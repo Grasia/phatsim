@@ -7,13 +7,14 @@
         <version>7</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <groupId>net.sf.sociaal</groupId>
+    <groupId>net.sf.phat</groupId>
     <artifactId>phat-sim</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
     <name>PHAT - Physical Human Activity Tester</name>
     <description>Physical Human Activity Tester</description>
-    <url>http://ingenias.sf.net</url>
+    <url>https://sourceforge.net/projects/phatsim/</url>
+    
     <licenses>
         <license>
             <name>The GPL V3</name>
@@ -47,7 +48,6 @@
         <jme.version>3.0.1</jme.version>
         <jali.version>1.0.0-SNAPSHOT</jali.version>
         <jdos.version>1.0.0-SNAPSHOT</jdos.version>
-        <jali.version>1.0.0-SNAPSHOT</jali.version>
     </properties>
     
     <modules>
