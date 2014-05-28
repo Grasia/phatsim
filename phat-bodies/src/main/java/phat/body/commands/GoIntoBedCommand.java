@@ -1,0 +1,161 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package phat.body.commands;
+
+import com.jme3.app.Application;
+import com.jme3.math.Matrix3f;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
+
+import java.util.logging.Level;
+
+import phat.body.BodiesAppState;
+import phat.body.control.animation.SitDownControl;
+import phat.body.control.navigation.AutonomousControlListener;
+import phat.body.control.navigation.navmesh.NavMeshMovementControl;
+import phat.body.control.physics.PHATCharacterControl;
+import phat.commands.PHATCommand;
+import phat.commands.PHATCommandListener;
+import phat.commands.PHATCommand.State;
+import phat.structures.houses.House;
+import phat.structures.houses.HouseAppState;
+import phat.util.Lazy;
+import phat.util.SpatialUtils;
+
+/**
+ *
+ * @author pablo
+ */
+public class GoIntoBedCommand extends PHATCommand implements AutonomousControlListener, PHATCommandListener {
+
+    private String bodyId;
+    private String bedId;
+    BodiesAppState bodiesAppState;
+    Spatial nearestSeat;
+    Node body;
+
+    public GoIntoBedCommand(String bodyId, String bedId, PHATCommandListener listener) {
+        super(listener);
+        this.bodyId = bodyId;
+        this.bedId = bedId;
+        logger.log(Level.INFO, "New Command: {0}", new Object[]{this});
+    }
+
+    public GoIntoBedCommand(String bodyId, String placeId) {
+        this(bodyId, placeId, null);
+    }
+
+    public static Vector3f getLocation(Node body) {
+        PHATCharacterControl cc = body.getControl(PHATCharacterControl.class);
+        return cc.getLocation();
+    }
+
+    public static Spatial getNearestSeat(Node placeToSeat, Node body) {
+        Spatial result = null;
+        if (placeToSeat.getChild("Seats") != null) {
+            Node seats = (Node) placeToSeat.getChild("Seats");
+            float minDistance = Float.MAX_VALUE;
+            for (Spatial pts : seats.getChildren()) {
+                float cd = pts.getWorldTranslation().distance(getLocation(body));
+                if (cd < minDistance) {
+                    minDistance = cd;
+                    result = pts;
+                }
+            }
+        }
+        return result;
+    }
+    GoToCommand goToCommand;
+    RotateTowardCommand rotateCommand;
+
+    @Override
+    public void runCommand(Application app) {
+        bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
+        HouseAppState houseAppState = app.getStateManager().getState(HouseAppState.class);
+
+        body = bodiesAppState.getAvailableBodies().get(bodyId);
+
+        if (body != null && body.getParent() != null) {
+            if (body.getControl(SitDownControl.class) != null) {
+                setState(State.Success);
+                return;
+            }
+            House house = houseAppState.getHouse(body);
+            Spatial placeToSit = SpatialUtils.getSpatialById(house.getRootNode(), bedId);
+            if (placeToSit != null) {
+                nearestSeat = getNearestSeat((Node) placeToSit, body);
+                //lyingDown();
+                goToCommand = new GoToCommand(bodyId, new Lazy<Vector3f>() {
+                    @Override
+                    public Vector3f getLazy() {
+                        if (((Node) nearestSeat).getChild("Access") != null) {
+                            return ((Node) nearestSeat).getChild("Access").getWorldTranslation();
+                        } else {
+                            Vector3f loc = nearestSeat.getWorldTranslation();
+                            Vector3f dir = nearestSeat.getWorldRotation().mult(Vector3f.UNIT_Z).normalize();
+                            return loc.add(dir.mult(0.5f));
+                        }
+                    }
+                }, this);
+                goToCommand.setMinDistance(0.3f);
+                bodiesAppState.runCommand(goToCommand);
+                return;
+            }
+        }
+        setState(State.Fail);
+    }
+
+    @Override
+    public void interruptCommand(Application app) {
+        BodiesAppState bodiesAppState = app.getStateManager().getState(
+                BodiesAppState.class);
+
+        Node body = bodiesAppState.getAvailableBodies().get(bodyId);
+
+        if (body != null && body.getParent() != null) {
+            if (goToCommand != null) {
+                goToCommand.interruptCommand(app);
+                return;
+            } else if (rotateCommand != null) {
+                rotateCommand.interruptCommand(null);
+                return;
+            }
+        }
+        setState(State.Fail);
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + bodyId + ", " + bedId + ")";
+    }
+
+    @Override
+    public void destinationReached(Vector3f destination) {
+        setState(State.Success);
+    }
+
+    private void lyingDown() {
+        PHATCharacterControl cc = body.getControl(PHATCharacterControl.class);
+        cc.setEnabled(false);
+        body.setLocalTranslation(Vector3f.ZERO);
+        body.setLocalRotation(Matrix3f.ZERO);
+        ((Node) nearestSeat).attachChild(body);
+        setState(State.Success);
+    }
+
+    @Override
+    public void commandStateChanged(PHATCommand command) {
+        if (command.getState() == PHATCommand.State.Success) {
+            if (command == goToCommand) {
+                rotateCommand = new RotateTowardCommand(bodyId, bedId, this);
+                rotateCommand.setOposite(true);
+                bodiesAppState.runCommand(rotateCommand);
+            } else if (command == rotateCommand) {
+                lyingDown();
+            }
+        }
+    }
+}

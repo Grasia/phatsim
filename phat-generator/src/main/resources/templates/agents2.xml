@@ -1,0 +1,55 @@
+@@@program xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"@@@
+ @@@repeat id="actors"@@@
+	@@@saveto@@@
+		@@@file overwrite="yes"@@@
+			@@@v@@@output@@@/v@@@/phat/agents/impl/@@@v@@@actorname@@@/v@@@Agent.java@@@/file@@@
+@@@text@@@
+package phat.agents.impl;
+
+import phat.agents.Agent;
+import phat.agents.automaton.*;
+import phat.agents.automaton.activities.*;
+import phat.agents.automaton.conditions.*;
+import phat.agents.automaton.timeIntervals.*;
+import phat.agents.events.*;
+
+public class @@@v@@@actorname@@@/v@@@Agent extends Agent {
+
+    public @@@v@@@actorname@@@/v@@@Agent(String bodyId) {
+        super(bodyId);
+    }
+	
+
+    @Override
+    protected void initAutomaton() {
+    	FSM fsm = new FSM(this, 1,"FSM-@@@v@@@actorname@@@/v@@@");
+    	@@@repeat id="timeInstance"@@@Transition @@@v@@@tiname@@@/v@@@Transition = new Transition(new @@@v@@@tiname@@@/v@@@TIA(this));
+    	@@@repeat id="timeTransition"@@@@@@v@@@tiname@@@/v@@@Transition.setCondition(new PastTimeCondition(@@@v@@@hours@@@/v@@@, @@@v@@@minutes@@@/v@@@,@@@v@@@seconds@@@/v@@@)); 
+    	@@@/repeat@@@ 
+    	@@@/repeat@@@
+    	
+    	@@@repeat id="firstTimeInterval"@@@fsm.registerStartState(@@@v@@@tiname@@@/v@@@Transition.getTarget());
+    	@@@/repeat@@@
+    	@@@repeat id="regTrans"@@@fsm.registerTransition(@@@v@@@tinameS@@@/v@@@Transition.getTarget(), @@@v@@@tinameT@@@/v@@@Transition);
+    	@@@/repeat@@@
+    	
+    	MainAutomaton mainAutomaton = new MainAutomaton(this);
+    	mainAutomaton.addTransition(fsm, false);
+    	
+        mainAutomaton.addListener(new AutomatonIcon());
+        
+    	setAutomaton(mainAutomaton);
+    	
+    	// Init EventManager
+    	@@@repeat id="eventProcessor"@@@
+    	getEventManager().addMap("@@@v@@@eventId@@@/v@@@", 
+    		new EventProcessor("@@@v@@@eventId@@@/v@@@", 
+    				@@@v@@@eventCondition@@@/v@@@, 
+    				new @@@v@@@acticity@@@/v@@@Activity(this)));
+    	@@@/repeat@@@
+    }
+}
+@@@/text@@@
+	@@@/saveto@@@
+	@@@/repeat@@@   
+@@@/program@@@

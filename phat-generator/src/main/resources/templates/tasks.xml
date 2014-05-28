@@ -1,0 +1,38 @@
+@@@program xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"@@@
+ @@@repeat id="tasks"@@@
+	@@@saveto@@@
+		@@@file overwrite="yes"@@@
+			@@@v@@@output@@@/v@@@/phat/agents/automaton/tasks/seq/@@@v@@@taskName@@@/v@@@Task.java@@@/file@@@
+@@@text@@@
+package phat.agents.automaton.tasks.seq;
+
+import phat.agents.automaton.*;
+import phat.agents.automaton.conditions.*;
+import phat.agents.automaton.uses.*;
+import phat.agents.events.*;
+import phat.agents.Agent;
+
+public class @@@v@@@taskName@@@/v@@@Task extends SeqTaskAutomaton {
+
+	public @@@v@@@taskName@@@/v@@@Task(Agent agent) {
+        super(agent, "@@@v@@@taskName@@@/v@@@");
+    }
+	
+	@Override
+	public void initTasks() {
+		@@@repeat id="subTasks"@@@
+		{ 
+		Automaton automaton = @@@v@@@subTaskInst@@@/v@@@;
+		@@@repeat id="events"@@@
+    	PHATAudioEventAutomatonFinishedListener audioEvent = 
+    			new PHATAudioEventAutomatonFinishedListener(agent,"@@@v@@@eventName@@@/v@@@", new AgentEventSource(agent));
+    	automaton.addListener(audioEvent);@@@/repeat@@@
+    	addTransition(automaton, false);
+    	} 
+    	@@@/repeat@@@
+	}
+}
+@@@/text@@@
+	@@@/saveto@@@
+	@@@/repeat@@@   
+@@@/program@@@

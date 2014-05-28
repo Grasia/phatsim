@@ -1,0 +1,29 @@
+@@@program xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"@@@
+ @@@repeat id="actors"@@@
+	@@@saveto@@@
+		@@@file overwrite="yes"@@@
+			@@@v@@@output@@@/v@@@/phat/mason/agents/@@@v@@@actorname@@@/v@@@Agent.java@@@/file@@@
+@@@text@@@
+package phat.mason.agents;
+
+import phat.agents.automaton.FSM;
+import phat.agents.automaton.Transition;
+import phat.agents.automaton.conditions.PastTimeCondition;
+
+public class @@@v@@@actorname@@@/v@@@Agent extends Agent {
+
+	public @@@v@@@actorname@@@/v@@@Agent(PhysicsActor physicsActor, PHATSimState state) {
+		super(physicsActor, state);
+	}
+	
+	@Override
+	protected void initAutomaton() {
+		FSM fsm = new FSM(this);
+    	
+    	setAutomaton(fsm);
+	}
+}
+@@@/text@@@
+	@@@/saveto@@@
+	@@@/repeat@@@   
+@@@/program@@@

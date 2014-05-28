@@ -1,0 +1,56 @@
+@@@program xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"@@@
+ @@@repeat id="tis"@@@
+	@@@saveto@@@
+		@@@file overwrite="yes"@@@
+			@@@v@@@output@@@/v@@@/phat/agents/automaton/timeIntervals/@@@v@@@tisName@@@/v@@@TIA.java@@@/file@@@
+@@@text@@@
+package phat.agents.automaton.timeIntervals;
+
+import phat.agents.automaton.FSM;
+import phat.agents.automaton.*;
+import phat.agents.automaton.activities.*;
+import phat.agents.automaton.conditions.*;
+import phat.agents.automaton.TimeIntervalAutomaton;
+import phat.agents.automaton.Transition;
+import phat.agents.Agent;
+
+public class @@@v@@@tisName@@@/v@@@TIA extends TimeIntervalAutomaton {
+
+	public @@@v@@@tisName@@@/v@@@TIA(Agent agent) {
+        super(agent, "@@@v@@@tisName@@@/v@@@TIA");
+    }
+	
+	@Override
+	public void initSubAutomaton() {
+		FSM fsm = new FSM(agent, 1,"FSM-@@@v@@@tisName@@@/v@@@TIA");
+		@@@repeat id="activities"@@@ActivityAutomaton @@@v@@@actName@@@/v@@@Activity = new @@@v@@@actName@@@/v@@@Activity(agent);
+		@@@/repeat@@@    	
+    	@@@repeat id="firstActivity"@@@fsm.registerStartState(@@@v@@@actName@@@/v@@@Activity);
+    	@@@/repeat@@@
+        @@@repeat id="regCondTrans"@@@
+        {
+            AutomatonCondition c = @@@v@@@condInst@@@/v@@@;
+            @@@repeat id="regTrueTrans"@@@            
+            Transition @@@v@@@actSource@@@/v@@@To@@@v@@@actTarget@@@/v@@@Transition = 
+    			new Transition(c, @@@v@@@actTarget@@@/v@@@Activity);    	    	
+            fsm.registerTransition(@@@v@@@actSource@@@/v@@@Activity, @@@v@@@actSource@@@/v@@@To@@@v@@@actTarget@@@/v@@@Transition);@@@/repeat@@@
+            @@@repeat id="regFalseTrans"@@@            
+            Transition @@@v@@@actSource@@@/v@@@To@@@v@@@actTarget@@@/v@@@Transition = 
+    			new Transition(new NegateCondition(c), @@@v@@@actTarget@@@/v@@@Activity);    	    	
+            fsm.registerTransition(@@@v@@@actSource@@@/v@@@Activity, @@@v@@@actSource@@@/v@@@To@@@v@@@actTarget@@@/v@@@Transition);@@@/repeat@@@
+        }@@@/repeat@@@
+    	@@@repeat id="regTrans"@@@fsm.registerTransition(@@@v@@@actSource@@@/v@@@Activity, @@@v@@@actTarget@@@/v@@@Activity);
+    	@@@/repeat@@@
+    	// DoNothing due to no activity defined
+    	@@@repeat id="noActivities"@@@Automaton doNothing = new DoNothing(agent, "DoNothing due to no activity defined");
+    	doNothing.setFinishCondition(new TimerFinishedCondition(0, 0, 1));
+    	fsm.registerStartState(doNothing);
+    	fsm.registerFinalState(doNothing);@@@/repeat@@@
+    	
+    	addTransition(fsm, true);
+	}
+}
+@@@/text@@@
+	@@@/saveto@@@
+	@@@/repeat@@@   
+@@@/program@@@

@@ -1,0 +1,460 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package phat.examples.android;
+
+import phat.hais.*;
+import phat.controls.animation.*;
+import com.jme3.animation.AnimControl;
+import com.jme3.app.SimpleApplication;
+import com.jme3.asset.AssetManager;
+import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.PhysicsCollisionEvent;
+import com.jme3.bullet.collision.PhysicsCollisionListener;
+import com.jme3.bullet.collision.shapes.CollisionShape;
+import com.jme3.bullet.control.PhysicsControl;
+import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.bullet.util.CollisionShapeFactory;
+import com.jme3.input.KeyInput;
+import com.jme3.input.controls.ActionListener;
+import com.jme3.input.controls.KeyTrigger;
+import com.jme3.light.AmbientLight;
+import com.jme3.light.DirectionalLight;
+import com.jme3.material.Material;
+import com.jme3.math.ColorRGBA;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
+import com.jme3.renderer.Camera;
+import com.jme3.renderer.ViewPort;
+import com.jme3.scene.CameraNode;
+import com.jme3.scene.Geometry;
+import com.jme3.scene.Node;
+import com.jme3.scene.SceneGraphVisitor;
+import com.jme3.scene.Spatial;
+import com.jme3.scene.control.CameraControl;
+import com.jme3.scene.shape.Box;
+import com.jme3.system.AppSettings;
+import com.jme3.system.JmeContext;
+import com.jme3.texture.FrameBuffer;
+import com.jme3.texture.Image;
+import com.jme3.texture.Texture2D;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import phat.agents.actors.BasicActor;
+import phat.devices.smartphone.SmartPhoneFactory;
+import phat.mobile.adm.AndroidVirtualDevice;
+import phat.sensors.camera.CameraSensor;
+import phat.server.PHATServerManager;
+import phat.server.camera.TCPCameraSensorServer;
+import phat.util.Debug;
+import phat.util.SpatialFactory;
+
+/**
+ *
+ * @author pablo
+ */
+public class HouseWithCamera extends SimpleApplication implements PhysicsCollisionListener {
+    private static final boolean PHYSICS_DEBUG = false;
+    private static final boolean NAV_DEBUG = false;
+    
+    private static final String BAD_MOVEMENT_PATIENT = "BadMovement";
+    private static final String TRIP_OVER_PATIENT = "TripOverPatient";
+    private static final String RELATIVE_LOOK_AT_LEFT = "LookAtLeft";
+    private static final String RELATIVE_GOTO_PATIENT = "RelativeGoToPatient";
+    
+    private String action = null;
+            
+    private BulletAppState bulletAppState;
+    private boolean initialized = false;
+    private Node house;
+    
+    private float time = 0f;
+    
+    private BasicActor patientActor;
+    private BasicActor relativeActor;
+
+    PHATServerManager serverManager;
+    
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    public static void main(String[] args) {
+        HouseWithCamera app = new HouseWithCamera();
+        //app.setDisplayFps(false);
+        app.setShowSettings(false);
+        app.setPauseOnLostFocus(false);
+        AppSettings settings = new AppSettings(true);
+        settings.setWidth(480);
+        settings.setHeight(800);
+        app.setSettings(settings);        
+        app.start();
+    }
+    /**
+     * App initialisation.It is invoked by JME3 to create the world
+     */
+    @Override
+    public void simpleInitApp() {
+        SpatialFactory.init(assetManager, rootNode);
+        
+        initKeys();
+        createPhysicsEngineAndAttachItToScene();
+        createTerrain();
+        createCameras();
+        createLight();
+        
+        if(PHYSICS_DEBUG)
+            Debug.enableDebugGrid(10,assetManager,rootNode);
+        
+        createOtherObjectInScene(rootNode, assetManager);
+
+
+        serverManager = new PHATServerManager();
+        NavActorFactory.init(rootNode, assetManager, bulletAppState);
+        SmartPhoneFactory.init(bulletAppState, assetManager, renderManager, cam, audioRenderer);
+        
+        Spatial basinLocation = getLocationOfBasinOfBathRoom1();
+        patientActor = NavActorFactory.createBasicActorWithNavigation(
+                "Patient",
+                "Models/People/Elder/Elder.j3o",
+                basinLocation.getWorldTranslation().add(0f, 0.5f, 0f),
+                0.2f,
+                0.5f,
+                0.1f,
+                //PatientAnimControl.class,
+                BasicCharacterAnimControl.class,
+                (Node) house);
+        patientActor.showName(true);
+        
+        Node smartphone1 = createSmartphone("Smartphone1", "emulator-5554");
+        rootNode.attachChild(smartphone1);
+        
+        patientActor.pickUp(smartphone1, false);
+                
+        Spatial hobLocation = getLocationOfHob();
+        relativeActor = NavActorFactory.createBasicActorWithNavigation(
+                "Relative",
+                "Models/People/Male/Male.j3o",
+                hobLocation.getWorldTranslation().add(0f, 0.5f, 0f),
+                0.2f,
+                1f,
+                0.1f,
+                BasicCharacterAnimControl.class,
+                (Node) house);
+        relativeActor.showName(true);        
+        
+        Node smartphone2 = createSmartphone("Smartphone2", "emulator-5556");
+        rootNode.attachChild(smartphone1);
+        
+        patientActor.pickUp(smartphone2, false);
+        
+        initTask(5f);
+        
+    }
+
+    private Node createSmartphone(String smartphoneId, String emulatorId) {
+        Node smartphone = SmartPhoneFactory.createSmartphone(smartphoneId);
+        SmartPhoneFactory.enableCameraFacility(smartphone);
+        
+        CameraSensor cameraSensor = smartphone.getControl(CameraSensor.class);
+        
+        TCPCameraSensorServer cameraServer = serverManager.createAndStartCameraServer(smartphone.getName(), cameraSensor);
+        cameraServer.setRate(1f);
+        
+        AndroidVirtualDevice avd = new AndroidVirtualDevice(smartphone.getName(), 
+        		emulatorId, smartphone.getName());
+        System.err.println("Despues.................");
+        avd.sendConfigFileForService(serverManager.getIP(), serverManager.getPort());
+        //avd.unlock();
+        avd.startActivity("phat.android.apps", "CameraCaptureActivity");
+        //avd.startActivity("phat.android.app.mic", "MainActivity");
+        // empieza a procesar audio
+        //System.out.println("press start button!");
+        //avd.tap(45, 193);
+
+        return smartphone;
+    }
+    
+    private ViewPort createViewPort(Camera smartPhoneCamera) {
+        float xFactor = (float)cam.getWidth()/(float)smartPhoneCamera.getWidth();
+        float yFactor = (float)cam.getHeight()/(float)smartPhoneCamera.getHeight();
+        smartPhoneCamera.setViewPort(0f*xFactor, 1f*xFactor, 0f*yFactor, 1f*yFactor);
+        ViewPort vp = renderManager.createPreView("asdf", smartPhoneCamera);        
+        vp.setClearFlags(true, true, true);        
+        vp.setBackgroundColor(ColorRGBA.White);
+        vp.attachScene(SpatialFactory.getRootNode());
+        return vp;
+    }
+    
+    private CameraNode createCameraNode(Camera smartPhoneCamera) {
+        CameraNode camNode = new CameraNode("Camera Node", smartPhoneCamera);
+        camNode.setControlDir(CameraControl.ControlDirection.SpatialToCamera);
+        camNode.setLocalTranslation(new Vector3f(0, 0, 0));
+        return camNode;
+    }
+    
+    List<TimeTask> tasks = new ArrayList<TimeTask>();
+    
+    private void initTask(float delay) {
+        Task patientTurn = new Task() {
+            @Override
+            public void performTask() {
+                patientActor.setAnimation("LookBehindR");
+            }
+        };
+        tasks.add(new TimeTask(delay+3f, patientTurn));
+        
+        Task patientTripOver = new Task() {
+            @Override
+            public void performTask() {
+                patientActor.tripOver();
+            }
+        };
+        tasks.add(new TimeTask(delay+5f, patientTripOver));
+        
+        Task hearASound = new Task() {
+            @Override
+            public void performTask() {
+                relativeActor.setAnimation("LookBehindL");
+            }
+        };
+        tasks.add(new TimeTask(delay+6f, hearASound));
+        
+        Task goToPatient = new Task() {
+            @Override
+            public void performTask() {
+                relativeActor.moveTo(patientActor.getLocation());
+            }
+        };
+        tasks.add(new TimeTask(delay+8f, goToPatient));
+        
+    }
+    
+    void checkTask(float time) {
+        for(TimeTask timeTask: tasks) {
+            timeTask.check(time);
+        }
+    }
+    /**
+     * Main simulation loop. This is where results of actions of different
+     * participants are controlled
+     *
+     */
+    @Override
+    public void simpleUpdate(float tpf) {
+        super.simpleUpdate(tpf);
+
+        time += tpf;
+        checkTask(time);
+    }
+    
+    interface Task {
+        public void performTask();
+    }
+    
+    class TimeTask {
+        float time;
+        Task task;
+        boolean performed = false;
+        
+        TimeTask(float time, Task task) {
+            this.time = time;
+            this.task = task;
+        }
+        
+        boolean check(float t) {
+            if(!performed && t > time) {
+                task.performTask();
+                performed = true;
+            }
+            return performed;
+        }
+    }
+    
+    @Override
+    public void collision(PhysicsCollisionEvent event) {
+        if (relativeActor == null || event == null || event.getNodeA() == null || event.getNodeB() == null) {
+            return;
+        }
+
+        if (event.getNodeA().getName().equals("Obstacle") && event.getNodeB().getName().equals(relativeActor.getName())) {
+            System.out.println("Tropiezo con Box " + event.getAppliedImpulse());
+            if (event.getAppliedImpulse() >= 0) {
+                relativeActor.tripOver();
+            }
+        }
+    }
+
+    private void createCameras() {
+        flyCam.setMoveSpeed(10f);
+        flyCam.setDragToRotate(true);// to prevent mouse capture
+        cam.setLocation(new Vector3f(7.0357456f, 11.175021f, 5.927986f));
+        cam.setRotation(new Quaternion(-0.3325067f, 0.6662985f, -0.44692048f, -0.49572945f));
+    }
+
+    private void createTerrain() {
+        house = (Node) assetManager.loadModel("Scenes/Structures/Houses/House3room2bathLP/House3room2bath.j3o");
+        Spatial physicalEntities = house.getChild("PhysicalEntities");
+        bulletAppState.getPhysicsSpace().addAll(house);
+        rootNode.attachChild(physicalEntities);
+        if(NAV_DEBUG) {
+            Node logicalEntities = (Node) house.getChild("LogicalEntities");
+            Geometry geoNavMesh = (Geometry) logicalEntities.getChild("NavMesh");
+            Geometry geometry = SpatialFactory.createShape("NavMesh", geoNavMesh.getMesh(), ColorRGBA.Green);
+            geometry.setLocalTranslation(geometry.getLocalTranslation().add(0f, 0.05f, 0f));
+            rootNode.attachChild(geometry);
+        }
+
+
+        changeLocation(physicalEntities, "Obstacle", new Vector3f(5.5658574f, 0.01f, 5.9433417f));
+    }
+
+    public Spatial getLocationOfBasinOfBathRoom1() {
+        Node le = (Node) house.getChild("LogicalEntities");
+        Node sc = (Node) le.getChild("SpatialCoordenates");
+        Node bathRoom1 = (Node) sc.getChild("BathRoom1");
+        return bathRoom1.getChild("Basin");
+    }
+    
+    public Spatial getLivingRoom() {
+        Node le = (Node) house.getChild("LogicalEntities");
+        Node sc = (Node) le.getChild("SpatialCoordenates");
+        Node bathRoom1 = (Node) sc.getChild("LivingRoom");
+        return bathRoom1.getChild("Center");
+    }
+
+    public Spatial getLocationOfBasinOfBathRoom2() {
+        Node le = (Node) house.getChild("LogicalEntities");
+        Node sc = (Node) le.getChild("SpatialCoordenates");
+        Node bathRoom1 = (Node) sc.getChild("BathRoom2");
+        return bathRoom1.getChild("Basin");
+    }
+
+    public Spatial getLocationOfHob() {
+        Node le = (Node) house.getChild("LogicalEntities");
+        Node sc = (Node) le.getChild("SpatialCoordenates");
+        Node bathRoom1 = (Node) sc.getChild("Kitchen");
+        return bathRoom1.getChild("Hob");
+    }
+
+    public Spatial getLocationOfSink() {
+        Node le = (Node) house.getChild("LogicalEntities");
+        Node sc = (Node) le.getChild("SpatialCoordenates");
+        Node bathRoom1 = (Node) sc.getChild("Kitchen");
+        return bathRoom1.getChild("Sink");
+    }
+
+    public void changeLocation(Spatial root, final String name, final Vector3f location) {
+        SceneGraphVisitor visitor = new SceneGraphVisitor() {
+            @Override
+            public void visit(Spatial spat) {
+                if (spat.getName().equals(name)) {
+                    RigidBodyControl rbc = spat.getControl(RigidBodyControl.class);
+                    if (rbc != null) {
+                        rbc.setPhysicsLocation(location);
+                    }
+                }
+            }
+        };
+        root.depthFirstTraversal(visitor);
+    }
+
+    private void createPhysicsEngineAndAttachItToScene() {
+        bulletAppState = new BulletAppState(); // physics engine based in jbullet
+        bulletAppState.setThreadingType(BulletAppState.ThreadingType.PARALLEL);
+        bulletAppState.setEnabled(true);
+        stateManager.attach(bulletAppState);
+        //bulletAppState.getPhysicsSpace().setAccuracy(1 / 120f);
+        if(PHYSICS_DEBUG)
+            bulletAppState.getPhysicsSpace().enableDebug(assetManager); // to show the collision wireframes
+
+        bulletAppState.getPhysicsSpace().addCollisionListener(this);
+    }
+
+    private Geometry createOtherObjectInScene(Node rootNode,
+            AssetManager assetManager) {
+        // code modified from http://jmonkeyengine.org/wiki/doku.php/jme3:beginner:hello_asset
+        Box box = new Box(8f, 0.1f, 5f);
+        Geometry wall = new Geometry("Floor", box);
+        Material mat_brick = new Material(
+                assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat_brick.setTexture("ColorMap",
+                assetManager.loadTexture("Textures/Terrain/BrickWall/BrickWall.jpg"));
+        wall.setMaterial(mat_brick);
+
+        //wall.setLocalTranslation(new Vector3f(7f,1f, 7f));
+        //wall.move(new Vector3f(10f, 10f, 5f));
+        //wall.setLocalScale(0.15f); // make wall smaller
+
+        // this part makes the object solid for others that define as well a "collision shape"
+        // warning, you have to use a dynamic shape. If you choose other kind, collisions will not be detected        
+        CollisionShape wallShape = CollisionShapeFactory.createDynamicMeshShape(wall);
+        // Associate a rigid body to the wall so that it is processed by the physical engine 
+        // the object mass has to be greater than 0 so that gravity acts on it.
+        RigidBodyControl wallBody = new RigidBodyControl(wallShape, 0f);
+        wall.addControl(wallBody);
+        wallBody.setEnabled(true);
+        //wallBody.setFriction(0.5f);
+        bulletAppState.getPhysicsSpace().add(wallBody);
+
+        rootNode.attachChild(wall);
+
+        wallBody.setPhysicsLocation(new Vector3f(6f, -0.11f, 5f));
+        return wall;
+
+    }
+
+    private void createLight() {
+        // We add light so we see the scene
+        AmbientLight al = new AmbientLight();
+        //al.setColor(ColorRGBA.White.mult(1.3f));
+        al.setColor(ColorRGBA.White.mult(0.6f));
+        rootNode.addLight(al);
+
+        DirectionalLight dl = new DirectionalLight();
+        dl.setColor(ColorRGBA.Gray);
+        dl.setDirection(new Vector3f(2.8f, -2.8f, -2.8f).normalizeLocal());
+        rootNode.addLight(dl);
+    }
+    
+    private ActionListener actionListener = new ActionListener() {
+        @Override
+        public void onAction(String name, boolean keyPressed, float tpf) {
+            if (name.equals(RELATIVE_LOOK_AT_LEFT) && !keyPressed) {
+                action = name;
+            }
+            if (name.equals(BAD_MOVEMENT_PATIENT) && !keyPressed) {
+                action = name;
+            }
+            if (name.equals(TRIP_OVER_PATIENT) && !keyPressed) {
+                action = name;
+            }
+            if (name.equals(RELATIVE_GOTO_PATIENT) && !keyPressed) {
+                action = name;
+            }
+        }
+    };
+
+    /**
+     * Custom Keybinding: Map named actions to inputs.
+     */
+    private void initKeys() {
+        inputManager.addMapping(BAD_MOVEMENT_PATIENT, new KeyTrigger(KeyInput.KEY_1));
+        inputManager.addListener(actionListener, new String[]{BAD_MOVEMENT_PATIENT});
+        
+        // You can map one or several inputs to one named action
+        inputManager.addMapping(TRIP_OVER_PATIENT, new KeyTrigger(KeyInput.KEY_2));
+        inputManager.addListener(actionListener, new String[]{TRIP_OVER_PATIENT});
+        
+        inputManager.addMapping(RELATIVE_LOOK_AT_LEFT, new KeyTrigger(KeyInput.KEY_3));
+        inputManager.addListener(actionListener, new String[]{RELATIVE_LOOK_AT_LEFT});
+        
+        // You can map one or several inputs to one named action
+        inputManager.addMapping(RELATIVE_GOTO_PATIENT, new KeyTrigger(KeyInput.KEY_4));
+        // Add the names to the action listener.
+        inputManager.addListener(actionListener, new String[]{RELATIVE_GOTO_PATIENT});
+
+    }
+}

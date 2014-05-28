@@ -1,0 +1,6 @@
+
+- Game engine (jMonkeyEngine's BSD License): http://hub.jmonkeyengine.org/wiki/doku.php/bsd_license
+
+Assests:
+- Furniture 3D models (Free Art license or Creative Commons Attribution license ): http://www.sweethome3d.com/freeModels.jsp
+- Character and animations (GPL license): http://www.worldforge.org/

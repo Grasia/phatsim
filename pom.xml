@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+ http://maven.apache.org/maven-v4_0_0.xsd">
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>net.sf.sociaal</groupId>
+    <artifactId>phat-sim</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.0-SNAPSHOT</version>
+    <name>PHAT - Physical Human Activity Tester</name>
+    <description>Physical Human Activity Tester</description>
+    <url>http://ingenias.sf.net</url>
+    <licenses>
+        <license>
+            <name>The GPL V3</name>
+            <url>http://www.gnu.org/copyleft/gpl.html</url>
+            <distribution />
+        </license>
+    </licenses>
+    <scm>
+        <connection>scm:svn:http://ingenias.svn.sourceforge.net/svnroot/ingenias/trunk/IDKMaven</connection>
+        <developerConnection>scm:svn:https://ingenias.svn.sourceforge.net/svnroot/ingenias/trunk/IDKMaven</developerConnection>
+        <url>http://ingenias.svn.sourceforge.net/svnroot/ingenias/trunk/IDKMaven</url>		
+    </scm>
+
+    <developers>
+        <developer>
+            <id>escalope</id>
+            <name>Jorge Gomez-Sanz</name>
+            <email>jjgomez@fdi.ucm.es</email>
+        </developer>
+        <developer>
+            <id>pcampillo</id>
+            <name>Pablo Campillo-Sanchez</name>
+            <email>pabcampi@ucm.es</email>
+        </developer>
+    </developers>
+    
+    <properties>
+        <vendor>GRASIA Research Group</vendor>
+        <developername>Pablo Campillo-Sanchez</developername>
+        <developeremail>pabcampi@ucm.es</developeremail>
+        <jme.version>3.0.1</jme.version>
+        <jali.version>1.0.0-SNAPSHOT</jali.version>
+        <jdos.version>1.0.0-SNAPSHOT</jdos.version>
+        <jali.version>1.0.0-SNAPSHOT</jali.version>
+    </properties>
+    
+    <modules>
+        <module>phat-env</module>
+        <module>phat-bodies</module>
+        <module>phat-core</module>
+        <module>phat-audio</module>
+        <module>phat-demos</module>
+        <module>phat-interface</module>        
+        <module>phat-mason</module>
+        <module>phat-devices</module>
+        <module>phat-server</module>
+        <module>phat-generator</module>
+    </modules>
+    
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.apache.maven.plugins</groupId>
+                                        <artifactId>maven-dependency-plugin</artifactId>
+                                        <versionRange>[1.0.0,)</versionRange>
+                                        <goals>
+                                            <goal>build-classpath</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore />
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+    
+    <repositories>
+        <repository>
+            <id>java.net-m2</id>
+            <name>java.net - Maven 2</name>
+            <url>https://repository.jboss.org/nexus/content/repositories/java.net-m2</url>
+        </repository>
+        <repository>
+            <id>sonatype-public</id>
+            <name>sonatype public</name>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
+        </repository>	  
+    </repositories>
+    
+</project>

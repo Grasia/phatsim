@@ -1,0 +1,90 @@
+@@@program xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"@@@
+	@@@repeat id="simInitialization"@@@
+	@@@saveto@@@
+		@@@file overwrite="yes"@@@
+			@@@v@@@output@@@/v@@@/phat/sim/Main@@@v@@@simName@@@/v@@@PHATSimulation.java@@@/file@@@
+@@@text@@@
+package phat.sim;
+
+import phat.agents.Agent;
+import phat.body.BodiesAppState;
+import phat.body.commands.*;
+import phat.devices.commands.*;
+import phat.config.*;
+import phat.world.WorldAppState;
+import phat.structures.houses.HouseFactory;
+import phat.PHATInitializer;
+import phat.PHATInterface;
+import phat.agents.impl.*;
+
+/**
+ *
+ * @author pablo
+ */
+public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer {
+
+    public static void main(String[] args) {
+        Main@@@v@@@simName@@@/v@@@PHATSimulation sim = new Main@@@v@@@simName@@@/v@@@PHATSimulation();
+        PHATInterface phat = new PHATInterface(sim);
+        phat.start();
+    }
+
+    @Override
+    public void initWorld(WorldConfigurator worldConfig) {
+        worldConfig.setTime(@@@v@@@year@@@/v@@@, @@@v@@@month@@@/v@@@, @@@v@@@day@@@/v@@@, @@@v@@@hour@@@/v@@@, @@@v@@@min@@@/v@@@, @@@v@@@sec@@@/v@@@);
+        worldConfig.setTimeVisible(true);
+        worldConfig.setLandType(WorldAppState.LandType.Grass);
+    }
+
+    @Override
+    public void initHouse(HouseConfigurator houseConfig) {
+        houseConfig.addHouseType("House1", HouseFactory.HouseType.House3room2bath);
+    }
+
+    @Override
+    public void initBodies(BodyConfigurator bodyConfig) {
+       @@@repeat id="bodies"@@@
+       bodyConfig.createBody(BodiesAppState.BodyType.@@@v@@@bodyType@@@/v@@@, "@@@v@@@actorname@@@/v@@@");
+       bodyConfig.runCommand(new BodyLabelCommand("@@@v@@@actorname@@@/v@@@", @@@v@@@showName@@@/v@@@));@@@/repeat@@@
+       
+       // Initial locations
+       @@@repeat id="initialLocs"@@@bodyConfig.setInSpace("@@@v@@@actorname@@@/v@@@", "House1", "@@@v@@@iniLoc@@@/v@@@");
+       @@@/repeat@@@
+    }
+    
+    @Override
+    public void initDevices(DeviceConfigurator deviceConfig) {
+    	@@@repeat id="createSP"@@@
+        deviceConfig.runCommand(new CreateSmartphoneCommand("@@@v@@@SPname@@@/v@@@"));
+        deviceConfig.runCommand(new SetDeviceOnPartOfBodyCommand("@@@v@@@humanId@@@/v@@@","@@@v@@@SPname@@@/v@@@", SetDeviceOnPartOfBodyCommand.PartOfBody.@@@v@@@partOfBody@@@/v@@@));@@@/repeat@@@
+        
+        @@@repeat id="emulator"@@@
+        deviceConfig.runCommand(new SetAndroidEmulatorCommand("@@@v@@@SPname@@@/v@@@", "@@@v@@@AvdName@@@/v@@@", "@@@v@@@AvdSerialNum@@@/v@@@"));
+        @@@repeat id="installApp"@@@
+        deviceConfig.runCommand(new InstallApkCommand("@@@v@@@SPname@@@/v@@@", "@@@v@@@apkFile@@@/v@@@"));@@@/repeat@@@
+        @@@repeat id="AndroidApp"@@@
+        deviceConfig.runCommand(new StartActivityCommand("@@@v@@@SPname@@@/v@@@", "@@@v@@@packageName@@@/v@@@", "@@@v@@@activityName@@@/v@@@"));@@@/repeat@@@@@@/repeat@@@
+        
+        @@@repeat id="avdScreen"@@@
+        {DisplayAVDScreenCommand displayCommand = new DisplayAVDScreenCommand("@@@v@@@SPname@@@/v@@@", "@@@v@@@AvdName@@@/v@@@");
+        displayCommand.setFrecuency(0.5f);
+        deviceConfig.runCommand(displayCommand);}@@@/repeat@@@
+    }
+    
+    @Override
+    public void initAgents(AgentConfigurator agentsConfig) {
+       @@@repeat id="agent"@@@
+       agentsConfig.add(new @@@v@@@agentname@@@/v@@@Agent("@@@v@@@agentname@@@/v@@@"));@@@/repeat@@@
+    }
+    
+    @Override
+    public String getTittle() {
+        return "PHAT-@@@v@@@simName@@@/v@@@";
+    }
+}
+
+
+@@@/text@@@
+	@@@/saveto@@@
+	@@@/repeat@@@
+@@@/program@@@
