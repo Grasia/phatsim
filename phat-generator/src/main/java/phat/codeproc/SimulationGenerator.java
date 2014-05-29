@@ -32,6 +32,7 @@ public class SimulationGenerator {
 
             generateWorldInitialization(simId, simDiag, simInitRep);
             generatePeopleInitialization(simDiag, simInitRep);
+            generateCameraPositionToBody(simDiag, simInitRep);
             generateSmartphones(simId, simDiag, simInitRep);
         }
 
@@ -79,6 +80,43 @@ public class SimulationGenerator {
                     simInitRep.add(bodyRep);
                     bodyRep.add(new Var("agentname", humanId));
                 }
+            }
+        }
+    }
+
+    private void generateCameraPositionToBody(Graph simDiag, Repeat simInitRep)
+            throws NullEntity, NotFound {
+        for (GraphEntity hi : Utils.getEntities(simDiag, "CameraInit")) {
+            GraphEntity human = Utils.getTargetEntity(hi, "CameraFaceToHuman", simDiag.getRelationships());
+            if (human != null) {
+                String humanId = human.getID();
+
+                Repeat camRep = new Repeat("CameraToBodyInit");
+                simInitRep.add(camRep);
+                camRep.add(new Var("actorname", humanId));
+                String distance = "2";
+                String elevation = "15";
+                String front = "true";
+                
+                GraphAttribute distanceGA = hi.getAttributeByName("DistanceToTarget");
+                if(distanceGA != null && !distanceGA.getSimpleValue().equals("")) {
+                    distance = distanceGA.getSimpleValue();
+                }
+                camRep.add(new Var("distance", distance));
+                
+                GraphAttribute elevationGA = hi.getAttributeByName("Elevation");
+                if(elevationGA != null && !elevationGA.getSimpleValue().equals("")) {
+                    elevation = elevationGA.getSimpleValue();
+                }
+                camRep.add(new Var("elevation", elevation));
+                
+                GraphAttribute frontGA = hi.getAttributeByName("IsInFrontOfHuman");
+                if(frontGA != null && !frontGA.getSimpleValue().equals("")) {
+                    if(frontGA.getSimpleValue().equals("No")) {
+                        front = "false";
+                    }
+                }
+                camRep.add(new Var("isinfrontofhuman", front));
             }
         }
     }
@@ -131,14 +169,14 @@ public class SimulationGenerator {
                     emulator.add(new Var("AvdSerialNum", avdSerialNumName.getSimpleValue()));
 
                     GraphAttribute apkFileField = emu.getAttributeByName("ApkFile");
-                    System.out.println("ApkFile = "+apkFileField.getSimpleValue());
+                    System.out.println("ApkFile = " + apkFileField.getSimpleValue());
                     if (apkFileField != null && !apkFileField.getSimpleValue().equals("")) {
                         Repeat installApp = new Repeat("installApp");
                         emulator.add(installApp);
                         installApp.add(new Var("SPname", smartphone.getID()));
                         installApp.add(new Var("apkFile", apkFileField.getSimpleValue()));
                     }
-                    
+
                     GraphAttribute avdScreenFeed = emu.getAttributeByName("AvdScreenFeed");
                     if (avdScreenFeed != null && avdScreenFeed.getSimpleValue().equals("Yes")) {
                         Repeat avdScreen = new Repeat("avdScreen");

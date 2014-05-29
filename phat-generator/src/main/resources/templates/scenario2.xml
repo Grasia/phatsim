@@ -50,6 +50,13 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
        // Initial locations
        @@@repeat id="initialLocs"@@@bodyConfig.setInSpace("@@@v@@@actorname@@@/v@@@", "House1", "@@@v@@@iniLoc@@@/v@@@");
        @@@/repeat@@@
+       @@@repeat id="CameraToBodyInit"@@@
+        SetCameraToBodyCommand setCameraToBodyCommand = new SetCameraToBodyCommand("@@@v@@@actorname@@@/v@@@");
+        setCameraToBodyCommand.setFront(@@@v@@@isinfrontofhuman@@@/v@@@);
+        setCameraToBodyCommand.setDistance(@@@v@@@distance@@@/v@@@f);
+        setCameraToBodyCommand.setHeight(@@@v@@@elevation@@@/v@@@f);
+        bodyConfig.runCommand(setCameraToBodyCommand);@@@/repeat@@@
+        
     }
     
     @Override
