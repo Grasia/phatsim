@@ -93,5 +93,34 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
 
 @@@/text@@@
 	@@@/saveto@@@
+
+@@@saveto@@@
+		@@@file overwrite="yes"@@@
+@@@v@@@output@@@/v@@@/phat/sim/Main@@@v@@@simName@@@/v@@@PHATSimulationOnlyDevices.java@@@/file@@@
+@@@text@@@
+package phat.sim;
+
+
+import phat.mobile.adm.*;
+
+/**
+ *
+ * @author pablo
+ */
+public class Main@@@v@@@simName@@@/v@@@PHATSimulationOnlyDevices  {
+
+    public static void main(String[] args) {
+       
+        @@@repeat id="emulator"@@@
+	AndroidCommandTools.launchAVD("@@@v@@@AvdName@@@/v@@@", "@@@v@@@AvdSerialNum@@@/v@@@");
+        @@@/repeat@@@
+    }
+
+}
+
+
+@@@/text@@@
+	@@@/saveto@@@
+
 	@@@/repeat@@@
 @@@/program@@@
