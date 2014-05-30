@@ -122,5 +122,26 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulationOnlyDevices  {
 @@@/text@@@
 	@@@/saveto@@@
 
+
+@@@saveto@@@
+		@@@file overwrite="yes"@@@
+@@@v@@@output@@@/v@@@/scripts/createAVDs@@@v@@@simName@@@/v@@@.sh@@@/file@@@
+@@@text@@@
+        @@@repeat id="emulator"@@@
+echo no|android create avd --force -n "@@@v@@@AvdName@@@/v@@@" -t "android-19" -c 100M --skin WVGA800 --abi x86 -a --device  "Nexus S"
+        @@@/repeat@@@
+@@@/text@@@
+	@@@/saveto@@@
+@@@saveto@@@
+		@@@file overwrite="yes"@@@
+@@@v@@@output@@@/v@@@/scripts/createAVDs@@@v@@@simName@@@/v@@@.bat@@@/file@@@
+@@@text@@@
+        @@@repeat id="emulator"@@@
+echo no|android create avd --force -n "@@@v@@@AvdName@@@/v@@@" -t "android-19" -c 100M --skin WVGA800 --abi x86 -a --device  "Nexus S"
+        @@@/repeat@@@
+@@@/text@@@
+	@@@/saveto@@@
+
+
 	@@@/repeat@@@
 @@@/program@@@
