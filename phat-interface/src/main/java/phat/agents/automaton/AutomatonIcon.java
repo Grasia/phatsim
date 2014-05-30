@@ -33,6 +33,7 @@ public class AutomatonIcon implements AutomatonListener {
         iconMapping.put("UseObjectAutomaton", "Textures/SociaalmlImages/behaviour/tasks/UseTask.png");
         iconMapping.put("PutOnClothingAutomaton", "Textures/SociaalmlImages/behaviour/tasks/PutOn.png");
         iconMapping.put("TakeOffClothingAutomaton", "Textures/SociaalmlImages/behaviour/tasks/TakeOff.png");
+        iconMapping.put("PressOnScreenXYAutomaton", "Textures/SociaalmlImages/behaviour/tasks/TapXY.png");
     }
     
     @Override
