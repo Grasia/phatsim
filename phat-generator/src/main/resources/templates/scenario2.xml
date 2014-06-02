@@ -93,5 +93,55 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
 
 @@@/text@@@
 	@@@/saveto@@@
+
+@@@saveto@@@
+		@@@file overwrite="yes"@@@
+@@@v@@@output@@@/v@@@/phat/sim/Main@@@v@@@simName@@@/v@@@PHATSimulationOnlyDevices.java@@@/file@@@
+@@@text@@@
+package phat.sim;
+
+
+import phat.mobile.adm.*;
+
+/**
+ *
+ * @author pablo
+ */
+public class Main@@@v@@@simName@@@/v@@@PHATSimulationOnlyDevices  {
+
+    public static void main(String[] args) {
+       
+        @@@repeat id="emulator"@@@
+	AndroidCommandTools.launchAVD("@@@v@@@AvdName@@@/v@@@", "@@@v@@@AvdSerialNum@@@/v@@@");
+        @@@/repeat@@@
+    }
+
+}
+
+
+@@@/text@@@
+	@@@/saveto@@@
+
+
+@@@saveto@@@
+		@@@file overwrite="yes"@@@
+@@@v@@@output@@@/v@@@/scripts/createAVDs@@@v@@@simName@@@/v@@@.sh@@@/file@@@
+@@@text@@@
+        @@@repeat id="emulator"@@@
+echo no|android create avd --force -n "@@@v@@@AvdName@@@/v@@@" -t "android-19" -c 100M --skin WVGA800 --abi x86 -a --device  "Nexus S"
+        @@@/repeat@@@
+@@@/text@@@
+	@@@/saveto@@@
+@@@saveto@@@
+		@@@file overwrite="yes"@@@
+@@@v@@@output@@@/v@@@/scripts/createAVDs@@@v@@@simName@@@/v@@@.bat@@@/file@@@
+@@@text@@@
+        @@@repeat id="emulator"@@@
+echo no|android create avd --force -n "@@@v@@@AvdName@@@/v@@@" -t "android-19" -c 100M --skin WVGA800 --abi x86 -a --device  "Nexus S"
+        @@@/repeat@@@
+@@@/text@@@
+	@@@/saveto@@@
+
+
 	@@@/repeat@@@
 @@@/program@@@
