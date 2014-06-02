@@ -61,41 +61,40 @@ public class TremblingHandCommand extends PHATCommand {
     }
 
     @Override
-	public void interruptCommand(Application app) {
+    public void interruptCommand(Application app) {
         setState(State.Fail);
-	}
-    
+    }
+
     private void active(Node body) {
         if (left) {
             LeftHandTremblingControl htc = body.getControl(LeftHandTremblingControl.class);
             if (htc == null) {
                 htc = new LeftHandTremblingControl();
-                if (minAngle != null) {
-                    htc.setMinAngle(minAngle);
-                }
-                if (maxAngle != null) {
-                    htc.setMaxAngle(maxAngle);
-                }
-                if (angular != null) {
-                    htc.setAngular(angular);
-                }
                 body.addControl(htc);
+            }
+            if (minAngle != null) {
+                htc.setMinAngle(minAngle);
+            }
+            if (maxAngle != null) {
+                htc.setMaxAngle(maxAngle);
+            }
+            if (angular != null) {
+                htc.setAngular(angular);
             }
         } else {
             RightHandTremblingControl htc = body.getControl(RightHandTremblingControl.class);
             if (htc == null) {
                 htc = new RightHandTremblingControl();
-                if (minAngle != null) {
-                    htc.setMinAngle(minAngle);
-                }
-                if (maxAngle != null) {
-                    htc.setMaxAngle(maxAngle);
-                }
-                if (angular != null) {
-                    htc.setAngular(angular);
-                }
-                System.out.println("RightRightRightRightRightRightRightRight");
                 body.addControl(htc);
+            }
+            if (minAngle != null) {
+                htc.setMinAngle(minAngle);
+            }
+            if (maxAngle != null) {
+                htc.setMaxAngle(maxAngle);
+            }
+            if (angular != null) {
+                htc.setAngular(angular);
             }
         }
     }

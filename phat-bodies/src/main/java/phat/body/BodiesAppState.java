@@ -142,6 +142,14 @@ public class BodiesAppState extends AbstractAppState {
         }
         return null;
     }
+    
+    public float getSpeed(String bodyId) {
+        Node body = availableBodies.get(bodyId);
+        if (body != null && body.getParent() != null) {
+            return body.getUserData("Speed");
+        }
+        return -1;
+    }
 
     @Override
     public void update(float tpf) {

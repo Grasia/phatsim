@@ -21,10 +21,16 @@ public class PHATAudioEventAutomatonFinishedListener extends PHATAudioEvent impl
     }
 
     @Override
-    public void automatonInitialized(Automaton automaton) {
+    public void nextAutomaton(Automaton previousAutomaton, Automaton nextAutomaton) {
     }
 
     @Override
-    public void nextAutomaton(Automaton previousAutomaton, Automaton nextAutomaton) {
+    public void preInit(Automaton automaton) {
+        
+    }
+
+    @Override
+    public void postInit(Automaton automaton) {
+        
     }
 }

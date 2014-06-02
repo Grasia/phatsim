@@ -9,14 +9,23 @@ import phat.agents.automaton.DrinkAutomaton;
 import phat.agents.automaton.FSM;
 import phat.agents.automaton.FallAutomaton;
 import phat.agents.automaton.GoIntoBedAutomaton;
+import phat.agents.automaton.MainAutomaton;
 import phat.agents.automaton.MoveToBodyLocAutomaton;
 import phat.agents.automaton.MoveToSpace;
 import phat.agents.automaton.SayAutomaton;
 import phat.agents.automaton.SitDownAutomaton;
 import phat.agents.automaton.StandUpAutomaton;
 import phat.agents.automaton.UseObjectAutomaton;
+import phat.agents.automaton.conditions.PastTimeCondition;
+import phat.agents.automaton.conditions.ProbCondition;
 import phat.agents.automaton.conditions.TimerFinishedCondition;
 import phat.agents.automaton.uses.UseDoorbellAutomaton;
+import phat.agents.filters.DiseaseManager;
+import phat.agents.filters.PDManager;
+import phat.agents.filters.Symptom;
+import phat.agents.filters.types.PlaceToGoFilter;
+import phat.agents.filters.types.ReplaceTaskFilter;
+import phat.agents.filters.types.SelectorFilter;
 import phat.body.BodiesAppState;
 import phat.body.commands.BodyLabelCommand;
 import phat.body.commands.SetBodyHeightCommand;
@@ -70,9 +79,6 @@ public class PAAMsScenario implements PHATInitializer {
     public void initBodies(BodyConfigurator bodyConfig) {
         bodyConfig.createBody(BodiesAppState.BodyType.ElderLP, patient);        
         bodyConfig.setInSpace(patient, "House1", "Hall");
-        bodyConfig.runCommand(new TremblingHeadCommand(patient, true));
-        bodyConfig.runCommand(new SetStoopedBodyCommand(patient, true));
-        bodyConfig.runCommand(new TremblingHandCommand(patient, true, true));
         //bodyConfig.runCommand(new BodyLabelCommand("Relative", true));
         /*SetCameraToBodyCommand setCameraToBodyCommand = new SetCameraToBodyCommand("Relative");
         setCameraToBodyCommand.setFront(true);
@@ -104,12 +110,19 @@ public class PAAMsScenario implements PHATInitializer {
     @Override
     public void initAgents(AgentConfigurator agentsConfig) {
         Agent patientAgent = new AgentImpl(patient);
-        MoveToSpace livingRoom = new MoveToSpace(patientAgent, "MoveToLivingRoom","LivingRoom");
-        patientAgent.setAutomaton(livingRoom);
         agentsConfig.add(patientAgent);
+        Automaton mainAutomaton = new MainAutomaton(patientAgent);
+        MoveToSpace livingRoom = new MoveToSpace(patientAgent, "MoveToLivingRoom","LivingRoom");
+        livingRoom.setMetadata("SOCIAALML_ENTITY_TYPE", "MoveToSpace");
+        mainAutomaton.addTransition(livingRoom, true);
+        mainAutomaton.addListener(new AutomatonIcon());
+        patientAgent.setAutomaton(mainAutomaton);
+        
+        DiseaseManager dm = new PDManager(patientAgent);
         
         Agent relativeAgent = new AgentImpl(relative);
         MoveToBodyLocAutomaton move = new MoveToBodyLocAutomaton(relativeAgent, "MoveToPatient", patient);
+        move.addListener(new AutomatonIcon());
         relativeAgent.setAutomaton(move);
         agentsConfig.add(relativeAgent);
     }

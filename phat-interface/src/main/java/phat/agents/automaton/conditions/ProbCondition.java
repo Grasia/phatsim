@@ -18,8 +18,9 @@ public class ProbCondition implements AutomatonCondition {
         }
         return value;
     }
+    
     @Override
     public boolean evaluate(Agent agent) {
-        return value <= prob;
+        return getRandomValue(agent) <= prob;
     }
 }

@@ -25,7 +25,7 @@ public class UseObjectAutomatonFactory {
             return new HaveAShowerAutomaton(agent, objectId);
         } else if(role.equals("WC")) {
             return new UseWCAutomaton(agent, objectId);
-        } else if(role.equals("Basin") || role.equals("Sink")) {
+        } else if(role.equals("Basin") || role.equals("Sink") || role.equals("TV")) {
             return new UseCommonObjectAutomaton(agent, objectId);
         } else if(role.equals("Doorbell")) {
             return new UseDoorbellAutomaton(agent, objectId);

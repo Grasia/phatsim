@@ -1,0 +1,47 @@
+@@@program xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"@@@
+ @@@repeat id="diseaseProfile"@@@
+	@@@saveto@@@
+		@@@file overwrite="yes"@@@
+			@@@v@@@output@@@/v@@@/phat/agents/filters/@@@v@@@dpName@@@/v@@@.java@@@/file@@@
+@@@text@@@
+package phat.agents.filters;
+
+import phat.agents.Agent;
+import phat.agents.automaton.FallAutomaton;
+import phat.agents.automaton.conditions.ProbCondition;
+import phat.agents.filters.types.ReplaceTaskFilter;
+import phat.agents.filters.types.SelectorFilter;
+
+public class @@@v@@@dpName@@@/v@@@ extends DiseaseManager {
+
+    public @@@v@@@dpName@@@/v@@@(Agent agent) {
+        super(agent);
+        initSymptoms();
+    }
+    
+    private void initSymptoms() {
+        setStage("@@@v@@@stageName@@@/v@@@");
+        @@@repeat id="symptoms"@@@
+        {Symptom symptom = new Symptom("@@@v@@@symptomName@@@/v@@@");
+        add(symptom);}
+        @@@/repeat@@@
+        
+        /*Symptom equilibrium = new Symptom("Equilibrium");
+        add(equilibrium);
+        equilibrium.setCurrentLevel(Symptom.Level.Hight);
+        
+        SelectorFilter sf = new SelectorFilter();
+        sf.add("MoveToSpace");
+        
+        ReplaceTaskFilter rtf = new ReplaceTaskFilter().setTask(new FallAutomaton(agent, "FallingTaskFilter"));
+        rtf.setCondition(new ProbCondition(0f));
+        sf.setNextFilter(rtf);
+        
+        equilibrium.add(Symptom.Level.Medium, sf);
+        agent.getAutomaton().addListener(this);*/
+    }
+}
+@@@/text@@@
+	@@@/saveto@@@
+	@@@/repeat@@@   
+@@@/program@@@

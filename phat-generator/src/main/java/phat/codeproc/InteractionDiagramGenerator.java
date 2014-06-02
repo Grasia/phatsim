@@ -27,7 +27,7 @@ public class InteractionDiagramGenerator {
 	public void generateEventProcessor(String humanId, Repeat repFather) throws NotFound,
 			NullEntity {
 
-		GraphEntity ip = getInteractionProfile(humanId, browser);
+		GraphEntity ip = Utils.getProfileTypeOf(humanId, INTERACTION_PROFILE_SPEC_DIAGRAM, browser);
 		if(ip == null)
 			return;
 		GraphAttribute ga = ip.getAttributeByName("InteractionSpecDiagField");
@@ -49,23 +49,5 @@ public class InteractionDiagramGenerator {
 				repEP.add(new Var("acticity", activity.getID()));
 			}
 		}
-	}
-
-	public static GraphEntity getInteractionProfile(String humanId, Browser browser) {
-		GraphEntity result = null;
-		try {
-			GraphEntity[] entities = browser.getAllEntities();
-			for (GraphEntity adl : entities) {
-				if (adl.getType().equalsIgnoreCase(INTERACTION_PROFILE_SPEC_DIAGRAM)) {
-					GraphEntity human = Utils.getTargetEntity(adl, "ProfileOf");
-					if (human.getID().equals(humanId)) {
-						return adl;
-					}
-				}
-			}
-		} catch (Throwable ex) {
-			ex.printStackTrace();
-		}
-		return result;
 	}
 }

@@ -9,6 +9,7 @@ import ingenias.generator.browser.GraphEntity;
 import ingenias.generator.datatemplate.Repeat;
 import ingenias.generator.datatemplate.Sequences;
 import ingenias.generator.datatemplate.Var;
+import phat.codeproc.pd.PDGenerator;
 
 public class AgentsGenerator {
 	static final String HUMAN_PROFILE_SPEC_DIAGRAM = "HumanProfileSpecDiagram";
@@ -32,6 +33,7 @@ public class AgentsGenerator {
 				String humanId = actor.getID();
 				new TimeIntervalsGenerator(browser).generateADL(humanId, rep);
 				new InteractionDiagramGenerator(browser).generateEventProcessor(humanId, rep);
+                                PDGenerator.linkPDManager(humanId, rep, browser);
 			}
 		}
 	}

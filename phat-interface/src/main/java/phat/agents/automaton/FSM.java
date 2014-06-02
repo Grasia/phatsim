@@ -62,6 +62,7 @@ public class FSM extends Automaton {
 
     public void registerStartState(Automaton automaton) {
         initialState = automaton;
+        initialState.parent = this;
     }
 
     /**
@@ -73,13 +74,14 @@ public class FSM extends Automaton {
      * @param destiny
      */
     public void registerTransition(Automaton source, Automaton destiny) {
-
+        source.parent = this;
+        destiny.parent = this;
         ArrayList<Transition> r = possibleTransitions.get(source);
         if (r == null) {
             r = new ArrayList<Transition>();
         }
         r.add(new Transition(destiny));
-        possibleTransitions.put(source, r);
+        possibleTransitions.put(source, r);        
     }
 
     /**
@@ -89,7 +91,8 @@ public class FSM extends Automaton {
      * @param destiny
      */
     public void registerTransition(Automaton source, Transition transition) {
-
+        source.parent = this;
+        transition.getTarget().parent = this;
         ArrayList<Transition> r = possibleTransitions.get(source);
         if (r == null) {
             r = new ArrayList<Transition>();
@@ -131,6 +134,7 @@ public class FSM extends Automaton {
      */
     public void registerFinalState(Automaton nameFinalState) {
         finalStates.add(nameFinalState);
+        nameFinalState.parent = this;
     }
 
     /**
@@ -179,6 +183,18 @@ public class FSM extends Automaton {
         return r.getTarget();
 
     }
+    
+    @Override
+    public void replaceCurrentAutomaton(Automaton automaton) {
+        if(currentState != null) {
+            for(Transition t: possibleTransitions.get(currentState)) {
+                registerTransition(automaton, t);
+            }
+            currentState.setFinished(true);
+            currentState.notifyNextAutomaton(automaton);
+        }
+        currentState = automaton;
+    }
 
     private Automaton checkIfTransitionIsActivated(Automaton source, PHATInterface phatInterface) {
         List<Transition> activatedTransitions = new ArrayList<Transition>();
@@ -209,9 +225,10 @@ public class FSM extends Automaton {
     @Override
     public void nextState(PHATInterface phatInterface) {
         if (!init) {
+            notifityPreInitToListeners();
             initState(phatInterface);
             init = true;
-            notifityInitializedListeners();
+            notifityPostInitToListeners();
         }
         // si este nivel esta terminado, devolver control
         if (this.isFinished(phatInterface)) {
@@ -231,9 +248,10 @@ public class FSM extends Automaton {
             }
             notifyNextAutomaton(currentState);
             if (!currentState.init) {
+                notifityPreInitToListeners();
                 currentState.initState(phatInterface);
                 currentState.init = true;
-                currentState.notifityInitializedListeners();
+                notifityPostInitToListeners();
             }
         }
         // se comprueba si se cumple una condicion de transicion

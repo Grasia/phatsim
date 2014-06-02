@@ -25,30 +25,29 @@ import phat.structures.houses.HouseAppState;
 public class TremblingHeadCommand extends PHATCommand {
 
     private String bodyId;
-    
     private Boolean on;
     private Float minAngle;
     private Float maxAngle;
     private Float angular;
-    
+
     public TremblingHeadCommand(String bodyId, Boolean on, PHATCommandListener listener) {
         super(listener);
         this.bodyId = bodyId;
         this.on = on;
         logger.log(Level.INFO, "New Command: {0}", new Object[]{this});
     }
-    
+
     public TremblingHeadCommand(String bodyId, Boolean on) {
         this(bodyId, on, null);
     }
-    
+
     @Override
     public void runCommand(Application app) {
         BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
-        
+
         Node body = bodiesAppState.getAvailableBodies().get(bodyId);
-        if(body != null) {
-            if(on) {
+        if (body != null) {
+            if (on) {
                 active(body);
             } else {
                 desactive(body);
@@ -56,25 +55,31 @@ public class TremblingHeadCommand extends PHATCommand {
         }
         setState(State.Success);
     }
-    
+
     private void active(Node body) {
         HeadTremblingControl htc = body.getControl(HeadTremblingControl.class);
-        if(htc == null) {
+        if (htc == null) {
             htc = new HeadTremblingControl();
-            if(minAngle != null) htc.setMinAngle(minAngle);
-            if(maxAngle != null) htc.setMaxAngle(maxAngle);
-            if(angular != null) htc.setAngular(angular);
             body.addControl(htc);
         }
+        if (minAngle != null) {
+            htc.setMinAngle(minAngle);
+        }
+        if (maxAngle != null) {
+            htc.setMaxAngle(maxAngle);
+        }
+        if (angular != null) {
+            htc.setAngular(angular);
+        }
     }
-    
+
     private void desactive(Node body) {
         HeadTremblingControl htc = body.getControl(HeadTremblingControl.class);
-        if(htc != null) {
+        if (htc != null) {
             body.removeControl(htc);
         }
     }
-    
+
     public Float getMinAngle() {
         return minAngle;
     }
@@ -98,14 +103,14 @@ public class TremblingHeadCommand extends PHATCommand {
     public void setAngular(Float angular) {
         this.angular = angular;
     }
-    
+
     @Override
     public String toString() {
-        return getClass().getSimpleName()+"("+bodyId+", "+on+")";
+        return getClass().getSimpleName() + "(" + bodyId + ", " + on + ")";
     }
 
-	@Override
-	public void interruptCommand(Application app) {
-		setState(State.Fail);
-	}
+    @Override
+    public void interruptCommand(Application app) {
+        setState(State.Fail);
+    }
 }

@@ -31,19 +31,13 @@ public class AutomatonIcon implements AutomatonListener {
         iconMapping.put("SitDownAutomaton", "Textures/SociaalmlImages/behaviour/tasks/SitDown.png");
         iconMapping.put("StandUpAutomaton", "Textures/SociaalmlImages/behaviour/tasks/StandUp.png");
         iconMapping.put("UseObjectAutomaton", "Textures/SociaalmlImages/behaviour/tasks/UseTask.png");
+        iconMapping.put("HaveAShowerAutomaton", "Textures/SociaalmlImages/behaviour/tasks/UseTask.png");
+        iconMapping.put("UseCommonObjectAutomaton", "Textures/SociaalmlImages/behaviour/tasks/UseTask.png");
+        iconMapping.put("UseDoorbellAutomaton", "Textures/SociaalmlImages/behaviour/tasks/UseTask.png");
+        iconMapping.put("UseWCAutomaton", "Textures/SociaalmlImages/behaviour/tasks/UseTask.png");
         iconMapping.put("PutOnClothingAutomaton", "Textures/SociaalmlImages/behaviour/tasks/PutOn.png");
         iconMapping.put("TakeOffClothingAutomaton", "Textures/SociaalmlImages/behaviour/tasks/TakeOff.png");
         iconMapping.put("PressOnScreenXYAutomaton", "Textures/SociaalmlImages/behaviour/tasks/TapXY.png");
-    }
-    
-    @Override
-    public void automatonInitialized(Automaton automaton) {
-        String iconPath = iconMapping.get(automaton.getClass().getSimpleName());
-        System.out.println("automatonInitialized("+automaton.getClass().getSimpleName()+","+automaton.getName()+")");
-        if(iconPath != null) {
-            System.out.println("\tIN!");
-            automaton.getAgent().runCommand(new AttachIconCommand(automaton.getAgent().getId(), iconPath, true));
-        }
     }
     
     @Override
@@ -60,6 +54,21 @@ public class AutomatonIcon implements AutomatonListener {
         //previousAutomaton.removeListener(this);
         System.out.println("nextAutomaton("+previousAutomaton.getClass().getSimpleName()+","+ nextAutomaton.getClass().getSimpleName()+","+nextAutomaton.getName()+")");
         nextAutomaton.addListener(this);
+    }
+
+    @Override
+    public void preInit(Automaton automaton) {
+        
+    }
+
+    @Override
+    public void postInit(Automaton automaton) {
+        String iconPath = iconMapping.get(automaton.getClass().getSimpleName());
+        System.out.println("automatonInitialized("+automaton.getClass().getSimpleName()+","+automaton.getName()+")");
+        if(iconPath != null) {
+            System.out.println("\tIN!");
+            automaton.getAgent().runCommand(new AttachIconCommand(automaton.getAgent().getId(), iconPath, true));
+        }
     }
     
 }

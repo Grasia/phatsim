@@ -44,6 +44,8 @@ public class TaskGenerator {
         GraphEntity task = Utils.getFirstEntity(std);
         while (task != null) {
             String sentence = getNewTaskInstanceSentence(task);
+            sentence += ".setMetadata(\"SOCIAALML_ENTITY_ID\",\""+task.getID()+"\")\n"
+                    + ".setMetadata(\"SOCIAALML_ENTITY_TYPE\",\""+task.getType()+"\")";
             System.out.println(">>" + sentence);
             if (sentence != null) {
                 Repeat rep = new Repeat("subTasks");
@@ -65,7 +67,7 @@ public class TaskGenerator {
         return Utils.getTargetEntity(task, "NextSeqTask", std.getRelationships());
     }
 
-    private String isCanBeInterrupted(GraphEntity task) {
+    private static String isCanBeInterrupted(GraphEntity task) {
         try {
             GraphAttribute ga = task.getAttributeByName("CanBeInterruptedField");
             String value = ga.getSimpleValue();
@@ -79,7 +81,7 @@ public class TaskGenerator {
         return "true";
     }
 
-    public String getNewTaskInstanceSentence(GraphEntity taskGE) throws NotFound {
+    public static String getNewTaskInstanceSentence(GraphEntity taskGE) throws NotFound {
         String canBeIterrupted = isCanBeInterrupted(taskGE);
         if (taskGE.getType().equals(TYPE_GET_UP_FROM_BED_TASK)) {
             System.out.println("Task: " + taskGE.getID());
@@ -119,8 +121,12 @@ public class TaskGenerator {
                     + ".setCanBeInterrupted(" + canBeIterrupted + ")";
         } else if (taskGE.getType().equals("BSequentialTask")) {
             GraphAttribute diagRef = taskGE.getAttributeByName("SeqTaskDiagramField");
+            if(!diagRef.getSimpleValue().equals("")) {
             return "new " + diagRef.getSimpleValue() + "Task(agent)" + "\n"
                     + ".setCanBeInterrupted(" + canBeIterrupted + ")";
+            } else {
+                return "null";
+            }
         } else if (taskGE.getType().equals("TakeOffTask")) {
             GraphAttribute durationGA = taskGE.getAttributeByName("BTaskDuration");
             int duration = Integer.parseInt(durationGA.getSimpleValue());

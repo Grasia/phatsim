@@ -12,6 +12,7 @@ import phat.agents.automaton.activities.*;
 import phat.agents.automaton.conditions.*;
 import phat.agents.automaton.timeIntervals.*;
 import phat.agents.events.*;
+import phat.agents.filters.*;
 
 public class @@@v@@@actorname@@@/v@@@Agent extends Agent {
 
@@ -38,8 +39,11 @@ public class @@@v@@@actorname@@@/v@@@Agent extends Agent {
     	
         mainAutomaton.addListener(new AutomatonIcon());
         
-    	setAutomaton(mainAutomaton);
+        setAutomaton(mainAutomaton);
     	
+        @@@repeat id="filterManager"@@@new @@@v@@@fmName@@@/v@@@(this);
+        @@@/repeat@@@
+
     	// Init EventManager
     	@@@repeat id="eventProcessor"@@@
     	getEventManager().addMap("@@@v@@@eventId@@@/v@@@", 

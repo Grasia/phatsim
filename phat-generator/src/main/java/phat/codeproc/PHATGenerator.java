@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.Properties;
 import java.util.Vector;
+import phat.codeproc.pd.PDGenerator;
 
 public class PHATGenerator extends
 		ingenias.editor.extension.BasicCodeGeneratorImp {
@@ -34,6 +35,7 @@ public class PHATGenerator extends
 		this.addTemplate("templates/timeinterval.xml");
 		this.addTemplate("templates/activities.xml");
 		this.addTemplate("templates/tasks.xml");
+                this.addTemplate("templates/disease_profile.xml");
 	}
 
 	public PHATGenerator(Browser browser) throws Exception {
@@ -43,6 +45,7 @@ public class PHATGenerator extends
 		this.addTemplate("templates/timeinterval.xml");
 		this.addTemplate("templates/activities.xml");
 		this.addTemplate("templates/tasks.xml");
+                this.addTemplate("templates/disease_profile.xml");
 	}
 
 	public String getVersion() {
@@ -135,6 +138,7 @@ public class PHATGenerator extends
 			new TaskGenerator(getBrowser(), seq).generateAllSeqTasks();
 			new ActivityGenerator(getBrowser()).generateTimeIntervals(seq);
 			new SimulationGenerator(browser).generateSimulations(seq);
+                        new PDGenerator(browser).generatePD(seq);
 		} catch (Throwable ex) {
 			ex.printStackTrace();
 		}

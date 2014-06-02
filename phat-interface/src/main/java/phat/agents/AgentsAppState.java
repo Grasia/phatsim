@@ -43,7 +43,7 @@ public class AgentsAppState extends AbstractAppState {
     final Map<String, Agent> availableAgents = new HashMap<>();
     ConcurrentLinkedQueue<PHATAgentCommand> commands = new ConcurrentLinkedQueue<>();
     ConcurrentLinkedQueue<PHATEvent> events = new ConcurrentLinkedQueue<>();
-    
+
     public AgentsAppState(PHATInterface phatInterface) {
         this.phatInterface = phatInterface;
     }
@@ -66,42 +66,46 @@ public class AgentsAppState extends AbstractAppState {
     @Override
     public void update(float tpf) {
         super.update(tpf);
-        
+
         for (PHATCommand bc : commands) {
             bc.run(app);
         }
-        
+
         for (PHATAgentTick agent : availableAgents.values()) {
-            for(PHATEvent e: events) {
-                ((Agent)agent).getEventManager().add(e);
+            for (PHATEvent e : events) {
+                ((Agent) agent).getEventManager().add(e);
             }
             agent.update(phatInterface);
         }
-        
+
         commands.clear();
     }
 
     public void add(Agent agent) {
         availableAgents.put(agent.getId(), agent);
+        agent.setAgentsAppState(this);
     }
-    
+
     public void add(PHATEvent event) {
         events.add(event);
     }
-    
+
     public void stop(Agent agent) {
-        
     }
 
-	public BodiesAppState getBodiesAppState() {
-		return bodiesAppState;
-	}
+    public BodiesAppState getBodiesAppState() {
+        return bodiesAppState;
+    }
 
+    public void setBodiesAppState(BodiesAppState bodiesAppState) {
+        this.bodiesAppState = bodiesAppState;
+    }
+    
     public HouseAppState getHouseAppState() {
         return houseAppState;
     }
 
     public PHATInterface getPHAInterface() {
-    	return phatInterface;
+        return phatInterface;
     }
 }

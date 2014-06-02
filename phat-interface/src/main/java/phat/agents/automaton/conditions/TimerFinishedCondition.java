@@ -22,5 +22,13 @@ public class TimerFinishedCondition implements AutomatonCondition {
             long secs = initialTime.spentTimeTo(agent.getTime());
             return secs >= seconds;
 	}
+        
+        public long getSeconds() {
+            return seconds;
+        }
+        
+        public void setSeconds(long seconds) {
+            this.seconds = seconds;
+        }
 
 }

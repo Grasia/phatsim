@@ -40,9 +40,10 @@ public abstract class SimpleState extends Automaton{
     @Override
     public void nextState(PHATInterface phatInterface) {
         if (!init) {
+            notifityPreInitToListeners();
             initState(phatInterface);
             init = true;
-            notifityInitializedListeners();
+            notifityPostInitToListeners();
         }
         if(isFinished(phatInterface))
             return;

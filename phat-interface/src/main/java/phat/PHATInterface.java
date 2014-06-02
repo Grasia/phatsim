@@ -119,6 +119,7 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
         app.getStateManager().attach(deviceConfig.getDevicesAppState());
         
         agentConfig = new AgentConfiguratorImpl(new AgentsAppState(this));
+        agentConfig.getAgentsAppState().setBodiesAppState(bodyConfig.getBodiesAppState());
         app.getStateManager().attach(agentConfig.getAgentsAppState());
 
         //app.getStateManager().attach(initAppState);

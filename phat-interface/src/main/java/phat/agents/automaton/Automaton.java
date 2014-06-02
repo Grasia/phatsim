@@ -5,6 +5,7 @@
 package phat.agents.automaton;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -33,7 +34,7 @@ import phat.agents.automaton.conditions.AutomatonCondition;
  * Serrano
  */
 public abstract class Automaton {
-
+    protected HashMap<String, String> metadata = null;
     /**
      * Persona que implementa el automata
      */
@@ -42,6 +43,10 @@ public abstract class Automaton {
      * Estado actual del autómata
      */
     protected Automaton currentState;
+    /**
+     * Parent automaton
+     */
+    Automaton parent;
     /**
      * Lista de tareas o transiciones pendientes en el autómata.
      */
@@ -95,9 +100,15 @@ public abstract class Automaton {
         }
     }
 
-    public void notifityInitializedListeners() {
+    public void notifityPreInitToListeners() {
         for (AutomatonListener al : listeners) {
-            al.automatonInitialized(this);
+            al.preInit(this);
+        }
+    }
+    
+    public void notifityPostInitToListeners() {
+        for (AutomatonListener al : listeners) {
+            al.postInit(this);
         }
     }
 
@@ -162,6 +173,7 @@ public abstract class Automaton {
      * ejecución).
      */
     public void addTransition(Automaton newTransition, boolean first) {
+        newTransition.parent = this;
         if (this.pendingTransitions.isEmpty()) {
             this.pendingTransitions.add(newTransition);
         } else {
@@ -214,6 +226,15 @@ public abstract class Automaton {
         return newTransition;
     }
 
+    public void replaceCurrentAutomaton(Automaton automaton) {
+        if(currentState != null) {
+            currentState.interrupt();
+            currentState.setFinished(true);
+            currentState.notifyNextAutomaton(automaton);
+        }
+        currentState = automaton;
+    }
+    
     public void printPendingTransitions() {
         System.out.println(agent.getId() + ":" + name
                 + " - Pending Transitions:");
@@ -281,9 +302,10 @@ public abstract class Automaton {
             return;
         }
         if (!init) {
+            notifityPreInitToListeners();
             initState(phatInterface);
             init = true;
-            notifityInitializedListeners();
+            notifityPostInitToListeners();
         }
         // generar nuevas transiciones y añadirlas en cola si no se devuelve
         // null
@@ -597,6 +619,10 @@ public abstract class Automaton {
         this.finishCondition = finishCondition;
         return this;
     }
+    
+    public AutomatonCondition getFinishCondition() {
+        return this.finishCondition;
+    }
 
     public Automaton getLeafAutomaton() {
         if (currentState != null) {
@@ -639,5 +665,26 @@ public abstract class Automaton {
         } else {
             return null;
         }
+    }
+    
+     public Automaton setMetadata(String key, String data) {
+        if (metadata == null) {
+            metadata = new HashMap<>();
+        }
+
+        metadata.put(key, data);
+        return this;
+    }
+
+    public String getMetadata(String key) {
+        if (metadata == null) {
+            return null;
+        }
+        
+        return metadata.get(key);
+    }
+
+    public Automaton getParent() {
+        return parent;
     }
 }
