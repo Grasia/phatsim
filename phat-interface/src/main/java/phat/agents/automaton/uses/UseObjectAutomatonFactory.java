@@ -25,10 +25,12 @@ public class UseObjectAutomatonFactory {
             return new HaveAShowerAutomaton(agent, objectId);
         } else if(role.equals("WC")) {
             return new UseWCAutomaton(agent, objectId);
-        } else if(role.equals("Basin") || role.equals("Sink") || role.equals("TV")) {
+        } else if(role.equals("Basin") || role.equals("Sink")) {
             return new UseCommonObjectAutomaton(agent, objectId);
         } else if(role.equals("Doorbell")) {
             return new UseDoorbellAutomaton(agent, objectId);
+        } else if(role.equals("TV")) {
+            return new SwitchTVAutomaton(agent, objectId, true);
         }
 
         return null;
