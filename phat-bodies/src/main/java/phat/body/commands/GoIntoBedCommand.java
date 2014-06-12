@@ -99,9 +99,20 @@ public class GoIntoBedCommand extends PHATCommand implements AutonomousControlLi
                 return;
             }
             House house = houseAppState.getHouse(body);
-            Spatial placeToSit = SpatialUtils.getSpatialById(house.getRootNode(), bedId);
-            if (placeToSit != null) {
-                nearestSeat = getNearestSeat((Node) placeToSit, body);
+            Spatial bedToGo = null;
+            if(bedId == null) {
+                bedToGo = SpatialUtils.getNearest(body, "Bed");
+                if(bedToGo == null) {
+                    System.out.println("Not bed found!!");
+                    setState(State.Fail);
+                    return;
+                }
+                bedId = bedToGo.getUserData("ID");
+            } else {
+                bedToGo = SpatialUtils.getSpatialById(house.getRootNode(), bedId);           
+            }
+            if (bedToGo != null) {
+                nearestSeat = getNearestSeat((Node) bedToGo, body);
                 //lyingDown();
                 goToCommand = new GoToCommand(bodyId, new Lazy<Vector3f>() {
                     @Override

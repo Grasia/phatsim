@@ -55,8 +55,6 @@ public class SetBodyHeightCommand extends PHATCommand {
     @Override
     public void runCommand(Application app) {
         BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
-        HouseAppState houseAppState = app.getStateManager().getState(HouseAppState.class);
-        BulletAppState bulletAppState = app.getStateManager().getState(BulletAppState.class);
 
         Node body = bodiesAppState.getAvailableBodies().get(bodyId);
 

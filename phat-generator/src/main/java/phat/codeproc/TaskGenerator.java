@@ -34,6 +34,7 @@ public class TaskGenerator {
 
     final static String SEQ_TASK_DIAG = "SequentialTaskDiagram";
     final static String TYPE_GET_UP_FROM_BED_TASK = "BGetUpFromBed";
+    final static String TYPE_GO_INTO_BED_TASK = "GoIntoBed";
     final static String TYPE_GO_TO_TASK = "BGoToTask";
     final static String TYPE_USE_TASK = "BUseTask";
     final static String TYPE_STAND_UP_TASK = "StandUp";
@@ -108,6 +109,13 @@ public class TaskGenerator {
             int duration = Integer.parseInt(durationGA.getSimpleValue());
             return "new StandUpAutomaton( agent, " + "\"" + taskGE.getID() + "\"" + "\n"
                     + ").setFinishCondition(new TimerFinishedCondition(0, 0, " + duration + "))"
+                    + ".setCanBeInterrupted(" + canBeIterrupted + ")";
+        } else if (taskGE.getType().equals(TYPE_GO_INTO_BED_TASK)) {
+            System.out.println("Task: " + taskGE.getID());
+            GraphAttribute durationGA = taskGE.getAttributeByName("BTaskDuration");
+            int duration = Integer.parseInt(durationGA.getSimpleValue());
+            return "new GoIntoBedAutomaton( agent, null)" + "\n"
+                    + ".setFinishCondition(new TimerFinishedCondition(0, 0, " + duration + "))"
                     + ".setCanBeInterrupted(" + canBeIterrupted + ")";
         } else if (taskGE.getType().equals(TYPE_GO_TO_TASK)) {
             GraphAttribute ga = taskGE.getAttributeByName("SpaceToGoField");

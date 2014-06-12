@@ -29,6 +29,7 @@ import com.jme3.scene.SceneGraphVisitor;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
+import de.jarnbjo.vorbis.Util;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -166,6 +167,19 @@ public class SpatialUtils {
 
         rootNode.breadthFirstTraversal(visitor);
 
+        return result;
+    }
+    
+    public static Spatial getNearest(Spatial spatial, final String targetRol) {
+        Spatial result = null;
+        float minDist = Float.MAX_VALUE;
+        for(Spatial s: getSpatialsByRole(getRootNode(spatial), targetRol)) {
+             float distance = s.getWorldTranslation().distance(spatial.getWorldTranslation());
+             if(distance < minDist) {
+                 minDist = distance;
+                 result = s;
+             }
+        }
         return result;
     }
     
