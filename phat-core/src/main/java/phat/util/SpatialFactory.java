@@ -20,6 +20,7 @@
 package phat.util;
 
 import com.jme3.asset.AssetManager;
+import com.jme3.bounding.BoundingVolume;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.material.Material;
@@ -119,14 +120,32 @@ public class SpatialFactory {
     public static BitmapText attachAName(Node node) {
         checkInit();
         
+        return attachAName(node, node.getName());
+    }
+    
+    /**
+     * Creates a geometry with the same name of the given node. It adds a
+     * controller called BillboardControl that turns the name of the node in
+     * order to look at the camera.
+     *
+     * Letter's size can be changed using setSize() method, the text with
+     * setText() method and the color using setColor() method.
+     *
+     * @param node
+     * @return
+     */
+    public static BitmapText attachAName(Node node, String name) {
+        checkInit();
+
         BitmapFont guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
         BitmapText ch = new BitmapText(guiFont, false);
-        ch.setSize(guiFont.getCharSet().getRenderedSize()*0.02f);
-        ch.setText(node.getName()); // crosshairs
-        ch.setColor(new ColorRGBA(1f, 0.8f, 0.3f, 0.8f));        
-        
+        ch.setName("BitmapText");
+        ch.setSize(guiFont.getCharSet().getRenderedSize() * 0.02f);
+        ch.setText(name); // crosshairs
+        ch.setColor(new ColorRGBA(1f, 0.8f, 0.3f, 0.8f));
+        ch.getLocalScale().divideLocal(node.getLocalScale());
         // controlador para que los objetos miren a la cámara.
-        BillboardControl control=new BillboardControl();
+        BillboardControl control = new BillboardControl();
         ch.addControl(control);
         node.attachChild(ch);
         return ch;
@@ -172,5 +191,16 @@ public class SpatialFactory {
         if(assetManager == null) {
             logger.log(Level.SEVERE, "Method SpatialFactory.init() hasn't been called");
         }
+    }
+    
+    public static boolean contains(Node parent, Spatial s) {
+        Spatial aux = s;
+        while(aux != null) {
+            if(aux.equals(parent)) {
+                return true;
+            }
+            aux = aux.getParent();
+        }
+        return false;
     }
 }

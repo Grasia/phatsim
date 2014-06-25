@@ -31,7 +31,9 @@ import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
 import de.jarnbjo.vorbis.Util;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -62,7 +64,7 @@ public class SpatialUtils {
             float radius = bs.getRadius();
             return new Vector3f(radius, radius, radius);
         }
-        return null;
+        return spatial.getWorldTranslation();
     }
 
     public static Vector3f getMinBounding(Spatial spatial) {
@@ -78,7 +80,7 @@ public class SpatialUtils {
             float radius = bs.getRadius();
             return new Vector3f(-radius, -radius, -radius);
         }
-        return null;
+        return spatial.getWorldTranslation();
     }
 
     public static boolean contains(Spatial container, Spatial entity) {
@@ -151,6 +153,23 @@ public class SpatialUtils {
 
         return result;
     }
+    
+    public static Map<String,Spatial> getAllSpatialWithId(Spatial rootNode, final Map<String,Spatial> store) {
+        SceneGraphVisitor visitor = new SceneGraphVisitor() {
+
+            @Override
+            public void visit(Spatial spat) {
+                String id = spat.getUserData("ID");
+                if (id != null) {
+                    store.put(id, spat);
+                }
+            }
+        };
+
+        rootNode.breadthFirstTraversal(visitor);
+
+        return store;
+    }
 
     public static List<Spatial> getSpatialsByRole(Spatial rootNode, final String targetRol) {
         final List<Spatial> result = new ArrayList<Spatial>();
@@ -199,6 +218,15 @@ public class SpatialUtils {
         System.out.println("");
     }
     
+    public static void printParents(Spatial spatial) {
+        String tab = "\t";
+        System.out.println(spatial+":");
+        Spatial parent = spatial.getParent();
+        while(parent != null) {
+            System.out.println(tab+parent.getName());
+            parent = parent.getParent();
+        }
+    }
     public static void printChildrens(Spatial spatial) {
         printChindrens(spatial, 0);
     }

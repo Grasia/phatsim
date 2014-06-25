@@ -19,9 +19,11 @@
  */
 package phat.body.control.animation;
 
+import com.jme3.animation.AnimControl;
 import phat.body.control.parkinson.*;
 import com.jme3.animation.Bone;
 import com.jme3.animation.SkeletonControl;
+import com.jme3.bullet.control.KinematicRagdollControl;
 import com.jme3.export.InputCapsule;
 import com.jme3.export.JmeExporter;
 import com.jme3.export.JmeImporter;
@@ -40,7 +42,9 @@ import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
 import com.jme3.scene.debug.Arrow;
 import java.io.IOException;
+import phat.util.Debug;
 import phat.util.SpatialFactory;
+import phat.util.SpatialUtils;
 
 /**
  * It generate a trembling in the head of a character.
@@ -50,17 +54,25 @@ import phat.util.SpatialFactory;
  * @author pablo
  */
 public class LookAtControl extends AbstractControl {
-
+    private static float LEFT_LIMIT_ANGLE = FastMath.HALF_PI;
+    private static float RIGHT_LIMIT_ANGLE = FastMath.HALF_PI;
+    private static float DOWN_LIMIT_ANGLE = FastMath.QUARTER_PI;
+    private static float UP_LIMIT_ANGLE = FastMath.HALF_PI;
+    
     SkeletonControl skeletonControl;
     Bone neck;
     Vector3f position = new Vector3f();
     Quaternion rotation = new Quaternion();
     float[] angles = new float[3];
     int index = 2;
-    float minAngle = -FastMath.QUARTER_PI / 4f;
-    float maxAngle = FastMath.QUARTER_PI / 4f;
-    float angular = FastMath.PI;
-    boolean min = true;
+    // Rotation on Y
+    float leftFactorLimit = 0.9f;       // leftFactorLimit * FastMath.HALF_PI
+    float rightFactorLimit = 0.9f;      // rightFactorLimit * FastMath.HALF_PI
+    // Rotation on X
+    float downFactorLimit = 1f;         // downFactorLimit * FastMath.QUARTER_PI
+    float upFactorLimit = 1f;           // upFactorLimit * FastMath.HALF_PI
+    
+    float angularFactor = 1f;           // angularFactor * FastMath.PI
     Spatial target;
     Geometry directionGeo;
 
@@ -73,9 +85,11 @@ public class LookAtControl extends AbstractControl {
             if (skeletonControl != null) {
                 neck = skeletonControl.getSkeleton().getBone("Neck");
                 rotation = new Quaternion();
-                startTest();
+                //Debug.attachLocalCoordinateAxes(skeletonControl.getAttachmentsNode("Neck"), 0.5f, SpatialFactory.getAssetManager(), SpatialFactory.getRootNode());
+                //startTest();
             }
         } else {
+            resetHead();
             skeletonControl = null;
             rotation = null;
         }
@@ -89,46 +103,11 @@ public class LookAtControl extends AbstractControl {
             directionGeo = SpatialFactory.createShape("StraightPath", arrow, ColorRGBA.Red);
             ((Node)spatial).attachChild(directionGeo);
         }
-        Node node = skeletonControl.getAttachmentsNode("Head");
+        Node node = skeletonControl.getAttachmentsNode("Neck");
         node.attachChild(directionGeo);
         //Vector3f headPos =
         //        skeletonControl.getSkeleton().getBone("Head").getModelSpacePosition();
         //directionGeo.setLocalTranslation(headPos);
-    }
-    
-    private void startTest() {
-        Spatial s = SpatialFactory.createCube(Vector3f.UNIT_XYZ.mult(0.1f), ColorRGBA.Blue);
-        this.target = s;
-        s.setLocalTranslation(Vector3f.UNIT_Z.add(-1f, 2.0f, 0f));
-        MoveArroundControl mac = new MoveArroundControl();
-        mac.setTarget(this.spatial);
-        s.addControl(mac);
-        ((Node)spatial).attachChild(s);        
-    }
-    
-    class MoveArroundControl extends AbstractControl {
-        Spatial target;
-        
-        @Override
-        protected void controlUpdate(float f) {
-            if(target != null) {
-                
-            }
-        }
-        
-        public void setTarget(Spatial target) {
-            this.target = target;
-        }
-        
-        public Spatial getTarget() {
-            return this.target;
-        }
-
-        @Override
-        protected void controlRender(RenderManager rm, ViewPort vp) {
-            
-        }
-        
     }
     
     private void resetHead() {
@@ -149,20 +128,75 @@ public class LookAtControl extends AbstractControl {
         if (neck != null) {
             setUserControlFrom(neck, true);
             neck.getCombinedTransform(position, rotation);
+                        
             updateNeck(rotation, fps);
             neck.setUserTransforms(position, rotation, Vector3f.UNIT_XYZ);
-            updateBonePositions(neck);
-            //setUserControlFrom(neck, false);
         }
-        showDirection();
+        //showDirection();
     }
-
-    private void updateNeck(Quaternion rotation, float tpf) {
-        rotation.lookAt(target.getWorldTranslation(), Vector3f.UNIT_Y);    
-        //rotation.set(neck.getWorldBindRotation());    
-        //rotation.lookAt(target.getWorldTranslation(), Vector3f.UNIT_Y);
+    
+    public void setTarget(Spatial target) {
+        this.target = target;
     }
-
+    
+    Quaternion rotLookAt = new Quaternion();
+    Quaternion aux = new Quaternion();
+    
+    public Quaternion getWorldRotation(Bone b) {
+        return null;
+    }
+    
+    Transform locTrans = new Transform();
+    Transform parentTrans = new Transform();
+    Vector3f locDir = new Vector3f();
+    
+    Geometry geo;
+    private void updateNeck(Quaternion rot, float tpf) {
+        locTrans.setRotation(neck.getModelSpaceRotation());
+        locTrans.setTranslation(neck.getModelSpacePosition());
+        locTrans.setScale(Vector3f.UNIT_XYZ);
+        
+        parentTrans.setRotation(spatial.getLocalRotation());
+        parentTrans.setTranslation(spatial.getLocalTranslation());
+        parentTrans.setScale(spatial.getLocalScale());
+        
+        locTrans.combineWithParent(parentTrans);
+        
+        Vector3f point = SpatialUtils.getCenterBoinding(target);
+        Vector3f tDir = point.subtract(locTrans.getTranslation()).normalize();
+        //Vector3f cDir = locTrans.getRotation().mult(Vector3f.UNIT_Z).normalize();
+        
+        /*if(geo != null)
+            geo.removeFromParent();
+        geo = SpatialFactory.createArrow(tDir, 4f, ColorRGBA.Green);
+        SpatialUtils.getRootNode(spatial).attachChild(geo);
+        geo.setLocalTranslation(locTrans.getTranslation());*/
+        
+        rotation.lookAt(tDir, Vector3f.UNIT_Y);
+        parentTrans.getRotation().inverseLocal();
+        parentTrans.getRotation().mult(rotation, rotation);
+        applyLimitations(rotation);
+    }
+    
+    public void applyLimitations(Quaternion rotation) {
+        rotation.toAngles(angles);
+        float upLimit = -upFactorLimit*UP_LIMIT_ANGLE;
+        float downLimit = downFactorLimit*DOWN_LIMIT_ANGLE;
+        float leftLimit = leftFactorLimit*LEFT_LIMIT_ANGLE;
+        float rightLimit = -rightFactorLimit*RIGHT_LIMIT_ANGLE;
+        if(angles[0] < upLimit) {
+            angles[0] = upLimit;
+        } else if(angles[0] > downLimit) {
+            angles[0] = downLimit;
+        }
+        if(angles[1] > leftLimit) {
+            angles[1] = leftLimit;
+        } else if(angles[1] < rightLimit) {
+            angles[1] = rightLimit;
+        }
+        rotation.fromAngles(angles);
+    }
+    
     private void updateBonePositions(Bone bone) {
         Transform t = new Transform();
         for (Bone b : bone.getChildren()) {
@@ -179,30 +213,6 @@ public class LookAtControl extends AbstractControl {
         }
     }
 
-    public float getMinAngle() {
-        return minAngle;
-    }
-
-    public void setMinAngle(float minAngle) {
-        this.minAngle = minAngle;
-    }
-
-    public float getMaxAngle() {
-        return maxAngle;
-    }
-
-    public void setMaxAngle(float maxAngle) {
-        this.maxAngle = maxAngle;
-    }
-
-    public float getAngular() {
-        return angular;
-    }
-
-    public void setAngular(float angular) {
-        this.angular = angular;
-    }
-
     @Override
     protected void controlRender(RenderManager rm, ViewPort vp) {
     }
@@ -211,9 +221,6 @@ public class LookAtControl extends AbstractControl {
     public Control cloneForSpatial(Spatial sptl) {
         HeadTremblingControl control = new HeadTremblingControl();
         control.setSpatial(sptl);
-        control.setAngular(angular);
-        control.setMaxAngle(maxAngle);
-        control.setMinAngle(minAngle);
         return control;
     }
 
@@ -221,9 +228,6 @@ public class LookAtControl extends AbstractControl {
     public void write(JmeExporter ex) throws IOException {
         super.write(ex);
         OutputCapsule oc = ex.getCapsule(this);
-        oc.write(angular, "angular", FastMath.PI);
-        oc.write(maxAngle, "maxAngle", FastMath.QUARTER_PI / 4f);
-        oc.write(minAngle, "minAngle", -FastMath.QUARTER_PI / 4f);
 
     }
 
@@ -231,8 +235,5 @@ public class LookAtControl extends AbstractControl {
     public void read(JmeImporter im) throws IOException {
         super.read(im);
         InputCapsule ic = im.getCapsule(this);
-        angular = ic.readFloat("angular", FastMath.PI);
-        maxAngle = ic.readFloat("maxAngle", FastMath.QUARTER_PI / 4f);
-        minAngle = ic.readFloat("minAngle", -FastMath.QUARTER_PI / 4f);
     }
 }

@@ -33,6 +33,7 @@ import phat.body.control.navigation.RandomWalkControl;
 import phat.body.control.navigation.navmesh.NavMeshMovementControl;
 import phat.body.control.physics.PHATCharacterControl;
 import phat.body.control.physics.ragdoll.BVHRagdollPreset;
+import phat.body.sensing.vision.VisionControl;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommand.State;
 
@@ -97,7 +98,7 @@ public class CreateBodyTypeCommand extends PHATCommand {
         bodiesAppState.getAvailableBodies().put(bodyId, body);
         
         //PhysicsUtils.setHighPhysicsPrecision(body);
-        
+        body.addControl(new VisionControl());
         setState(State.Success);
     }
     @Override
