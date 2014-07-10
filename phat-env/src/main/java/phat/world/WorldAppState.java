@@ -32,6 +32,7 @@ import com.jme3.font.BitmapText;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
@@ -48,6 +49,7 @@ import com.jme3.shadow.EdgeFilteringMode;
  import com.jme3.shadow.SpotLightShadowFilter;
  import com.jme3.shadow.SpotLightShadowRenderer;*/
 import com.jme3.system.AppSettings;
+import com.jme3.texture.Texture;
 import com.jme3.util.SkyFactory;
 import com.jme3.util.TangentBinormalGenerator;
 import java.util.ArrayList;
@@ -145,10 +147,17 @@ public class WorldAppState extends AbstractAppState {
     private void initSky() {
         Node world = (Node) rootNode.getChild("World");
         sky = world.getChild("Sky");
+        app.getViewPort().setBackgroundColor(ColorRGBA.Cyan);
+        if(sky != null) {
+            sky.removeFromParent();
+        }
         if (sky == null) {
-            sky = SkyFactory.createSky(assetManager, "Textures/Sky/Bright/BrightSky.dds", false);
+            //Texture skyTexture = assetManager.loadTexture("Textures/Sky/SkySphere.png");
+            //sky = SkyFactory.createSky(assetManager, skyTexture, true);
+            //sky.rotate(0f, 0f, FastMath.PI);
+            //sky = SkyFactory.createSky(assetManager, "Textures/Sky/Bright/BrightSky.dds", false);
             //sky = SkyFactory.createSky(assetManager, "Textures/Sky/Bright/FullskiesBlueClear03.dds", false);
-            rootNode.attachChild(sky);
+            //rootNode.attachChild(sky);
         }
     }
 
