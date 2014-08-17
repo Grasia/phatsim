@@ -84,7 +84,7 @@ public class SimulationGenerator {
                     bodyRep.add(new Var("showName", showName));
                 }
 
-                String initialLoc = getInitialLocation(humanId);
+                String initialLoc = getInitialLocation(humanId,simDiag);
                 System.out.println("humanId=" + humanId + ",il="
                         + initialLoc);
                 if (initialLoc != null) {
@@ -274,11 +274,11 @@ public class SimulationGenerator {
         return null;
     }
 
-    public String getInitialLocation(String humanId) {
+    public String getInitialLocation(String humanId, Graph simDiagram) {
         try {
-            Graph[] diagrams = browser.getGraphs();
-            for (Graph simDiagram : diagrams) {
-                if (simDiagram.getType().equalsIgnoreCase(SIMULATION_DIAGRAM)) {
+          //  Graph[] diagrams = browser.getGraphs();
+           // for (Graph simDiagram : diagrams) {
+             //   if (simDiagram.getType().equalsIgnoreCase(SIMULATION_DIAGRAM)) {
                     System.out.println("Diagram = " + simDiagram.getID());
                     for (GraphEntity hi : simDiagram.getEntities()) {
                         if (hi.getType().equalsIgnoreCase(
@@ -294,8 +294,8 @@ public class SimulationGenerator {
                             }
                         }
                     }
-                }
-            }
+              //  }
+           // }
         } catch (Throwable ex) {
             ex.printStackTrace();
         }

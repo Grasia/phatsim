@@ -1,0 +1,26 @@
+@@@program xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"@@@
+	
+	@@@saveto@@@
+		@@@file overwrite="yes"@@@
+			@@@v@@@output@@@/v@@@/buildext.xml@@@/file@@@
+@@@text@@@
+<project>
+@@@repeat id="simInitialization"@@@
+<target name="run@@@v@@@simName@@@/v@@@" depends="compile">
+        <java fork="true" failonerror="true" maxmemory="300m"
+              classname="phat.sim.Main@@@v@@@simName@@@/v@@@PHATSimulation">
+		<classpath>			  
+			<pathelement path="${maven.build.outputDir}" />
+			<pathelement path="${mavenclasspath}" />              
+		</classpath>
+        </java>
+</target>
+  <target name="package@@@v@@@simName@@@/v@@@" depends="compile">
+   <maven basedir="${pom.dir}" goal="package" resultproperty="maven.build.result" options="-e -Dbuild.for.prod=false -Djavac.debug=true -Djavac.optimize=false -Dshade.mainName=@@@v@@@simName@@@/v@@@ -Dshade.mainClass=phat.sim.Main@@@v@@@simName@@@/v@@@PHATSimulation"/>
+ </target>
+
+@@@/repeat@@@
+</project>
+@@@/text@@@
+	@@@/saveto@@@
+@@@/program@@@

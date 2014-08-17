@@ -82,8 +82,9 @@
                     </excludes>
                 </configuration>
             </plugin>
+<!-- shade plugin must go before izpack to be executed first -->
 
-            <plugin><!-- shade plugin must go before izpack to be executed first -->
+            <!--plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>1.7.1</version>
@@ -114,7 +115,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
+            </plugin-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
