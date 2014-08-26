@@ -28,9 +28,6 @@ import ingenias.generator.browser.Browser;
 import ingenias.generator.browser.Graph;
 import ingenias.generator.browser.GraphAttribute;
 import ingenias.generator.browser.GraphEntity;
-import ingenias.generator.browser.GraphRelationship;
-import ingenias.generator.browser.GraphRole;
-import ingenias.generator.datatemplate.Repeat;
 import ingenias.generator.datatemplate.Sequences;
 import ingenias.generator.datatemplate.Var;
 import ingenias.generator.interpreter.SplitHandler;
@@ -50,8 +47,6 @@ import java.util.Properties;
 import java.util.Vector;
 
 import phat.codeproc.pd.PDGenerator;
-
-import org.bouncycastle.jce.provider.JDKMessageDigest.MD5;
 
 class FileUtils {
 	public static byte[] readFileAsBytes(String filename)
@@ -141,8 +136,9 @@ ingenias.editor.extension.BasicCodeGeneratorImp {
 				boolean allFilesExist=checkFiles(prefix);
 				StringBuffer sb =  FileUtils.readFile(args[0]);			
 				byte[] checksum =getCheckSum(sb.toString());		
+				
 				if (!java.util.Arrays.equals(getLastCheckSum(new File(args[0]).getAbsolutePath()),checksum)
-						|| !allFilesExist){ 
+						|| !allFilesExist || (args.length==3 && args[2].equalsIgnoreCase("true"))){ 
 					ingenias.editor.Log.initInstance(new PrintWriter(System.out));
 					ModelJGraph.disableAllListeners(); // this disable layout
 					// listeners that slow down

@@ -62,7 +62,7 @@ public class SetBodyInCoordenatesCommand extends PHATCommand {
         HouseAppState houseAppState = app.getStateManager().getState(HouseAppState.class);
         BulletAppState bulletAppState = app.getStateManager().getState(BulletAppState.class);
 
-        Node body = bodiesAppState.getAvailableBodies().get(bodyId);
+        Node body = bodiesAppState.getBody(bodyId);
 
         if (body != null && body.getParent() == null) {
             PHATCharacterControl cc = body.getControl(PHATCharacterControl.class);

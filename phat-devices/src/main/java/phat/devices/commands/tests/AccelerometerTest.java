@@ -163,7 +163,7 @@ public class AccelerometerTest implements PHATInitAppListener {
                     chart.showWindow();
                     init = true;
                     //System.out.println("getFocusedWindowName = "+devicesAppState.getAVD("Smartphone1").getFocusedWindowName());
-                    Node patient = bodiesAppState.getAvailableBodies().get("Patient");
+                    Node patient = bodiesAppState.getBody("Patient");
                     patient.setUserData("Speed", 1f);
                 }
                 cont += f;

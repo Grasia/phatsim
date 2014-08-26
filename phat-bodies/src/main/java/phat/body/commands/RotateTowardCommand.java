@@ -62,7 +62,7 @@ public class RotateTowardCommand extends PHATCommand implements AutonomousContro
     public void runCommand(Application app) {
         BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
 
-        Node body = bodiesAppState.getAvailableBodies().get(bodyId);
+        Node body = bodiesAppState.getBody(bodyId);
 
         if (body != null && body.getParent() != null) {
             PHATCharacterControl cc = body.getControl(PHATCharacterControl.class);
@@ -87,7 +87,7 @@ public class RotateTowardCommand extends PHATCommand implements AutonomousContro
 	public void interruptCommand(Application app) {
 		BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
 
-        Node body = bodiesAppState.getAvailableBodies().get(bodyId);
+        Node body = bodiesAppState.getBody(bodyId);
 
         if (body != null && body.getParent() != null) {
             PHATCharacterControl cc = body.getControl(PHATCharacterControl.class);

@@ -66,7 +66,7 @@ public class SayASentenceBodyCommand extends PHATCommand implements AudioSourceS
         if (app.getStateManager().getState(AudioAppState.class) != null) {
 
             BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
-            Node body = bodiesAppState.getAvailableBodies().get(bodyId);
+            Node body = bodiesAppState.getBody(bodyId);
 
             if (body != null && body.getParent() != null) {
                 removeAudioSpeakerSource(body);

@@ -52,7 +52,7 @@ public class ShowLabelsOfVisibleObjectsCommand extends PHATCommand {
     public void runCommand(Application app) {
         BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
 
-        Node body = bodiesAppState.getAvailableBodies().get(bodyId);
+        Node body = bodiesAppState.getBody(bodyId);
         if (body != null) {
             VisionControl vc = body.getControl(VisionControl.class);
             if (vc != null) {

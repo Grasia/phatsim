@@ -45,10 +45,10 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
     public void initBodies(BodyConfigurator bodyConfig) {
        @@@repeat id="bodies"@@@
        bodyConfig.createBody(BodiesAppState.BodyType.@@@v@@@bodyType@@@/v@@@, "@@@v@@@actorname@@@/v@@@");
-       bodyConfig.runCommand(new BodyLabelCommand("@@@v@@@actorname@@@/v@@@", @@@v@@@showName@@@/v@@@));@@@/repeat@@@
+       bodyConfig.runCommand(new BodyLabelCommand("@@@v@@@actorname@@@/v@@@", @@@v@@@showName@@@/v@@@));
        
        // Initial locations
-       @@@repeat id="initialLocs"@@@bodyConfig.setInSpace("@@@v@@@actorname@@@/v@@@", "House1", "@@@v@@@iniLoc@@@/v@@@");
+       bodyConfig.setInSpace("@@@v@@@actorname@@@/v@@@", "House1", "@@@v@@@iniLoc@@@/v@@@");
        bodyConfig.runCommand(new SetBodyHeightCommand("@@@v@@@actorname@@@/v@@@", 1.7f));
        @@@/repeat@@@
        @@@repeat id="CameraToBodyInit"@@@

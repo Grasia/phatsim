@@ -60,7 +60,7 @@ public class DebugSkeletonCommand extends PHATCommand {
         BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
         assetManager = app.getAssetManager();
 
-        Node body = bodiesAppState.getAvailableBodies().get(bodyId);
+        Node body = bodiesAppState.getBody(bodyId);
         if (body != null && body.getParent() != null) {
             if (show) {
                 showSkeleton(body);

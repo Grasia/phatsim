@@ -59,7 +59,7 @@ public class GoToSpaceCommand extends PHATCommand implements AutonomousControlLi
         BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
         HouseAppState houseAppState = app.getStateManager().getState(HouseAppState.class);
 
-        Node body = bodiesAppState.getAvailableBodies().get(bodyId);
+        Node body = bodiesAppState.getBody(bodyId);
 
         System.out.println("BodyId == "+bodyId);
         if (body != null && body.getParent() != null) {
@@ -91,7 +91,7 @@ public class GoToSpaceCommand extends PHATCommand implements AutonomousControlLi
         BodiesAppState bodiesAppState = app.getStateManager().getState(
                 BodiesAppState.class);
 
-        Node body = bodiesAppState.getAvailableBodies().get(bodyId);
+        Node body = bodiesAppState.getBody(bodyId);
 
         if (body != null && body.getParent() != null) {
             NavMeshMovementControl nmmc = body

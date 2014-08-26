@@ -19,11 +19,6 @@
  */
 package phat.codeproc;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Stack;
-
 import ingenias.exception.NotFound;
 import ingenias.exception.NullEntity;
 import ingenias.generator.browser.Browser;
@@ -33,6 +28,10 @@ import ingenias.generator.browser.GraphEntity;
 import ingenias.generator.datatemplate.Repeat;
 import ingenias.generator.datatemplate.Sequences;
 import ingenias.generator.datatemplate.Var;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class ActivityGenerator {
 	static final String ADL_SPEC_DIAGRAM = "ADLSpecDiagram";
@@ -65,7 +64,7 @@ public class ActivityGenerator {
 		for (GraphEntity ge : browser.getAllEntities()) {
 			if (ge.getType().equals(ACTIVITY_TYPE)) {
 				Repeat rep = new Repeat("activities");
-				rep.add(new Var("actName", ge.getID()));
+				rep.add(new Var("actName", Utils.replaceBadChars(ge.getID())));
 				seq.addRepeat(rep);
 
 				GraphAttribute ga = ge
@@ -75,7 +74,7 @@ public class ActivityGenerator {
 					System.out.println(ge.getID() + " >-* " + actDiagId);
 					if (actDiagId != null && !actDiagId.equals("")) {
 						Repeat repSeq = new Repeat("seqTaskSpec");
-						repSeq.add(new Var("seqTaskName", actDiagId));
+						repSeq.add(new Var("seqTaskName", Utils.replaceBadChars(actDiagId)));
 						rep.add(repSeq);
 					}
 				}
@@ -123,7 +122,7 @@ public class ActivityGenerator {
 		GraphEntity ge = Utils.getFirstEntity(adlSpec);
 		Repeat repFirst = new Repeat("firstActivity");
 		repFather.add(repFirst);
-		repFirst.add(new Var("actName", ge.getID()));
+		repFirst.add(new Var("actName", Utils.replaceBadChars(ge.getID())));
 
 		for (GraphEntity activity : adlSpec.getEntities()) {
 			System.out.println(">>>>entity ->" + activity.getType() + ":"
@@ -135,7 +134,7 @@ public class ActivityGenerator {
 				// Defines the activity
 				Repeat rep = new Repeat("activities");
 				repFather.add(rep);
-				rep.add(new Var("actName", activityName));
+				rep.add(new Var("actName", Utils.replaceBadChars(activityName)));
 
 				for (GraphEntity nextAct : Utils.getTargetsEntity(activity,
 						NEXT_ACTIVITY_REL)) {

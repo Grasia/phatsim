@@ -19,14 +19,11 @@
  */
 package phat.codeproc;
 
-import java.util.Collection;
-
-import phat.agents.automaton.conditions.PastTimeCondition;
 import ingenias.exception.NotFound;
 import ingenias.generator.browser.GraphAttribute;
 import ingenias.generator.browser.GraphEntity;
-import ingenias.generator.datatemplate.Repeat;
-import ingenias.generator.datatemplate.Var;
+
+import java.util.Collection;
 
 public class ConditionGenerator {
 	static final String CTIME_TYPE = "CTime";

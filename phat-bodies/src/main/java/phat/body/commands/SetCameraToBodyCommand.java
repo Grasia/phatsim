@@ -60,7 +60,7 @@ public class SetCameraToBodyCommand extends PHATCommand {
     public void runCommand(Application app) {
         BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
 
-        Node body = bodiesAppState.getAvailableBodies().get(bodyId);
+        Node body = bodiesAppState.getBody(bodyId);
         if (app instanceof SimpleApplication) {
             ((SimpleApplication) app).getFlyByCamera().setEnabled(false);
         }
@@ -80,7 +80,7 @@ public class SetCameraToBodyCommand extends PHATCommand {
     public void interruptCommand(Application app) {
         BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
 
-        Node body = bodiesAppState.getAvailableBodies().get(bodyId);
+        Node body = bodiesAppState.getBody(bodyId);
         if (body != null && body.getParent() != null) {
             camNode.removeFromParent();
             setState(State.Interrupted);

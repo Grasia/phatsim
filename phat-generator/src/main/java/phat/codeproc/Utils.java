@@ -25,7 +25,6 @@ package phat.codeproc;
 import ingenias.exception.NotInitialised;
 import ingenias.exception.NullEntity;
 import ingenias.generator.browser.Browser;
-import ingenias.generator.browser.BrowserImp;
 import ingenias.generator.browser.Graph;
 import ingenias.generator.browser.GraphEntity;
 import ingenias.generator.browser.GraphRelationship;
@@ -467,10 +466,7 @@ public class Utils {
         try {
             for (GraphRelationship gr : ge.getRelationships()) {
                 if (gr.getType().equals(relationType)) {
-                    GraphRole gRole = getTargetRole(gr.getRoles());
-                    if (gRole != null && gRole.getPlayer().getID() != ge.getID()) {
-                        return gRole.getPlayer();
-                    }
+                   return  getTargetEntity(ge, gr);
                 }
             }
         } catch (Throwable ex) {
@@ -478,6 +474,15 @@ public class Utils {
         }
         return null;
     }
+
+	public static GraphEntity getTargetEntity(GraphEntity ge, GraphRelationship gr)
+			throws NullEntity {
+		GraphRole gRole = getTargetRole(gr.getRoles());
+		if (gRole != null && gRole.getPlayer().getID() != ge.getID()) {
+		    return gRole.getPlayer();
+		}
+		return null;
+	}
 
     public static boolean isTargetOfAnyRelationship(GraphEntity ge)
             throws NullEntity {

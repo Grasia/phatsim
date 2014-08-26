@@ -26,9 +26,10 @@ import ingenias.generator.browser.Graph;
 import ingenias.generator.browser.GraphAttribute;
 import ingenias.generator.browser.GraphEntity;
 import ingenias.generator.browser.GraphRelationship;
-import ingenias.generator.browser.GraphRole;
 import ingenias.generator.datatemplate.Repeat;
 import ingenias.generator.datatemplate.Var;
+
+import java.util.Vector;
 
 public class TimeIntervalsGenerator {
 	final static String TIME_INTERVAL_TYPE = "TimeInterval";
@@ -65,7 +66,7 @@ public class TimeIntervalsGenerator {
 			GraphEntity ge = Utils.getFirstEntity(adlSpec);
 			Repeat repFirst = new Repeat("firstTimeInterval");
 			repFather.add(repFirst);
-			repFirst.add(new Var("tiname", ge.getID()));
+			repFirst.add(new Var("tiname", Utils.replaceBadChars(ge.getID())));
 
 			while (ge != null) {
 				System.out.println(ge.getType() + ": " + ge.getID());
@@ -73,7 +74,7 @@ public class TimeIntervalsGenerator {
 					String timeIntervalName = ge.getID();
 					Repeat rep = new Repeat("timeInstance");
 					repFather.add(rep);
-					rep.add(new Var("tiname", timeIntervalName));
+					rep.add(new Var("tiname", Utils.replaceBadChars(timeIntervalName)));
 					GraphEntity geClock = Utils.getTargetEntity(ge,
 							INTERVAL_CLOCK_REL);
 					if (geClock != null) {
@@ -100,8 +101,8 @@ public class TimeIntervalsGenerator {
 					if (geNext != null) {
 						Repeat rep3 = new Repeat("regTrans");
 						repFather.add(rep3);
-						rep3.add(new Var("tinameS", ge.getID()));
-						rep3.add(new Var("tinameT", geNext.getID()));
+						rep3.add(new Var("tinameS", Utils.replaceBadChars(ge.getID())));
+						rep3.add(new Var("tinameT", Utils.replaceBadChars(geNext.getID())));
 					}
 					ge = geNext;
 				} else {
@@ -117,11 +118,13 @@ public class TimeIntervalsGenerator {
 		try {
 			GraphEntity[] entities = browser.getAllEntities();
 			for (GraphEntity adl : entities) {
-				if (adl.getType().equalsIgnoreCase(ADLProfile_SPEC_DIAGRAM)) {
-					GraphEntity human = Utils.getTargetEntity(adl, "ProfileOf");
-					if (human.getID().equals(humanId)) {
-						return adl;
-					}
+				if (adl.getType().equalsIgnoreCase(ADLProfile_SPEC_DIAGRAM)) {					
+					Vector<GraphRelationship> rels = adl.getAllRelationships("ProfileOf");
+					for (GraphRelationship rel:rels){
+					 GraphEntity connectedHuman = Utils.getTargetEntity(adl, rel);	
+					 if (connectedHuman!=null && connectedHuman.getID().equalsIgnoreCase(humanId))
+						 return adl;
+					}					
 				}
 			}
 		} catch (Throwable ex) {

@@ -29,6 +29,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,14 +52,14 @@ import phat.world.WorldAppState;
  */
 public class BodiesAppState extends AbstractAppState {
 
-    SimpleApplication app;
-    AssetManager assetManager;
-    BulletAppState bulletAppState;
-    Node rootNode;
-    HouseAppState houseAppState;
-    WorldAppState worldAppState;
-    Node humans;
-    Map<String, Node> availableBodies = new HashMap<>();
+	private SimpleApplication app;
+    private AssetManager assetManager;
+    private BulletAppState bulletAppState;
+    private Node rootNode;
+    private HouseAppState houseAppState;
+    private WorldAppState worldAppState;
+    private Node humans;
+    private Map<String, Node> availableBodies = new HashMap<>();
 
     public enum BodyType {
         Elder, Young, Sinbad, ElderLP
@@ -198,8 +199,17 @@ public class BodiesAppState extends AbstractAppState {
         return rootNode;
     }
 
-    public Map<String, Node> getAvailableBodies() {
+    private synchronized Map<String, Node> getAvailableBodies() {
         return availableBodies;
+    }
+    
+    private synchronized Collection<String> getAvailableBodyIds() {
+        return availableBodies.keySet();
+    }
+    
+    
+    public synchronized void addBody(String bodyId, Node bodyNode) {
+        availableBodies.put(bodyId, bodyNode);
     }
 
     public AssetManager getAssetManager() {
@@ -209,4 +219,9 @@ public class BodiesAppState extends AbstractAppState {
     public PHATCalendar getTime() {
     	return worldAppState.getCalendar();
     }
+
+	public Node getBody(String bodyId) {
+	
+		return availableBodies.get(bodyId);
+	}
 }

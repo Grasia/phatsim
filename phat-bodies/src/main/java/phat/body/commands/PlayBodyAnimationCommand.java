@@ -58,7 +58,7 @@ public class PlayBodyAnimationCommand extends PHATCommand implements
 		BodiesAppState bodiesAppState = app.getStateManager().getState(
 				BodiesAppState.class);
 
-		Node body = bodiesAppState.getAvailableBodies().get(bodyId);
+		Node body = bodiesAppState.getBody(bodyId);
 
 		if (body != null && body.getParent() != null) {
 			BasicCharacterAnimControl bcac = body
@@ -74,7 +74,7 @@ public class PlayBodyAnimationCommand extends PHATCommand implements
 		BodiesAppState bodiesAppState = app.getStateManager().getState(
 				BodiesAppState.class);
 
-		Node body = bodiesAppState.getAvailableBodies().get(bodyId);
+		Node body = bodiesAppState.getBody(bodyId);
 
 		if (body != null && body.getParent() != null) {
 			BasicCharacterAnimControl bcac = body

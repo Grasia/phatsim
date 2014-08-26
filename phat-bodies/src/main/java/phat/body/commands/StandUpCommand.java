@@ -60,7 +60,7 @@ public class StandUpCommand extends PHATCommand implements AnimFinishedListener 
     public void runCommand(Application app) {
         BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
 
-        body = bodiesAppState.getAvailableBodies().get(bodyId);
+        body = bodiesAppState.getBody(bodyId);
 
         if (body != null && body.getParent() != null) {
             krc = body.getControl(KinematicRagdollControl.class);

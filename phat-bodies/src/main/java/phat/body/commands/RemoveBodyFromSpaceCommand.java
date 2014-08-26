@@ -42,7 +42,7 @@ public class RemoveBodyFromSpaceCommand extends PHATCommand {
     @Override
     public void runCommand(Application app) {
         BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
-        Node body = bodiesAppState.getAvailableBodies().get(bodyId);
+        Node body = bodiesAppState.getBody(bodyId);
 
         if (body != null && body.getParent() != null) {
             body.removeFromParent();

@@ -68,7 +68,7 @@ public class FallDownCommand extends PHATCommand {
         BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
         BulletAppState bulletAppState = app.getStateManager().getState(BulletAppState.class);
 
-        Node body = bodiesAppState.getAvailableBodies().get(bodyId);
+        Node body = bodiesAppState.getBody(bodyId);
 
         if (body != null && body.getParent() != null) {
             SpatialUtils.printControls(body);

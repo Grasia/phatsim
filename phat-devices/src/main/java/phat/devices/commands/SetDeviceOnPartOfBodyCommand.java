@@ -71,7 +71,7 @@ public class SetDeviceOnPartOfBodyCommand extends PHATDeviceCommand implements A
         BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
         DevicesAppState devicesAppState = app.getStateManager().getState(DevicesAppState.class);
 
-        Node body = bodiesAppState.getAvailableBodies().get(bodyId);
+        Node body = bodiesAppState.getBody(bodyId);
 
         if (body != null && body.getParent() != null) {
             Spatial s = devicesAppState.getDevice(deviceId);

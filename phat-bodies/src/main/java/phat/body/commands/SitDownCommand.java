@@ -89,7 +89,7 @@ public class SitDownCommand extends PHATCommand implements AutonomousControlList
         bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
         HouseAppState houseAppState = app.getStateManager().getState(HouseAppState.class);
 
-        body = bodiesAppState.getAvailableBodies().get(bodyId);
+        body = bodiesAppState.getBody(bodyId);
 
         if (body != null && body.getParent() != null) {
             if (body.getControl(SitDownControl.class) != null) {
@@ -131,7 +131,7 @@ public class SitDownCommand extends PHATCommand implements AutonomousControlList
 		BodiesAppState bodiesAppState = app.getStateManager().getState(
 				BodiesAppState.class);
 
-		Node body = bodiesAppState.getAvailableBodies().get(bodyId);
+		Node body = bodiesAppState.getBody(bodyId);
 
 		if (body != null && body.getParent() != null) {
 			if(goToCommand != null) {

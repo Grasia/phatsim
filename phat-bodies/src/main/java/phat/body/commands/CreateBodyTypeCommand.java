@@ -95,7 +95,7 @@ public class CreateBodyTypeCommand extends PHATCommand {
         body.addControl(new PersuitAndAvoidControl());
         //body.addControl(new LookAtControl());
         
-        bodiesAppState.getAvailableBodies().put(bodyId, body);
+        bodiesAppState.addBody(bodyId, body);
         
         //PhysicsUtils.setHighPhysicsPrecision(body);
         body.addControl(new VisionControl());

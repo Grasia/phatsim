@@ -23,7 +23,6 @@ import ingenias.exception.NotFound;
 import ingenias.exception.NullEntity;
 import ingenias.generator.browser.Browser;
 import ingenias.generator.browser.Graph;
-import ingenias.generator.browser.GraphAttribute;
 import ingenias.generator.browser.GraphEntity;
 import ingenias.generator.datatemplate.Repeat;
 import ingenias.generator.datatemplate.Sequences;
@@ -47,7 +46,7 @@ public class AgentsGenerator {
 			for (GraphEntity actor : Utils.getEntities(diagram, "Human")) {
 				Repeat rep = new Repeat("actors");
 				seq.addRepeat(rep);
-				rep.add(new Var("actorname", actor.getID()));
+				rep.add(new Var("actorname", Utils.replaceBadChars(actor.getID())));
 
 				String humanId = actor.getID();
 				new TimeIntervalsGenerator(browser).generateADL(humanId, rep);

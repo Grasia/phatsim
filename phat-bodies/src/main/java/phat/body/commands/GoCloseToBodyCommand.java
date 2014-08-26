@@ -60,11 +60,10 @@ public class GoCloseToBodyCommand extends PHATCommand implements
 		BodiesAppState bodiesAppState = app.getStateManager().getState(
 				BodiesAppState.class);
 
-		Node body = bodiesAppState.getAvailableBodies().get(bodyId);
+		Node body = bodiesAppState.getBody(bodyId);
 
 		if (body != null && body.getParent() != null) {
-			Node targetBody = bodiesAppState.getAvailableBodies().get(
-					targetBodyId);
+			Node targetBody = bodiesAppState.getBody(targetBodyId);
 			if (targetBody != null && targetBody.getParent() != null) {
 				NavMeshMovementControl nmmc = body
 						.getControl(NavMeshMovementControl.class);
@@ -88,7 +87,7 @@ public class GoCloseToBodyCommand extends PHATCommand implements
 		BodiesAppState bodiesAppState = app.getStateManager().getState(
 				BodiesAppState.class);
 
-		Node body = bodiesAppState.getAvailableBodies().get(bodyId);
+		Node body = bodiesAppState.getBody(bodyId);
 
 		if (body != null && body.getParent() != null) {
 			NavMeshMovementControl nmmc = body

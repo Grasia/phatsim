@@ -62,7 +62,7 @@ public class BodyLabelCommand extends PHATCommand {
     public void runCommand(Application app) {
         BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
 
-        Node body = bodiesAppState.getAvailableBodies().get(bodyId);
+        Node body = bodiesAppState.getBody(bodyId);
         BitmapText bitmapText = getName(body);
         
         if (show && bitmapText == null) {

@@ -128,7 +128,7 @@ public class FallDownTest implements PHATInitAppListener {
             @Override
             public void update(float f) {
                 if(!init) {
-                    bodiesAppState.getAvailableBodies().get("Patient").setUserData("Speed", 0.5f);
+                    bodiesAppState.getBody("Patient").setUserData("Speed", 0.5f);
                     init = true;
                 }
                 cont += f;

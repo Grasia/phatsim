@@ -19,18 +19,16 @@
  */
 package phat.codeproc;
 
-import java.util.Collection;
-
 import ingenias.exception.NotFound;
 import ingenias.exception.NullEntity;
 import ingenias.generator.browser.Browser;
 import ingenias.generator.browser.Graph;
 import ingenias.generator.browser.GraphAttribute;
 import ingenias.generator.browser.GraphEntity;
-import ingenias.generator.browser.GraphRelationship;
-import ingenias.generator.browser.GraphRole;
 import ingenias.generator.datatemplate.Repeat;
 import ingenias.generator.datatemplate.Var;
+
+import java.util.Collection;
 
 public class InteractionDiagramGenerator {
 	final static String TIME_INTERVAL_TYPE = "TimeInterval";

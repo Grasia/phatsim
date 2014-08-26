@@ -55,7 +55,7 @@ public class AttachIconCommand extends PHATCommand {
     public void runCommand(Application app) {
         BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
 
-        Node body = bodiesAppState.getAvailableBodies().get(bodyId);
+        Node body = bodiesAppState.getBody(bodyId);
         Node pivot = (Node) body.getChild("Pivot");
         if(pivot == null) {
             pivot = new Node("Pivot");

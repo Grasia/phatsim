@@ -29,276 +29,286 @@ import ingenias.generator.datatemplate.Repeat;
 import ingenias.generator.datatemplate.Sequences;
 import ingenias.generator.datatemplate.Var;
 
+import java.util.List;
+
 public class SimulationGenerator {
 
-    static final String HUMAN_PROFILE_SPEC_DIAGRAM = "HumanProfileSpecDiagram";
-    static final String ADLProfile_SPEC_DIAGRAM = "ADLProfile";
-    static final String SIMULATION_DIAGRAM = "SimulationDiagram";
-    static final String HUMAN_INITIALIZATION_OBJ = "HumanInitialization";
-    Browser browser;
+	static final String HUMAN_PROFILE_SPEC_DIAGRAM = "HumanProfileSpecDiagram";
+	static final String ADLProfile_SPEC_DIAGRAM = "ADLProfile";
+	static final String SIMULATION_DIAGRAM = "SimulationDiagram";
+	static final String HUMAN_INITIALIZATION_OBJ = "HumanInitialization";
+	Browser browser;
 
-    public SimulationGenerator(Browser browser) {
-        this.browser = browser;
-    }
+	public SimulationGenerator(Browser browser) {
+		this.browser = browser;
+	}
 
-    public void generateSimulations(Sequences seq) throws NullEntity, NotFound {
-        for (Graph simDiag : Utils
-                .getGraphsByType(SIMULATION_DIAGRAM, browser)) {
-            String simId = simDiag.getID();
-            Repeat simInitRep = new Repeat("simInitialization");
-            seq.addRepeat(simInitRep);
-            simInitRep.add(new Var("simName", simId));
+	public void generateSimulations(Sequences seq) throws NullEntity, NotFound {
+		for (Graph simDiag : Utils
+				.getGraphsByType(SIMULATION_DIAGRAM, browser)) {
+			String simId = simDiag.getID();
+			Repeat simInitRep = new Repeat("simInitialization");
+			seq.addRepeat(simInitRep);
+			simInitRep.add(new Var("simName", Utils.replaceBadChars(simId)));
 
-            generateWorldInitialization(simId, simDiag, simInitRep);
-            generatePeopleInitialization(simDiag, simInitRep);
-            generateCameraPositionToBody(simDiag, simInitRep);
-            generateSmartphones(simId, simDiag, simInitRep);
-        }
+			generateWorldInitialization(simId, simDiag, simInitRep);
+			generatePeopleInitialization(simDiag, simInitRep);
+			generateCameraPositionToBody(simDiag, simInitRep);
+			generateSmartphones(simId, simDiag, simInitRep);
+		}
 
-    }
+	}
 
-    private void generatePeopleInitialization(Graph simDiag, Repeat simInitRep)
-            throws NullEntity, NotFound {
-        for (GraphEntity hi : Utils.getEntities(simDiag, HUMAN_INITIALIZATION_OBJ)) {
-            GraphEntity human = Utils.getTargetEntity(hi, "RelatedHuman", simDiag.getRelationships());
-            if (human != null) {
-                String humanId = human.getID();
+	private void generatePeopleInitialization(Graph simDiag, Repeat simInitRep)
+			throws NullEntity, NotFound {
+		for (GraphEntity hi : Utils.getEntities(simDiag, HUMAN_INITIALIZATION_OBJ)) {
+			GraphEntity human = Utils.getTargetEntity(hi, "RelatedHuman", simDiag.getRelationships());
+			if (human != null) {
+				String humanId = human.getID();
 
-                String bodyType = getBodyType(humanId);
-                if (bodyType != null) {
-                    Repeat bodyRep = new Repeat("bodies");
-                    simInitRep.add(bodyRep);
-                    bodyRep.add(new Var("actorname", humanId));
-                    bodyRep.add(new Var("bodyType", bodyType));
-                    String showName = "false";
-                    try {
-                        GraphAttribute ga = human.getAttributeByName("ShowName");
-                        if (ga != null) {
-                            String valueName = ga.getSimpleValue();
-                            if (valueName != null && valueName.equals("Yes")) {
-                                showName = "true";
-                            }
-                        }
-                    } catch (NotFound nf) {
-                    }
-                    bodyRep.add(new Var("showName", showName));
-                }
+				String bodyType = getBodyType(humanId);
+				if (bodyType != null) {
+					Repeat bodyRep = new Repeat("bodies");
+					simInitRep.add(bodyRep);
+					bodyRep.add(new Var("actorname", Utils.replaceBadChars(humanId)));
+					bodyRep.add(new Var("bodyType", bodyType));
+					String showName = "false";
+					try {
+						GraphAttribute ga = human.getAttributeByName("ShowName");
+						if (ga != null) {
+							String valueName = ga.getSimpleValue();
+							if (valueName != null && valueName.equals("Yes")) {
+								showName = "true";
+							}
+						}
+					} catch (NotFound nf) {
+					}
+					bodyRep.add(new Var("showName", showName));
+					String initialLoc = getInitialLocation(humanId,simDiag);
+					System.out.println("humanId=" + humanId + ",il="
+							+ initialLoc);
+					if (initialLoc != null) {                  
+						bodyRep.add(new Var("iniLoc", initialLoc));
+					}
 
-                String initialLoc = getInitialLocation(humanId,simDiag);
-                System.out.println("humanId=" + humanId + ",il="
-                        + initialLoc);
-                if (initialLoc != null) {
-                    Repeat initLocRep = new Repeat("initialLocs");
-                    simInitRep.add(initLocRep);
-                    initLocRep.add(new Var("actorname", humanId));
-                    initLocRep.add(new Var("iniLoc", initialLoc));
-                }
+					if (TimeIntervalsGenerator.getADL(humanId, browser) != null) {
+						Repeat bodyRep1 = new Repeat("agent");
+						simInitRep.add(bodyRep1);
+						bodyRep1.add(new Var("agentname", humanId));
+					}
+				}
 
-                if (TimeIntervalsGenerator.getADL(humanId, browser) != null) {
-                    Repeat bodyRep = new Repeat("agent");
-                    simInitRep.add(bodyRep);
-                    bodyRep.add(new Var("agentname", humanId));
-                }
-            }
-        }
-    }
 
-    private void generateCameraPositionToBody(Graph simDiag, Repeat simInitRep)
-            throws NullEntity, NotFound {
-        for (GraphEntity hi : Utils.getEntities(simDiag, "CameraInit")) {
-            GraphEntity human = Utils.getTargetEntity(hi, "CameraFaceToHuman", simDiag.getRelationships());
-            if (human != null) {
-                String humanId = human.getID();
+			}
+		}
+	}
 
-                Repeat camRep = new Repeat("CameraToBodyInit");
-                simInitRep.add(camRep);
-                camRep.add(new Var("actorname", humanId));
-                String distance = "2";
-                String elevation = "15";
-                String front = "true";
-                
-                GraphAttribute distanceGA = hi.getAttributeByName("DistanceToTarget");
-                if(distanceGA != null && !distanceGA.getSimpleValue().equals("")) {
-                    distance = distanceGA.getSimpleValue();
-                }
-                camRep.add(new Var("distance", distance));
-                
-                GraphAttribute elevationGA = hi.getAttributeByName("Elevation");
-                if(elevationGA != null && !elevationGA.getSimpleValue().equals("")) {
-                    elevation = elevationGA.getSimpleValue();
-                }
-                camRep.add(new Var("elevation", elevation));
-                
-                GraphAttribute frontGA = hi.getAttributeByName("IsInFrontOfHuman");
-                if(frontGA != null && !frontGA.getSimpleValue().equals("")) {
-                    if(frontGA.getSimpleValue().equals("No")) {
-                        front = "false";
-                    }
-                }
-                camRep.add(new Var("isinfrontofhuman", front));
-            }
-        }
-    }
+	private void generateCameraPositionToBody(Graph simDiag, Repeat simInitRep)
+			throws NullEntity, NotFound {
+		for (GraphEntity hi : Utils.getEntities(simDiag, "CameraInit")) {
+			GraphEntity human = Utils.getTargetEntity(hi, "CameraFaceToHuman", simDiag.getRelationships());
+			if (human != null) {
+				String humanId = human.getID();
 
-    public void generateWorldInitialization(String simId, Graph simDiags,
-            Repeat rep) throws NullEntity, NotFound {
-        GraphEntity ge = getEntity(simDiags, "WorldInitialization");
-        GraphEntity iniDate = Utils.getTargetEntity(ge, "InitialDate");
-        GraphAttribute year = iniDate.getAttributeByName("YearField");
-        GraphAttribute month = iniDate.getAttributeByName("MonthField");
-        GraphAttribute day = iniDate.getAttributeByName("DayField");
-        GraphAttribute hour = iniDate.getAttributeByName("HourField");
-        GraphAttribute min = iniDate.getAttributeByName("MinuteField");
-        GraphAttribute sec = iniDate.getAttributeByName("SecondField");
+				Repeat camRep = new Repeat("CameraToBodyInit");
+				simInitRep.add(camRep);
+				camRep.add(new Var("actorname", Utils.replaceBadChars(humanId)));
+				String distance = "2";
+				String elevation = "15";
+				String front = "true";
 
-        rep.add(new Var("year", year.getSimpleValue()));
-        rep.add(new Var("month", month.getSimpleValue()));
-        rep.add(new Var("day", day.getSimpleValue()));
-        rep.add(new Var("hour", hour.getSimpleValue()));
-        rep.add(new Var("min", min.getSimpleValue()));
-        rep.add(new Var("sec", sec.getSimpleValue()));
-    }
+				GraphAttribute distanceGA = hi.getAttributeByName("DistanceToTarget");
+				if(distanceGA != null && !distanceGA.getSimpleValue().equals("")) {
+					distance = distanceGA.getSimpleValue();
+				}
+				camRep.add(new Var("distance", distance));
 
-    private void generateSmartphones(String simId, Graph simDiags,
-            Repeat rep) throws NullEntity, NotFound {
-        for (GraphEntity smartphone : Utils.getEntities(simDiags, "ESmartPhone")) {
-            Repeat createSPRep = new Repeat("createSP");
-            rep.add(createSPRep);
-            createSPRep.add(new Var("SPname", smartphone.getID()));
+				GraphAttribute elevationGA = hi.getAttributeByName("Elevation");
+				if(elevationGA != null && !elevationGA.getSimpleValue().equals("")) {
+					elevation = elevationGA.getSimpleValue();
+				}
+				camRep.add(new Var("elevation", elevation));
 
-            GraphEntity loc = Utils.getTargetEntity(smartphone, "InitialDeviceLocation", simDiags.getRelationships());
-            String humanId = loc.getAttributeByName("BelongsTo").getSimpleValue();
-            String partOfBody = loc.getAttributeByName("PartOfBodyName").getSimpleValue();
-            createSPRep.add(new Var("humanId", humanId));
-            createSPRep.add(new Var("partOfBody", partOfBody));
-        }
+				GraphAttribute frontGA = hi.getAttributeByName("IsInFrontOfHuman");
+				if(frontGA != null && !frontGA.getSimpleValue().equals("")) {
+					if(frontGA.getSimpleValue().equals("No")) {
+						front = "false";
+					}
+				}
+				camRep.add(new Var("isinfrontofhuman", front));
+			}
+		}
+	}
 
-        for (GraphEntity smartphone : Utils.getEntities(simDiags, "ESmartPhone")) {
+	public void generateWorldInitialization(String simId, Graph simDiags,
+			Repeat rep) throws NullEntity, NotFound {
+		GraphEntity ge = getEntity(simDiags, "WorldInitialization");
+		GraphEntity iniDate = Utils.getTargetEntity(ge, "InitialDate");
+		GraphAttribute year = iniDate.getAttributeByName("YearField");
+		GraphAttribute month = iniDate.getAttributeByName("MonthField");
+		GraphAttribute day = iniDate.getAttributeByName("DayField");
+		GraphAttribute hour = iniDate.getAttributeByName("HourField");
+		GraphAttribute min = iniDate.getAttributeByName("MinuteField");
+		GraphAttribute sec = iniDate.getAttributeByName("SecondField");
 
-            GraphEntity emu = Utils.getTargetEntity(smartphone, "EmulatorPeer", simDiags.getRelationships());
-            if (emu != null) {
-                GraphAttribute avdName = emu.getAttributeByName("AvdName");
-                GraphAttribute avdSerialNumName = emu.getAttributeByName("AvdSerialNumber");
-                if (avdName != null && !avdName.getSimpleValue().equals("")
-                        && avdSerialNumName != null && !avdSerialNumName.getSimpleValue().equals("")) {
-                    Repeat emulator = new Repeat("emulator");
-                    rep.add(emulator);
-                    emulator.add(new Var("SPname", smartphone.getID()));
-                    emulator.add(new Var("AvdName", avdName.getSimpleValue()));
-                    emulator.add(new Var("AvdSerialNum", avdSerialNumName.getSimpleValue()));
+		rep.add(new Var("year", year.getSimpleValue()));
+		rep.add(new Var("month", month.getSimpleValue()));
+		rep.add(new Var("day", day.getSimpleValue()));
+		rep.add(new Var("hour", hour.getSimpleValue()));
+		rep.add(new Var("min", min.getSimpleValue()));
+		rep.add(new Var("sec", sec.getSimpleValue()));
+	}
 
-                    GraphAttribute apkFileField = emu.getAttributeByName("ApkFile");
-                    System.out.println("ApkFile = " + apkFileField.getSimpleValue());
-                    if (apkFileField != null && !apkFileField.getSimpleValue().equals("")) {
-                        Repeat installApp = new Repeat("installApp");
-                        emulator.add(installApp);
-                        installApp.add(new Var("SPname", smartphone.getID()));
-                        installApp.add(new Var("apkFile", apkFileField.getSimpleValue()));
-                    }
+	private void generateSmartphones(String simId, Graph simDiags,
+			Repeat rep) throws NullEntity, NotFound {
+		for (GraphEntity smartphone : Utils.getEntities(simDiags, "ESmartPhone")) {
+			Repeat createSPRep = new Repeat("createSP");
+			rep.add(createSPRep);
+			createSPRep.add(new Var("SPname", smartphone.getID()));
 
-                    GraphAttribute avdScreenFeed = emu.getAttributeByName("AvdScreenFeed");
-                    if (avdScreenFeed != null && avdScreenFeed.getSimpleValue().equals("Yes")) {
-                        Repeat avdScreen = new Repeat("avdScreen");
-                        rep.add(avdScreen);
-                        avdScreen.add(new Var("SPname", smartphone.getID()));
-                        avdScreen.add(new Var("AvdName", avdName.getSimpleValue()));
-                    }
+			GraphEntity loc = Utils.getTargetEntity(smartphone, "InitialDeviceLocation", simDiags.getRelationships());
+			String humanId = loc.getAttributeByName("BelongsTo").getSimpleValue();
+			String partOfBody = loc.getAttributeByName("PartOfBodyName").getSimpleValue();
+			createSPRep.add(new Var("humanId", humanId));
+			createSPRep.add(new Var("partOfBody", partOfBody));
+		}
 
-                    GraphEntity runApp = Utils.getTargetEntity(emu, "RunAndroidApp", simDiags.getRelationships());
-                    if (runApp != null) {
-                        GraphAttribute packageName = runApp.getAttributeByName("PackageField");
-                        GraphAttribute activityName = runApp.getAttributeByName("ActivityField");
-                        if (packageName != null && !packageName.getSimpleValue().equals("")
-                                && activityName != null && !activityName.getSimpleValue().equals("")) {
-                            Repeat androidApp = new Repeat("AndroidApp");
-                            emulator.add(androidApp);
-                            androidApp.add(new Var("packageName", packageName.getSimpleValue()));
-                            androidApp.add(new Var("activityName", activityName.getSimpleValue()));
-                        }
-                    }
-                }
-            }
-        }
-    }
+		for (GraphEntity smartphone : Utils.getEntities(simDiags, "ESmartPhone")) {
 
-    private GraphEntity getEntity(Graph diagram, String type) {
-        try {
-            for (GraphEntity ge : Utils.getEntities(diagram, type)) {
-                return ge;
-            }
-        } catch (NullEntity e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
+			GraphEntity emu = Utils.getTargetEntity(smartphone, "EmulatorPeer", simDiags.getRelationships());
+			if (emu != null) {
+				GraphAttribute avdName = emu.getAttributeByName("AvdName");
+				GraphAttribute avdSerialNumName = emu.getAttributeByName("AvdSerialNumber");
+				if (avdName != null && !avdName.getSimpleValue().equals("")
+						&& avdSerialNumName != null && !avdSerialNumName.getSimpleValue().equals("")) {
+					Repeat emulator = new Repeat("emulator");
+					rep.add(emulator);
+					emulator.add(new Var("SPname", smartphone.getID()));
+					emulator.add(new Var("AvdName", avdName.getSimpleValue()));
+					emulator.add(new Var("AvdSerialNum", avdSerialNumName.getSimpleValue()));
 
-    private String getBodyType(String humanId) {
-        for (Graph humanProfileDiagram : Utils.getGraphsByType(
-                "HumanProfileSpecDiagram", browser)) {
-            GraphEntity human = getEntity(humanProfileDiagram, "Human");
-            if (human != null && human.getID().equals(humanId)) {
-                GraphEntity sp = getEntity(humanProfileDiagram, "SocialProfile");
-                if (sp != null) {
-                    try {
-                        GraphAttribute sd = sp
-                                .getAttributeByName("SocialSpecDiagField");
-                        if (sd.getSimpleValue() != null) {
-                            System.out.println("Diagram name = "
-                                    + sd.getSimpleValue());
-                            Graph socialProfile = Utils.getGraphByName(
-                                    sd.getSimpleValue(), browser);
-                            GraphEntity pi = getEntity(socialProfile,
-                                    "PersonalInfo");
-                            if (pi != null) {
-                                GraphAttribute ageAt = pi
-                                        .getAttributeByName("AgeField");
-                                if (ageAt != null
-                                        && !ageAt.getSimpleValue().equals("")) {
-                                    int age = Integer.parseInt(ageAt
-                                            .getSimpleValue());
-                                    if (age > 60) {
-                                        return "ElderLP";
-                                    } else {
-                                        return "Young";
-                                    }
-                                }
-                            }
-                        }
-                    } catch (NotFound e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-        return null;
-    }
+					GraphAttribute apkFileField = emu.getAttributeByName("ApkFile");
+					System.out.println("ApkFile = " + apkFileField.getSimpleValue());
+					if (apkFileField != null && !apkFileField.getSimpleValue().equals("")) {
+						Repeat installApp = new Repeat("installApp");
+						emulator.add(installApp);
+						installApp.add(new Var("SPname", smartphone.getID()));
+						installApp.add(new Var("apkFile", apkFileField.getSimpleValue()));
+					}
 
-    public String getInitialLocation(String humanId, Graph simDiagram) {
-        try {
-          //  Graph[] diagrams = browser.getGraphs();
-           // for (Graph simDiagram : diagrams) {
-             //   if (simDiagram.getType().equalsIgnoreCase(SIMULATION_DIAGRAM)) {
-                    System.out.println("Diagram = " + simDiagram.getID());
-                    for (GraphEntity hi : simDiagram.getEntities()) {
-                        if (hi.getType().equalsIgnoreCase(
-                                HUMAN_INITIALIZATION_OBJ)) {
-                            GraphEntity human = Utils.getTargetEntity(hi,
-                                    "RelatedHuman");
-                            if (human.getID().equals(humanId)) {
-                                GraphEntity initialPos = Utils.getTargetEntity(
-                                        hi, "InitialLocation");
-                                if (initialPos != null) {
-                                    return initialPos.getID();
-                                }
-                            }
-                        }
-                    }
-              //  }
-           // }
-        } catch (Throwable ex) {
-            ex.printStackTrace();
-        }
-        return null;
-    }
+					GraphAttribute avdScreenFeed = emu.getAttributeByName("AvdScreenFeed");
+					if (avdScreenFeed != null && avdScreenFeed.getSimpleValue().equals("Yes")) {
+						Repeat avdScreen = new Repeat("avdScreen");
+						rep.add(avdScreen);
+						avdScreen.add(new Var("SPname", smartphone.getID()));
+						avdScreen.add(new Var("AvdName", avdName.getSimpleValue()));
+					}
+
+					GraphEntity runApp = Utils.getTargetEntity(emu, "RunAndroidApp", simDiags.getRelationships());
+					if (runApp != null) {
+						GraphAttribute packageName = runApp.getAttributeByName("PackageField");
+						GraphAttribute activityName = runApp.getAttributeByName("ActivityField");
+						if (packageName != null && !packageName.getSimpleValue().equals("")
+								&& activityName != null && !activityName.getSimpleValue().equals("")) {
+							Repeat androidApp = new Repeat("AndroidApp");
+							emulator.add(androidApp);
+							androidApp.add(new Var("packageName", packageName.getSimpleValue()));
+							androidApp.add(new Var("activityName", activityName.getSimpleValue()));
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private GraphEntity getEntity(Graph diagram, String type) {
+		try {
+			for (GraphEntity ge : Utils.getEntities(diagram, type)) {
+				return ge;
+			}
+		} catch (NullEntity e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	private String getBodyType(String humanId) {
+		for (Graph humanProfileDiagram : Utils.getGraphsByType(
+				"HumanProfileSpecDiagram", browser)) {
+			List<GraphEntity> humans;
+
+			try {
+				humans = Utils.getEntities(humanProfileDiagram, "Human");
+				for (GraphEntity human:humans)
+					if (human.getID().equals(humanId)) {
+						GraphEntity sp = getEntity(humanProfileDiagram, "SocialProfile");
+						if (sp != null) {
+							try {
+								GraphAttribute sd = sp
+										.getAttributeByName("SocialSpecDiagField");
+								if (sd.getSimpleValue() != null) {
+									System.out.println("Diagram name = "
+											+ sd.getSimpleValue());
+									Graph socialProfile = Utils.getGraphByName(
+											sd.getSimpleValue(), browser);
+									GraphEntity pi = getEntity(socialProfile,
+											"PersonalInfo");
+									if (pi != null) {
+										GraphAttribute ageAt = pi
+												.getAttributeByName("AgeField");
+										if (ageAt != null
+												&& !ageAt.getSimpleValue().equals("")) {
+											int age = Integer.parseInt(ageAt
+													.getSimpleValue());
+											if (age > 60) {
+												return "ElderLP";
+											} else {
+												return "Young";
+											}
+										}
+									}
+								}
+							} catch (NotFound e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+
+					}
+
+			} catch (NullEntity e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	public String getInitialLocation(String humanId, Graph simDiagram) {
+		try {
+			//  Graph[] diagrams = browser.getGraphs();
+			// for (Graph simDiagram : diagrams) {
+			//   if (simDiagram.getType().equalsIgnoreCase(SIMULATION_DIAGRAM)) {
+			System.out.println("Diagram = " + simDiagram.getID());
+			for (GraphEntity hi : simDiagram.getEntities()) {
+				if (hi.getType().equalsIgnoreCase(
+						HUMAN_INITIALIZATION_OBJ)) {
+					GraphEntity human = Utils.getTargetEntity(hi,
+							"RelatedHuman");
+					if (human.getID().equals(humanId)) {
+						GraphEntity initialPos = Utils.getTargetEntity(
+								hi, "InitialLocation");
+						if (initialPos != null) {
+							return initialPos.getID();
+						}
+					}
+				}
+			}
+			//  }
+			// }
+		} catch (Throwable ex) {
+			ex.printStackTrace();
+		}
+		return null;
+	}
 }
