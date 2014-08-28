@@ -144,6 +144,8 @@ public class SimulationGenerator {
 			Repeat rep) throws NullEntity, NotFound {
 		GraphEntity ge = getEntity(simDiags, "WorldInitialization");
 		GraphEntity iniDate = Utils.getTargetEntity(ge, "InitialDate");
+		if (iniDate==null)
+			System.out.println("Hola");
 		GraphAttribute year = iniDate.getAttributeByName("YearField");
 		GraphAttribute month = iniDate.getAttributeByName("MonthField");
 		GraphAttribute day = iniDate.getAttributeByName("DayField");

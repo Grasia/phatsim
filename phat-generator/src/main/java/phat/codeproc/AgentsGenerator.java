@@ -46,12 +46,14 @@ public class AgentsGenerator {
 			for (GraphEntity actor : Utils.getEntities(diagram, "Human")) {
 				Repeat rep = new Repeat("actors");
 				seq.addRepeat(rep);
+									
 				rep.add(new Var("actorname", Utils.replaceBadChars(actor.getID())));
-
 				String humanId = actor.getID();
 				new TimeIntervalsGenerator(browser).generateADL(humanId, rep);
 				new InteractionDiagramGenerator(browser).generateEventProcessor(humanId, rep);
-                                PDGenerator.linkPDManager(humanId, rep, browser);
+                                PDGenerator.linkPDManager(humanId, rep, browser);                                
+                new PDGenerator(browser).generatePD(seq, actor);
+                
 			}
 		}
 	}

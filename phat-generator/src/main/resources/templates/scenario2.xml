@@ -81,7 +81,7 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
     @Override
     public void initAgents(AgentConfigurator agentsConfig) {
        @@@repeat id="agent"@@@
-       agentsConfig.add(new @@@v@@@agentname@@@/v@@@Agent("@@@v@@@agentname@@@/v@@@"));@@@/repeat@@@
+       agentsConfig.add(new @@@v@@@agentname@@@/v@@@Agent("@@@v@@@agentname@@@/v@@@","@@@v@@@simName@@@/v@@@" ));@@@/repeat@@@
     }
     
     @Override
