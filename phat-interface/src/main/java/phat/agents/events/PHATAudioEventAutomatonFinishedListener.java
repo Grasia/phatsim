@@ -52,4 +52,14 @@ public class PHATAudioEventAutomatonFinishedListener extends PHATAudioEvent impl
     public void postInit(Automaton automaton) {
         
     }
+
+    @Override
+    public void automatonInterrupted(Automaton automaton) {
+        
+    }
+
+    @Override
+    public void automatonResumed(Automaton resumedAutomaton) {
+        
+    }
 }

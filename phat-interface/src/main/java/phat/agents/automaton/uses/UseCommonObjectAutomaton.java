@@ -19,9 +19,6 @@
  */
 package phat.agents.automaton.uses;
 
-import com.jme3.math.Vector3f;
-import com.jme3.scene.Spatial;
-
 import phat.PHATInterface;
 import phat.agents.Agent;
 import phat.agents.automaton.SimpleState;
@@ -62,7 +59,6 @@ public class UseCommonObjectAutomaton extends SimpleState implements PHATCommand
         }
         useObjfinished = super.isFinished(phatInterface) || fail;
         if (useObjfinished) {
-            System.out.println("FINISHED!!!!");
             agent.runCommand(new CloseObjectCommand(agent.getId(), objId));
             tapClosed = true;
         }
@@ -71,7 +67,6 @@ public class UseCommonObjectAutomaton extends SimpleState implements PHATCommand
 
     @Override
     public void commandStateChanged(PHATCommand command) {
-        System.out.println(command.getClass().getSimpleName()+": Command State = "+command.getState().name());
         if (command == goCloseToObj && command.getState().equals(PHATCommand.State.Success)) {
             agent.runCommand(new AlignWithCommand(agent.getId(), objId));
             agent.runCommand(new OpenObjectCommand(agent.getId(), objId));
@@ -83,23 +78,24 @@ public class UseCommonObjectAutomaton extends SimpleState implements PHATCommand
     
     @Override
     public void interrupt() {
-    	super.interrupt();
-        if(goCloseToObj != null && goCloseToObj.getState().equals(PHATCommand.State.Running)) {
+    	if(goCloseToObj != null && goCloseToObj.getState().equals(PHATCommand.State.Running)) {
             goCloseToObj.setFunction(PHATCommand.Function.Interrupt);
             agent.runCommand(goCloseToObj);
         }
         agent.runCommand(new CloseObjectCommand(agent.getId(), objId));
         tapClosed = true;
             
-    	setFinished(true);
+    	super.interrupt();
     }
-
+    
     @Override
     public void simpleNextState(PHATInterface phatInterface) {
     }
 
     @Override
     public void initState(PHATInterface phatInterface) {
+        tapClosed = false;
+        fail = false;
         goToUse(objId);
     }
 

@@ -31,6 +31,8 @@ import phat.agents.automaton.Automaton;
 import phat.agents.events.PHATEvent;
 import phat.agents.events.PHATEventManager;
 import phat.body.BodiesAppState;
+import phat.body.BodyUtils;
+import phat.body.BodyUtils.BodyPosture;
 import phat.commands.PHATCommand;
 import phat.world.PHATCalendar;
 
@@ -100,9 +102,6 @@ public abstract class Agent implements PHATAgentTick {
             initAutomaton();
             init = true;
         }
-        if(getId().equals("E3Cleaner") && getCurrentAction().startsWith("DoNothing")) {
-        	System.out.println(getId()+": "+getCurrentAction());
-        }
         if(eventManager.areEvents()) {
             eventManager.process(phatInterface);
         }
@@ -142,5 +141,9 @@ public abstract class Agent implements PHATAgentTick {
     
     public BodiesAppState getBodiesAppState() {
         return agentsAppState.getBodiesAppState();
+    }
+    
+    public BodyPosture getBodyPosture() {
+        return BodyUtils.getBodyPosture(getBodiesAppState().getBody(bodyId));
     }
 }

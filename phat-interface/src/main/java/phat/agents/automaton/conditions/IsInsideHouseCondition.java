@@ -20,16 +20,24 @@
 package phat.agents.automaton.conditions;
 
 import phat.agents.Agent;
+import phat.agents.automaton.Automaton;
 
 public class IsInsideHouseCondition implements AutomatonCondition {
-        
-	public IsInsideHouseCondition() {
-		super();
-	}
 
-	@Override
-	public boolean evaluate(Agent agent) {
-            return agent.getBodiesAppState().isBodyInAHouse(agent.getId());
-	}
+    public IsInsideHouseCondition() {
+        super();
+    }
 
+    @Override
+    public boolean evaluate(Agent agent) {
+        return agent.getBodiesAppState().isBodyInAHouse(agent.getId());
+    }
+
+    @Override
+    public void automatonInterrupted(Automaton automaton) {
+    }
+
+    @Override
+    public void automatonResumed(Automaton automaton) {
+    }
 }

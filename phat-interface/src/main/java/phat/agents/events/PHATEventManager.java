@@ -28,6 +28,7 @@ import phat.PHATInterface;
 import phat.agents.Agent;
 import phat.agents.automaton.ActivityAutomaton;
 import phat.agents.automaton.Automaton;
+import phat.agents.automaton.InterruptionAutomaton;
 
 /**
  *
@@ -53,23 +54,22 @@ public class PHATEventManager {
             if (!event.state.equals(PHATEvent.State.Started)) {
                 continue;
             }
-            System.out.println("Event = " + event.getId());
-            System.out.println("isPerceptible = " + event.isPerceptible(agent));
             if (event.isPerceptible(agent)) {
                 EventProcessor ep = eventsMapping.get(event.getId());
-                System.out.println("EventProcessor = " + ep);
                 if (ep != null) {
                     Automaton automaton = ep.process(agent);
                     if (automaton != null) {
-                        System.out.println("\tBehavior=" + automaton.getName());
                         ActivityAutomaton aa = agent.getAutomaton()
                                 .getCurrentUpperAutomatonByType(
                                 ActivityAutomaton.class);
                         if (aa != null) {
-                            System.out.println("Activity = " + aa.getName());
                             Automaton currentAction = aa.getLeafAutomaton();
-                            if (currentAction == null || currentAction.isCanBeInterrupted()) {                                
-                                if(currentAction != null) {
+                            if (currentAction == null || currentAction.isCanBeInterrupted()) {
+                                agent.getAutomaton().interrupt();
+                                agent.setAutomaton(
+                                new InterruptionAutomaton(agent, automaton, agent.getAutomaton()));
+                                
+                                /*if(currentAction != null) {
                                     System.out.println("Current task = "
                                     + aa.getLeafAutomaton().getName());
                                     currentAction.interrupt();
@@ -77,7 +77,8 @@ public class PHATEventManager {
                                 aa.interrupt();
                                 aa.addTransition(automaton, true);
                                 aa.initState(phatInterface);
-                                aa.printPendingTransitions();
+                                aa.printPendingTransitions();*/
+                                agent.getAutomaton().printPendingTransitions();
                                 event.setEventState(PHATEvent.State.Assigned);
                             } else {
                                 System.out.println(currentAction.getName() + " NO Interrupted!");

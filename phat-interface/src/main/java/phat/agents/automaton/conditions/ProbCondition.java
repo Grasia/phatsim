@@ -20,26 +20,35 @@
 package phat.agents.automaton.conditions;
 
 import phat.agents.Agent;
+import phat.agents.automaton.Automaton;
 
 public class ProbCondition implements AutomatonCondition {
 
     float prob;
     float value = -1f;
-    
+
     public ProbCondition(float prob) {
         super();
         this.prob = prob;
     }
 
     private float getRandomValue(Agent agent) {
-        if(value == -1f) {
+        if (value == -1f) {
             this.value = agent.getAgentsAppState().getPHAInterface().getRandom().nextFloat();
         }
         return value;
     }
-    
+
     @Override
     public boolean evaluate(Agent agent) {
         return getRandomValue(agent) <= prob;
+    }
+
+    @Override
+    public void automatonInterrupted(Automaton automaton) {
+    }
+
+    @Override
+    public void automatonResumed(Automaton automaton) {
     }
 }

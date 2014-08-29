@@ -20,6 +20,7 @@
 package phat.agents.automaton.conditions;
 
 import phat.agents.Agent;
+import phat.agents.automaton.Automaton;
 
 /**
  * Interface for evaluating transitions
@@ -34,4 +35,6 @@ public interface AutomatonCondition {
 	 * @return
 	 */
 	boolean evaluate(Agent agent);
+        void automatonInterrupted(Automaton automaton);
+        void automatonResumed(Automaton automaton);
 }

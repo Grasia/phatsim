@@ -88,4 +88,14 @@ public class DiseaseManager implements AutomatonListener {
     @Override
     public void postInit(Automaton automaton) {
     }
+
+    @Override
+    public void automatonInterrupted(Automaton automaton) {
+       
+    }
+
+    @Override
+    public void automatonResumed(Automaton resumedAutomaton) {
+    
+    }
 }

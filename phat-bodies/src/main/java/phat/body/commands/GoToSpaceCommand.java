@@ -26,6 +26,7 @@ import com.jme3.scene.Node;
 import java.util.logging.Level;
 
 import phat.body.BodiesAppState;
+import phat.body.BodyUtils;
 import phat.body.control.navigation.AutonomousControlListener;
 import phat.body.control.navigation.navmesh.NavMeshMovementControl;
 import phat.commands.PHATCommand;
@@ -38,11 +39,12 @@ import phat.structures.houses.HouseAppState;
  *
  * @author pablo
  */
-public class GoToSpaceCommand extends PHATCommand implements AutonomousControlListener {
+public class GoToSpaceCommand extends PHATCommand implements AutonomousControlListener, PHATCommandListener {
 
     private String bodyId;
     private String spaceId;
-
+    Application app;
+            
     public GoToSpaceCommand(String bodyId, String spaceId, PHATCommandListener listener) {
         super(listener);
         this.bodyId = bodyId;
@@ -56,34 +58,38 @@ public class GoToSpaceCommand extends PHATCommand implements AutonomousControlLi
 
     @Override
     public void runCommand(Application app) {
+        this.app = app;
         BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
         HouseAppState houseAppState = app.getStateManager().getState(HouseAppState.class);
 
         Node body = bodiesAppState.getBody(bodyId);
 
-        System.out.println("BodyId == "+bodyId);
         if (body != null && body.getParent() != null) {
-            House house = houseAppState.getHouse(body);
-            System.out.println("HOUSE ====> "+house);
-            if (house != null) {
-                Vector3f loc = house.getCoordenatesOfSpaceById(spaceId);
-                System.out.println("LOC => "+loc);
-                if (loc != null) {
-                    NavMeshMovementControl nmmc = body.getControl(NavMeshMovementControl.class);
-                    if (nmmc != null) {
-                        System.out.println("setMinDistance => 0.5");
-                        nmmc.setMinDistance(0.5f);
-                        boolean reachable = nmmc.moveTo(loc);
-                        if (reachable) {
-                            System.out.println("REACHABLE!!!!!");
-                            nmmc.setListener(this);
-                            return;
-                        }
+            if(BodyUtils.isBodyPosture(body, BodyUtils.BodyPosture.Standing)) {
+                goToDestination(body, houseAppState);
+            } else {
+                bodiesAppState.runCommand(new StandUpCommand(bodyId, this));
+            }
+        }
+        setState(State.Fail);
+    }
+
+    public void goToDestination(Node body, HouseAppState houseAppState) {
+        House house = houseAppState.getHouse(body);
+        if (house != null) {
+            Vector3f loc = house.getCoordenatesOfSpaceById(spaceId);
+            if (loc != null) {
+                NavMeshMovementControl nmmc = body.getControl(NavMeshMovementControl.class);
+                if (nmmc != null) {
+                    nmmc.setMinDistance(0.5f);
+                    boolean reachable = nmmc.moveTo(loc);
+                    if (reachable) {
+                        nmmc.setListener(this);
+                        return;
                     }
                 }
             }
         }
-        setState(State.Fail);
     }
 
     @Override
@@ -111,5 +117,20 @@ public class GoToSpaceCommand extends PHATCommand implements AutonomousControlLi
     @Override
     public void destinationReached(Vector3f destination) {
         setState(State.Success);
+    }
+
+    @Override
+    public void commandStateChanged(PHATCommand command) {
+        HouseAppState houseAppState = app.getStateManager().getState(HouseAppState.class);
+        BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
+        Node body = bodiesAppState.getBody(bodyId);
+        
+        if (body != null && body.getParent() != null) {
+            if(BodyUtils.isBodyPosture(body, BodyUtils.BodyPosture.Standing)) {
+                goToDestination(body, houseAppState);
+            } else {
+                setState(State.Fail);
+            }
+        }
     }
 }

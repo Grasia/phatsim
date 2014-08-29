@@ -20,7 +20,6 @@
 package phat.agents.events;
 
 import phat.agents.Agent;
-import phat.agents.automaton.Automaton;
 
 /**
  *

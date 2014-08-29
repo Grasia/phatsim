@@ -109,27 +109,39 @@ public abstract class Automaton {
         listeners.remove(l);
     }
 
-    public void notifityListeners(boolean isSuccessful) {
+    void notifityListeners(boolean isSuccessful) {
         for (AutomatonListener al : listeners) {
             al.automatonFinished(this, isSuccessful);
         }
     }
 
-    public void notifityPreInitToListeners() {
+    void notifityPreInitToListeners() {
         for (AutomatonListener al : listeners) {
             al.preInit(this);
         }
     }
     
-    public void notifityPostInitToListeners() {
+    void notifityPostInitToListeners() {
         for (AutomatonListener al : listeners) {
             al.postInit(this);
         }
     }
 
-    public void notifyNextAutomaton(Automaton nextAutomaton) {
+    void notifyNextAutomaton(Automaton nextAutomaton) {
         for (AutomatonListener al : listeners) {
             al.nextAutomaton(this, nextAutomaton);
+        }
+    }
+    
+    void notifyInterruptedAutomaton(Automaton automaton) {
+        for (AutomatonListener al : listeners) {
+            al.automatonInterrupted(automaton);
+        }
+    }
+    
+    public void notifyResumedAutomaton(Automaton automaton) {
+        for (AutomatonListener al : listeners) {
+            al.automatonResumed(automaton);
         }
     }
     
@@ -415,12 +427,31 @@ public abstract class Automaton {
      * Stay y se le resta de la duración el tiempo ya ejeceutado).
      */
     public void interrupt() {
-        this.clearPendingTransitions();
+        if(finishCondition != null) {
+            finishCondition.automatonInterrupted(this);
+        }
         if (currentState != null) {
             currentState.interrupt();
         }
+        setFinished(true);
+        setPause(true);
+        notifyInterruptedAutomaton(this);
     }
 
+    public void resume(PHATInterface phatInterface) {
+        if(finishCondition != null) {
+            finishCondition.automatonResumed(this);
+        }
+        if (currentState != null) {
+            currentState.resume(phatInterface);
+        }
+        setFinished(false);
+        pause = false;
+        notifyResumedAutomaton(this);
+        
+        initState(phatInterface);
+    }
+    
     /**
      * Este método es llamado cuando se quiere usar una instancia de automata
      * otra vez sin crear una nueva. Por ejemplo por ejemplo en el automata

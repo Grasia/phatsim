@@ -30,15 +30,26 @@ import phat.commands.PHATCommandListener;
  * @author pablo
  */
 public class GoIntoBedAutomaton extends SimpleState implements PHATCommandListener {
+
     GoIntoBedCommand goIntoBedCommand;
     boolean finished;
     String bedId;
-    
+
     public GoIntoBedAutomaton(Agent agent, String bedId) {
         super(agent, 0, "GoIntoBedAutomaton");
         this.bedId = bedId;
     }
-    
+
+    @Override
+    public void interrupt() {
+        if (goIntoBedCommand != null && goIntoBedCommand.getState().equals(PHATCommand.State.Running)) {
+            goIntoBedCommand.setFunction(PHATCommand.Function.Interrupt);
+            agent.runCommand(goIntoBedCommand);
+        }
+
+        super.interrupt();
+    }
+
     @Override
     public boolean isFinished(PHATInterface phatInterface) {
         return super.isFinished(phatInterface) || finished;
@@ -54,11 +65,11 @@ public class GoIntoBedAutomaton extends SimpleState implements PHATCommandListen
 
     @Override
     public void simpleNextState(PHATInterface phatInterface) {
-        
     }
 
     @Override
     public void initState(PHATInterface phatInterface) {
+        finished = false;
         goIntoBedCommand = new GoIntoBedCommand(agent.getId(), bedId, this);
         agent.runCommand(goIntoBedCommand);
     }

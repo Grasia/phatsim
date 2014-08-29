@@ -20,19 +20,16 @@
 package phat.body.commands;
 
 import com.jme3.app.Application;
-import com.jme3.bullet.control.KinematicRagdollControl;
 import com.jme3.scene.Node;
 
 import java.util.logging.Level;
-import jme3tools.optimize.GeometryBatchFactory;
 
 import phat.body.BodiesAppState;
+import phat.body.BodyUtils;
 import phat.body.control.animation.BasicCharacterAnimControl;
 import phat.body.control.navigation.PersuitAndAvoidControl;
-import phat.body.control.navigation.RandomWalkControl;
 import phat.body.control.navigation.navmesh.NavMeshMovementControl;
 import phat.body.control.physics.PHATCharacterControl;
-import phat.body.control.physics.ragdoll.BVHRagdollPreset;
 import phat.body.sensing.vision.VisionControl;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommand.State;
@@ -99,6 +96,9 @@ public class CreateBodyTypeCommand extends PHATCommand {
         
         //PhysicsUtils.setHighPhysicsPrecision(body);
         body.addControl(new VisionControl());
+        
+        BodyUtils.setBodyPosture(body, BodyUtils.BodyPosture.Standing);
+        
         setState(State.Success);
     }
     @Override

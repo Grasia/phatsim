@@ -24,6 +24,7 @@ import com.jme3.scene.Spatial;
 import phat.PHATInterface;
 import phat.agents.Agent;
 import phat.agents.automaton.SimpleState;
+import phat.body.commands.CloseObjectCommand;
 import phat.body.commands.GoToCommand;
 import phat.body.commands.OpenObjectCommand;
 import phat.body.commands.SitDownCommand;
@@ -63,14 +64,12 @@ public class UseDoorbellAutomaton extends SimpleState implements PHATCommandList
 
     @Override
     public void commandStateChanged(PHATCommand command) {
-        System.out.println("commandStateChanged -> "+command.toString());
         if (command == goCloseToDoorbell
                 && command.getState().equals(PHATCommand.State.Success)) {
             useDoorbell = new OpenObjectCommand(agent.getId(), doorbellId, this);
             agent.runCommand(useDoorbell);
         } else if (command == useDoorbell
                 && command.getState().equals(PHATCommand.State.Success)) {
-            System.out.println("Success!");
             buttonPushed = true;
         }
         if (command.getState().equals(PHATCommand.State.Fail)) {
@@ -82,8 +81,18 @@ public class UseDoorbellAutomaton extends SimpleState implements PHATCommandList
     public void simpleNextState(PHATInterface phatInterface) {
     }
 
+    public void interrupt() {
+    	if(goCloseToDoorbell != null && goCloseToDoorbell.getState().equals(PHATCommand.State.Running)) {
+            goCloseToDoorbell.setFunction(PHATCommand.Function.Interrupt);
+            agent.runCommand(goCloseToDoorbell);
+        }            
+    	super.interrupt();
+    }
+        
     @Override
     public void initState(PHATInterface phatInterface) {
+        buttonPushed = false;
+        fail = false;
         useWC();
     }
 

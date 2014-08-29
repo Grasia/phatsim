@@ -28,6 +28,7 @@ import com.jme3.scene.Spatial;
 import java.util.logging.Level;
 
 import phat.body.BodiesAppState;
+import phat.body.BodyUtils;
 import phat.body.control.animation.SitDownControl;
 import phat.body.control.navigation.AutonomousControlListener;
 import phat.body.control.navigation.navmesh.NavMeshMovementControl;
@@ -103,7 +104,6 @@ public class GoIntoBedCommand extends PHATCommand implements AutonomousControlLi
             if(bedId == null) {
                 bedToGo = SpatialUtils.getNearest(body, "Bed");
                 if(bedToGo == null) {
-                    System.out.println("Not bed found!!");
                     setState(State.Fail);
                     return;
                 }
@@ -169,6 +169,7 @@ public class GoIntoBedCommand extends PHATCommand implements AutonomousControlLi
         body.setLocalTranslation(Vector3f.ZERO);
         body.setLocalRotation(Matrix3f.ZERO);
         ((Node) nearestSeat).attachChild(body);
+        BodyUtils.setBodyPosture(body, BodyUtils.BodyPosture.Lying);
         setState(State.Success);
     }
 
@@ -183,5 +184,9 @@ public class GoIntoBedCommand extends PHATCommand implements AutonomousControlLi
                 lyingDown();
             }
         }
+    }
+
+    public String getBedId() {
+        return bedId;
     }
 }

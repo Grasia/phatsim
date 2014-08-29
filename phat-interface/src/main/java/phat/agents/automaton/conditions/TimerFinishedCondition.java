@@ -20,34 +20,50 @@
 package phat.agents.automaton.conditions;
 
 import phat.agents.Agent;
+import phat.agents.automaton.Automaton;
 import phat.world.PHATCalendar;
 
 public class TimerFinishedCondition implements AutomatonCondition {
-	long seconds;
-        PHATCalendar initialTime;
-	boolean init = false;
-        
-	public TimerFinishedCondition(int hours, int minutes, int seconds) {
-		super();
-		this.seconds = hours*3600 + minutes*60 + seconds;
-	}
 
-	@Override
-	public boolean evaluate(Agent agent) {
-            if(!init) {
-                initialTime = (PHATCalendar) agent.getTime().clone();
-                init = true;
-            }
-            long secs = initialTime.spentTimeTo(agent.getTime());
-            return secs >= seconds;
-	}
-        
-        public long getSeconds() {
-            return seconds;
-        }
-        
-        public void setSeconds(long seconds) {
-            this.seconds = seconds;
-        }
+    long seconds;
+    long secondsInterrupted = 0;
+    PHATCalendar initialTime;
+    PHATCalendar interruption;
+    boolean init = false;
 
+    public TimerFinishedCondition(int hours, int minutes, int seconds) {
+        super();
+        this.seconds = hours * 3600 + minutes * 60 + seconds;
+    }
+
+    @Override
+    public boolean evaluate(Agent agent) {
+        if (!init) {
+            initialTime = (PHATCalendar) agent.getTime().clone();
+            init = true;
+        }
+        long secs = initialTime.spentTimeTo(agent.getTime());
+        return secs - secondsInterrupted >= seconds;
+    }
+
+    public long getSeconds() {
+        return seconds;
+    }
+
+    public void setSeconds(long seconds) {
+        this.seconds = seconds;
+    }
+
+    @Override
+    public void automatonInterrupted(Automaton automaton) {
+        interruption = (PHATCalendar) automaton.getAgent().getTime().clone();
+    }
+
+    @Override
+    public void automatonResumed(Automaton automaton) {
+        if (interruption != null) {
+            secondsInterrupted += interruption.spentTimeTo(automaton.getAgent().getTime());
+            interruption = null;
+        }
+    }
 }

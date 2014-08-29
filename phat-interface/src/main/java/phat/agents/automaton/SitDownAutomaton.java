@@ -31,13 +31,24 @@ import phat.commands.PHATCommandListener;
  */
 public class SitDownAutomaton extends SimpleState implements PHATCommandListener {
     SitDownCommand sitDownCommand;
+    String placeId;
     boolean seated = false;
     
     public SitDownAutomaton( Agent agent, String placeId) {
         super(agent, 0, "SitDownAutomaton");
-        sitDownCommand = new SitDownCommand(agent.getId(), placeId, this);
+        this.placeId = placeId;
     }
 
+    @Override
+    public void interrupt() {
+    	if(sitDownCommand != null && sitDownCommand.getState().equals(PHATCommand.State.Running)) {
+            sitDownCommand.setFunction(PHATCommand.Function.Interrupt);
+            agent.runCommand(sitDownCommand);
+        }
+            
+    	super.interrupt();
+    }
+    
     @Override
     public boolean isFinished(PHATInterface phatInterface) {
         return super.isFinished(phatInterface) || seated;
@@ -58,6 +69,7 @@ public class SitDownAutomaton extends SimpleState implements PHATCommandListener
 
     @Override
     public void initState(PHATInterface phatInterface) {
+        sitDownCommand = new SitDownCommand(agent.getId(), placeId, this);    
         agent.runCommand(sitDownCommand);
     }
 }

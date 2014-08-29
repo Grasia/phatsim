@@ -20,12 +20,20 @@
 package phat.agents.automaton.conditions;
 
 import phat.agents.Agent;
-
+import phat.agents.automaton.Automaton;
 
 public class EmptyCondition implements AutomatonCondition {
-	@Override
-	public boolean evaluate(Agent agent) {
-		return true;
-	}
 
+    @Override
+    public boolean evaluate(Agent agent) {
+        return true;
+    }
+
+    @Override
+    public void automatonInterrupted(Automaton automaton) {
+    }
+
+    @Override
+    public void automatonResumed(Automaton automaton) {
+    }
 }

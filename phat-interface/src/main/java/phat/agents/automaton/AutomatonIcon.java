@@ -57,17 +57,23 @@ public class AutomatonIcon implements AutomatonListener {
     
     @Override
     public void automatonFinished(Automaton automaton, boolean isSuccessful) {
+        removeIcon(automaton);
+    }
+
+    @Override
+    public void automatonInterrupted(Automaton automaton) {
+        removeIcon(automaton);
+    }
+    
+    private void removeIcon(Automaton automaton) {
         String iconPath = iconMapping.get(automaton.getClass().getSimpleName());
-        System.out.println("automatonFinished("+automaton.getClass().getSimpleName()+","+automaton.getName()+")");
         if(iconPath != null) {
             automaton.getAgent().runCommand(new AttachIconCommand(automaton.getAgent().getId(), iconPath, false));
         }
     }
-
+    
     @Override
     public void nextAutomaton(Automaton previousAutomaton, Automaton nextAutomaton) {
-        //previousAutomaton.removeListener(this);
-        System.out.println("nextAutomaton("+previousAutomaton.getClass().getSimpleName()+","+ nextAutomaton.getClass().getSimpleName()+","+nextAutomaton.getName()+")");
         nextAutomaton.addListener(this);
     }
 
@@ -78,12 +84,18 @@ public class AutomatonIcon implements AutomatonListener {
 
     @Override
     public void postInit(Automaton automaton) {
+        addIcon(automaton);
+    }
+
+    @Override
+    public void automatonResumed(Automaton resumedAutomaton) {
+        addIcon(resumedAutomaton);
+    }
+
+    private void addIcon(Automaton automaton) {
         String iconPath = iconMapping.get(automaton.getClass().getSimpleName());
-        System.out.println("automatonInitialized("+automaton.getClass().getSimpleName()+","+automaton.getName()+")");
         if(iconPath != null) {
-            System.out.println("\tIN!");
             automaton.getAgent().runCommand(new AttachIconCommand(automaton.getAgent().getId(), iconPath, true));
         }
     }
-    
 }

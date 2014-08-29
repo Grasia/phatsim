@@ -27,4 +27,8 @@ public interface AutomatonListener {
     public void nextAutomaton(Automaton previousAutomaton, Automaton nextAutomaton);
 
     public void automatonFinished(Automaton automaton, boolean isSuccessful);
+    
+    public void automatonInterrupted(Automaton automaton);
+    
+    public void automatonResumed(Automaton resumedAutomaton);
 }

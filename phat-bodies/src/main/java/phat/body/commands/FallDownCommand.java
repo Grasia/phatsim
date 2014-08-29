@@ -19,20 +19,15 @@
  */
 package phat.body.commands;
 
-import com.jme3.animation.AnimControl;
 import com.jme3.app.Application;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.control.AbstractPhysicsControl;
 import com.jme3.bullet.control.KinematicRagdollControl;
-import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
-import com.jme3.scene.control.AbstractControl;
-import com.jme3.scene.control.Control;
 
 import java.util.logging.Level;
 
 import phat.body.BodiesAppState;
+import phat.body.BodyUtils;
 import phat.body.control.animation.BasicCharacterAnimControl;
 import phat.body.control.navigation.StraightMovementControl;
 import phat.body.control.physics.PHATCharacterControl;
@@ -100,6 +95,7 @@ public class FallDownCommand extends PHATCommand {
             
             SpatialUtils.printControls(body);
 
+            BodyUtils.setBodyPosture(body, BodyUtils.BodyPosture.Falling);
             //SimulateTripOver sto = new SimulateTripOver(body);
             //sto.activate();
             //krc.setEnabled(true);

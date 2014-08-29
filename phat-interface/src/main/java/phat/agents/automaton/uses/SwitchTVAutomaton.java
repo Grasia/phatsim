@@ -22,7 +22,6 @@ package phat.agents.automaton.uses;
 import phat.PHATInterface;
 import phat.agents.Agent;
 import phat.agents.automaton.SimpleState;
-import phat.agents.automaton.conditions.TimerFinishedCondition;
 import phat.body.commands.GoCloseToObjectCommand;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
@@ -47,7 +46,7 @@ public class SwitchTVAutomaton extends SimpleState implements PHATCommandListene
         this.tvId = tvId;
         this.on = on;
     }
-
+    
     @Override
     public void simpleNextState(PHATInterface phatInterface) {
     }
@@ -55,6 +54,15 @@ public class SwitchTVAutomaton extends SimpleState implements PHATCommandListene
     @Override
     public boolean isFinished(PHATInterface phatInterface) {
         return done;
+    }
+    
+    @Override
+    public void interrupt() {
+    	if(goCloseToObj != null && goCloseToObj.getState().equals(PHATCommand.State.Running)) {
+            goCloseToObj.setFunction(PHATCommand.Function.Interrupt);
+            agent.runCommand(goCloseToObj);
+        }            
+    	super.interrupt();
     }
 
     @Override

@@ -27,6 +27,7 @@ import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
+import com.jme3.scene.control.Control;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,7 +53,7 @@ import phat.world.WorldAppState;
  */
 public class BodiesAppState extends AbstractAppState {
 
-	private SimpleApplication app;
+    private SimpleApplication app;
     private AssetManager assetManager;
     private BulletAppState bulletAppState;
     private Node rootNode;
@@ -62,15 +63,15 @@ public class BodiesAppState extends AbstractAppState {
     private Map<String, Node> availableBodies = new HashMap<>();
 
     public enum BodyType {
+
         Elder, Young, Sinbad, ElderLP
     }
-    
     ConcurrentLinkedQueue<PHATCommand> runningCommands = new ConcurrentLinkedQueue<>();
     ConcurrentLinkedQueue<PHATCommand> pendingCommands = new ConcurrentLinkedQueue<>();
-    
+    List<PHATCommand> commandLog = new ArrayList<PHATCommand>();
+
     @Override
     public void initialize(AppStateManager stateManager, Application application) {
-        System.out.println("Inititalize " + getClass().getSimpleName());
         super.initialize(stateManager, application);
         this.app = (SimpleApplication) application;
         this.assetManager = application.getAssetManager();
@@ -78,7 +79,7 @@ public class BodiesAppState extends AbstractAppState {
 
         worldAppState = app.getStateManager().getState(WorldAppState.class);
         houseAppState = app.getStateManager().getState(HouseAppState.class);
-        
+
         AudioFactory.init(application.getAudioRenderer(), assetManager, rootNode);
         createHumansNode();
     }
@@ -122,7 +123,7 @@ public class BodiesAppState extends AbstractAppState {
     public void runCommand(PHATCommand command) {
         pendingCommands.add(command);
     }
-    
+
     public boolean isBodyInTheWorld(String bodyId) {
         Node body = availableBodies.get(bodyId);
         if (body != null) {
@@ -130,21 +131,21 @@ public class BodiesAppState extends AbstractAppState {
         }
         return false;
     }
-    
+
     public boolean isBodyInAHouse(String bodyId) {
         Node body = availableBodies.get(bodyId);
-        for(House house: houseAppState.getHouses()) {
-            if(house.isSpatialInHouse(body)) {
+        for (House house : houseAppState.getHouses()) {
+            if (house.isSpatialInHouse(body)) {
                 return true;
             }
         }
         return false;
     }
-    
+
     public boolean isBodyInHouse(String bodyId, String houseId) {
         Node body = availableBodies.get(bodyId);
         House house = houseAppState.getHouse(houseId);
-        if(house != null) {
+        if (house != null) {
             return house.isSpatialInHouse(body);
         }
         return false;
@@ -158,7 +159,7 @@ public class BodiesAppState extends AbstractAppState {
         }
         return null;
     }
-    
+
     public float getSpeed(String bodyId) {
         Node body = availableBodies.get(bodyId);
         if (body != null && body.getParent() != null) {
@@ -172,16 +173,17 @@ public class BodiesAppState extends AbstractAppState {
         super.update(tpf);
 
         /*for(Node n: availableBodies.values()) {
-            System.out.println("\n"+n.getName());
-            for(int i = 0; i < n.getNumControls(); i++) {
-                System.out.println("\t"+n.getControl(i).getClass().getSimpleName());
-            }
-        }*/
-        
+         System.out.println("\n"+n.getName());
+         for(int i = 0; i < n.getNumControls(); i++) {
+         System.out.println("\t"+n.getControl(i).getClass().getSimpleName());
+         }
+         }*/
+
         runningCommands.addAll(pendingCommands);
         pendingCommands.clear();
         for (PHATCommand bc : runningCommands) {
             System.out.println("Running Command: " + bc);
+            commandLog.add(bc);
             bc.run(app);
         }
         runningCommands.clear();
@@ -202,12 +204,11 @@ public class BodiesAppState extends AbstractAppState {
     private synchronized Map<String, Node> getAvailableBodies() {
         return availableBodies;
     }
-    
+
     private synchronized Collection<String> getAvailableBodyIds() {
         return availableBodies.keySet();
     }
-    
-    
+
     public synchronized void addBody(String bodyId, Node bodyNode) {
         availableBodies.put(bodyId, bodyNode);
     }
@@ -215,13 +216,23 @@ public class BodiesAppState extends AbstractAppState {
     public AssetManager getAssetManager() {
         return assetManager;
     }
-    
+
     public PHATCalendar getTime() {
-    	return worldAppState.getCalendar();
+        return worldAppState.getCalendar();
     }
 
-	public Node getBody(String bodyId) {
-	
-		return availableBodies.get(bodyId);
-	}
+    public Node getBody(String bodyId) {
+
+        return availableBodies.get(bodyId);
+    }
+
+    public < T extends PHATCommand> T getLastCommand(Class<T> commandType) {
+        int last = commandLog.size();
+        for (int i = last - 1; i >= 0; i--) {
+            if(commandType.isAssignableFrom(commandLog.get(i).getClass())) {
+                return (T) commandLog.get(i);
+            }
+        }
+        return null;
+    }
 }

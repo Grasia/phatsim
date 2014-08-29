@@ -17,29 +17,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package phat.agents.automaton.conditions;
+package phat.body;
 
-import phat.agents.Agent;
-import phat.agents.automaton.Automaton;
+import com.jme3.scene.Node;
 
-public class NegateCondition implements AutomatonCondition {
-
-    AutomatonCondition condition;
-
-    public NegateCondition(AutomatonCondition ac) {
-        this.condition = ac;
+/**
+ *
+ * @author pablo
+ */
+public class BodyUtils {
+    
+    public enum BodyPosture {Standing, Sitting, Lying, Falling}
+    public static String BodyPostureKey = "BodyPosture";
+    
+    public static boolean isBodyPosture(Node body, BodyPosture posture) {
+        return posture.name().equals(body.getUserData(BodyUtils.BodyPostureKey));
     }
-
-    @Override
-    public boolean evaluate(Agent agent) {
-        return !condition.evaluate(agent);
+    
+    public static void setBodyPosture(Node body, BodyPosture posture) {
+        body.setUserData(BodyUtils.BodyPostureKey, posture.name());
     }
-
-    @Override
-    public void automatonInterrupted(Automaton automaton) {
-    }
-
-    @Override
-    public void automatonResumed(Automaton automaton) {
+    
+    public static BodyPosture getBodyPosture(Node body) {
+        String bodyPosture = body.getUserData(BodyPostureKey);
+        if(bodyPosture != null) {
+            return BodyPosture.valueOf(bodyPosture);
+        }
+        return null;
     }
 }

@@ -20,7 +20,6 @@
 package phat.body.commands;
 
 import com.jme3.app.Application;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -28,20 +27,17 @@ import com.jme3.scene.Spatial;
 import java.util.logging.Level;
 
 import phat.body.BodiesAppState;
+import phat.body.BodyUtils;
 import phat.body.control.animation.SitDownControl;
 import phat.body.control.navigation.AutonomousControlListener;
-import phat.body.control.navigation.navmesh.NavMeshMovementControl;
 import phat.body.control.physics.PHATCharacterControl;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
 import phat.structures.houses.House;
 import phat.structures.houses.HouseAppState;
-import phat.util.Debug;
 import phat.util.Lazy;
-import phat.util.SpatialFactory;
 import phat.util.SpatialUtils;
-import sun.management.resources.agent;
 
 /**
  *
@@ -98,7 +94,7 @@ public class SitDownCommand extends PHATCommand implements AutonomousControlList
             }
             House house = houseAppState.getHouse(body);
             Spatial placeToSit = null;
-            if(house != null) {
+            if (house != null) {
                 placeToSit = SpatialUtils.getSpatialById(house.getRootNode(), placeId);
             } else {
                 placeToSit = SpatialUtils.getSpatialById(bodiesAppState.getRootNode(), placeId);
@@ -109,8 +105,8 @@ public class SitDownCommand extends PHATCommand implements AutonomousControlList
                 goToCommand = new GoToCommand(bodyId, new Lazy<Vector3f>() {
                     @Override
                     public Vector3f getLazy() {
-                        Spatial access = ((Node)nearestSeat).getChild("Access");
-                        if(access != null) {
+                        Spatial access = ((Node) nearestSeat).getChild("Access");
+                        if (access != null) {
                             return access.getWorldTranslation();
                         }
                         Vector3f loc = nearestSeat.getWorldTranslation();
@@ -127,24 +123,24 @@ public class SitDownCommand extends PHATCommand implements AutonomousControlList
     }
 
     @Override
-	public void interruptCommand(Application app) {
-		BodiesAppState bodiesAppState = app.getStateManager().getState(
-				BodiesAppState.class);
+    public void interruptCommand(Application app) {
+        BodiesAppState bodiesAppState = app.getStateManager().getState(
+                BodiesAppState.class);
 
-		Node body = bodiesAppState.getBody(bodyId);
+        Node body = bodiesAppState.getBody(bodyId);
 
-		if (body != null && body.getParent() != null) {
-			if(goToCommand != null) {
-				goToCommand.interruptCommand(app);
-				return;
-			} else if(rotateCommand != null) {
-				rotateCommand.interruptCommand(null);
-				return;
-			}
-		}
-		setState(State.Fail);
-	}
-    
+        if (body != null && body.getParent() != null) {
+            if (goToCommand != null) {
+                goToCommand.interruptCommand(app);
+                return;
+            } else if (rotateCommand != null) {
+                rotateCommand.interruptCommand(app);
+                return;
+            }
+        }
+        setState(State.Fail);
+    }
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + bodyId + ", " + placeId + ")";
@@ -157,12 +153,13 @@ public class SitDownCommand extends PHATCommand implements AutonomousControlList
 
     private void sitDown() {
         PHATCharacterControl cc = body.getControl(PHATCharacterControl.class);
-        cc.setEnabled(false);        
+        cc.setEnabled(false);
         Vector3f dir = nearestSeat.getLocalRotation().mult(Vector3f.UNIT_Z).normalize();
         body.setLocalRotation(nearestSeat.getParent().getParent().getWorldRotation());
         SitDownControl sdc = new SitDownControl();
         sdc.setSeat(nearestSeat);
         body.addControl(sdc);
+        BodyUtils.setBodyPosture(body, BodyUtils.BodyPosture.Sitting);
         setState(State.Success);
     }
 
@@ -177,5 +174,9 @@ public class SitDownCommand extends PHATCommand implements AutonomousControlList
                 sitDown();
             }
         }
+    }
+
+    public String getPlaceId() {
+        return placeId;
     }
 }

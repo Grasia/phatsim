@@ -25,6 +25,7 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import java.util.logging.Level;
 import phat.body.BodiesAppState;
+import phat.body.BodyUtils;
 import phat.body.control.animation.AnimFinishedListener;
 import phat.body.control.animation.BasicCharacterAnimControl;
 import phat.body.control.animation.SitDownControl;
@@ -68,21 +69,23 @@ public class StandUpCommand extends PHATCommand implements AnimFinishedListener 
             StraightMovementControl smc = body.getControl(StraightMovementControl.class);
 
             SitDownControl sdc = body.getControl(SitDownControl.class);
-            if (sdc != null) {
+            if (BodyUtils.isBodyPosture(body, BodyUtils.BodyPosture.Sitting)) {
                 // Character is seat in a chair or something like that
                 sdc.standUp();
+                BodyUtils.setBodyPosture(body, BodyUtils.BodyPosture.Standing);
                 setState(PHATCommand.State.Success);
-            } else if (krc != null && krc.isEnabled() && krc.getMode() == KinematicRagdollControl.Mode.Ragdoll) {
+            } else if (BodyUtils.isBodyPosture(body, BodyUtils.BodyPosture.Falling)) {
                 BasicCharacterAnimControl bcac = body.getControl(BasicCharacterAnimControl.class);
                 bcac.setEnabled(true);
                 bcac.standUpAnimation(this);
                 krc.blendToKinematicMode(1f);
-            } else if (body.getParent().getParent().getName().equals("Seats")) {
+            } else if (BodyUtils.isBodyPosture(body, BodyUtils.BodyPosture.Lying)) {
                 Vector3f accessLoc = body.getParent().getChild("Access").getWorldTranslation();
                 body.removeFromParent();
                 bodiesAppState.getBodiesNode().attachChild(body);
                 body.setLocalTranslation(accessLoc);
                 cc.setEnabled(true);
+                BodyUtils.setBodyPosture(body, BodyUtils.BodyPosture.Standing);
                 setState(PHATCommand.State.Success);
             } else {
                 setState(PHATCommand.State.Success);
@@ -101,6 +104,7 @@ public class StandUpCommand extends PHATCommand implements AnimFinishedListener 
         cc.setEnabled(true);
         cc.setWalkDirection(Vector3f.ZERO);
         cc.setViewDirection(body.getLocalRotation().getRotationColumn(2));
+        BodyUtils.setBodyPosture(body, BodyUtils.BodyPosture.Standing);
         setState(State.Success);
     }
 

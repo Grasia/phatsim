@@ -178,7 +178,7 @@ public class MainPHATSimulation implements PHATInitializer {
         fsm.registerTransition(useSink, fin);
         fsm.registerFinalState(fin);
         
-        //fsm.addListener(new AutomatonIcon());
+        fsm.addListener(new AutomatonIcon());
         
         relative.setAutomaton(fsm);
         agentsConfig.add(relative);
