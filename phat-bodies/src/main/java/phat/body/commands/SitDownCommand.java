@@ -124,11 +124,6 @@ public class SitDownCommand extends PHATCommand implements AutonomousControlList
 
     @Override
     public void interruptCommand(Application app) {
-        BodiesAppState bodiesAppState = app.getStateManager().getState(
-                BodiesAppState.class);
-
-        Node body = bodiesAppState.getBody(bodyId);
-
         if (body != null && body.getParent() != null) {
             if (goToCommand != null) {
                 goToCommand.interruptCommand(app);

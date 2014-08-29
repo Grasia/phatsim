@@ -36,12 +36,13 @@ public class AutomatonIcon implements AutomatonListener {
     
     private void init() {
         iconMapping.put("DrinkAutomaton", "Textures/SociaalmlImages/behaviour/tasks/Drink.png");
+        iconMapping.put("EatAnimation", "Textures/SociaalmlImages/behaviour/tasks/Eat.png");
         iconMapping.put("DoNothing", "Textures/SociaalmlImages/behaviour/tasks/Wait.png");
+        iconMapping.put("SleepAutomaton", "Textures/SociaalmlImages/behaviour/tasks/FallSleepTask.png");
         iconMapping.put("FallAutomaton", "Textures/SociaalmlImages/behaviour/tasks/Fall.png");
         iconMapping.put("GoIntoBedAutomaton", "Textures/SociaalmlImages/behaviour/tasks/GoIntoBed.png");
         iconMapping.put("MoveToLazyLocation", "Textures/SociaalmlImages/behaviour/tasks/GoToTask.png");
         iconMapping.put("MoveToSpace", "Textures/SociaalmlImages/behaviour/tasks/GoToTask.png");
-        //iconMapping.put("PlayAnimation", "Textures/SociaalmlImages/behaviour/tasks/Drink.png");
         iconMapping.put("SayAutomaton", "Textures/SociaalmlImages/behaviour/tasks/Say.png");
         iconMapping.put("SitDownAutomaton", "Textures/SociaalmlImages/behaviour/tasks/SitDown.png");
         iconMapping.put("StandUpAutomaton", "Textures/SociaalmlImages/behaviour/tasks/StandUp.png");

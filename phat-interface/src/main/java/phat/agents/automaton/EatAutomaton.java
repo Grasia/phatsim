@@ -31,30 +31,20 @@ import phat.world.PHATCalendar;
  *
  * @author pablo
  */
-public class DrinkAutomaton extends SimpleState implements PHATCommandListener {
+public class EatAutomaton extends SimpleState implements PHATCommandListener {
 
-    boolean drinking = false;
+    boolean eat = false;
     PlayBodyAnimationCommand playAnimCommand;
-    PHATCalendar lastDrink = null;
-    float drinkRate = 10f;
+    PHATCalendar lastEat = null;
+    float eatRate = 15f;
     
-    public DrinkAutomaton(Agent agent) {
+    public EatAutomaton(Agent agent) {
         super(agent, 0, "DrinkAutomaton");
     }
 
     @Override
     public boolean isFinished(PHATInterface phatInterface) {
-        return super.isFinished(phatInterface) && !drinking;
-    }
-    
-    @Override
-    public void interrupt() {
-    	if(playAnimCommand != null && playAnimCommand.getState().equals(PHATCommand.State.Running)) {
-            playAnimCommand.setFunction(PHATCommand.Function.Interrupt);
-            agent.runCommand(playAnimCommand);
-        }
-            
-    	super.interrupt();
+        return super.isFinished(phatInterface) && !eat;
     }
     
     @Override
@@ -62,32 +52,30 @@ public class DrinkAutomaton extends SimpleState implements PHATCommandListener {
         if (command == playAnimCommand
                 && (command.getState().equals(PHATCommand.State.Success) ||
                 		command.getState().equals(PHATCommand.State.Fail))) {
-            drinking = false;
+            eat = false;
         }
     }
 
     @Override
     public void simpleNextState(PHATInterface phatInterface) {
-        if(!drinking) {
-            int secs = (int)lastDrink.spentTimeTo(phatInterface.getSimTime());
-            if(secs >= drinkRate) {
-                drink(phatInterface);
+        if(!eat) {
+            int secs = (int)lastEat.spentTimeTo(phatInterface.getSimTime());
+            if(secs >= eatRate) {
+                eat(phatInterface);
             }
         }
     }
 
     @Override
     public void initState(PHATInterface phatInterface) {
-        drinking = false;
-        lastDrink = null;
-        drink(phatInterface);
+        eat(phatInterface);
     }
 
-    private void drink(PHATInterface phatInterface) {
-        drinking = true;
+    private void eat(PHATInterface phatInterface) {
+        eat = true;
         playAnimCommand = new PlayBodyAnimationCommand(agent.getId(), 
-                BasicCharacterAnimControl.AnimName.DrinkStanding.name(), this);
+                BasicCharacterAnimControl.AnimName.EatStanding.name(), this);
         agent.runCommand(playAnimCommand);
-        lastDrink = (PHATCalendar) phatInterface.getSimTime().clone();
+        lastEat = (PHATCalendar) phatInterface.getSimTime().clone();
     }
 }

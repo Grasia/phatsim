@@ -238,6 +238,19 @@ public class TaskGenerator {
 					+ ".setFinishCondition(new TimerFinishedCondition(0, 0, "
 					+ duration + "))" + "\n" + ".setCanBeInterrupted("
 					+ canBeIterrupted + ")";
+		} else if (taskGE.getType().equals("Eat")) {
+			GraphAttribute durationGA = taskGE
+					.getAttributeByName("BTaskDuration");
+			int duration = 1;
+			try {
+				duration = Integer.parseInt(durationGA.getSimpleValue());
+			} catch (NumberFormatException nfe) {
+			}
+			;
+			return "new EatAutomaton(agent)" + "\n"
+					+ ".setFinishCondition(new TimerFinishedCondition(0, 0, "
+					+ duration + "))" + "\n" + ".setCanBeInterrupted("
+					+ canBeIterrupted + ")";
 		} else if (taskGE.getType().equals(TYPE_STAND_UP_TASK)) {
 			GraphAttribute durationGA = taskGE
 					.getAttributeByName("BTaskDuration");
@@ -251,6 +264,20 @@ public class TaskGenerator {
 					+ Utils.replaceBadChars(taskGE.getID()) + "\"" + ")" + "\n"
 					+ ".setFinishCondition(new TimerFinishedCondition(0, 0, "
 					+ duration + "))" + "\n" + ".setCanBeInterrupted("
+					+ canBeIterrupted + ")";
+		} else if (taskGE.getType().equals("FallSleep")) {
+			GraphAttribute durationGA = taskGE
+					.getAttributeByName("BTaskDuration");
+			int duration = 1;
+			try {
+				duration = Integer.parseInt(durationGA.getSimpleValue());
+			} catch (NumberFormatException nfe) {
+			}
+			;
+			return "new SleepAutomaton(agent,\""
+					+ Utils.replaceBadChars(taskGE.getID()) + "\")" + "\n"
+					+ ".setFinishCondition(new TimerFinishedCondition(0, 0, "
+					+ duration + "))" + ".setCanBeInterrupted("
 					+ canBeIterrupted + ")";
 		} else if (taskGE.getType().equals("WaitTask")) {
 			GraphAttribute durationGA = taskGE

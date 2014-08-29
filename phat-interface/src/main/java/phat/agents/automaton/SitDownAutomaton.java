@@ -69,6 +69,7 @@ public class SitDownAutomaton extends SimpleState implements PHATCommandListener
 
     @Override
     public void initState(PHATInterface phatInterface) {
+        seated = false;
         sitDownCommand = new SitDownCommand(agent.getId(), placeId, this);    
         agent.runCommand(sitDownCommand);
     }

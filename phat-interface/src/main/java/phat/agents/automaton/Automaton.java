@@ -104,6 +104,10 @@ public abstract class Automaton {
     public void addListener(AutomatonListener l) {
         listeners.add(l);
     }
+    
+    public void addListeners(Automaton automaton) {
+        listeners.addAll(automaton.listeners);
+    }
 
     public void removeListener(AutomatonListener l) {
         listeners.remove(l);
@@ -127,7 +131,7 @@ public abstract class Automaton {
         }
     }
 
-    void notifyNextAutomaton(Automaton nextAutomaton) {
+    public void notifyNextAutomaton(Automaton nextAutomaton) {
         for (AutomatonListener al : listeners) {
             al.nextAutomaton(this, nextAutomaton);
         }
@@ -449,7 +453,11 @@ public abstract class Automaton {
         pause = false;
         notifyResumedAutomaton(this);
         
+        notifityPreInitToListeners();
         initState(phatInterface);
+        init = true;
+        notifityPostInitToListeners();
+        
     }
     
     /**

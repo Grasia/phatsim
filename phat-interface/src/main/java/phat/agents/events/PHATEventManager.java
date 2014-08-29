@@ -66,9 +66,10 @@ public class PHATEventManager {
                             Automaton currentAction = aa.getLeafAutomaton();
                             if (currentAction == null || currentAction.isCanBeInterrupted()) {
                                 agent.getAutomaton().interrupt();
-                                agent.setAutomaton(
-                                new InterruptionAutomaton(agent, automaton, agent.getAutomaton()));
-                                
+                                InterruptionAutomaton ia = new InterruptionAutomaton(agent, automaton, agent.getAutomaton());
+                                Automaton ca = agent.getAutomaton();
+                                agent.setAutomaton(ia);
+                                ca.notifyNextAutomaton(ia);
                                 /*if(currentAction != null) {
                                     System.out.println("Current task = "
                                     + aa.getLeafAutomaton().getName());
