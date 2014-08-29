@@ -78,9 +78,11 @@ public class InterruptionAutomaton extends Automaton {
         FSM result = new FSM(agent);
         if (resumedAutomaton != null) {
             resumedAutomaton.resume(phatInterface);
-            result.registerStartState(preAutomaton);
             if (preAutomaton != null) {
+                result.registerStartState(preAutomaton);
                 result.registerTransition(preAutomaton, resumedAutomaton);
+            } else {
+                result.registerStartState(resumedAutomaton);
             }
         }
         result.registerFinalState(resumedAutomaton);
