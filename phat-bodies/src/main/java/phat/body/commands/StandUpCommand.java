@@ -23,9 +23,12 @@ import com.jme3.app.Application;
 import com.jme3.bullet.control.KinematicRagdollControl;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import java.util.logging.Level;
 import phat.body.BodiesAppState;
 import phat.body.BodyUtils;
+import static phat.body.commands.SitDownCommand.AVAILABLE_SEAT_KEY;
+import static phat.body.commands.SitDownCommand.PLACE_ID_KEY;
 import phat.body.control.animation.AnimFinishedListener;
 import phat.body.control.animation.BasicCharacterAnimControl;
 import phat.body.control.animation.SitDownControl;
@@ -33,6 +36,8 @@ import phat.body.control.navigation.StraightMovementControl;
 import phat.body.control.physics.PHATCharacterControl;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
+import phat.structures.houses.House;
+import phat.structures.houses.HouseAppState;
 import phat.util.SpatialUtils;
 
 /**
@@ -43,7 +48,10 @@ public class StandUpCommand extends PHATCommand implements AnimFinishedListener 
 
     private String bodyId;
     private Node body;
-    
+    private HouseAppState houseAppState;
+    BodiesAppState bodiesAppState;
+    Node seat;
+
     public StandUpCommand(String bodyId, PHATCommandListener listener) {
         super(listener);
         this.bodyId = bodyId;
@@ -53,13 +61,13 @@ public class StandUpCommand extends PHATCommand implements AnimFinishedListener 
     public StandUpCommand(String bodyId) {
         this(bodyId, null);
     }
-
     KinematicRagdollControl krc;
     PHATCharacterControl cc;
-    
+
     @Override
     public void runCommand(Application app) {
-        BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
+        bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
+        houseAppState = app.getStateManager().getState(HouseAppState.class);
 
         body = bodiesAppState.getBody(bodyId);
 
@@ -73,6 +81,7 @@ public class StandUpCommand extends PHATCommand implements AnimFinishedListener 
                 // Character is seat in a chair or something like that
                 sdc.standUp();
                 BodyUtils.setBodyPosture(body, BodyUtils.BodyPosture.Standing);
+                setUnavailable();
                 setState(PHATCommand.State.Success);
             } else if (BodyUtils.isBodyPosture(body, BodyUtils.BodyPosture.Falling)) {
                 BasicCharacterAnimControl bcac = body.getControl(BasicCharacterAnimControl.class);
@@ -93,6 +102,38 @@ public class StandUpCommand extends PHATCommand implements AnimFinishedListener 
         }
     }
 
+    private void setUnavailable() {
+        String placeId = body.getUserData(PLACE_ID_KEY);
+        Spatial place = getNearestSeat(placeId, body);
+        place.setUserData(SitDownCommand.AVAILABLE_SEAT_KEY, false);
+        body.setUserData(PLACE_ID_KEY, null);
+    }
+
+    public Spatial getNearestSeat(String placeId, Spatial body) {
+        Spatial result = null;
+        Node placeToSit = null;
+        House house = houseAppState.getHouse(body);
+        if (house != null) {
+            placeToSit = (Node) SpatialUtils.getSpatialById(house.getRootNode(), placeId);
+        } else {
+            placeToSit = (Node) SpatialUtils.getSpatialById(bodiesAppState.getRootNode(), placeId);
+        }
+        if (placeToSit != null) {
+            if (placeToSit.getChild("Seats") != null) {
+                Node seats = (Node) placeToSit.getChild("Seats");
+                float minDistance = Float.MAX_VALUE;
+                for (Spatial pts : seats.getChildren()) {
+                    float cd = pts.getWorldTranslation().distanceSquared(body.getWorldTranslation());
+                    if (cd < minDistance) {
+                        minDistance = cd;
+                        result = pts;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + bodyId + ")";
@@ -105,6 +146,7 @@ public class StandUpCommand extends PHATCommand implements AnimFinishedListener 
         cc.setWalkDirection(Vector3f.ZERO);
         cc.setViewDirection(body.getLocalRotation().getRotationColumn(2));
         BodyUtils.setBodyPosture(body, BodyUtils.BodyPosture.Standing);
+        seat.setUserData(AVAILABLE_SEAT_KEY, false);
         setState(State.Success);
     }
 

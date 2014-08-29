@@ -45,9 +45,13 @@ import phat.util.SpatialUtils;
  */
 public class SitDownCommand extends PHATCommand implements AutonomousControlListener, PHATCommandListener {
 
+    public static String AVAILABLE_SEAT_KEY = "AVAILABLE_SEAT_KEY";
+    public static String PLACE_ID_KEY = "PLACE_ID_KEY";
+    
     private String bodyId;
     private String placeId;
     BodiesAppState bodiesAppState;
+    HouseAppState houseAppState;
     Spatial nearestSeat;
     Node body;
 
@@ -62,20 +66,39 @@ public class SitDownCommand extends PHATCommand implements AutonomousControlList
         this(bodyId, placeId, null);
     }
 
-    public static Spatial getNearestSeat(Node placeToSeat, Spatial body) {
+    public Spatial getNearestFreeSeat(String placeId, Spatial body) {
         Spatial result = null;
-        if (placeToSeat.getChild("Seats") != null) {
-            Node seats = (Node) placeToSeat.getChild("Seats");
-            float minDistance = Float.MAX_VALUE;
-            for (Spatial pts : seats.getChildren()) {
-                float cd = pts.getWorldTranslation().distanceSquared(body.getWorldTranslation());
-                if (cd < minDistance) {
-                    minDistance = cd;
-                    result = pts;
+        Node placeToSit = null;
+        House house = houseAppState.getHouse(body);
+        if (house != null) {
+            placeToSit = (Node) SpatialUtils.getSpatialById(house.getRootNode(), placeId);
+        } else {
+            placeToSit = (Node) SpatialUtils.getSpatialById(bodiesAppState.getRootNode(), placeId);
+        }
+        if (placeToSit != null) {
+            if (placeToSit.getChild("Seats") != null) {
+                Node seats = (Node) placeToSit.getChild("Seats");
+                float minDistance = Float.MAX_VALUE;
+                for (Spatial pts : seats.getChildren()) {
+                    if (isSeatAvailable(pts)) {
+                        float cd = pts.getWorldTranslation().distanceSquared(body.getWorldTranslation());
+                        if (cd < minDistance) {
+                            minDistance = cd;
+                            result = pts;
+                        }
+                    }
                 }
             }
         }
         return result;
+    }
+
+    private boolean isSeatAvailable(Spatial seat) {
+        Boolean availableSeat = seat.getUserData(AVAILABLE_SEAT_KEY);
+        if (availableSeat == null || availableSeat) {
+            return true;
+        }
+        return false;
     }
     GoToCommand goToCommand;
     RotateTowardCommand rotateCommand;
@@ -83,7 +106,7 @@ public class SitDownCommand extends PHATCommand implements AutonomousControlList
     @Override
     public void runCommand(Application app) {
         bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
-        HouseAppState houseAppState = app.getStateManager().getState(HouseAppState.class);
+        houseAppState = app.getStateManager().getState(HouseAppState.class);
 
         body = bodiesAppState.getBody(bodyId);
 
@@ -92,33 +115,25 @@ public class SitDownCommand extends PHATCommand implements AutonomousControlList
                 setState(State.Success);
                 return;
             }
-            House house = houseAppState.getHouse(body);
-            Spatial placeToSit = null;
-            if (house != null) {
-                placeToSit = SpatialUtils.getSpatialById(house.getRootNode(), placeId);
-            } else {
-                placeToSit = SpatialUtils.getSpatialById(bodiesAppState.getRootNode(), placeId);
-            }
-            if (placeToSit != null) {
-                nearestSeat = getNearestSeat((Node) placeToSit, body);
-                //sitDown();
-                goToCommand = new GoToCommand(bodyId, new Lazy<Vector3f>() {
-                    @Override
-                    public Vector3f getLazy() {
-                        Spatial access = ((Node) nearestSeat).getChild("Access");
-                        if (access != null) {
-                            return access.getWorldTranslation();
-                        }
-                        Vector3f loc = nearestSeat.getWorldTranslation();
-                        Vector3f dir = nearestSeat.getWorldRotation().mult(Vector3f.UNIT_Z).normalize();
-                        return loc.add(dir.mult(0.5f));
+            nearestSeat = getNearestFreeSeat(placeId, body);
+            //sitDown();
+            goToCommand = new GoToCommand(bodyId, new Lazy<Vector3f>() {
+                @Override
+                public Vector3f getLazy() {
+                    Spatial access = ((Node) nearestSeat).getChild("Access");
+                    if (access != null) {
+                        return access.getWorldTranslation();
                     }
-                }, this);
-                goToCommand.setMinDistance(0.05f);
-                bodiesAppState.runCommand(goToCommand);
-                return;
-            }
+                    Vector3f loc = nearestSeat.getWorldTranslation();
+                    Vector3f dir = nearestSeat.getWorldRotation().mult(Vector3f.UNIT_Z).normalize();
+                    return loc.add(dir.mult(0.5f));
+                }
+            }, this);
+            goToCommand.setMinDistance(0.05f);
+            bodiesAppState.runCommand(goToCommand);
+            return;
         }
+
         setState(State.Fail);
     }
 
@@ -155,6 +170,8 @@ public class SitDownCommand extends PHATCommand implements AutonomousControlList
         sdc.setSeat(nearestSeat);
         body.addControl(sdc);
         BodyUtils.setBodyPosture(body, BodyUtils.BodyPosture.Sitting);
+        nearestSeat.setUserData(AVAILABLE_SEAT_KEY, false);
+        body.setUserData(PLACE_ID_KEY, placeId);
         setState(State.Success);
     }
 
@@ -166,9 +183,36 @@ public class SitDownCommand extends PHATCommand implements AutonomousControlList
                 rotateCommand.setOposite(true);
                 bodiesAppState.runCommand(rotateCommand);
             } else if (command == rotateCommand) {
-                sitDown();
+                Spatial seat = getNearestFreeSeat(placeId, body);
+                if (seat != null) {
+                    if (seat == nearestSeat) {
+                        sitDown();
+                    } else {
+                        nearestSeat = seat;
+                        goToCommand = new GoToCommand(bodyId, new Lazy<Vector3f>() {
+                            @Override
+                            public Vector3f getLazy() {
+                                Spatial access = ((Node) nearestSeat).getChild("Access");
+                                if (access != null) {
+                                    return access.getWorldTranslation();
+                                }
+                                Vector3f loc = nearestSeat.getWorldTranslation();
+                                Vector3f dir = nearestSeat.getWorldRotation().mult(Vector3f.UNIT_Z).normalize();
+                                return loc.add(dir.mult(0.5f));
+                            }
+                        }, this);
+                        goToCommand.setMinDistance(0.05f);
+                        bodiesAppState.runCommand(goToCommand);
+                    }
+                } else {
+                    setState(State.Fail);
+                }
             }
         }
+    }
+
+    public Spatial getNearestSeat() {
+        return nearestSeat;
     }
 
     public String getPlaceId() {
