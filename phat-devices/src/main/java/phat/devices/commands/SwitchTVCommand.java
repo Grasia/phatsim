@@ -38,7 +38,8 @@ import phat.util.SpatialUtils;
  * @author pablo
  */
 public class SwitchTVCommand extends PHATDeviceCommand {
-
+    static String TV_STATE_KEY = "TV_STATE_KEY";
+    
     private String tvId;
     private boolean on;
 
@@ -71,6 +72,14 @@ public class SwitchTVCommand extends PHATDeviceCommand {
         setState(State.Fail);
     }
 
+    public static boolean isTVOn(String tvId) {
+        Spatial tv = SpatialUtils.getSpatialById(SpatialFactory.getRootNode(), tvId);
+        Boolean state = tv.getUserData(TV_STATE_KEY);
+        if(state != null && state) {
+            return true;
+        }
+        return false;
+    }
     @Override
     public void interruptCommand(Application app) {
         setState(State.Interrupted);

@@ -46,7 +46,7 @@ public class SwitchTVAutomaton extends SimpleState implements PHATCommandListene
         this.tvId = tvId;
         this.on = on;
     }
-    
+
     @Override
     public void simpleNextState(PHATInterface phatInterface) {
     }
@@ -55,31 +55,37 @@ public class SwitchTVAutomaton extends SimpleState implements PHATCommandListene
     public boolean isFinished(PHATInterface phatInterface) {
         return done;
     }
-    
+
     @Override
     public void interrupt() {
-    	if(goCloseToObj != null && goCloseToObj.getState().equals(PHATCommand.State.Running)) {
+        if (goCloseToObj != null && goCloseToObj.getState().equals(PHATCommand.State.Running)) {
             goCloseToObj.setFunction(PHATCommand.Function.Interrupt);
             agent.runCommand(goCloseToObj);
-        }            
-    	super.interrupt();
+        }
+        super.interrupt();
     }
 
     @Override
     public void commandStateChanged(PHATCommand command) {
         if (command == goCloseToObj
                 && command.getState().equals(PHATCommand.State.Success)) {
-            switchTVCommandd = new SwitchTVCommand(tvId, on, this);
-            deviceConfigurator.runCommand(switchTVCommandd);            
+            if (!SwitchTVCommand.isTVOn(tvId)) {
+                switchTVCommandd = new SwitchTVCommand(tvId, on, this);
+                deviceConfigurator.runCommand(switchTVCommandd);
+            }
             done = true;
         }
     }
 
     @Override
     public void initState(PHATInterface phatInterface) {
-        goCloseToObj = new GoCloseToObjectCommand(agent.getId(), tvId, this);
-        goCloseToObj.setMinDistance(0.1f);
-        agent.runCommand(goCloseToObj);
-        deviceConfigurator = phatInterface.getDevicesConfig();
+        if (!SwitchTVCommand.isTVOn(tvId)) {
+            goCloseToObj = new GoCloseToObjectCommand(agent.getId(), tvId, this);
+            goCloseToObj.setMinDistance(0.3f);
+            agent.runCommand(goCloseToObj);
+            deviceConfigurator = phatInterface.getDevicesConfig();
+        } else {
+            done = true;
+        }
     }
 }
