@@ -2,7 +2,7 @@
  @@@repeat id="diseaseProfile"@@@
 	@@@saveto@@@
 		@@@file overwrite="yes"@@@
-			@@@v@@@output@@@/v@@@/phat/agents/filters/@@@v@@@dpName@@@/v@@@.java@@@/file@@@
+			@@@v@@@output@@@/v@@@/phat/agents/filters/@@@v@@@dpName@@@/v@@@_@@@v@@@actorname@@@/v@@@.java@@@/file@@@
 @@@text@@@
 package phat.agents.filters;
 
@@ -13,39 +13,51 @@ import phat.agents.automaton.conditions.*;
 import phat.agents.filters.*;
 import phat.agents.filters.types.*;
 
-public class @@@v@@@dpName@@@/v@@@ extends DiseaseManager {
+public class @@@v@@@dpName@@@/v@@@_@@@v@@@actorname@@@/v@@@ extends DiseaseManager {
 
-    public @@@v@@@dpName@@@/v@@@(Agent agent) {
+    public @@@v@@@dpName@@@/v@@@_@@@v@@@actorname@@@/v@@@(Agent agent, String simulation) {
         super(agent);
-        initSymptoms();
+        initSymptoms(simulation);
     }
     
-    private void initSymptoms() {
+    private void initSymptoms(String simulation) {
         setStage("@@@v@@@stageName@@@/v@@@");
         @@@repeat id="symptoms"@@@
         @@@v@@@symptomType@@@/v@@@ @@@v@@@symptomName@@@/v@@@ = new @@@v@@@symptomType@@@/v@@@("@@@v@@@symptomName@@@/v@@@");
         add(@@@v@@@symptomName@@@/v@@@);
-        @@@v@@@symptomName@@@/v@@@.setCurrentLevel(@@@v@@@symptomLevel@@@/v@@@);
-        @@@repeat id="createFiltersSeq"@@@
-            @@@repeat id="FUnableFilter"@@@ @@@/repeat@@@
-            @@@repeat id="FChangeToolFilter"@@@ @@@/repeat@@@
-            @@@repeat id="FChangeTargetObjFilter"@@@ @@@/repeat@@@
-            @@@repeat id="FReplaceTaskFilter"@@@ReplaceTaskFilter @@@v@@@filterName@@@/v@@@ = new ReplaceTaskFilter().setTask(@@@v@@@taskSentence@@@/v@@@);
-            @@@v@@@filterName@@@/v@@@.setCondition(@@@v@@@filterCond@@@/v@@@);@@@/repeat@@@
-            @@@repeat id="FModifyPlaceFilter"@@@ @@@/repeat@@@
-            @@@repeat id="FDelayFilter"@@@DelayFilter @@@v@@@filterName@@@/v@@@ = new DelayFilter();
-            @@@v@@@filterName@@@/v@@@.setDelay(@@@v@@@delayValude@@@/v@@@);
-            @@@v@@@filterName@@@/v@@@.setCondition(@@@v@@@filterCond@@@/v@@@);@@@/repeat@@@
-            @@@repeat id="FTaskSelectorFilter"@@@ SelectorFilter @@@v@@@filterName@@@/v@@@ = new SelectorFilter();
-            @@@v@@@filterName@@@/v@@@.setCondition(@@@v@@@filterCond@@@/v@@@);
-            @@@repeat id="allowedTaskRep"@@@@@@v@@@filterName@@@/v@@@.add("@@@v@@@taskType@@@/v@@@");@@@/repeat@@@
-            @@@/repeat@@@
-            @@@repeat id="nextFilterRep"@@@@@@v@@@sourceFilter@@@/v@@@.setNextFilter(@@@v@@@targetFilter@@@/v@@@);
-            @@@/repeat@@@
-            @@@repeat id="alternativeFilterRep"@@@@@@v@@@sourceFilter@@@/v@@@.setAlterrnativeFilter(@@@v@@@targetFilter@@@/v@@@);@@@/repeat@@@
-            @@@repeat id="setFirstFilter"@@@ @@@v@@@symptomName@@@/v@@@.add(@@@v@@@symplevel@@@/v@@@, @@@v@@@firstFilter@@@/v@@@); @@@/repeat@@@
-            @@@/repeat@@@
-        @@@/repeat@@@
+    	switch (simulation){
+    	@@@repeat id="siminit"@@@
+	//begin siminit
+    	case "@@@v@@@simname@@@/v@@@":{
+	        @@@v@@@symptomName@@@/v@@@.setCurrentLevel(@@@v@@@symptomLevel@@@/v@@@);
+	  @@@repeat id="createFiltersSeq"@@@{
+//begin createFiltersSeq
+		    @@@repeat id="FUnableFilter"@@@ @@@/repeat@@@
+		    @@@repeat id="FChangeToolFilter"@@@ @@@/repeat@@@
+		    @@@repeat id="FChangeTargetObjFilter"@@@ @@@/repeat@@@
+		    @@@repeat id="FReplaceTaskFilter"@@@ReplaceTaskFilter @@@v@@@filterName@@@/v@@@ = new ReplaceTaskFilter().setTask(@@@v@@@taskSentence@@@/v@@@);
+		    @@@v@@@filterName@@@/v@@@.setCondition(@@@v@@@filterCond@@@/v@@@);@@@/repeat@@@
+		    @@@repeat id="FModifyPlaceFilter"@@@ @@@/repeat@@@
+		    @@@repeat id="FDelayFilter"@@@DelayFilter @@@v@@@filterName@@@/v@@@ = new DelayFilter();
+		    @@@v@@@filterName@@@/v@@@.setDelay(@@@v@@@delayValude@@@/v@@@);
+		    @@@v@@@filterName@@@/v@@@.setCondition(@@@v@@@filterCond@@@/v@@@);@@@/repeat@@@
+		    @@@repeat id="FTaskSelectorFilter"@@@ SelectorFilter @@@v@@@filterName@@@/v@@@ = new SelectorFilter();
+		    @@@v@@@filterName@@@/v@@@.setCondition(@@@v@@@filterCond@@@/v@@@);
+		    @@@repeat id="allowedTaskRep"@@@@@@v@@@filterName@@@/v@@@.add("@@@v@@@taskType@@@/v@@@");@@@/repeat@@@
+		    @@@/repeat@@@
+		    @@@repeat id="nextFilterRep"@@@@@@v@@@sourceFilter@@@/v@@@.setNextFilter(@@@v@@@targetFilter@@@/v@@@);
+		    @@@/repeat@@@
+		    @@@repeat id="alternativeFilterRep"@@@@@@v@@@sourceFilter@@@/v@@@.setAlterrnativeFilter(@@@v@@@targetFilter@@@/v@@@);@@@/repeat@@@
+		    @@@repeat id="setFirstFilter"@@@ @@@v@@@symptomName@@@/v@@@.add(@@@v@@@symplevel@@@/v@@@, @@@v@@@firstFilter@@@/v@@@); @@@/repeat@@@
+		//end createFiltersSeq  
+		   }; @@@/repeat@@@
+		};
+	        break;
+	    //end siminit  
+		@@@/repeat@@@	    
+		}
+	     @@@/repeat@@@
+    
         
         agent.getAutomaton().addListener(this);
     }

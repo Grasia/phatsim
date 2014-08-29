@@ -218,8 +218,7 @@ ingenias.editor.extension.BasicCodeGeneratorImp {
 			new AgentsGenerator(browser).generateAgents(seq);
 			new TaskGenerator(getBrowser(), seq).generateAllSeqTasks();
 			new ActivityGenerator(getBrowser()).generateTimeIntervals(seq);
-			new SimulationGenerator(browser).generateSimulations(seq);
-			new PDGenerator(browser).generatePD(seq);
+			new SimulationGenerator(browser).generateSimulations(seq);			
 		} catch (Throwable ex) {
 			ex.printStackTrace();
 		}

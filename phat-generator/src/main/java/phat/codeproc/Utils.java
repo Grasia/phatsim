@@ -68,8 +68,8 @@ public class Utils {
             GraphEntity[] entities = browser.getAllEntities();
             for (GraphEntity adl : entities) {
                 if (adl.getType().equalsIgnoreCase(profileType)) {
-                    GraphEntity human = Utils.getTargetEntity(adl, "ProfileOf");
-                    if (human.getID().equals(humanId)) {
+                    GraphEntity human = Utils.getTargetEntity(adl, "ProfileOf");                    
+                    if (human!=null && human.getID().equals(humanId)) {
                         return adl;
                     }
                 }
@@ -428,14 +428,24 @@ public class Utils {
         return result;
     }
 
+    public static GraphEntity getSourceEntity(GraphEntity ge, GraphRelationship gr)  {
+    	GraphRole gRole = getSourceRole( gr.getRoles());
+        try {
+			if (gRole != null && gRole.getPlayer().getID() != ge.getID()) {
+			    return gRole.getPlayer();
+			}
+		} catch (NullEntity e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        return null;
+    }
+    
     public static GraphEntity getSourceEntity(GraphEntity ge, String relationType) {
         try {
             for (GraphRelationship gr : ge.getRelationships()) {
                 if (gr.getType().equals(relationType)) {
-                    GraphRole gRole = getSourceRole(gr.getRoles());
-                    if (gRole != null && gRole.getPlayer().getID() != ge.getID()) {
-                        return gRole.getPlayer();
-                    }
+                	 return getSourceEntity(ge, gr);
                 }
             }
         } catch (Throwable ex) {
@@ -478,7 +488,7 @@ public class Utils {
 	public static GraphEntity getTargetEntity(GraphEntity ge, GraphRelationship gr)
 			throws NullEntity {
 		GraphRole gRole = getTargetRole(gr.getRoles());
-		if (gRole != null && gRole.getPlayer().getID() != ge.getID()) {
+		if (gRole != null && !gRole.getPlayer().getID().equals(ge.getID())) {
 		    return gRole.getPlayer();
 		}
 		return null;
@@ -733,4 +743,16 @@ public class Utils {
         }
         return related;
     }
+
+	public static boolean contains(Graph graph, GraphEntity actor) {
+		try {
+			for (GraphEntity ge:graph.getEntities())
+				if (ge.equals(actor))
+					return true;
+		} catch (NullEntity e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
 }

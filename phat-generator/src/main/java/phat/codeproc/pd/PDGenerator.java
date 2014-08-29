@@ -30,11 +30,15 @@ import ingenias.generator.browser.GraphRelationship;
 import ingenias.generator.datatemplate.Repeat;
 import ingenias.generator.datatemplate.Sequences;
 import ingenias.generator.datatemplate.Var;
+
 import java.util.Collection;
 import java.util.List;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.apache.commons.lang.Validate;
+
 import phat.codeproc.ConditionGenerator;
 import phat.codeproc.InteractionDiagramGenerator;
 import phat.codeproc.TaskGenerator;
@@ -76,11 +80,13 @@ public class PDGenerator {
 		this.browser = browser;
 	}
 
-	public void generatePD(Sequences seq) throws NullEntity, NotFound {
-		for (Graph diagram : Utils.getGraphsByType(PARKINSON_PROFILE_SPEC_DIAGRAM,
-				browser)) {
+	public void generatePD(Sequences seq, GraphEntity actor) throws NullEntity, NotFound {
+		Vector<Graph> diagramsPD=getPDDiagramsForActor(actor);
+
+		for (Graph diagram : diagramsPD) {
 			Repeat rep = new Repeat("diseaseProfile");
 			seq.addRepeat(rep);
+			rep.add(new Var("actorname",  Utils.replaceBadChars(actor.getID())));
 			rep.add(new Var("dpName", Utils.replaceBadChars(diagram.getID())));
 			List<GraphEntity> stages = Utils.getEntities(diagram, PD_STAGE);
 			if (stages.size() == 1) {
@@ -93,23 +99,29 @@ public class PDGenerator {
 					rep.add(symptoms);
 					symptoms.add(new Var("symptomName", symptom.getID()));
 					symptoms.add(new Var("symptomType", getSymptomClass(symptom)));
-					symptoms.add(new Var("symptomLevel", getSymptomLevel(symptom)));
-					for (GraphEntity filter : Utils.getTargetsEntity(symptom, LIMITATIONS)) {
-						String level = getLevelOfFilter(filter.getType());
-						Repeat filterSet = new Repeat("createFiltersSeq");
-						symptoms.add(filterSet);
-						filterSet.add(new Var("symplevel", level));
-						if (level != null) {
-							GraphAttribute filters = filter.getAttributeByName(TASK_ALLOWED);
-							GraphCollection filterCollection = filters.getCollectionValue();
-							for (int i = 0; i < filterCollection.size(); i++) {
-								GraphEntity ge = filterCollection.getElementAt(i);
-								GraphAttribute filterRef = ge.getAttributeByName("modelID");
-								String filterDiagName = filterRef.getSimpleValue();
-								Graph filtersGraph = Utils.getGraphByName(filterDiagName, browser);
-								if (filtersGraph != null) {
-									generateFilters(filterSet, filtersGraph, level);
-									generateDependencies(filterSet, filtersGraph, level);
+					Vector<String[]> simulationSymptomLevels = getSymptomLevel(symptom, actor);
+					for (String[] pairSymptonAndSim:simulationSymptomLevels){
+						Repeat simlevels=new Repeat("siminit");
+						symptoms.add(simlevels);					
+						simlevels.add(new Var("symptomLevel", pairSymptonAndSim[0]));	
+						simlevels.add(new Var("simname", pairSymptonAndSim[1]));
+						for (GraphEntity filter : Utils.getTargetsEntity(symptom, LIMITATIONS)) {
+							String level = getLevelOfFilter(filter.getType());
+							Repeat filterSet = new Repeat("createFiltersSeq");
+							simlevels.add(filterSet);
+							simlevels.add(new Var("symplevel", level));
+							if (level != null) {
+								GraphAttribute filters = filter.getAttributeByName(TASK_ALLOWED);
+								GraphCollection filterCollection = filters.getCollectionValue();
+								for (int i = 0; i < filterCollection.size(); i++) {
+									GraphEntity ge = filterCollection.getElementAt(i);
+									GraphAttribute filterRef = ge.getAttributeByName("modelID");
+									String filterDiagName = filterRef.getSimpleValue();
+									Graph filtersGraph = Utils.getGraphByName(filterDiagName, browser);
+									if (filtersGraph != null) {
+										generateFilters(filterSet, filtersGraph, level);
+										generateDependencies(filterSet, filtersGraph, level);
+									}
 								}
 							}
 						}
@@ -117,6 +129,28 @@ public class PDGenerator {
 				}
 			}
 		}
+	}
+
+	private Vector<Graph> getPDDiagramsForActor(GraphEntity actor) {
+		Vector<Graph> patientGraphs=new Vector<Graph>();
+		Vector<GraphRelationship> rels = actor.getAllRelationships("ProfileOf");		
+		for (GraphRelationship rel :rels) {
+			GraphEntity target;
+			try {
+				target = Utils.getSourceEntity(actor, rel);
+				if (target.getType().equals("ParkinsonsProfile")){
+					GraphAttribute diagNameAtt = target.getAttributeByName("ParkinsonSpecDiag");
+					if (diagNameAtt!=null && diagNameAtt.getSimpleValue()!=null &&
+							browser.getGraph(diagNameAtt.getSimpleValue())!=null)
+						patientGraphs.add(browser.getGraph(diagNameAtt.getSimpleValue()));
+				}	
+			} catch (NotFound e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+		return patientGraphs;
 	}
 
 	private String getSymptomClass(GraphEntity symptom) {
@@ -135,32 +169,52 @@ public class PDGenerator {
 		return result;
 	}
 
-	private String getSymptomLevel(GraphEntity symptom) {
+	private Vector<String[]> getSymptomLevel(GraphEntity symptom, GraphEntity actor) {
 		String result = "Symptom.Level.None";
+		Vector<String[]> results=new Vector<String[]>();
+		Collection<Graph> graphs = Utils.getGraphsByType("SimulationDiagram", browser);
+		for (Graph graph:graphs){
+			if (Utils.contains(graph,actor)){					
+				String level=getActorSymptomInSimdiagram(graph,actor,symptom );					
+				if (level!=null)
+					results.add(new String[]{level,graph.getID()});
+				else
+					results.add(new String[]{"Symptom.Level.None",graph.getID()});
+			}
+		}
+		return results;
+	}
+
+	private String getActorSymptomInSimdiagram(Graph graph, GraphEntity actor, GraphEntity symptom) {
 		try {
-			GraphAttribute sefGA = symptom.getAttributeByName("SymptomEvoField");
-			if (!sefGA.equals("")) {
-				Graph sef = Utils.getGraphByName(sefGA.getSimpleValue(), browser);
-				if (sef!=null){
-					try {
-						for (GraphEntity entity : sef.getEntities()) {
-							if (entity.getType().equals("LOWSympLevelState")) {
-								result = "phat.agents.filters.Symptom.Level.Low";
-							} else if (entity.getType().equals("MEDIUMSympLevelState")) {
-								result = "phat.agents.filters.Symptom.Level.Medium";
-							} else if (entity.getType().equals("HIGHSympLevelState")) {
-								result = "phat.agents.filters.Symptom.Level.High";
+			for (GraphEntity entity : graph.getEntities()) {
+				if (entity.getType().equals("HumanInitialization") &&
+						Utils.getRelatedElementsVector(entity, "RelatedHuman", "RelatedHumantarget").contains(actor))					
+				{
+					Vector<GraphEntity> symptomsInitialized = Utils.getRelatedElementsVector(entity, "InitializesSymptom", "InitializesSymptomtarget");
+					for (GraphEntity symptominialization:symptomsInitialized){
+						boolean initializedSympom = Utils.getRelatedElementsVector(symptominialization, "InitializedSymptom", "InitializedSymptomtarget").contains(symptom);
+						if (initializedSympom){
+							String levelValue=symptominialization.getAttributeByName("SymptomLevel").getSimpleValue();
+							switch (levelValue){
+							case "LOW":
+								return "phat.agents.filters.Symptom.Level.Low"; 								
+							case "MEDIUM":
+								return "phat.agents.filters.Symptom.Level.Medium";							
+							case "HIGH":
+								return "phat.agents.filters.Symptom.Level.High";								
 							}
 						}
-					} catch (NullEntity ex) {
-						Logger.getLogger(PDGenerator.class.getName()).log(Level.SEVERE, null, ex);
+
 					}
 				}
+
 			}
-		} catch (NotFound ex) {
-			Logger.getLogger(PDGenerator.class.getName()).log(Level.SEVERE, null, ex);
+		} catch (NullEntity | NotFound e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		return result;
+		return null;
 	}
 
 	private void generateDependencies(Repeat filterSet, Graph filterGraph, String level) {
@@ -209,7 +263,7 @@ public class PDGenerator {
 				for (GraphEntity taskGE : Utils.getTargetsEntity(filterGE, "AllowedTask")) {
 					Repeat allowedTaskRep = new Repeat("allowedTaskRep");
 					selectRep.add(allowedTaskRep);
-					allowedTaskRep.add(new Var("taskType", taskGE.getID()));
+					allowedTaskRep.add(new Var("taskType", Utils.replaceBadChars(taskGE.getID())));
 				}
 			}
 			for (GraphEntity filterGE : Utils.getEntities(filterGraph, DELAY_FILTER_TYPE)) {
@@ -239,7 +293,7 @@ public class PDGenerator {
 					String taskSentence = "null";
 					GraphAttribute diagRef = filterGE.getAttributeByName("SeqTaskDiagramField");
 					if (!diagRef.getSimpleValue().equals("")) {
-						taskSentence = "new " + diagRef.getSimpleValue() + "Task(agent)";
+						taskSentence = "new " + Utils.replaceBadChars(diagRef.getSimpleValue()) + "Task(agent)";
 					}
 					selectRep.add(new Var("taskSentence", taskSentence));
 					filterSet.add(selectRep);
@@ -269,7 +323,7 @@ public class PDGenerator {
 				System.out.println("FIRST ENTITY => " + firstFilter.getID());
 				Repeat selectRep = new Repeat("setFirstFilter");
 				filterSet.add(selectRep);
-				filterSet.add(new Var("firstFilter", firstFilter.getID()));
+				filterSet.add(new Var("firstFilter", Utils.replaceBadChars(firstFilter.getID())));
 			}
 		} catch (NullEntity ex) {
 			Logger.getLogger(PDGenerator.class.getName()).log(Level.SEVERE, null, ex);
@@ -324,7 +378,7 @@ public class PDGenerator {
 				GraphAttribute pdSpec = dmGraph.getAttributeByName("ParkinsonSpecDiag");
 				Repeat rep = new Repeat("filterManager");
 				repFather.add(rep);
-				rep.add(new Var("fmName", pdSpec.getSimpleValue()));
+				rep.add(new Var("fmName", Utils.replaceBadChars(pdSpec.getSimpleValue())));
 			} catch (NotFound ex) {
 				Logger.getLogger(PDGenerator.class.getName()).log(Level.SEVERE, null, ex);
 			}
