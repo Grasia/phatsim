@@ -77,8 +77,9 @@ public class HaveAShowerAutomaton extends SimpleState implements PHATCommandList
             goIntoShower.setFunction(PHATCommand.Function.Interrupt);
             agent.runCommand(goIntoShower);
         }
-        if (tapClosed == false) {
-            agent.runCommand(new CloseObjectCommand(agent.getId(), showerId));
+        if (closeObjectCommand != null && tapClosed == false) {
+            closeObjectCommand = new CloseObjectCommand(agent.getId(), showerId);
+            agent.runCommand(closeObjectCommand);
         }
         tapClosed = true;
 
