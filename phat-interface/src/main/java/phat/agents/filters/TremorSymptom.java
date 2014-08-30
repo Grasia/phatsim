@@ -46,15 +46,18 @@ public class TremorSymptom extends Symptom {
         Agent agent = diseaseManager.getAgent();
         switch (this.currentLevel) {
             case None:
-                agent.runCommand(new TremblingHeadCommand(agent.getId(), true));
+                agent.runCommand(new TremblingHeadCommand(agent.getId(), false));
                 agent.runCommand(new TremblingHandCommand(agent.getId(), false, true));
                 agent.runCommand(new TremblingHandCommand(agent.getId(), false, false));
                 break;
             case Low:
+                agent.runCommand(new TremblingHeadCommand(agent.getId(), false));
+                agent.runCommand(new TremblingHandCommand(agent.getId(), false, true));
                 agent.runCommand(new TremblingHandCommand(agent.getId(), true, false));
                 break;
             case Medium:
                 agent.runCommand(new TremblingHeadCommand(agent.getId(), true));
+                agent.runCommand(new TremblingHandCommand(agent.getId(), false, true));
                 agent.runCommand(new TremblingHandCommand(agent.getId(), true, false));
                 break;
             case High:
