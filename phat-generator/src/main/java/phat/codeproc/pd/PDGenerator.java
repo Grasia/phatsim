@@ -189,11 +189,11 @@ public class PDGenerator {
 		try {
 			for (GraphEntity entity : graph.getEntities()) {
 				if (entity.getType().equals("HumanInitialization") &&
-						Utils.getRelatedElementsVector(entity, "RelatedHuman", "RelatedHumantarget").contains(actor))					
+						Utils.getRelatedElementsVectorInSameDiagram(entity, "RelatedHuman", "RelatedHumantarget").contains(actor))					
 				{
-					Vector<GraphEntity> symptomsInitialized = Utils.getRelatedElementsVector(entity, "InitializesSymptom", "InitializesSymptomtarget");
-					for (GraphEntity symptominialization:symptomsInitialized){
-						boolean initializedSympom = Utils.getRelatedElementsVector(symptominialization, "InitializedSymptom", "InitializedSymptomtarget").contains(symptom);
+					Vector<GraphEntity> symptomsInitialized = Utils.getRelatedElementsVectorInSameDiagram(entity, "InitializesSymptom", "InitializesSymptomtarget");
+					for (GraphEntity symptominialization:symptomsInitialized){					
+						boolean initializedSympom = Utils.getRelatedElementsVectorInSameDiagram(symptominialization, "InitializedSymptom", "InitializedSymptomtarget").contains(symptom);
 						if (initializedSympom){
 							String levelValue=symptominialization.getAttributeByName("SymptomLevel").getSimpleValue();
 							switch (levelValue){

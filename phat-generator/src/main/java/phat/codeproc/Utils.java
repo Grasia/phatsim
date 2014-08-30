@@ -264,6 +264,26 @@ public class Utils {
         }
         return new Vector(new HashSet(related));
     }
+    
+    public static Vector<GraphEntity> getRelatedElementsVectorInSameDiagram(
+            GraphEntity agent, String relationshipname, String role)
+            throws NullEntity {
+        GraphRelationship[] rels = agent.getRelationships();        
+        Vector related = new Vector();
+        for (GraphRelationship gr:rels){        
+            if (gr.getType().toLowerCase()
+                    .equals(relationshipname.toLowerCase())) {
+                GraphRole[] roles = gr.getRoles();
+                for (int k = 0; k < roles.length; k++) {
+                    if (roles[k].getName().toLowerCase()
+                            .equals(role.toLowerCase())) {
+                        related.add(roles[k].getPlayer());
+                    }
+                }
+            }
+        }
+        return new Vector(new HashSet(related));
+    }
 
     /**
      * It obtains all elements related with "element" with "relationshipname"
