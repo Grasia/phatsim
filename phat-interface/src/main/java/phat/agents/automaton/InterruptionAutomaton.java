@@ -72,21 +72,26 @@ public class InterruptionAutomaton extends Automaton {
         }
         addTransition(firstAutomaton, false);
     }
+    boolean defaultFlag = false;
 
     @Override
     public Automaton getDefaultState(PHATInterface phatInterface) {
-        FSM result = new FSM(agent);
-        if (resumedAutomaton != null) {
-            resumedAutomaton.resume(phatInterface);
-            if (preAutomaton != null) {
-                result.registerStartState(preAutomaton);
-                result.registerTransition(preAutomaton, resumedAutomaton);
-            } else {
-                result.registerStartState(resumedAutomaton);
+        if (!defaultFlag) {
+            FSM result = new FSM(agent);
+            if (resumedAutomaton != null) {
+                resumedAutomaton.resume();
+                if (preAutomaton != null) {
+                    result.registerStartState(preAutomaton);
+                    result.registerTransition(preAutomaton, resumedAutomaton);
+                } else {
+                    result.registerStartState(resumedAutomaton);
+                }
             }
+            result.registerFinalState(resumedAutomaton);
+            defaultFlag = true;
+            return result;
         }
-        result.registerFinalState(resumedAutomaton);
-        return result;
+        return null;
     }
 
     @Override

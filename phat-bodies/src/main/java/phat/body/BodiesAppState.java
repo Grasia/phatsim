@@ -182,7 +182,7 @@ public class BodiesAppState extends AbstractAppState {
         runningCommands.addAll(pendingCommands);
         pendingCommands.clear();
         for (PHATCommand bc : runningCommands) {
-            System.out.println("Running Command: " + bc);
+            System.out.println("Start Running Command: " + bc);
             commandLog.add(bc);
             bc.run(app);
         }

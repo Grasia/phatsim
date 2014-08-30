@@ -70,6 +70,7 @@ public class GoToSpaceCommand extends PHATCommand implements AutonomousControlLi
             } else {
                 bodiesAppState.runCommand(new StandUpCommand(bodyId, this));
             }
+            return;
         }
         setState(State.Fail);
     }

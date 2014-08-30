@@ -49,6 +49,7 @@ import phat.agents.automaton.conditions.AutomatonCondition;
  * Serrano
  */
 public abstract class Automaton {
+
     protected HashMap<String, String> metadata = null;
     /**
      * Persona que implementa el automata
@@ -93,6 +94,7 @@ public abstract class Automaton {
      * Inidica si se ha inicializado el estado
      */
     protected boolean init = false;
+    protected boolean resumed = false;
     /**
      * Referencia a automata padre, no obligatoria
      */
@@ -102,11 +104,9 @@ public abstract class Automaton {
     boolean canBeInterrupted = true;
 
     public void addListener(AutomatonListener l) {
-        listeners.add(l);
-    }
-    
-    public void addListeners(Automaton automaton) {
-        listeners.addAll(automaton.listeners);
+        if(!listeners.contains(l)) {
+            listeners.add(l);
+        }
     }
 
     public void removeListener(AutomatonListener l) {
@@ -124,7 +124,7 @@ public abstract class Automaton {
             al.preInit(this);
         }
     }
-    
+
     void notifityPostInitToListeners() {
         for (AutomatonListener al : listeners) {
             al.postInit(this);
@@ -136,19 +136,19 @@ public abstract class Automaton {
             al.nextAutomaton(this, nextAutomaton);
         }
     }
-    
+
     void notifyInterruptedAutomaton(Automaton automaton) {
         for (AutomatonListener al : listeners) {
             al.automatonInterrupted(automaton);
         }
     }
-    
+
     public void notifyResumedAutomaton(Automaton automaton) {
         for (AutomatonListener al : listeners) {
             al.automatonResumed(automaton);
         }
     }
-    
+
     /**
      * Este método crea un autómata principal. El más alto de la jerarquía. Por
      * eso no hace falta pasar valores como la duración o la prioridad.
@@ -253,19 +253,18 @@ public abstract class Automaton {
             }
             addTransition(stateToBeReplaced, true);
         }
-        notifyNextAutomaton(newTransition);
         return newTransition;
     }
 
     public void replaceCurrentAutomaton(Automaton automaton) {
-        if(currentState != null) {
+        if (currentState != null) {
             currentState.interrupt();
             currentState.setFinished(true);
             currentState.notifyNextAutomaton(automaton);
         }
         currentState = automaton;
     }
-    
+
     public void printPendingTransitions() {
         System.out.println(agent.getId() + ":" + name
                 + " - Pending Transitions:");
@@ -332,7 +331,17 @@ public abstract class Automaton {
         if (pause || finished) {
             return;
         }
-        if (!init) {
+        if (resumed) {
+            if (finishCondition != null) {
+                finishCondition.automatonResumed(this);
+            }
+            if (currentState != null) {
+                currentState.resume(phatInterface);
+            }
+            resume(phatInterface);
+            notifyResumedAutomaton(this);
+            resumed = false;            
+        } else if (!init) {
             notifityPreInitToListeners();
             initState(phatInterface);
             init = true;
@@ -368,6 +377,9 @@ public abstract class Automaton {
                 // estado inicial o como
                 // siguiente)
                 currentState = nextAutomaton(null, phatInterface);
+                if(currentState != null) {
+                    notifyNextAutomaton(currentState);
+                }
                 if (ECHO) {
                     System.out.println(agent.getId() + ", " + name
                             + " automaton changes to state "
@@ -376,6 +388,9 @@ public abstract class Automaton {
             } else {// si no hay transiciones pendintes ir a estado por defecto
                 // (tanto si es como estado inicial o como siguiente)
                 currentState = getDefaultState(phatInterface);
+                if(currentState != null) {
+                    notifyNextAutomaton(currentState);
+                }
                 if (ECHO && currentState != null) {
                     System.out.println(agent.getId() + ", " + name
                             + " automaton changes default state "
@@ -431,7 +446,7 @@ public abstract class Automaton {
      * Stay y se le resta de la duración el tiempo ya ejeceutado).
      */
     public void interrupt() {
-        if(finishCondition != null) {
+        if (finishCondition != null) {
             finishCondition.automatonInterrupted(this);
         }
         if (currentState != null) {
@@ -442,22 +457,23 @@ public abstract class Automaton {
         notifyInterruptedAutomaton(this);
     }
 
-    public void resume(PHATInterface phatInterface) {
-        if(finishCondition != null) {
-            finishCondition.automatonResumed(this);
-        }
-        if (currentState != null) {
-            currentState.resume(phatInterface);
-        }
+    public void resume() {
         setFinished(false);
         pause = false;
-        notifyResumedAutomaton(this);
-        
-        notifityPreInitToListeners();
-        initState(phatInterface);
-        init = true;
-        notifityPostInitToListeners();
-        
+        resumed = true;
+        if (currentState != null) {
+            currentState.resume();
+        }
+    }
+
+    /**
+     *
+     * @param phatInterface
+     */
+    public void resume(PHATInterface phatInterface) {
+        if(currentState == null) {
+            initState(phatInterface);
+        }
     }
     
     /**
@@ -673,7 +689,7 @@ public abstract class Automaton {
         this.finishCondition = finishCondition;
         return this;
     }
-    
+
     public AutomatonCondition getFinishCondition() {
         return this.finishCondition;
     }
@@ -708,20 +724,17 @@ public abstract class Automaton {
 
     public <T extends Automaton> T getCurrentUpperAutomatonByType(Class<T> automatonType) {
         if (currentState != null) {
-            System.out.println("asdf->" + currentState.getName());
             if (currentState.getClass().getSuperclass().equals(automatonType)) {
-                System.out.println("asdf->Activity");
                 return (T) currentState;
             } else {
-                System.out.println("asdf->no");
                 return currentState.getCurrentUpperAutomatonByType(automatonType);
             }
         } else {
             return null;
         }
     }
-    
-     public Automaton setMetadata(String key, String data) {
+
+    public Automaton setMetadata(String key, String data) {
         if (metadata == null) {
             metadata = new HashMap<>();
         }
@@ -734,7 +747,7 @@ public abstract class Automaton {
         if (metadata == null) {
             return null;
         }
-        
+
         return metadata.get(key);
     }
 

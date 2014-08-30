@@ -44,12 +44,11 @@ public class MoveToSpace extends SimpleState implements PHATCommandListener {
 
     @Override
     public void interrupt() {
-        super.interrupt();
         if (goToSpaceCommand != null) {
             goToSpaceCommand.setFunction(PHATCommand.Function.Interrupt);
             agent.runCommand(goToSpaceCommand);
         }
-        setFinished(true);
+        super.interrupt();
     }
 
     public MoveToSpace(Agent agent, String name, String destinyName, float distance) {
@@ -65,8 +64,7 @@ public class MoveToSpace extends SimpleState implements PHATCommandListener {
     @Override
     public void commandStateChanged(PHATCommand command) {
         if (command == goToSpaceCommand) {
-            if (command.getState().equals(PHATCommand.State.Success)
-                    || command.getState().equals(PHATCommand.State.Interrupted)) {
+            if (command.getState().equals(PHATCommand.State.Success)) {
                 destinyReached = true;
             }
         }
@@ -78,6 +76,7 @@ public class MoveToSpace extends SimpleState implements PHATCommandListener {
 
     @Override
     public void initState(PHATInterface phatInterface) {
+        destinyReached = false;        
         if (speed > 0) {
             agent.runCommand(new SetSpeedDisplacemenetCommand(agent.getId(), speed));
         }

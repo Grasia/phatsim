@@ -59,34 +59,39 @@ public class HaveAShowerAutomaton extends SimpleState implements PHATCommandList
         }
         haveShowerfinished = super.isFinished(phatInterface) || fail;
         if (haveShowerfinished) {
-            closeObjectCommand = new CloseObjectCommand(agent.getId(), showerId, this);
-            agent.runCommand(closeObjectCommand);
+            if (goIntoShower != null && goIntoShower.getState().equals(PHATCommand.State.Running)) {
+                goIntoShower.setFunction(PHATCommand.Function.Interrupt);
+                agent.runCommand(goIntoShower);
+            } else if (!tapClosed) {
+                closeObjectCommand = new CloseObjectCommand(agent.getId(), showerId, this);
+                agent.runCommand(closeObjectCommand);
+            }
             return false;
         }
         return haveShowerfinished;
     }
-    
+
     @Override
     public void interrupt() {
-    	if(goIntoShower != null && goIntoShower.getState().equals(PHATCommand.State.Running)) {
+        if (goIntoShower != null && goIntoShower.getState().equals(PHATCommand.State.Running)) {
             goIntoShower.setFunction(PHATCommand.Function.Interrupt);
             agent.runCommand(goIntoShower);
         }
-        if(tapClosed == false) {
+        if (tapClosed == false) {
             agent.runCommand(new CloseObjectCommand(agent.getId(), showerId));
         }
         tapClosed = true;
-            
-    	super.interrupt();
+
+        super.interrupt();
     }
-        
+
     @Override
     public void commandStateChanged(PHATCommand command) {
         if (command == goIntoShower
                 && command.getState().equals(PHATCommand.State.Success)) {
             agent.runCommand(new OpenObjectCommand(agent.getId(), showerId));
         } else if (command == closeObjectCommand && command.getState().equals(PHATCommand.State.Success)) {
-            tapClosed = true;            
+            tapClosed = true;
         }
         if (command.getState().equals(PHATCommand.State.Fail)) {
             fail = true;
