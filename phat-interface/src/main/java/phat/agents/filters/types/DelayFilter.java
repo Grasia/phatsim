@@ -50,6 +50,7 @@ public class DelayFilter extends Filter {
             MoveToSpace move = (MoveToSpace) automaton;
             System.out.println("delay = "+delay);
             float speed = agent.getBodiesAppState().getSpeed(agent.getId());
+            System.out.println("speed = "+speed);
             if(speed > 0) {
                 move.setSpeed(speed/delay);
             }
