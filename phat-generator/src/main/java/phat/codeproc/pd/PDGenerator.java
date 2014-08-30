@@ -109,7 +109,7 @@ public class PDGenerator {
 							String level = getLevelOfFilter(filter.getType());
 							Repeat filterSet = new Repeat("createFiltersSeq");
 							simlevels.add(filterSet);
-							simlevels.add(new Var("symplevel", level));
+							filterSet.add(new Var("symplevel", level));
 							if (level != null) {
 								GraphAttribute filters = filter.getAttributeByName(TASK_ALLOWED);
 								GraphCollection filterCollection = filters.getCollectionValue();
