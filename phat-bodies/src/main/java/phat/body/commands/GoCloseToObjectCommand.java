@@ -83,6 +83,7 @@ public class GoCloseToObjectCommand extends PHATCommand implements
 					// Vector3f loc =
 					// SpatialUtils.getCenterBoinding(targetSpatial);
 					Vector3f loc = targetSpatial.getWorldTranslation();
+                                        System.out.println("Location = "+loc);
 					boolean reachable = nmmc.moveTo(loc);
 					System.out.println("Loc = " + loc);
 					System.out.println("Object " + targetObjectId

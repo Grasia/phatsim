@@ -73,7 +73,7 @@ public class CreateSmartphoneTest implements PHATInitAppListener {
         seAPI = SpatialEnvironmentAPI.createSpatialEnvironmentAPI(app);
 
         seAPI.getWorldAppState().setCalendar(2013, 1, 1, 12, 0, 0);
-        seAPI.getWorldAppState().setLandType(WorldAppState.LandType.TwoHouses);
+        seAPI.getWorldAppState().setLandType(WorldAppState.LandType.Basic);
         seAPI.getHouseAppState().runCommand(new CreateHouseCommand("House1", HouseFactory.HouseType.House3room2bath));
         
 

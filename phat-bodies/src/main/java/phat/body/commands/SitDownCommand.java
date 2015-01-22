@@ -20,7 +20,9 @@
 package phat.body.commands;
 
 import com.jme3.app.Application;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 
@@ -37,6 +39,7 @@ import phat.commands.PHATCommand.State;
 import phat.structures.houses.House;
 import phat.structures.houses.HouseAppState;
 import phat.util.Lazy;
+import phat.util.SpatialFactory;
 import phat.util.SpatialUtils;
 
 /**
@@ -47,7 +50,6 @@ public class SitDownCommand extends PHATCommand implements AutonomousControlList
 
     public static String AVAILABLE_SEAT_KEY = "AVAILABLE_SEAT_KEY";
     public static String PLACE_ID_KEY = "PLACE_ID_KEY";
-    
     private String bodyId;
     private String placeId;
     BodiesAppState bodiesAppState;
@@ -81,7 +83,8 @@ public class SitDownCommand extends PHATCommand implements AutonomousControlList
                 float minDistance = Float.MAX_VALUE;
                 for (Spatial pts : seats.getChildren()) {
                     if (isSeatAvailable(pts)) {
-                        float cd = pts.getWorldTranslation().distanceSquared(body.getWorldTranslation());
+                        float cd = pts.getWorldTranslation().distanceSquared(
+                                body.getWorldTranslation());
                         if (cd < minDistance) {
                             minDistance = cd;
                             result = pts;
@@ -117,21 +120,23 @@ public class SitDownCommand extends PHATCommand implements AutonomousControlList
             }
             nearestSeat = getNearestFreeSeat(placeId, body);
             //sitDown();
-            goToCommand = new GoToCommand(bodyId, new Lazy<Vector3f>() {
-                @Override
-                public Vector3f getLazy() {
-                    Spatial access = ((Node) nearestSeat).getChild("Access");
-                    if (access != null) {
-                        return access.getWorldTranslation();
+            if (nearestSeat != null) {
+                goToCommand = new GoToCommand(bodyId, new Lazy<Vector3f>() {
+                    @Override
+                    public Vector3f getLazy() {
+                        Spatial access = ((Node) nearestSeat).getChild("Access");
+                        if (access != null) {
+                            return access.getWorldTranslation();
+                        }
+                        Vector3f loc = nearestSeat.getWorldTranslation();
+                        Vector3f dir = nearestSeat.getWorldRotation().mult(Vector3f.UNIT_Z).normalize();
+                        return loc.add(dir.mult(0.5f));
                     }
-                    Vector3f loc = nearestSeat.getWorldTranslation();
-                    Vector3f dir = nearestSeat.getWorldRotation().mult(Vector3f.UNIT_Z).normalize();
-                    return loc.add(dir.mult(0.5f));
-                }
-            }, this);
-            goToCommand.setMinDistance(0.05f);
-            bodiesAppState.runCommand(goToCommand);
-            return;
+                }, this);
+                goToCommand.setMinDistance(0.05f);
+                bodiesAppState.runCommand(goToCommand);
+                return;
+            }
         }
 
         setState(State.Fail);

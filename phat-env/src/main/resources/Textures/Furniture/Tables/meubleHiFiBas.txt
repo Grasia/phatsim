@@ -1,0 +1,7 @@
+MeubleHiFiBas
+Author : Gael BETTINELLI
+License : Free Art License, see http://artlibre.org/licence/lal/en for more informations
+Textures :
+- Bois : http://freestocktextures.com/texture/id/698 modifié Gael BETTINELLI
+"Terms of use : FreeStockTextures.com are the authors of all the photos available on this site. All textures may be used for both personal and commercial purposes. You may make any derivative work out of them. However you are not allowed to sell or redistribute these textures in an underived form or if the modified product is a texture or a textures pack."
+- Autres textures basiques Gael BETTINELLI

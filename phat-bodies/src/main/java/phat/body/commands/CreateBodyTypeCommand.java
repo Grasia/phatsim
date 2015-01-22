@@ -20,9 +20,11 @@
 package phat.body.commands;
 
 import com.jme3.app.Application;
+import com.jme3.bullet.control.KinematicRagdollControl;
 import com.jme3.scene.Node;
 
 import java.util.logging.Level;
+import jme3tools.optimize.GeometryBatchFactory;
 
 import phat.body.BodiesAppState;
 import phat.body.BodyUtils;
@@ -30,7 +32,7 @@ import phat.body.control.animation.BasicCharacterAnimControl;
 import phat.body.control.navigation.PersuitAndAvoidControl;
 import phat.body.control.navigation.navmesh.NavMeshMovementControl;
 import phat.body.control.physics.PHATCharacterControl;
-import phat.body.sensing.vision.VisionControl;
+import phat.bullet.control.ragdoll.BVHRagdollPreset;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommand.State;
 
@@ -62,11 +64,11 @@ public class CreateBodyTypeCommand extends PHATCommand {
         body.setName(bodyId);
         body.setUserData("ID", bodyId);
         
-        //GeometryBatchFactory.optimize(body);
+        GeometryBatchFactory.optimize(body);
         
         PHATCharacterControl phatCharacterControl = body.getControl(PHATCharacterControl.class);
         if(phatCharacterControl == null) {
-            phatCharacterControl = new PHATCharacterControl();
+            phatCharacterControl = new PHATCharacterControl(0.2f, 1.9f, 80f);
             body.addControl(phatCharacterControl);
         }
         
@@ -82,11 +84,12 @@ public class CreateBodyTypeCommand extends PHATCommand {
             body.addControl(navMesh);
         }
         
-        /*BVHRagdollPreset preset = new BVHRagdollPreset();
+        BVHRagdollPreset preset = new BVHRagdollPreset();
         KinematicRagdollControl krc = new KinematicRagdollControl(preset, 0.5f);        
-        krc.setKinematicMode();        
+        krc.setKinematicMode();   
+        krc.setRootMass(10f);
         body.addControl(krc);
-        krc.setEnabled(false);*/
+        krc.setEnabled(false);
         
         //body.addControl(new RandomWalkControl());
         body.addControl(new PersuitAndAvoidControl());
@@ -95,7 +98,7 @@ public class CreateBodyTypeCommand extends PHATCommand {
         bodiesAppState.addBody(bodyId, body);
         
         //PhysicsUtils.setHighPhysicsPrecision(body);
-        body.addControl(new VisionControl());
+        //body.addControl(new VisionControl());
         
         BodyUtils.setBodyPosture(body, BodyUtils.BodyPosture.Standing);
         

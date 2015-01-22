@@ -61,7 +61,7 @@ public abstract class RagdollTransitionControl implements PhysicsTickListener {
         //kinematicRagdollControl.setEnabled(true);
         kinematicRagdollControl.setRagdollMode();
         
-        highPrecision();
+        //highPrecision();
         
         initBody();
         applyPhysics(ps, tpf);

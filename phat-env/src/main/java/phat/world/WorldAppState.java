@@ -90,6 +90,7 @@ public class WorldAppState extends AbstractAppState {
     DirectionalLight sun;
     AmbientLight ambientLight;
     LandType landType = LandType.Basic;
+    ColorRGBA terrainColor = ColorRGBA.Brown;
     public static final int SHADOWMAP_SIZE = 1024;
     private DirectionalLightShadowRenderer dlsr;
     private DirectionalLightShadowFilter dlsf;
@@ -230,7 +231,7 @@ public class WorldAppState extends AbstractAppState {
 
     private Node createBasicLand() {
         Node world = (Node) assetManager.loadModel("Scenes/Lands/Sky.j3o");
-        Spatial terrain = SpatialFactory.createCube(new Vector3f(100f, 0.1f, 100f), ColorRGBA.Brown);
+        Spatial terrain = SpatialFactory.createCube(new Vector3f(100f, 0.1f, 100f), terrainColor);
         terrain.move(0f, -0.15f, 0f);
         terrain.setName("terrain");
         terrain.addControl(new RigidBodyControl(0f));
@@ -499,5 +500,13 @@ public class WorldAppState extends AbstractAppState {
 
     public void setLandType(LandType landType) {
         this.landType = landType;
+    }
+
+    public ColorRGBA getTerrainColor() {
+        return terrainColor;
+    }
+
+    public void setTerrainColor(ColorRGBA terrainColor) {
+        this.terrainColor = terrainColor;
     }
 }

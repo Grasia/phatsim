@@ -1,1 +1,7 @@
 /phat-devices/target/
+*.so
+*~
+vapi.props
+
+/phat-mason/target/
+/phat-demos/target/

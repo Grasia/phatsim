@@ -285,8 +285,8 @@ public class AudioAndroid extends SimpleApplication {
     }
     
     public SmartPhone createSmartphone(String name, Vector3f loc, String emulatorName) {
-        Geometry geo_sp = SmartPhoneFactory.createSmartphoneGeometry(name);
-        SmartPhone smartphone = new SmartPhone(name, geo_sp);
+        Node sp = SmartPhoneFactory.createSmartphoneGeometry(name, new Vector3f(0.048f, 0.08f, 0.002f));
+        SmartPhone smartphone = new SmartPhone(name, sp);
         smartphone.setLocalTranslation(loc);
         
         MicrophoneControl micControl = new MicrophoneControl("Micro-"+name, 10000, audioRenderer);

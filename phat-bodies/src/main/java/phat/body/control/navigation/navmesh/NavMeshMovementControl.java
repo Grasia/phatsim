@@ -135,10 +135,10 @@ public class NavMeshMovementControl extends AbstractControl implements Autonomou
     private Geometry getGeoNavMesh() {
         List<Spatial> houses = SpatialUtils.getSpatialsByRole(SpatialUtils.getRootNode(spatial), "House");
         for (Spatial house : houses) {
-            if (SpatialUtils.contains(house, ((Node) spatial).getChild(0))) {
+            //if (SpatialUtils.contains(house, ((Node) spatial).getChild(0))) {
                 Node le = (Node) ((Node) house).getChild("LogicalEntities");
                 return (Geometry) le.getChild("NavMesh");
-            }
+            //}
         }
         return null;
     }

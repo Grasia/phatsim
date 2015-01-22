@@ -114,7 +114,7 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
         //Debug.enableDebugGrid(20, app.getAssetManager(), app.getRootNode());
         bulletAppState = new BulletAppState();        
         app.getStateManager().attach(bulletAppState);
-        bulletAppState.getPhysicsSpace().setAccuracy(1f/120f);
+        //bulletAppState.getPhysicsSpace().setAccuracy(1f/200f);
         //bulletAppState.setDebugEnabled(true);
 
         audioConfig = new AudioConfiguratorImpl(new AudioAppState());

@@ -47,7 +47,7 @@ public class PickUpCommand extends PHATCommand implements AutonomousControlListe
 
     public enum Hand {Left, Right}
     
-    float minDistance = 0.5f;
+    float minDistance = 0.75f;
     String bodyId;
     String entityId;
     Hand hand;
@@ -76,7 +76,7 @@ public class PickUpCommand extends PHATCommand implements AutonomousControlListe
                 Node rootNode = SpatialUtils.getRootNode(body);
                 Spatial s = SpatialUtils.getSpatialById(rootNode, entityId);
                 if (s != null) {
-                    if(body.getWorldTranslation().distance(s.getWorldTranslation()) < minDistance &&
+                    if(SpatialUtils.getCenterBoinding(body).distance(SpatialUtils.getCenterBoinding(s)) < minDistance &&
                             pickUp(body, s)) {
                         setState(State.Success);
                         return;
@@ -93,6 +93,7 @@ public class PickUpCommand extends PHATCommand implements AutonomousControlListe
 	}
     
     private boolean pickUp(Spatial body, Spatial obj) {
+        System.out.println("PICK_UP!!!!!");
         RigidBodyControl rbc = ActorFactory.findControl(obj, RigidBodyControl.class);
         if (rbc != null) {
             rbc.setEnabled(false);

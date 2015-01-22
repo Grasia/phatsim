@@ -45,7 +45,7 @@ public class ScreenAVDControl extends AbstractControl {
     float frecuency = 1f;
     float cont = 0f;
     AndroidVirtualDevice avd;
-    Node device;
+    Geometry display;
     Texture texture;
     AWTLoader awtLoader;
     final BufferedImage[] buf = new BufferedImage[2];
@@ -53,8 +53,8 @@ public class ScreenAVDControl extends AbstractControl {
     int imagCont = 0;
     Thread imageCapture;
 
-    public ScreenAVDControl(Node device, AndroidVirtualDevice avd) {
-        this.device = device;
+    public ScreenAVDControl(Geometry display, AndroidVirtualDevice avd) {
+        this.display = display;
         this.avd = avd;
     }
 
@@ -63,7 +63,6 @@ public class ScreenAVDControl extends AbstractControl {
         super.setSpatial(spatial);
 
         if (spatial != null) {
-            device = (Node) spatial;
             awtLoader = new AWTLoader();
             imageCapture = new Thread() {
                 @Override
@@ -98,14 +97,13 @@ public class ScreenAVDControl extends AbstractControl {
         if (cont > frecuency) {
             synchronized (buf) {
                 if (imagCont > 0) {
-                    Geometry geo = (Geometry) device.getChild(0);
                     if (texture == null) {
                         texture = new Texture2D(buf[index].getWidth(), buf[index].getHeight(), Image.Format.Depth24);
                         texture.setImage(awtLoader.load(buf[index], true));
-                        geo.getMaterial().setTexture("ColorMap", texture);
+                        display.getMaterial().setTexture("ColorMap", texture);
                     } else {
                         texture.setImage(awtLoader.load(buf[index], true));
-                        geo.updateGeometricState();
+                        display.updateGeometricState();
                     }
                     imagCont--;
                 }
@@ -120,7 +118,7 @@ public class ScreenAVDControl extends AbstractControl {
 
     @Override
     public Control cloneForSpatial(Spatial sptl) {
-        return new ScreenAVDControl(device, avd);
+        return new ScreenAVDControl(display, avd);
     }
 
     @Override

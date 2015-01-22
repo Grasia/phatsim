@@ -33,7 +33,8 @@ public class BVHRagdollPreset extends RagdollPreset {
      * @TODO calibrate free-degrees of each bone
      */
     @Override
-    protected void initBoneMap() {        
+    protected void initBoneMap() {     
+        System.out.println("initBoneMap....");
         boneMap.put("Head", new JointPreset(0f,0f,0f,0f,0f,0f));
         boneMap.put("Jaw", new JointPreset(0f,0f,0f,0f,0f,0f));
         boneMap.put("RightShoulder", new JointPreset(0f,0f,0f,0f,0f,0f));
@@ -51,9 +52,9 @@ public class BVHRagdollPreset extends RagdollPreset {
         boneMap.put("LeftForeArm", new JointPreset(FastMath.HALF_PI*1.2f, 0f, FastMath.QUARTER_PI, 0, 0f, 0f));
         boneMap.put("LeftHand", new JointPreset(FastMath.QUARTER_PI, -FastMath.QUARTER_PI/2f, 0f, 0f, FastMath.QUARTER_PI/2f, -FastMath.QUARTER_PI/2f));
         
-        //boneMap.put("Spine1", new JointPreset(-FastMath.QUARTER_PI/8f, -FastMath.QUARTER_PI/8f, FastMath.QUARTER_PI/4f, -FastMath.QUARTER_PI/4f, FastMath.QUARTER_PI/4f, -FastMath.QUARTER_PI/4f));
-        //boneMap.put("Spine", new JointPreset(-FastMath.QUARTER_PI/8f, -FastMath.QUARTER_PI/8f, FastMath.QUARTER_PI/4f, -FastMath.QUARTER_PI/4f, FastMath.QUARTER_PI/4f, -FastMath.QUARTER_PI/4f));
-        //boneMap.put("LowerBack", new JointPreset(-FastMath.QUARTER_PI/8f, -FastMath.QUARTER_PI/8f, FastMath.QUARTER_PI/4f, -FastMath.QUARTER_PI/4f, FastMath.QUARTER_PI/4f, -FastMath.QUARTER_PI/4f));
+        boneMap.put("Spine1", new JointPreset(-FastMath.QUARTER_PI/8f, -FastMath.QUARTER_PI/8f, FastMath.QUARTER_PI/4f, -FastMath.QUARTER_PI/4f, FastMath.QUARTER_PI/4f, -FastMath.QUARTER_PI/4f));
+        boneMap.put("Spine", new JointPreset(-FastMath.QUARTER_PI/8f, -FastMath.QUARTER_PI/8f, FastMath.QUARTER_PI/4f, -FastMath.QUARTER_PI/4f, FastMath.QUARTER_PI/4f, -FastMath.QUARTER_PI/4f));
+        boneMap.put("LowerBack", new JointPreset(-FastMath.QUARTER_PI/8f, -FastMath.QUARTER_PI/8f, FastMath.QUARTER_PI/4f, -FastMath.QUARTER_PI/4f, FastMath.QUARTER_PI/4f, -FastMath.QUARTER_PI/4f));
         
         boneMap.put("RightUpLeg", new JointPreset(FastMath.QUARTER_PI/2f, -FastMath.QUARTER_PI*1.6f, 0f, 0f, FastMath.QUARTER_PI, -FastMath.QUARTER_PI/2f));
         boneMap.put("RightLeg", new JointPreset(FastMath.HALF_PI*1.2f, 0f, 0f,0f,0f,0f));
@@ -84,7 +85,7 @@ public class BVHRagdollPreset extends RagdollPreset {
         
     @Override
     protected void initLexicon() {
-        
+        System.out.println("initLexicon....");
         LexiconEntry entry = new LexiconEntry2();
         entry.addSynonym("Neck", 100);        
         lexicon.put("Neck", entry);

@@ -102,7 +102,7 @@ public class SwitchOnTVCommandTest implements PHATInitAppListener {
         bodiesAppState.createBody(BodiesAppState.BodyType.ElderLP, "Patient");
         //bodiesAppState.runCommand(new SetBodyInCoordenatesCommand("Patient", Vector3f.ZERO));
         bodiesAppState.runCommand(new SetBodyInHouseSpaceCommand("Patient", "House1", "Hall"));
-        bodiesAppState.runCommand(new RandomWalkingCommand("Patient", true));
+        //bodiesAppState.runCommand(new RandomWalkingCommand("Patient", true));
         //bodiesAppState.runCommand(new SetPCListenerToBodyCommand("Patient"));
 
         devicesAppState = new DevicesAppState();

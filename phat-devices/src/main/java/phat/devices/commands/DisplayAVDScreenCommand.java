@@ -20,15 +20,18 @@
 package phat.devices.commands;
 
 import com.jme3.app.Application;
+import com.jme3.material.Material;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
-import java.awt.image.BufferedImage;
+import com.jme3.scene.Spatial;
+import java.util.List;
 import java.util.logging.Level;
 import phat.commands.PHATCommandListener;
 import phat.devices.DevicesAppState;
 import phat.devices.controls.ScreenAVDControl;
-import phat.devices.smartphone.SmartPhoneFactory;
+import static phat.devices.smartphone.SmartPhoneFactory.assetManager;
 import phat.mobile.adm.AndroidVirtualDevice;
+import phat.util.SpatialUtils;
 
 /**
  *
@@ -55,15 +58,21 @@ public class DisplayAVDScreenCommand extends PHATDeviceCommand {
     public void runCommand(Application app) {
         DevicesAppState devicesAppState = app.getStateManager().getState(DevicesAppState.class);
         Node device = devicesAppState.getDevice(smartphoneId);
-        AndroidVirtualDevice avd = devicesAppState.getAVD(avdId);
+        AndroidVirtualDevice avd = devicesAppState.getAVD(smartphoneId);
         if (device != null && avd != null) {
-            ScreenAVDControl c = device.getControl(ScreenAVDControl.class);
-            if(c == null) {
-                c = new ScreenAVDControl(device, avd);
-                device.addControl(c);                
+            List<Spatial> screens = SpatialUtils.getSpatialsByRole(device, "Screen");
+            System.out.println("#Screen = "+screens.size());
+            if (screens.size() > 0) {
+                Spatial screen = screens.get(0);
+                screen.setMaterial(new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md"));
+                ScreenAVDControl c = screen.getControl(ScreenAVDControl.class);
+                if (c == null) {
+                    c = new ScreenAVDControl((Geometry) screen, avd);
+                    screen.addControl(c);
+                }
+                c.setFrecuency(frecuency);
+                setState(State.Success);
             }
-            c.setFrecuency(frecuency);
-            setState(State.Success);
             return;
         }
         setState(State.Fail);

@@ -22,6 +22,7 @@ package phat.devices.smartphone;
 import com.jme3.asset.AssetManager;
 import com.jme3.audio.AudioRenderer;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
@@ -37,17 +38,13 @@ import com.jme3.scene.Node;
 import com.jme3.scene.control.BillboardControl;
 import com.jme3.scene.control.CameraControl;
 import com.jme3.scene.shape.Box;
+import com.jme3.scene.shape.Quad;
 import com.jme3.texture.FrameBuffer;
 import com.jme3.texture.Image;
 import com.jme3.texture.Texture;
 import com.jme3.texture.Texture2D;
 import com.jme3.texture.plugins.AWTLoader;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
 import phat.sensors.accelerometer.AccelerometerControl;
 import phat.sensors.camera.CameraSensor;
 import phat.sensors.microphone.MicrophoneControl;
@@ -65,6 +62,9 @@ public class SmartPhoneFactory {
     public static Camera camera;
     public static BulletAppState bulletAppState;
 
+    public static Material blackMat;
+    public static Material screenMat;
+    
     public static void init(BulletAppState bulletAppState, AssetManager assetManager,
             RenderManager renderManager, Camera camera,
             AudioRenderer audioRenderer) {
@@ -73,31 +73,50 @@ public class SmartPhoneFactory {
         SmartPhoneFactory.renderManager = renderManager;
         SmartPhoneFactory.camera = camera;
         SmartPhoneFactory.audioRenderer = audioRenderer;
+        
+        screenMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        screenMat.setTexture("ColorMap", assetManager.loadTexture("Textures/FrontSmartPhone.jpg"));
+        
+        blackMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        blackMat.setColor("Color", ColorRGBA.Black);
     }
 
-    public static Geometry createSmartphoneGeometry(String name) {
-        float scale = 1f;
-        Box box = new Box(0.048f * scale, 0.08f * scale, 0.002f * scale);
-        Geometry geo = new Geometry(name, box);
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setTexture("ColorMap", assetManager.loadTexture("Textures/FrontSmartPhone.jpg"));
-        geo.setMaterial(mat);
-        return geo;
+    public static Node createSmartphoneGeometry(String smartphoneId, Vector3f dimensions) {
+        Node smartphone = new Node(smartphoneId);
+        
+        smartphone.setUserData("ID", smartphoneId);
+        smartphone.setUserData("ROLE", "AndroidDevice");
+        smartphone.setUserData("TYPE", "Smartphone");
+        
+        Box box = new Box(dimensions.x, dimensions.y, dimensions.z);
+        Geometry deviceBody = new Geometry(smartphoneId, box);
+        deviceBody.setMaterial(blackMat);
+        smartphone.attachChild(deviceBody);
+        
+        Geometry screen = createDisplayGeometry("Screen1", dimensions.x*2f, dimensions.y*2f);
+        screen.setMaterial(screenMat);
+        screen.move(-dimensions.x, -dimensions.y, dimensions.z+0.01f);
+        smartphone.attachChild(screen);
+        
+        RigidBodyControl rbc = new RigidBodyControl(new BoxCollisionShape(), 5f);
+        smartphone.addControl(rbc);
+        rbc.setFriction(1f);
+        
+        return smartphone;
+    }
+    
+    public static Geometry createDisplayGeometry(String id, float width, float height) {
+        Geometry screen = new Geometry("Screen", new Quad(width, height));
+        screen.setUserData("ID", id);
+        screen.setUserData("ROLE", "Screen");
+        
+        return screen;
     }
 
     public static void setImageOnTexture(Geometry geo, BufferedImage bufImg) {
         Texture texture = new Texture2D(bufImg.getWidth(), bufImg.getHeight(), Image.Format.Depth24);
         texture.setImage(new AWTLoader().load(bufImg, false));
         geo.getMaterial().setTexture("ColorMap", texture);
-    }
-
-    public static Geometry createSmartphoneGeometry(String name, Vector3f dimension) {
-        Box box = new Box(Vector3f.ZERO, dimension);
-        Geometry geo = new Geometry(name, box);
-        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
-        mat.setTexture("ColorMap", assetManager.loadTexture("Textures/FrontSmartPhone.jpg"));
-        geo.setMaterial(mat);
-        return geo;
     }
 
     public static BitmapText showName(Node node) {
@@ -115,17 +134,7 @@ public class SmartPhoneFactory {
     }
 
     public static Node createSmartphone(String smartphoneId) {
-        Node smartphone = new Node(smartphoneId);
-        smartphone.setUserData("ID", smartphoneId);
-        smartphone.setUserData("ROLE", "Smartphone");
-        Geometry geo = createSmartphoneGeometry(smartphoneId);
-        smartphone.attachChild(geo);
-
-        RigidBodyControl rbc = new RigidBodyControl(1f);
-        smartphone.addControl(rbc);
-        rbc.setFriction(1f);
-
-        return smartphone;
+        return createSmartphoneGeometry(smartphoneId, new Vector3f(0.048f, 0.08f, 0.002f));
     }
 
     public static void enableCameraFacility(Node smartphone) {

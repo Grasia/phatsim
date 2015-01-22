@@ -49,8 +49,9 @@ public class TestHouse extends SimpleApplication {
         settings.setWidth(1280);
         settings.setHeight(720);
         app.setSettings(settings);
-        app.setDisplayFps(true);
+        app.setDisplayFps(false);
         app.setShowSettings(false);
+        app.setDisplayStatView(false);
         app.start();
     }
 
@@ -72,16 +73,16 @@ public class TestHouse extends SimpleApplication {
         worldAppState = new WorldAppState();
         getStateManager().attach(worldAppState);
         
-        worldAppState.setHour(5);
+        worldAppState.setHour(12);
         worldAppState.setVisibleCalendar(true);
         worldAppState.setEnableShadows(false);
-        worldAppState.setSpeedFactor(1000);
-        worldAppState.setLandType(WorldAppState.LandType.TwoHouses);
+        //worldAppState.setSpeedFactor(1000);
+        worldAppState.setLandType(WorldAppState.LandType.Grass);
 
         houseAppState = new HouseAppState();
         houseAppState.runCommand(new CreateHouseCommand("House1", HouseFactory.HouseType.House3room2bath));
-        houseAppState.runCommand(new CreateHouseCommand("House2", HouseFactory.HouseType.House3room2bath));
-        houseAppState.runCommand(new DebugShowHouseNavMeshCommand(true));
+        //houseAppState.runCommand(new CreateHouseCommand("House2", HouseFactory.HouseType.House3room2bath));
+        //houseAppState.runCommand(new DebugShowHouseNavMeshCommand(true));
         getStateManager().attach(houseAppState);
         
         /*getStateManager().attach(new AbstractAppState() {

@@ -41,7 +41,7 @@ public class CreateSmartphoneCommand extends PHATDeviceCommand {
     private boolean accelerometerSensor = false;
     private boolean microphoneSensor = false;
     private boolean attachCoordinateAxes = false;
-    
+
     public CreateSmartphoneCommand(String smartphoneId) {
         this(smartphoneId, null);
     }
@@ -55,14 +55,20 @@ public class CreateSmartphoneCommand extends PHATDeviceCommand {
     @Override
     public void runCommand(Application app) {
         DevicesAppState devicesAppState = app.getStateManager().getState(DevicesAppState.class);
-        Node smartphone = SmartPhoneFactory.createSmartphone(smartphoneId);        
+        Node smartphone = SmartPhoneFactory.createSmartphone(smartphoneId);
         smartphone.setName(smartphoneId);
 
-        SmartPhoneFactory.enableAccelerometerFacility(smartphone);
-        SmartPhoneFactory.enableMicrophoneFacility(smartphone);
-        SmartPhoneFactory.enableCameraFacility(smartphone);
-        
-        if(attachCoordinateAxes) {
+        if (accelerometerSensor) {
+            SmartPhoneFactory.enableAccelerometerFacility(smartphone);
+        }
+        if (microphoneSensor) {
+            SmartPhoneFactory.enableMicrophoneFacility(smartphone);
+        }
+        if (cameraSensor) {
+            SmartPhoneFactory.enableCameraFacility(smartphone);
+        }
+
+        if (attachCoordinateAxes) {
             Debug.attachCoordinateAxes(Vector3f.ZERO, 0.5f, SmartPhoneFactory.assetManager, smartphone);
         }
         devicesAppState.addDevice(smartphoneId, smartphone);
@@ -76,7 +82,7 @@ public class CreateSmartphoneCommand extends PHATDeviceCommand {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + smartphoneId +")";
+        return getClass().getSimpleName() + "(" + smartphoneId + ")";
     }
 
     public CreateSmartphoneCommand setAttachCoordinateAxes(boolean attachCoordinateAxes) {

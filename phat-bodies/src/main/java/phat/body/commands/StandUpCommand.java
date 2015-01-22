@@ -50,7 +50,7 @@ public class StandUpCommand extends PHATCommand implements AnimFinishedListener 
     private Node body;
     private HouseAppState houseAppState;
     BodiesAppState bodiesAppState;
-    Node seat;
+    Spatial seat;
 
     public StandUpCommand(String bodyId, PHATCommandListener listener) {
         super(listener);
@@ -75,13 +75,13 @@ public class StandUpCommand extends PHATCommand implements AnimFinishedListener 
             krc = body.getControl(KinematicRagdollControl.class);
             cc = body.getControl(PHATCharacterControl.class);
             StraightMovementControl smc = body.getControl(StraightMovementControl.class);
-
-            SitDownControl sdc = body.getControl(SitDownControl.class);
+            
             if (BodyUtils.isBodyPosture(body, BodyUtils.BodyPosture.Sitting)) {
                 // Character is seat in a chair or something like that
+                SitDownControl sdc = body.getControl(SitDownControl.class);
                 sdc.standUp();
                 BodyUtils.setBodyPosture(body, BodyUtils.BodyPosture.Standing);
-                setUnavailable();
+                setAvailable();
                 setState(PHATCommand.State.Success);
             } else if (BodyUtils.isBodyPosture(body, BodyUtils.BodyPosture.Falling)) {
                 BasicCharacterAnimControl bcac = body.getControl(BasicCharacterAnimControl.class);
@@ -102,10 +102,11 @@ public class StandUpCommand extends PHATCommand implements AnimFinishedListener 
         }
     }
 
-    private void setUnavailable() {
+    private void setAvailable() {
         String placeId = body.getUserData(PLACE_ID_KEY);
         Spatial place = getNearestSeat(placeId, body);
-        place.setUserData(SitDownCommand.AVAILABLE_SEAT_KEY, false);
+        place.setUserData(SitDownCommand.AVAILABLE_SEAT_KEY, true);
+        seat = place;
         body.setUserData(PLACE_ID_KEY, null);
     }
 
@@ -146,7 +147,9 @@ public class StandUpCommand extends PHATCommand implements AnimFinishedListener 
         cc.setWalkDirection(Vector3f.ZERO);
         cc.setViewDirection(body.getLocalRotation().getRotationColumn(2));
         BodyUtils.setBodyPosture(body, BodyUtils.BodyPosture.Standing);
-        seat.setUserData(AVAILABLE_SEAT_KEY, false);
+        if(seat != null) {
+            seat.setUserData(AVAILABLE_SEAT_KEY, false);
+        }
         setState(State.Success);
     }
 

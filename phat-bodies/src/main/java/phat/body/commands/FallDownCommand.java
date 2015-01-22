@@ -19,23 +19,34 @@
  */
 package phat.body.commands;
 
+import com.jme3.animation.Bone;
+import com.jme3.animation.SkeletonControl;
 import com.jme3.app.Application;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.PhysicsSpace;
+import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.control.KinematicRagdollControl;
+import com.jme3.bullet.objects.PhysicsRigidBody;
+import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 
 import java.util.logging.Level;
 
 import phat.body.BodiesAppState;
 import phat.body.BodyUtils;
+import static phat.body.commands.SitDownCommand.PLACE_ID_KEY;
 import phat.body.control.animation.BasicCharacterAnimControl;
+import phat.body.control.animation.SitDownControl;
 import phat.body.control.navigation.StraightMovementControl;
 import phat.body.control.physics.PHATCharacterControl;
 import phat.body.control.physics.ragdoll.BVHRagdollPreset;
+import phat.bullet.control.ragdoll.PushChestFoward;
 import phat.bullet.control.ragdoll.SimulateTripOver;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
+import phat.structures.houses.House;
 import phat.structures.houses.HouseAppState;
 import phat.util.PhysicsUtils;
 import phat.util.SpatialUtils;
@@ -47,6 +58,8 @@ import phat.util.SpatialUtils;
 public class FallDownCommand extends PHATCommand {
 
     private String bodyId;
+    HouseAppState houseAppState;
+    BodiesAppState bodiesAppState;
 
     public FallDownCommand(String bodyId, PHATCommandListener listener) {
         super(listener);
@@ -60,13 +73,25 @@ public class FallDownCommand extends PHATCommand {
 
     @Override
     public void runCommand(Application app) {
-        BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
         BulletAppState bulletAppState = app.getStateManager().getState(BulletAppState.class);
 
+        bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
+        houseAppState = app.getStateManager().getState(HouseAppState.class);
         Node body = bodiesAppState.getBody(bodyId);
 
         if (body != null && body.getParent() != null) {
-            SpatialUtils.printControls(body);
+            if (BodyUtils.isBodyPosture(body, BodyUtils.BodyPosture.Sitting)) {
+                // Character is seat in a chair or something like that
+                SitDownControl sdc = body.getControl(SitDownControl.class);
+                //sdc.standUp();
+                body.removeControl(sdc);
+                /*PHATCharacterControl cc = body.getControl(PHATCharacterControl.class);
+                 cc.setEnabled(true);
+                 BasicCharacterAnimControl bcac = body.getControl(BasicCharacterAnimControl.class);
+                 bcac.setEnabled(true);*/
+                BodyUtils.setBodyPosture(body, BodyUtils.BodyPosture.Standing);
+                setAvailable(body);
+            }
             KinematicRagdollControl krc = body.getControl(KinematicRagdollControl.class);
             if (krc == null) {
                 BVHRagdollPreset preset = new BVHRagdollPreset();
@@ -74,11 +99,7 @@ public class FallDownCommand extends PHATCommand {
                 body.addControl(krc);
                 bulletAppState.getPhysicsSpace().add(krc);
             }
-            krc.setRagdollMode();
-            if (!krc.isEnabled()) {
-                krc.setEnabled(true);
-            }
-
+            
             PHATCharacterControl cc = body.getControl(PHATCharacterControl.class);
             cc.setEnabled(false);
             //body.getControl(BasicCharacterAnimControl.class).setEnabled(false);
@@ -87,15 +108,33 @@ public class FallDownCommand extends PHATCommand {
             if (smc != null) {
                 body.removeControl(smc);
             }
-            
+
             BasicCharacterAnimControl bcac = body.getControl(BasicCharacterAnimControl.class);
-            if(bcac != null) {
+            if (bcac != null) {
                 bcac.setManualAnimation(null, null);
             }
+
+            if (!krc.isEnabled()) {
+                krc.setEnabled(true);
+            }
+            
+            SkeletonControl sc = body.getControl(SkeletonControl.class);
+            for (int i = 0; i < sc.getSkeleton().getBoneCount(); i++) {
+                Bone b = sc.getSkeleton().getBone(i);
+                //System.out.println("bone name = "+b.getName());
+                PhysicsRigidBody rbc = krc.getBoneRigidBody(b.getName());
+                if (rbc != null) {
+                    //System.out.println(b.getName()+" => "+rbc.getMass());
+                    rbc.setFriction(0.8f);
+                }
+            }
+            krc.setRagdollMode();
             
             SpatialUtils.printControls(body);
 
             BodyUtils.setBodyPosture(body, BodyUtils.BodyPosture.Falling);
+            
+            //bulletAppState.getPhysicsSpace().addTickListener(new PushChestFoward(body));
             //SimulateTripOver sto = new SimulateTripOver(body);
             //sto.activate();
             //krc.setEnabled(true);
@@ -104,6 +143,38 @@ public class FallDownCommand extends PHATCommand {
             return;
         }
         setState(State.Fail);
+    }
+
+    private void setAvailable(Node body) {
+        String placeId = body.getUserData(PLACE_ID_KEY);
+        Spatial place = getNearestSeat(placeId, body);
+        place.setUserData(SitDownCommand.AVAILABLE_SEAT_KEY, true);
+        body.setUserData(PLACE_ID_KEY, null);
+    }
+
+    public Spatial getNearestSeat(String placeId, Spatial body) {
+        Spatial result = null;
+        Node placeToSit = null;
+        House house = houseAppState.getHouse(body);
+        if (house != null) {
+            placeToSit = (Node) SpatialUtils.getSpatialById(house.getRootNode(), placeId);
+        } else {
+            placeToSit = (Node) SpatialUtils.getSpatialById(bodiesAppState.getRootNode(), placeId);
+        }
+        if (placeToSit != null) {
+            if (placeToSit.getChild("Seats") != null) {
+                Node seats = (Node) placeToSit.getChild("Seats");
+                float minDistance = Float.MAX_VALUE;
+                for (Spatial pts : seats.getChildren()) {
+                    float cd = pts.getWorldTranslation().distanceSquared(body.getWorldTranslation());
+                    if (cd < minDistance) {
+                        minDistance = cd;
+                        result = pts;
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     @Override

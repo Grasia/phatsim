@@ -60,6 +60,7 @@ public class SetAndroidEmulatorCommand extends PHATDeviceCommand {
     @Override
     public void runCommand(Application app) {
         DevicesAppState devicesAppState = app.getStateManager().getState(DevicesAppState.class);
+        devicesAppState.registerAllAndroidDevicesInScenario();
         Node device = devicesAppState.getDevice(smartphoneId);
         if (device != null) {
             AndroidVirtualDevice avd = new AndroidVirtualDevice(avdId, serialEmulator, smartphoneId);

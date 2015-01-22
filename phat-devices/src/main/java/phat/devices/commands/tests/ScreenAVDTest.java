@@ -110,6 +110,7 @@ public class ScreenAVDTest implements PHATInitAppListener {
         app.getStateManager().attach(worldAppState);
         worldAppState.setCalendar(2013, 1, 1, 12, 0, 0);
 
+        /*
         houseAppState = new HouseAppState();
         houseAppState.runCommand(new CreateHouseCommand("House1", HouseFactory.HouseType.House3room2bath));
         app.getStateManager().attach(houseAppState);
@@ -120,7 +121,7 @@ public class ScreenAVDTest implements PHATInitAppListener {
         bodiesAppState.createBody(BodiesAppState.BodyType.Elder, "Patient");
         bodiesAppState.runCommand(
                 new SetBodyInCoordenatesCommand("Patient", new Vector3f(1.5f, 0.0f, 7.45f)));
-        bodiesAppState.runCommand(new SetBodyHeightCommand("Patient", 1.7f));
+        bodiesAppState.runCommand(new SetBodyHeightCommand("Patient", 1.7f));*/
                 
         devicesAppState = new DevicesAppState();
         stateManager.attach(devicesAppState);

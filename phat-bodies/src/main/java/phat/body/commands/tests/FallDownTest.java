@@ -85,7 +85,8 @@ public class FallDownTest implements PHATInitAppListener {
         BulletAppState bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
         //bulletAppState.setDebugEnabled(true);
-        bulletAppState.getPhysicsSpace().setAccuracy(1f/120f);
+        //bulletAppState.getPhysicsSpace().setAccuracy(1f/120f);
+        bulletAppState.setDebugEnabled(true);
 
         seAPI = SpatialEnvironmentAPI.createSpatialEnvironmentAPI(app);
 
