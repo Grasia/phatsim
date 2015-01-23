@@ -20,15 +20,23 @@
 package phat.devices.commands;
 
 import com.jme3.app.Application;
+import com.jme3.app.SimpleApplication;
+import com.jme3.material.Material;
 import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
+import com.jme3.scene.shape.Quad;
+import java.util.List;
 import java.util.logging.Level;
 import phat.commands.PHATCommandListener;
 import phat.devices.DevicesAppState;
 import phat.devices.smartphone.SmartPhoneFactory;
+import static phat.devices.smartphone.SmartPhoneFactory.assetManager;
 import phat.util.Debug;
+import phat.util.SpatialUtils;
 
 /**
  *
@@ -55,9 +63,18 @@ public class CreateSmartphoneCommand extends PHATDeviceCommand {
     @Override
     public void runCommand(Application app) {
         DevicesAppState devicesAppState = app.getStateManager().getState(DevicesAppState.class);
-        Node smartphone = SmartPhoneFactory.createSmartphone(smartphoneId);
+        
+        Spatial device = SpatialUtils.getSpatialById(((SimpleApplication)app).getRootNode(), smartphoneId);
+        Node smartphone;
+        System.out.println("DEVICE ===== "+device);
+        if(device != null && device instanceof Node) {
+            smartphone = (Node) device;
+            fixScreen(device);
+        } else {
+            smartphone = SmartPhoneFactory.createSmartphone(smartphoneId);
+        }
         smartphone.setName(smartphoneId);
-
+        
         if (accelerometerSensor) {
             SmartPhoneFactory.enableAccelerometerFacility(smartphone);
         }
@@ -73,6 +90,27 @@ public class CreateSmartphoneCommand extends PHATDeviceCommand {
         }
         devicesAppState.addDevice(smartphoneId, smartphone);
         setState(State.Success);
+    }
+    
+    private void fixScreen(Spatial device) {
+        List<Spatial> screens = SpatialUtils.getSpatialsByRole(device, "Screen");
+            if (screens.size() > 0) {
+                Geometry geo = (Geometry) screens.get(0);
+                Node p = geo.getParent();
+                geo.removeFromParent();
+                geo = new Geometry("Screen", new Quad(1f, 0.6f));
+                geo.setUserData("ID", "Screen1");
+                geo.setUserData("ROLE", "Screen");
+                Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+                mat.setTexture("ColorMap", assetManager.loadTexture("Textures/FrontSmartPhone.jpg"));
+                geo.setMaterial(mat);
+                geo.move(-1.4f, 0f, -0.6f);
+                geo.rotate(-FastMath.HALF_PI, 0f, 0f);
+                geo.setLocalScale(Vector3f.UNIT_XYZ.divide(p.getWorldScale()));
+                p.attachChild(geo);
+                setState(State.Success);
+                return;
+            }
     }
 
     @Override

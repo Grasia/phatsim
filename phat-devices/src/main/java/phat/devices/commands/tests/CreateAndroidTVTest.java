@@ -92,14 +92,13 @@ public class CreateAndroidTVTest implements PHATInitAppListener {
         String deviceId = "AndroidTV1";
         //String avdId = "Nexes_S_API_21";
         String avdId = "AndroidTV1";
-        //devicesAppState.runCommand(new CreateSmartphoneCommand(deviceId));
+        devicesAppState.runCommand(new CreateSmartphoneCommand(deviceId));
         //Vector3f loc = new Vector3f(9.0942f, 0.75f, 4.0266f);
-        Vector3f loc = new Vector3f(0f, 0.1f, 0f);
         //devicesAppState.runCommand(new SetDeviceInCoordenatesCommand(deviceId, loc));
         devicesAppState.runCommand(new SetAndroidEmulatorCommand(deviceId, avdId, "emulator-5554"));
-        //devicesAppState.runCommand(new StartActivityCommand("Smartphone1", "phat.android.apps", "BodyPositionMonitoring"));
+        devicesAppState.runCommand(new StartActivityCommand(deviceId, "es.ucm.fdi.grasia.smarttvapp.gui", "TVAppActivity"));
         
-        devicesAppState.runCommand(new SetImageOnScreenCommand(deviceId, "Textures/FrontSmartPhone.jpg"));
+        //devicesAppState.runCommand(new SetImageOnScreenCommand(deviceId, "Textures/FrontSmartPhone.jpg"));
         DisplayAVDScreenCommand displayCommand = new DisplayAVDScreenCommand(deviceId, avdId);
         displayCommand.setFrecuency(0.5f);
         devicesAppState.runCommand(displayCommand);

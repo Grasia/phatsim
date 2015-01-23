@@ -66,7 +66,6 @@ public class SetImageOnScreenCommand extends PHATDeviceCommand {
     public void runCommand(Application app) {
         DevicesAppState devicesAppState = app.getStateManager().getState(DevicesAppState.class);
 
-        devicesAppState.registerAllAndroidDevicesInScenario();
         Node device = devicesAppState.getDevice(deviceId);
 
         if (device != null) {

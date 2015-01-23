@@ -99,7 +99,7 @@ public class DevicesAppState extends AbstractAppState {
 
     public void registerAllAndroidDevicesInScenario() {
         List<Spatial> devices = SpatialUtils.getSpatialsByRole(app.getRootNode(), "AndroidDevice");
-        for (Spatial device : SpatialUtils.getSpatialsByRole(app.getRootNode(), "AndroidDevice")) {
+        for (Spatial device : devices) {
             String id = device.getUserData("ID");
             if (id != null) {
                 addDevice(id, (Node) device);
