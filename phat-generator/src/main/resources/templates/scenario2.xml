@@ -63,7 +63,8 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
     public void initDevices(DeviceConfigurator deviceConfig) {
     	@@@repeat id="createSP"@@@
         deviceConfig.runCommand(new CreateSmartphoneCommand("@@@v@@@SPname@@@/v@@@"));
-        deviceConfig.runCommand(new SetDeviceOnPartOfBodyCommand("@@@v@@@humanId@@@/v@@@","@@@v@@@SPname@@@/v@@@", SetDeviceOnPartOfBodyCommand.PartOfBody.@@@v@@@partOfBody@@@/v@@@));@@@/repeat@@@
+        @@@repeat id="setLoc"@@@
+        deviceConfig.runCommand(new SetDeviceOnPartOfBodyCommand("@@@v@@@humanId@@@/v@@@","@@@v@@@SPname@@@/v@@@", SetDeviceOnPartOfBodyCommand.PartOfBody.@@@v@@@partOfBody@@@/v@@@));@@@/repeat@@@@@@/repeat@@@
         
         @@@repeat id="emulator"@@@
         deviceConfig.runCommand(new SetAndroidEmulatorCommand("@@@v@@@SPname@@@/v@@@", "@@@v@@@AvdName@@@/v@@@", "@@@v@@@AvdSerialNum@@@/v@@@"));
