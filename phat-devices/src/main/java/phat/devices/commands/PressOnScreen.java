@@ -21,7 +21,9 @@ package phat.devices.commands;
 
 import com.jme3.app.Application;
 import com.jme3.scene.Node;
+import edu.cmu.sphinx.frontend.filter.Preemphasizer;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import phat.commands.PHATCommandListener;
 import phat.devices.DevicesAppState;
 import phat.mobile.adm.AndroidVirtualDevice;
@@ -35,6 +37,7 @@ public class PressOnScreen extends PHATDeviceCommand {
     private String smartphoneId;
     private int x;
     private int y;
+    TouchingThread thread;
 
     public PressOnScreen(String smartphoneId, int x, int y) {
         this(smartphoneId, x, y, null);
@@ -50,17 +53,39 @@ public class PressOnScreen extends PHATDeviceCommand {
 
     @Override
     public void runCommand(Application app) {
-        DevicesAppState devicesAppState = app.getStateManager().getState(DevicesAppState.class);
-        Node smartphone = devicesAppState.getDevice(smartphoneId);
-        if(smartphone != null) {
-            AndroidVirtualDevice avd = devicesAppState.getAVD(smartphoneId);
-            if(avd != null) {
-                avd.tap(x,y);
-                setState(State.Success);
-                return;
-            }
+        thread = new TouchingThread(app, this);
+        thread.start();
+    }
+
+    class TouchingThread extends Thread {
+        Application app;
+        PressOnScreen pos;
+
+        public TouchingThread(Application app, PressOnScreen pos) {
+            this.app = app;
+            this.pos = pos;
         }
-        setState(State.Fail);
+        
+        @Override
+        public void run() {
+            DevicesAppState devicesAppState = app.getStateManager().getState(DevicesAppState.class);
+            Node smartphone = devicesAppState.getDevice(smartphoneId);
+            if (smartphone != null) {
+                AndroidVirtualDevice avd = devicesAppState.getAVD(smartphoneId);
+                if (avd != null) {
+                    avd.touchDown(x, y);
+                    try {
+                        sleep(700);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(PressOnScreen.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    avd.touchUp(x, y);
+                    pos.setState(PressOnScreen.State.Success);
+                    return;
+                }
+            }
+            pos.setState(PressOnScreen.State.Fail);
+        }
     }
 
     @Override

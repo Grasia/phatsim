@@ -21,11 +21,9 @@ package phat.devices.commands;
 
 import com.jme3.app.Application;
 import com.jme3.scene.Node;
-import com.sun.corba.se.spi.activation.ServerManager;
 import java.util.logging.Level;
 import phat.commands.PHATCommandListener;
 import phat.devices.DevicesAppState;
-import phat.devices.smartphone.SmartPhoneFactory;
 import phat.mobile.adm.AndroidVirtualDevice;
 import phat.sensors.accelerometer.AccelerometerControl;
 import phat.sensors.camera.CameraSensor;

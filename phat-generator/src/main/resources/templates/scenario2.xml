@@ -62,10 +62,15 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
     @Override
     public void initDevices(DeviceConfigurator deviceConfig) {
     	@@@repeat id="createSP"@@@
-        deviceConfig.runCommand(new CreateSmartphoneCommand("@@@v@@@SPname@@@/v@@@"));
-        @@@repeat id="setLoc"@@@
-        deviceConfig.runCommand(new SetDeviceOnPartOfBodyCommand("@@@v@@@humanId@@@/v@@@","@@@v@@@SPname@@@/v@@@", SetDeviceOnPartOfBodyCommand.PartOfBody.@@@v@@@partOfBody@@@/v@@@));@@@/repeat@@@@@@/repeat@@@
-        
+        CreateSmartphoneCommand csc@@@v@@@SPname@@@/v@@@ = new CreateSmartphoneCommand("@@@v@@@SPname@@@/v@@@");
+        @@@repeat id="createSPSetDim"@@@
+        csc@@@v@@@SPname@@@/v@@@.setDimensions(@@@v@@@width@@@/v@@@f , @@@v@@@height@@@/v@@@f , @@@v@@@depth@@@/v@@@f);
+        @@@/repeat@@@
+        deviceConfig.runCommand(csc@@@v@@@SPname@@@/v@@@);
+        @@@repeat id="setLocPartOfBody"@@@
+        deviceConfig.runCommand(new SetDeviceOnPartOfBodyCommand("@@@v@@@humanId@@@/v@@@","@@@v@@@SPname@@@/v@@@", SetDeviceOnPartOfBodyCommand.PartOfBody.@@@v@@@partOfBody@@@/v@@@));@@@/repeat@@@
+        @@@repeat id="setLocFurniture"@@@
+        deviceConfig.runCommand(new SetDeviceOnFurnitureCommand("@@@v@@@SPname@@@/v@@@", "House1", "@@@v@@@furId@@@/v@@@"));@@@/repeat@@@@@@/repeat@@@
         @@@repeat id="emulator"@@@
         deviceConfig.runCommand(new SetAndroidEmulatorCommand("@@@v@@@SPname@@@/v@@@", "@@@v@@@AvdName@@@/v@@@", "@@@v@@@AvdSerialNum@@@/v@@@"));
         @@@repeat id="installApp"@@@

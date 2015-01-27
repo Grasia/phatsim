@@ -169,14 +169,31 @@ public class SimulationGenerator {
             rep.add(createSPRep);
             createSPRep.add(new Var("SPname", smartphone.getID()));
 
+            String width = smartphone.getAttributeByName("WidthField").getSimpleValue();
+            String height = smartphone.getAttributeByName("HeightField").getSimpleValue();
+            String depth = smartphone.getAttributeByName("DepthField").getSimpleValue();
+
+            if (!width.equals("") && !height.equals("") && !depth.equals("")) {
+                Repeat setDims = new Repeat("createSPSetDim");
+                createSPRep.add(setDims);
+                setDims.add(new Var("width", width));
+                setDims.add(new Var("height", height));
+                setDims.add(new Var("depth", depth));
+            }
             GraphEntity loc = Utils.getTargetEntity(smartphone, "InitialDeviceLocation", simDiags.getRelationships());
-            if (loc != null && !loc.equals("")) {
-                Repeat setLocRep = new Repeat("setLoc");
-                createSPRep.add(setLocRep);
-                String humanId = loc.getAttributeByName("BelongsTo").getSimpleValue();
-                String partOfBody = loc.getAttributeByName("PartOfBodyName").getSimpleValue();
-                setLocRep.add(new Var("humanId", humanId));
-                setLocRep.add(new Var("partOfBody", partOfBody));
+            if (loc != null) {
+                if (loc.getType().equals("PartOfBody")) {
+                    Repeat setLocRep = new Repeat("setLocPartOfBody");
+                    createSPRep.add(setLocRep);
+                    String humanId = loc.getAttributeByName("BelongsTo").getSimpleValue();
+                    String partOfBody = loc.getAttributeByName("PartOfBodyName").getSimpleValue();
+                    setLocRep.add(new Var("humanId", humanId));
+                    setLocRep.add(new Var("partOfBody", partOfBody));
+                } else if (loc.getType().equals("FTable")) {
+                    Repeat setLocRep = new Repeat("setLocFurniture");
+                    createSPRep.add(setLocRep);
+                    setLocRep.add(new Var("furId", loc.getID()));
+                }
             }
         }
 

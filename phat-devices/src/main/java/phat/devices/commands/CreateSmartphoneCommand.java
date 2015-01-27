@@ -49,6 +49,7 @@ public class CreateSmartphoneCommand extends PHATDeviceCommand {
     private boolean accelerometerSensor = false;
     private boolean microphoneSensor = false;
     private boolean attachCoordinateAxes = false;
+    private Vector3f dimensions = new Vector3f(0.048f, 0.08f, 0.002f);
 
     public CreateSmartphoneCommand(String smartphoneId) {
         this(smartphoneId, null);
@@ -71,7 +72,7 @@ public class CreateSmartphoneCommand extends PHATDeviceCommand {
             smartphone = (Node) device;
             fixScreen(device);
         } else {
-            smartphone = SmartPhoneFactory.createSmartphone(smartphoneId);
+            smartphone = SmartPhoneFactory.createSmartphone(smartphoneId, dimensions);
         }
         smartphone.setName(smartphoneId);
         
@@ -126,5 +127,14 @@ public class CreateSmartphoneCommand extends PHATDeviceCommand {
     public CreateSmartphoneCommand setAttachCoordinateAxes(boolean attachCoordinateAxes) {
         this.attachCoordinateAxes = attachCoordinateAxes;
         return this;
+    }
+    
+    public CreateSmartphoneCommand setDimensions(float width, float height, float depth) {
+        dimensions.set(width, height, depth);
+        return this;
+    }
+
+    public Vector3f getDimensions() {
+        return dimensions;
     }
 }

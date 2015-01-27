@@ -133,8 +133,8 @@ public class SmartPhoneFactory {
         return ch;
     }
 
-    public static Node createSmartphone(String smartphoneId) {
-        return createSmartphoneGeometry(smartphoneId, new Vector3f(0.048f, 0.08f, 0.002f));
+    public static Node createSmartphone(String smartphoneId, Vector3f dimensions) {
+        return createSmartphoneGeometry(smartphoneId, dimensions);
     }
 
     public static void enableCameraFacility(Node smartphone) {

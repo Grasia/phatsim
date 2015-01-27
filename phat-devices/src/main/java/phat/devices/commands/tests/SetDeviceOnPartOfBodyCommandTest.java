@@ -36,6 +36,7 @@ import phat.body.commands.SetBodyInCoordenatesCommand;
 import phat.devices.DevicesAppState;
 import phat.devices.commands.CreateSmartphoneCommand;
 import phat.devices.commands.SetAndroidEmulatorCommand;
+import phat.devices.commands.SetDeviceOnFurnitureCommand;
 import phat.devices.commands.SetDeviceOnPartOfBodyCommand;
 import phat.devices.commands.StartActivityCommand;
 import phat.structures.houses.TestHouse;
@@ -99,6 +100,11 @@ public class SetDeviceOnPartOfBodyCommandTest implements PHATInitAppListener {
         devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone1"));
         devicesAppState.runCommand(new SetDeviceOnPartOfBodyCommand("Patient", "Smartphone1", 
                 SetDeviceOnPartOfBodyCommand.PartOfBody.Chest));
+        
+        devicesAppState.runCommand(new CreateSmartphoneCommand("SmartWatch1").setDimensions(0.03f, 0.03f, 0.01f));
+        devicesAppState.runCommand(new SetDeviceOnPartOfBodyCommand("Patient", "SmartWatch1", 
+                SetDeviceOnPartOfBodyCommand.PartOfBody.LeftWrist));
+        devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("deviceId", "House1", "furnitureId"));
         
         //devicesAppState.runCommand(new SetAndroidEmulatorCommand("Smartphone1", "Smartphone1", "emulator-5554"));
         //devicesAppState.runCommand(new StartActivityCommand("Smartphone1", "phat.android.apps", "CameraCaptureActivity"));
