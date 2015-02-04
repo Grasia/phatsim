@@ -74,7 +74,7 @@ public class SimulationGenerator {
                     bodyRep.add(new Var("bodyType", bodyType));
                     String showName = "false";
                     try {
-                        GraphAttribute ga = human.getAttributeByName("ShowName");
+                        GraphAttribute ga = hi.getAttributeByName("ShowName");
                         if (ga != null) {
                             String valueName = ga.getSimpleValue();
                             if (valueName != null && valueName.equals("Yes")) {
@@ -82,6 +82,7 @@ public class SimulationGenerator {
                             }
                         }
                     } catch (NotFound nf) {
+                        System.out.println("NOT FOUND ShowName"+nf.getMessage());
                     }
                     bodyRep.add(new Var("showName", showName));
                     String initialLoc = getInitialLocation(humanId, simDiag);
