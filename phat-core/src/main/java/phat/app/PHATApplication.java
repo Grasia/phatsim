@@ -30,7 +30,6 @@ public class PHATApplication extends SimpleApplication {
 
     PHATInitAppListener initializer;
     PHATFinalizeAppListener finalizer;
-    
     private boolean initialized = false;
 
     public PHATApplication(PHATInitAppListener initializer, AppState... states) {
@@ -54,6 +53,31 @@ public class PHATApplication extends SimpleApplication {
         flyCam.setDragToRotate(true);
     }
 
+    @Override
+    public void update() {
+        super.update();
+
+        if (speed == 0) {
+            timer.update();
+
+            if (inputEnabled) {
+                inputManager.update(timer.getTimePerFrame());
+            }
+
+            float tpf = timer.getTimePerFrame() * 1f;
+            
+            guiNode.updateLogicalState(tpf);
+            guiNode.updateGeometricState();
+
+            // render states
+            stateManager.render(renderManager);
+            renderManager.render(tpf, context.isRenderable());
+            simpleRender(renderManager);
+            stateManager.postRender();
+
+        }
+    }
+
     public boolean isInitialized() {
         return initialized;
     }
@@ -65,8 +89,16 @@ public class PHATApplication extends SimpleApplication {
     @Override
     public void finalize() throws Throwable {
         super.finalize();
-        if(finalizer != null) {
+        if (finalizer != null) {
             finalizer.finalize(this);
         }
+    }
+
+    public float getSimSpeed() {
+        return super.speed;
+    }
+
+    public void setSimSpeed(float speed) {
+        super.speed = speed;
     }
 }

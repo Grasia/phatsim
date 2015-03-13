@@ -47,10 +47,12 @@ import phat.config.impl.DeviceConfiguratorImpl;
 import phat.config.impl.HouseConfiguratorImpl;
 import phat.config.impl.WorldConfiguratorImpl;
 import phat.devices.DevicesAppState;
+import phat.gui.GUIMainMenuAppState;
 import phat.structures.houses.HouseAppState;
 import phat.util.Debug;
 import phat.world.PHATCalendar;
 import phat.world.WorldAppState;
+import tonegod.gui.core.Screen;
 
 /**
  *
@@ -67,6 +69,7 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
     BodyConfiguratorImpl bodyConfig;
     DeviceConfiguratorImpl deviceConfig;
     AgentConfiguratorImpl agentConfig;
+    boolean paused;
     long seed;
     String tittle = "PHAT";
     Random random;
@@ -112,10 +115,14 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
         app.getCamera().setRotation(new Quaternion(0.5041053f, -0.49580166f, 0.5068195f, 0.4931456f));
 
         //Debug.enableDebugGrid(20, app.getAssetManager(), app.getRootNode());
-        bulletAppState = new BulletAppState();        
-        app.getStateManager().attach(bulletAppState);
+        //bulletAppState = new BulletAppState();        
+        //app.getStateManager().attach(bulletAppState);
         //bulletAppState.getPhysicsSpace().setAccuracy(1f/200f);
         //bulletAppState.setDebugEnabled(true);
+        
+        Screen screen = new Screen(app, "tonegod/gui/style/def/style_map.gui.xml");
+        app.getGuiNode().addControl(screen);
+        app.getStateManager().attach(new GUIMainMenuAppState(screen));
 
         audioConfig = new AudioConfiguratorImpl(new AudioAppState());
         audioConfig.setMultiAudioRenderer(false, app);
@@ -147,6 +154,49 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
         random = new Random(seed);
     }
 
+    public void setSimSpeed(float speed) {
+        if(speed > 0) {
+            app.setSimSpeed(speed);
+            if(paused) {
+                resumePHAT();
+            }
+        } else if(!paused) {
+            pausePHAT();
+        }
+    }
+    
+    private void pausePHAT() {
+        paused = true;
+        
+        pauseAppState(BulletAppState.class);
+        pauseAppState(AgentsAppState.class);
+        pauseAppState(DevicesAppState.class);
+        pauseAppState(BodiesAppState.class);
+        pauseAppState(HouseAppState.class);
+        pauseAppState(WorldAppState.class);
+    }
+    
+    private <T extends AppState> void pauseAppState(Class<T> appStateClass) {
+        T appState = app.getStateManager().getState(appStateClass);
+        if(appState != null) {
+            app.getStateManager().detach(appState);
+        }
+    }
+    
+    private void resumePHAT() {
+        paused = false;
+        app.getStateManager().attach(bulletAppState);
+        app.getStateManager().attach(agentConfig.getAgentsAppState());
+        app.getStateManager().attach(deviceConfig.getDevicesAppState());
+        app.getStateManager().attach(bodyConfig.getBodiesAppState());
+        app.getStateManager().attach(houseConfig.getHousedAppState());
+        app.getStateManager().attach(worldConfig.getWorldAppState());
+    }
+    
+    public float getSimSpeed() {
+        return app.getSimSpeed();
+    }
+    
     @Override
     public void finalize(SimpleApplication app) {
         

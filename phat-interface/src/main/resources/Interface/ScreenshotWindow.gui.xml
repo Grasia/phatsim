@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+
+
+<root>
+    <screen>
+        <component type="Window" id="ScreenshotWindow" position="50,400" dimensions="400,400">
+            <method name="setWindowTitle" param0="Screenshot windows" />
+            <method name="setIsResizable" param0="false" />
+            <component type="Label" position="20,30" dimensions="200,20">
+                <method name="setText" param0="File path:" />
+            </component>
+            <component type="TextField" id="FilePathTextField" position="20,50" dimensions="360,20">
+                <method name="setText" param0="First Name:" />
+            </component>
+            <component type="Label" position="20,80" dimensions="200,20">
+                <method name="setText" param0="File name:" />
+            </component>
+            <component type="TextField" id="FileNameTextField" position="20,100" dimensions="360,20">
+                <method name="setText" param0="First Name:" />
+            </component>
+            <component type="Button" id="screenshotButton" position="150,130" dimensions="100,40">
+                <method name="setText" param0="Ok" />
+                <eventMethod name="onButtonMouseLeftUp" stateMethodName="saveScreenshot" />
+            </component>
+            <component type="Label" id="ScreenshotImage" position="100,180" dimensions="200,200">
+            </component>
+        </component>
+    </screen>
+</root>

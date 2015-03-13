@@ -137,8 +137,8 @@ public class ActorAdapter  {
         return null;
     }
     
-    private Node createSmartphone(String smartphoneId, String emulatorId, String activity) {
-        Node smartphone = SmartPhoneFactory.createSmartphone(smartphoneId);
+    private Node createSmartphone(String smartphoneId, Vector3f dimensions, String emulatorId, String activity) {
+        Node smartphone = SmartPhoneFactory.createSmartphone(smartphoneId, dimensions);
         SmartPhoneFactory.enableCameraFacility(smartphone);
         
         CameraSensor cameraSensor = smartphone.getControl(CameraSensor.class);
@@ -164,7 +164,7 @@ public class ActorAdapter  {
     }
     
     public Node createAudioSmartphone(String smartphoneId, String emulatorId) {
-        Node smartphone = SmartPhoneFactory.createSmartphone(smartphoneId);
+        Node smartphone = SmartPhoneFactory.createSmartphone(smartphoneId, new Vector3f(0.048f, 0.08f, 0.002f));
         
         smartphone.getControl(RigidBodyControl.class).setEnabled(false);
         

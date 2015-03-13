@@ -16,6 +16,16 @@
             <artifactId>phat-devices</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
+        <!--dependency>
+            <groupId>net.sf.sociaal</groupId>
+            <artifactId>tonegod.gui</artifactId>
+            <version>3.0.0.20130526</version>
+        </dependency-->
+        <dependency>
+            <groupId>net.sf.sociaal</groupId>
+            <artifactId>jME3-tonegod-gui</artifactId>
+            <version>0.4.6.1484</version>
+        </dependency>	
     </dependencies>
 
     <profiles>

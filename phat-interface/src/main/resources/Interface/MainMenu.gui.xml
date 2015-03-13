@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+
+
+<root>
+    <screen>
+        <component type="Button" id="MenuButton" position="0,0" dimensions="60,30">
+            <method name="setText" param0="Menu" />
+            <eventMethod name="onButtonMouseLeftUp" stateMethodName="showMenu" />
+        </component>
+        <component type="Button" id="PlayPauseButton" position="60,0" dimensions="60,30">
+            <method name="setText" param0="Pause" />
+            <eventMethod name="onButtonMouseLeftUp" stateMethodName="playPauseSim" />
+        </component>
+        <component type="Button" id="SpeedDownButton" position="120,0" dimensions="30,30">
+            <method name="setText" param0="&lt;" />
+            <eventMethod name="onButtonMouseLeftUp" stateMethodName="onSpeedDown" />
+        </component>
+        <component type="TextField" id="SpeedLabel" position="150,0" dimensions="40,30" >
+            <method name="setText" param0="1.0" />
+            <method name="setTextAlign" param0="Right" />
+            <method name="setTextVAlign" param0="Center" />
+            <method name="setIsEnabled" param0="false" />
+        </component>
+        <component type="Button" id="SpeedUpButton" position="190,0" dimensions="30,30">
+            <method name="setText" param0="&gt;" />
+            <eventMethod name="onButtonMouseLeftUp" stateMethodName="onSpeedUp" />
+        </component>
+        <!--component type="Spinner" id="SpeedSpinner" position="120,0" dimensions="100,30" orientation="HORIZONTAL">
+            <method name="setStepFloatRange" param0="0.5f" param1="16f" param2="0.5"/>
+            <method name="setTextClipPadding" param0="0f" param1="30f" param2="0f" param3="0f"/>
+            <eventMethod name="onChange" stateMethodName="onSpeedChange" />
+        </component-->
+        <!-- Info view Menu-->
+        <component type="Menu" id="ViewInfoMenu" position="0,0">
+            <method name="addMenuItem" param0="Time and date" param1="1" param2="null" param3="true"/>
+            <eventMethod name="onMenuItemClicked" stateMethodName="viewInfoMenuClick" />
+        </component>
+        <!-- Debug view Menu-->
+        <component type="Menu" id="ViewDebugMenu" position="0,0">
+            <method name="addMenuItem" param0="FPS" param1="1" param2="null" param3="true" />
+            <method name="addMenuItem" param0="Stat View" param1="2" param2="null" param3="true" />
+            <eventMethod name="onMenuItemClicked" stateMethodName="viewDebugMenuClick" />
+        </component>        
+        <!-- Debug view Menu-->
+        <component type="Menu" id="ViewMenu" position="0,0">
+            <method name="addMenuItem" param0="Information" param1="1" param2="ViewInfoMenu" />
+            <method name="addMenuItem" param0="Debug Tools" param1="2" param2="ViewDebugMenu" />
+        </component>
+        
+        <component type="Menu" id="ToolsMenu" position="0,0">
+            <method name="addMenuItem" param0="Take snapshot" param1="1" param2="null" />
+            <eventMethod name="onMenuItemClicked" stateMethodName="toolsMenuClick" />
+        </component>
+        
+        <component type="Menu" id="MainMenu" position="0,0">
+            <method name="addMenuItem" param0="View" param1="1" param2="ViewMenu" />
+            <method name="addMenuItem" param0="Tools" param1="2" param2="ToolsMenu"/>
+            <method name="addMenuItem" param0="Quit" param1="3" param2="null"/>
+            <eventMethod name="onMenuItemClicked" stateMethodName="menuClicked" />
+        </component>
+    </screen>
+</root>

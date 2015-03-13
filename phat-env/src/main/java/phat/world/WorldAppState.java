@@ -28,12 +28,9 @@ import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.MeshCollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.font.BitmapFont;
-import com.jme3.font.BitmapText;
 import com.jme3.light.AmbientLight;
 import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.FastMath;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
 import com.jme3.renderer.queue.RenderQueue;
@@ -49,9 +46,6 @@ import com.jme3.shadow.EdgeFilteringMode;
  import com.jme3.shadow.SpotLightShadowFilter;
  import com.jme3.shadow.SpotLightShadowRenderer;*/
 import com.jme3.system.AppSettings;
-import com.jme3.texture.Texture;
-import com.jme3.util.SkyFactory;
-import com.jme3.util.TangentBinormalGenerator;
 import java.util.ArrayList;
 import java.util.List;
 import phat.util.SpatialFactory;
@@ -73,11 +67,9 @@ public class WorldAppState extends AbstractAppState {
     AssetManager assetManager;
     BulletAppState bulletAppState;
     Node rootNode;
-    Node guiNode;
     AppSettings settings;
     BitmapFont guiFont;
     PHATCalendar calendar;          // Calendar that register the simulated time.
-    BitmapText calendarText;        // Element to show the calendar on the screen.
     boolean visibleCalendar = true;
     int year = 2013;
     int month = 1;
@@ -149,7 +141,7 @@ public class WorldAppState extends AbstractAppState {
         Node world = (Node) rootNode.getChild("World");
         sky = world.getChild("Sky");
         app.getViewPort().setBackgroundColor(ColorRGBA.Cyan);
-        if(sky != null) {
+        if (sky != null) {
             sky.removeFromParent();
         }
         if (sky == null) {
@@ -199,7 +191,6 @@ public class WorldAppState extends AbstractAppState {
         this.app = (SimpleApplication) application;
         this.assetManager = application.getAssetManager();
         this.rootNode = app.getRootNode();
-        this.guiNode = app.getGuiNode();
 
         SpatialFactory.init(assetManager, rootNode);
 
@@ -225,8 +216,6 @@ public class WorldAppState extends AbstractAppState {
             System.out.println("Create calendar!!!!");
             createCalendar();
         }
-
-        setVisibleCalendar(visibleCalendar);
     }
 
     private Node createBasicLand() {
@@ -236,7 +225,7 @@ public class WorldAppState extends AbstractAppState {
         terrain.setName("terrain");
         terrain.addControl(new RigidBodyControl(0f));
         world.attachChild(terrain);
-        
+
         return world;
     }
 
@@ -303,25 +292,6 @@ public class WorldAppState extends AbstractAppState {
 
     public void setVisibleCalendar(boolean visibleCalendar) {
         this.visibleCalendar = visibleCalendar;
-
-        if (visibleCalendar && guiFont != null) {
-            calendarText = new BitmapText(guiFont, false);
-            calendarText.setSize(guiFont.getCharSet().getRenderedSize());      // font size
-            calendarText.setColor(ColorRGBA.White);                             // font color            
-            calendarText.setText(calendar.toString());             // the text            
-
-            int pos = 0;
-            if (settings != null) {
-                pos = (int) Math.round(
-                        (settings.getWidth() - calendarText.getLineWidth()) / 2f);
-            }
-
-            calendarText.setLocalTranslation(pos, calendarText.getLineHeight(), 0); // position
-            guiNode.attachChild(calendarText);
-        } else if (calendarText != null) {
-            calendarText.removeFromParent();
-            calendarText = null;
-        }
     }
 
     public boolean isVisibleCalendar() {
@@ -343,9 +313,6 @@ public class WorldAppState extends AbstractAppState {
             totalMillis += 1000;
         }
         calendar.setTimeInMillis(calendar.getTimeInMillis() + totalMillis);
-        if (visibleCalendar) {
-            calendarText.setText(calendar.toString());
-        }
 
         updateLight(tpf);
     }

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+
+
+<root>
+    <screen>
+        <component type="Window" id="TimeWindow" position="0%,90%" dimensions="180,50">
+            <method name="setWindowTitle" param0="Date and Time" />
+            <method name="setIsResizable" param0="false" />
+            <method name="setGlobalAlpha" param0="0.8f" />
+            <component type="Label" id="TimeLabel" position="0,25" dimensions="180,20">
+                <method name="setText" param0="First Name:" />
+                <method name="setTextAlign" param0="Center" />
+                <method name="setTextVAlign" param0="Center" />
+            </component>
+        </component>
+    </screen>
+</root>
