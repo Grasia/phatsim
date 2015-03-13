@@ -61,6 +61,7 @@ public class PHATScreenshotAppState extends AbstractAppState implements ActionLi
     private Renderer renderer;
     private RenderManager rm;
     private ByteBuffer outBuf;
+    private ByteBuffer imgBuf;
     private int width, height;
     private Image image;
 
@@ -115,6 +116,7 @@ public class PHATScreenshotAppState extends AbstractAppState implements ActionLi
     @Override
     public void reshape(ViewPort vp, int w, int h) {
         outBuf = BufferUtils.createByteBuffer(w * h * 4);
+        imgBuf = BufferUtils.createByteBuffer(w * h * 4);
         width = w;
         height = h;
     }
@@ -148,13 +150,13 @@ public class PHATScreenshotAppState extends AbstractAppState implements ActionLi
                 byte b = outBuf.get(i + 2);
                 byte a = outBuf.get(i + 3);
                 
-                outBuf.put(i, b); // r
-                outBuf.put(i + 1, g); // g
-                outBuf.put(i + 2, r); // b
-                outBuf.put(i + 3, a); // a
+                imgBuf.put(i, b); // r
+                imgBuf.put(i + 1, g); // g
+                imgBuf.put(i + 2, r); // b
+                imgBuf.put(i + 3, a); // a
             }
             
-            image = new Image(Image.Format.RGBA8, width, height, outBuf);
+            image = new Image(Image.Format.RGBA8, width, height, imgBuf);
         }
     }
 
