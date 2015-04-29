@@ -113,7 +113,7 @@ public class PDGenerator {
 							if (level != null) {
 								GraphAttribute filters = filter.getAttributeByName(TASK_ALLOWED);
 								GraphCollection filterCollection = filters.getCollectionValue();
-								for (int i = 0; i < filterCollection.size(); i++) {
+								for (int i = 0; i < 1; i++) {
 									GraphEntity ge = filterCollection.getElementAt(i);
 									GraphAttribute filterRef = ge.getAttributeByName("modelID");
 									String filterDiagName = filterRef.getSimpleValue();
