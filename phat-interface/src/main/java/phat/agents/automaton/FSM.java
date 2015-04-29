@@ -252,7 +252,7 @@ public class FSM extends Automaton {
         }
         // si marca de pausa, ignorar
         if (pause) {
-            return;
+        	return ;
         }
         // El estado incial se da en el primer registro.
         if (currentState == null) {
@@ -298,7 +298,7 @@ public class FSM extends Automaton {
                     System.out.println(agent.getId() + ", " + name
                             + " automaton finished");
                 }
-                return;
+                return ;
             }
             // si no, llamar a decidir una transición
             Automaton nstate = decideTransition(phatInterface);
@@ -319,7 +319,7 @@ public class FSM extends Automaton {
             // bez subestados, es
             // automata jerárquico.
         }
-
+       
     }
 
     /**

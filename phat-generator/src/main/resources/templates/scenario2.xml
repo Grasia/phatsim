@@ -6,11 +6,18 @@
 @@@text@@@
 package phat.sim;
 
+
+import java.rmi.AlreadyBoundException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+
 import phat.agents.Agent;
 import phat.body.BodiesAppState;
 import phat.body.commands.*;
 import phat.devices.commands.*;
 import phat.config.*;
+import phat.world.MonitorEventQueue;
+import phat.world.MonitorEventQueueImp;
 import phat.world.WorldAppState;
 import phat.structures.houses.HouseFactory;
 import phat.PHATInitializer;
@@ -22,8 +29,9 @@ import phat.agents.impl.*;
  * @author pablo
  */
 public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer {
-
+	static MonitorEventQueueImp meq=new MonitorEventQueueImp();
     public static void main(String[] args) {
+    	meq.startServer(MonitorEventQueue.DefaultName);
         Main@@@v@@@simName@@@/v@@@PHATSimulation sim = new Main@@@v@@@simName@@@/v@@@PHATSimulation();
         PHATInterface phat = new PHATInterface(sim);
         phat.start();
@@ -87,7 +95,9 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
     @Override
     public void initAgents(AgentConfigurator agentsConfig) {
        @@@repeat id="agent"@@@
-       agentsConfig.add(new @@@v@@@agentname@@@/v@@@Agent("@@@v@@@agentname@@@/v@@@","@@@v@@@simName@@@/v@@@" ));@@@/repeat@@@
+       {@@@v@@@agentname@@@/v@@@Agent patient=new @@@v@@@agentname@@@/v@@@Agent("@@@v@@@agentname@@@/v@@@","@@@v@@@simName@@@/v@@@" );
+       patient.registerListener(meq); 
+       agentsConfig.add(patient);}@@@/repeat@@@
     }
     
     @Override
@@ -119,7 +129,9 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulationOnlyDevices  {
        
         @@@repeat id="emulator"@@@
 	AndroidCommandTools.launchAVD("@@@v@@@AvdName@@@/v@@@", "@@@v@@@AvdSerialNum@@@/v@@@");
-        @@@/repeat@@@
+        @@@/repeat@@@    E3PatientAgent patient=new E3PatientAgent("E3Patient","Sim1" );
+    	patient.registerListener(meq);
+       agentsConfig.add(patient);
     }
 
 }

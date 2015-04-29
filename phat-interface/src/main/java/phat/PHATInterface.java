@@ -20,6 +20,7 @@
 package phat;
 
 import com.aurellem.capture.AurellemSystemDelegate;
+
 import java.util.Random;
 
 import com.jme3.app.Application;
@@ -34,6 +35,7 @@ import com.jme3.system.AppSettings;
 import com.jme3.system.JmeSystem;
 
 import phat.agents.AgentsAppState;
+
 import phat.app.PHATApplication;
 import phat.app.PHATFinalizeAppListener;
 import phat.app.PHATInitAppListener;
@@ -73,10 +75,14 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
     long seed;
     String tittle = "PHAT";
     Random random;
+    
+
 
     public PHATInterface(PHATInitializer initializer) {
         this.initializer = initializer;
     }
+    
+   
 
     public void start() {
         app = new PHATApplication(this);

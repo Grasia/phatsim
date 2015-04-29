@@ -61,8 +61,8 @@ public abstract class SimpleState extends Automaton{
             notifityPostInitToListeners();
         }
         if(isFinished(phatInterface))
-            return;
-        simpleNextState(phatInterface);
+        	return ;
+        simpleNextState(phatInterface);        
     }
     
     public abstract void simpleNextState(PHATInterface phatInterface);

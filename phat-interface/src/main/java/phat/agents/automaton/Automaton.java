@@ -325,11 +325,12 @@ public abstract class Automaton {
      *
      * @nota: no hay una etiqueta de estado a ignorar
      * @param state
+     * @return 
      */
     public void nextState(PHATInterface phatInterface) {
         // si marca de pausa, ignorar
         if (pause || finished) {
-            return;
+            return ;
         }
         if (resumed) {
             if (finishCondition != null) {
@@ -410,7 +411,7 @@ public abstract class Automaton {
                             + name
                             + " automaton finished and no default state given, control returned to upper automaton. ");
                 }
-                return;
+                return ;
             }
         }
 
@@ -432,6 +433,7 @@ public abstract class Automaton {
         currentState.nextState(phatInterface); // los estados tienen a su vez
         // subestados, es automata
         // jerárquico.
+      
     }
 
     /**
