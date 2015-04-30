@@ -30,6 +30,7 @@ import java.util.List;
 
 import phat.PHATInterface;
 import phat.agents.automaton.Automaton;
+import phat.agents.automaton.AutomatonListener;
 import phat.agents.events.PHATEvent;
 import phat.agents.events.PHATEventManager;
 import phat.body.BodiesAppState;
@@ -59,8 +60,87 @@ public abstract class Agent implements PHATAgentTick {
 		}
 	}
 
+	private void registerListenerIntoAutomaton(){
+		if (getAutomaton()!=null && getListener()!=null){
+			
+			getAutomaton().addListener(new AutomatonListener() {
+
+				private AgentPHATEvent lastEvent=null;
+				@Override
+				public void preInit(Automaton automaton) {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public void postInit(Automaton automaton) {
+					
+
+				}
+
+				@Override
+				public void nextAutomaton(Automaton previousAutomaton,
+						Automaton nextAutomaton) {
+					
+					AgentPHATEvent currentEvent=null;
+					if (automaton.getLeafAutomaton()!=null){
+						currentEvent=
+								new AgentPHATEvent(getId(), 
+										getLocation(), 
+										getTime(), getBodyPosture(),
+										automaton.getLeafAutomaton().getName());
+
+					} else {
+						currentEvent=
+								new AgentPHATEvent(getId(), 
+										getLocation(), 
+										getTime(), getBodyPosture(),
+										"undertermined");
+
+					}
+
+					if (lastEvent==null ||(lastEvent!=null && !lastEvent.similar(currentEvent))){
+						lastEvent=currentEvent;
+						try {
+							System.out.println("Registrandoooooo1");
+							eventListener.notifyEvent(currentEvent);
+						} catch (RemoteException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}	
+
+
+					}
+
+
+
+				}
+
+				@Override
+				public void automatonResumed(Automaton resumedAutomaton) {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public void automatonInterrupted(Automaton automaton) {
+					// TODO Auto-generated method stub
+
+				}
+
+				@Override
+				public void automatonFinished(Automaton automaton, boolean isSuccessful) {
+					// TODO Auto-generated method stub
+
+				}
+			});
+		}
+
+	}
+
 	public void registerListener(MonitorEventQueue meq) {
 		eventListener=meq;		
+		registerListenerIntoAutomaton();
 	}    
 
 	public MonitorEventQueue getListener() {
@@ -107,9 +187,9 @@ public abstract class Agent implements PHATAgentTick {
 
 	public void setAutomaton(Automaton automaton) {
 		this.automaton = automaton;
+		this.registerListenerIntoAutomaton();
 	}
 
-	private AgentPHATEvent lastEvent=null;
 	@Override
 	public void update(PHATInterface phatInterface) {
 		if (!init) {
@@ -122,43 +202,10 @@ public abstract class Agent implements PHATAgentTick {
 		if (automaton != null) {
 			//System.out.println(bodyId+": "+automaton.getCurrentAction());
 			automaton.nextState(phatInterface);
-			if (eventListener!=null){
-				AgentPHATEvent currentEvent=null;
-				if (automaton.getLeafAutomaton()!=null){
-					currentEvent=
-							new AgentPHATEvent(getId(), 
-									getLocation(), 
-									getTime(), this.getBodyPosture(),
-									automaton.getLeafAutomaton().getName());
-
-				} else {
-					currentEvent=
-							new AgentPHATEvent(getId(), 
-									getLocation(), 
-									getTime(), this.getBodyPosture(),
-									"undertermined");
-					
-				}
-				
-				if (lastEvent==null ||(lastEvent!=null && !lastEvent.similar(currentEvent))){
-					lastEvent=currentEvent;
-					try {
-						eventListener.notifyEvent(currentEvent);
-					} catch (RemoteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}	
-					
-
-				}
-
-
-			}
-			// task fails
-			// task success
-			// starting task
 
 		}
+
+
 	}
 
 	public Vector3f getLocation() {

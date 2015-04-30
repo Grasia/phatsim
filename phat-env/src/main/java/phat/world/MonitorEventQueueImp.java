@@ -22,13 +22,12 @@ public class MonitorEventQueueImp implements MonitorEventQueue {
 		}
 		if (registry==null){
 			try {
-				System.err.println("otro");
+				
 				registry = LocateRegistry.getRegistry(port);
 				registry.list();// to force the connection and ensure there is something at the other side
 				// getRegistry is not failing when resolving the registry
-				System.err.println("terminado");
+
 			} catch (Exception  e) {
-				System.err.println("creado");
 				registry = java.rmi.registry.LocateRegistry.createRegistry(port); // Creates and exports a Registry instance	
 				
 			}		
