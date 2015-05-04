@@ -71,7 +71,7 @@ public class PHATServerManager {
 
         return ams;
     }
-    
+
     public TCPCameraSensorServer createAndStartCameraServer(String id, CameraSensor cameraSensor) {
         TCPCameraSensorServer ams = null;
         int port = ServiceManagerServer.getInstance().getNextPort();
@@ -115,7 +115,7 @@ public class PHATServerManager {
 
         return ams;
     }
-    
+
     public void stop() {
         for (List<TCPSensorServer> list : tcpSensorServers.values()) {
             for (TCPSensorServer server : list) {
@@ -155,13 +155,23 @@ public class PHATServerManager {
                     e.hasMoreElements();) {
 
                 NetworkInterface ni = (NetworkInterface) e.nextElement();
-                if (ni.getName().contains("eth") || ni.getName().contains("wlan"))  {
+                System.out.println("NetworkInterface = " + ni.getName());
+                if (ni.getName().contains("eth") || ni.getName().contains("wlan")) {
                     for (Enumeration ee = ni.getInetAddresses(); ee.hasMoreElements();) {
                         InetAddress ip = (InetAddress) ee.nextElement();
-                        if(ip instanceof Inet4Address && ip.getAddress() != null) {
+                        if (ip instanceof Inet4Address && ip.getAddress() != null) {
                             return ip;
                         }
                         //System.out.println("Ip's: " + ip.getHostAddress());
+                    }
+                }
+            }
+            NetworkInterface lo = NetworkInterface.getByName("lo");
+            if (lo != null) {
+                for (Enumeration ee = lo.getInetAddresses(); ee.hasMoreElements();) {
+                    InetAddress ip = (InetAddress) ee.nextElement();
+                    if (ip instanceof Inet4Address && ip.getAddress() != null) {
+                        return ip;
                     }
                 }
             }
