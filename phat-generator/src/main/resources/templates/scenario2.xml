@@ -34,6 +34,7 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
     	meq.startServer(MonitorEventQueue.DefaultName);
         Main@@@v@@@simName@@@/v@@@PHATSimulation sim = new Main@@@v@@@simName@@@/v@@@PHATSimulation();
         PHATInterface phat = new PHATInterface(sim);
+        phat.setSeed(@@@v@@@seedValue@@@/v@@@L);
         phat.start();
     }
 

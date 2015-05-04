@@ -61,23 +61,22 @@ public class DiseaseManager implements AutomatonListener {
     
     @Override
     public void preInit(Automaton automaton) {
-        if (!Filter.hasBeenFiltered(automaton)) {
-            Automaton alternative = automaton;
-            for (Symptom symptom : symptomMap.values()) {
-                System.out.println("Symptom = " + symptom.getSymptomType() + ": " + symptom.getCurrentLevel());
-                alternative = symptom.processFilters(agent, automaton);
-                System.out.println("Alternative = " + alternative);
-                if (!alternative.equals(automaton)) {
-                    automaton.getParent().replaceCurrentAutomaton(alternative);
-                    automaton = alternative;
-                }
-            }
-            Filter.markFiltered(automaton);
-        }
+        
     }
 
     @Override
     public void nextAutomaton(Automaton previousAutomaton, Automaton nextAutomaton) {
+        if (!Filter.hasBeenFiltered(nextAutomaton)) {
+            Automaton alternative = nextAutomaton;
+            for (Symptom symptom : symptomMap.values()) {
+                alternative = symptom.processFilters(agent, nextAutomaton);
+                if (!alternative.equals(nextAutomaton)) {
+                    nextAutomaton.getParent().replaceCurrentAutomaton(alternative);
+                    nextAutomaton = alternative;
+                }
+            }
+            Filter.markFiltered(nextAutomaton);
+        }      
         nextAutomaton.addListener(this);
     }
 

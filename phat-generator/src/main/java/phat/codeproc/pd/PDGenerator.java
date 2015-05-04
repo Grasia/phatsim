@@ -113,7 +113,7 @@ public class PDGenerator {
 							if (level != null) {
 								GraphAttribute filters = filter.getAttributeByName(TASK_ALLOWED);
 								GraphCollection filterCollection = filters.getCollectionValue();
-								for (int i = 0; i < 1; i++) {
+								for (int i = 0; i < filterCollection.size(); i++) {
 									GraphEntity ge = filterCollection.getElementAt(i);
 									GraphAttribute filterRef = ge.getAttributeByName("modelID");
 									String filterDiagName = filterRef.getSimpleValue();
@@ -320,10 +320,10 @@ public class PDGenerator {
 				selectRep.add(new Var("filterCond", getCondition(filterGE)));
 			}
 			for (GraphEntity firstFilter : Utils.getFirstEntities(filterGraph)) {
-				System.out.println("FIRST ENTITY => " + firstFilter.getID());
+				System.out.println("FIRST ENTITY => " + Utils.replaceBadChars(firstFilter.getID()));
 				Repeat selectRep = new Repeat("setFirstFilter");
 				filterSet.add(selectRep);
-				filterSet.add(new Var("firstFilter", Utils.replaceBadChars(firstFilter.getID())));
+				selectRep.add(new Var("firstFilter", Utils.replaceBadChars(firstFilter.getID())));
 			}
 		} catch (NullEntity ex) {
 			Logger.getLogger(PDGenerator.class.getName()).log(Level.SEVERE, null, ex);

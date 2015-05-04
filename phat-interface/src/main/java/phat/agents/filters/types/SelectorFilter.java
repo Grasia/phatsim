@@ -29,21 +29,30 @@ import phat.agents.automaton.Automaton;
  * @author pablo
  */
 public class SelectorFilter extends Filter {
+
     List<String> taskTypes = new ArrayList<>();
-    
+
     @Override
     public boolean checkCondition(Agent agent, Automaton automaton) {
-        boolean condition = super.checkCondition(agent, automaton);
-        
-        if(taskTypes.isEmpty()) {
-            return condition;
-        } 
-        
-        String entityType = automaton.getMetadata("SOCIAALML_ENTITY_TYPE");
-        String entityID = automaton.getMetadata("SOCIAALML_ENTITY_ID");
-        if(entityID != null && taskTypes.contains(entityID)) {
-            return condition;
+        /*System.out.println("SelectorFilter: "+agent.getId()+", "+automaton.getMetadata("SOCIAALML_ENTITY_ID"));
+        for(String types: taskTypes) {
+            System.out.println("\t-"+types);
+        }*/
+        if (super.checkCondition(agent, automaton)) {
+
+            if (taskTypes.isEmpty()) {
+                //System.out.println("true");
+                return true;
+            }
+
+            String entityType = automaton.getMetadata("SOCIAALML_ENTITY_TYPE");
+            String entityID = automaton.getMetadata("SOCIAALML_ENTITY_ID");
+            if (entityID != null && taskTypes.contains(entityID)) {
+                //System.out.println("true");
+                return true;
+            }
         }
+        //System.out.println("false");
         return false;
     }
 
@@ -51,7 +60,7 @@ public class SelectorFilter extends Filter {
     public Automaton apply(Agent agent, Automaton automaton) {
         return automaton;
     }
-    
+
     public void add(String taskType) {
         taskTypes.add(taskType);
     }
