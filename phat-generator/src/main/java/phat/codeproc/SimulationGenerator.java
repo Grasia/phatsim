@@ -144,6 +144,14 @@ public class SimulationGenerator {
     public void generateWorldInitialization(String simId, Graph simDiags,
             Repeat rep) throws NullEntity, NotFound {
         GraphEntity ge = getEntity(simDiags, "WorldInitialization");
+        GraphAttribute world = ge.getAttributeByName("SimulationSeedField");
+        
+        String seedValue = "0";
+        if(world != null) {
+            seedValue = world.getSimpleValue();            
+        }
+        rep.add(new Var("seedValue", seedValue));
+        
         GraphEntity iniDate = Utils.getTargetEntity(ge, "InitialDate");
         if (iniDate == null) {
             System.out.println("Hola");
