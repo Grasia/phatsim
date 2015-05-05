@@ -259,7 +259,7 @@ public class PDGenerator {
 				Repeat selectRep = new Repeat(SELECTOR_FILTER_TYPE);
 				filterSet.add(selectRep);
 				selectRep.add(new Var("filterName", Utils.replaceBadChars(filterGE.getID())));
-				selectRep.add(new Var("filterCond", getCondition(filterGE)));
+				selectRep.add(new Var("filterCond", getCondition(filterGraph,filterGE)));
 				for (GraphEntity taskGE : Utils.getTargetsEntity(filterGE, "AllowedTask")) {
 					Repeat allowedTaskRep = new Repeat("allowedTaskRep");
 					selectRep.add(allowedTaskRep);
@@ -269,7 +269,7 @@ public class PDGenerator {
 			for (GraphEntity filterGE : Utils.getEntities(filterGraph, DELAY_FILTER_TYPE)) {
 				Repeat selectRep = new Repeat(DELAY_FILTER_TYPE);
 				selectRep.add(new Var("filterName", Utils.replaceBadChars(filterGE.getID())));
-				selectRep.add(new Var("filterCond", getCondition(filterGE)));
+				selectRep.add(new Var("filterCond", getCondition(filterGraph,filterGE)));
 				selectRep.add(new Var("level", level));
 				try {
 					GraphAttribute delayGA = filterGE.getAttributeByName("DelayPercentageField");
@@ -283,12 +283,12 @@ public class PDGenerator {
 				Repeat selectRep = new Repeat(PLACE_FILTER_TYPE);
 				filterSet.add(selectRep);
 				selectRep.add(new Var("filterName", Utils.replaceBadChars(filterGE.getID())));
-				selectRep.add(new Var("filterCond", getCondition(filterGE)));
+				selectRep.add(new Var("filterCond", getCondition(filterGraph, filterGE)));
 			}
 			for (GraphEntity filterGE : Utils.getEntities(filterGraph, REPLACE_TASK_FILTER_TYPE)) {
 				Repeat selectRep = new Repeat(REPLACE_TASK_FILTER_TYPE);
 				selectRep.add(new Var("filterName", Utils.replaceBadChars(filterGE.getID())));
-				selectRep.add(new Var("filterCond", getCondition(filterGE)));
+				selectRep.add(new Var("filterCond", getCondition(filterGraph, filterGE)));
 				try {
 					String taskSentence = "null";
 					GraphAttribute diagRef = filterGE.getAttributeByName("SeqTaskDiagramField");
@@ -305,19 +305,19 @@ public class PDGenerator {
 				Repeat selectRep = new Repeat(TARGET_OBJ_FILTER_TYPE);
 				filterSet.add(selectRep);
 				selectRep.add(new Var("filterName", Utils.replaceBadChars(filterGE.getID())));
-				selectRep.add(new Var("filterCond", getCondition(filterGE)));
+				selectRep.add(new Var("filterCond", getCondition(filterGraph, filterGE)));
 			}
 			for (GraphEntity filterGE : Utils.getEntities(filterGraph, CHANGE_TOOL_FILTER_TYPE)) {
 				Repeat selectRep = new Repeat(CHANGE_TOOL_FILTER_TYPE);
 				filterSet.add(selectRep);
 				selectRep.add(new Var("filterName", Utils.replaceBadChars(filterGE.getID())));
-				selectRep.add(new Var("filterCond", getCondition(filterGE)));
+				selectRep.add(new Var("filterCond", getCondition(filterGraph, filterGE)));
 			}
 			for (GraphEntity filterGE : Utils.getEntities(filterGraph, UNABLE_FILTER_TYPE)) {
 				Repeat selectRep = new Repeat(UNABLE_FILTER_TYPE);
 				filterSet.add(selectRep);
 				selectRep.add(new Var("filterName", Utils.replaceBadChars(filterGE.getID())));
-				selectRep.add(new Var("filterCond", getCondition(filterGE)));
+				selectRep.add(new Var("filterCond", getCondition(filterGraph, filterGE)));
 			}
 			for (GraphEntity firstFilter : Utils.getFirstEntities(filterGraph)) {
 				System.out.println("FIRST ENTITY => " + Utils.replaceBadChars(firstFilter.getID()));
@@ -330,7 +330,7 @@ public class PDGenerator {
 		}
 	}
 
-	private String getCondition(GraphEntity entity) {
+	private String getCondition(Graph graph, GraphEntity entity) {
 		String cond = "null";
 		try {
 			cond = ConditionGenerator.generateCondition(Utils.getTargetsEntity(entity, "FPrecondition"));
@@ -339,7 +339,7 @@ public class PDGenerator {
 		return cond;
 	}
 
-	private void processFilterSequence(GraphEntity firstFilter, Repeat rep) {
+	private void processFilterSequence(Graph graph, GraphEntity firstFilter, Repeat rep) {
 		String cond = "null";
 		try {
 			cond = ConditionGenerator.generateCondition(Utils.getTargetsEntity(firstFilter, "FPrecondition"));
@@ -350,7 +350,7 @@ public class PDGenerator {
 
 		GraphEntity nextFilter = Utils.getTargetEntity(firstFilter, NEXT_FILTER_REL, firstFilter.getRelationships());
 		if (nextFilter != null) {
-			processFilterSequence(nextFilter, rep);
+			processFilterSequence(graph, nextFilter, rep);
 		}
 	}
 

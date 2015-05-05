@@ -58,7 +58,7 @@ public class SetBodyHeightCommand extends PHATCommand {
 
         Node body = bodiesAppState.getBody(bodyId);
 
-        if (body != null && body.getParent() != null) {
+        if (body != null) {
             Vector3f max = SpatialUtils.getMaxBounding(body);
             Vector3f min = SpatialUtils.getMinBounding(body);
             

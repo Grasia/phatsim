@@ -56,7 +56,7 @@ public class SetSpeedDisplacemenetCommand extends PHATCommand {
 
         Node body = bodiesAppState.getBody(bodyId);
 
-        if (body != null && body.getParent() != null) {
+        if (body != null) {
             body.setUserData("Speed", speed);
             setState(State.Success);
             return;

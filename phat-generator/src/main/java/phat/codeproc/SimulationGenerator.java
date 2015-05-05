@@ -89,7 +89,9 @@ public class SimulationGenerator {
                     System.out.println("humanId=" + humanId + ",il="
                             + initialLoc);
                     if (initialLoc != null) {
-                        bodyRep.add(new Var("iniLoc", initialLoc));
+                        Repeat initLocRep = new Repeat("initLocRep");
+                        bodyRep.add(initLocRep);
+                        initLocRep.add(new Var("iniLoc", initialLoc));
                     }
 
                     if (TimeIntervalsGenerator.getADL(humanId, browser) != null) {

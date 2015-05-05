@@ -57,7 +57,8 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
        bodyConfig.runCommand(new BodyLabelCommand("@@@v@@@actorname@@@/v@@@", @@@v@@@showName@@@/v@@@));
        
        // Initial locations
-       bodyConfig.setInSpace("@@@v@@@actorname@@@/v@@@", "House1", "@@@v@@@iniLoc@@@/v@@@");
+       @@@repeat id="initLocRep"@@@bodyConfig.setInSpace("@@@v@@@actorname@@@/v@@@", "House1", "@@@v@@@iniLoc@@@/v@@@");
+        @@@/repeat@@@
        bodyConfig.runCommand(new SetBodyHeightCommand("@@@v@@@actorname@@@/v@@@", 1.7f));
        @@@/repeat@@@
        @@@repeat id="CameraToBodyInit"@@@
