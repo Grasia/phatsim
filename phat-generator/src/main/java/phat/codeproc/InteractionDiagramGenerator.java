@@ -61,9 +61,9 @@ public class InteractionDiagramGenerator {
 				Collection<GraphEntity> conds = Utils.getTargetsEntity(ge, "ConditionNeeded");
 				Repeat repEP = new Repeat("eventProcessor");
 				repFather.add(repEP);
-				repEP.add(new Var("eventId", event.getID()));
+				repEP.add(new Var("eventId", Utils.replaceBadChars(event.getID())));
 				repEP.add(new Var("eventCondition", ConditionGenerator.generateCondition(conds)));
-				repEP.add(new Var("acticity", activity.getID()));
+				repEP.add(new Var("acticity", Utils.replaceBadChars(activity.getID())));
 			}
 		}
 	}

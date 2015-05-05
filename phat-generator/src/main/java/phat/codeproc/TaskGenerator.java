@@ -48,7 +48,7 @@ public class TaskGenerator {
     public void generateAllSeqTasks() throws NotFound {
         System.out.println("generateAllSeqTasks.............................");
         for (Graph std : Utils.getGraphsByType(SEQ_TASK_DIAG, browser)) {
-            System.out.println(">" + std.getType() + ":" + std.getID());
+            System.out.println(">" + std.getType() + ":" + Utils.replaceBadChars(std.getID()));
             Repeat rep = new Repeat("tasks");
             rep.add(new Var("taskName", Utils.replaceBadChars(std.getID())));
             sequence.addRepeat(rep);
@@ -64,7 +64,7 @@ public class TaskGenerator {
         while (task != null) {
             String sentence = getNewTaskInstanceSentence(task);
             sentence += ".setMetadata(\"SOCIAALML_ENTITY_ID\",\""
-                    + task.getID() + "\")\n"
+                    + Utils.replaceBadChars(task.getID()) + "\")\n"
                     + ".setMetadata(\"SOCIAALML_ENTITY_TYPE\",\""
                     + task.getType() + "\")";
             System.out.println(">>" + sentence);
@@ -77,7 +77,7 @@ public class TaskGenerator {
                         .getTargetEntity(task, "ProducesEvent");
                 if (event != null) {
                     Repeat eRep = new Repeat("events");
-                    eRep.add(new Var("eventName", event.getID()));
+                    eRep.add(new Var("eventName", Utils.replaceBadChars(event.getID())));
                     rep.add(eRep);
                 }
             }
@@ -189,7 +189,8 @@ public class TaskGenerator {
             GraphAttribute diagRef = taskGE
                     .getAttributeByName("SeqTaskDiagramField");
             if (!diagRef.getSimpleValue().equals("")) {
-                return "new " + diagRef.getSimpleValue() + "Task(agent)" + "\n"
+                return "new " + Utils.replaceBadChars(diagRef.getSimpleValue()) +
+                        "Task(agent)" + "\n"
                         + ".setCanBeInterrupted(" + canBeIterrupted + ")";
             } else {
                 return "null";

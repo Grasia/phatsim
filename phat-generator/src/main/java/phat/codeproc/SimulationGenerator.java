@@ -115,7 +115,7 @@ public class SimulationGenerator {
 
                 Repeat camRep = new Repeat("CameraToBodyInit");
                 simInitRep.add(camRep);
-                camRep.add(new Var("actorname", Utils.replaceBadChars(humanId)));
+                camRep.add(new Var("actorname", humanId));
                 String distance = "2";
                 String elevation = "15";
                 String front = "true";

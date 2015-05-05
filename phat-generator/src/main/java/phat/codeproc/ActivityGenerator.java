@@ -70,8 +70,7 @@ public class ActivityGenerator {
                 GraphAttribute ga = ge
                         .getAttributeByName(SEQ_TASK_DIAGRAM_FIELD);
                 if (ga != null) {
-                    String actDiagId = ga.getSimpleValue();
-                    System.out.println(ge.getID() + " >-* " + actDiagId);
+                    String actDiagId = Utils.replaceBadChars(ga.getSimpleValue());
                     if (actDiagId != null && !actDiagId.equals("")) {
                         Repeat repSeq = new Repeat("seqTaskSpec");
                         repSeq.add(new Var("seqTaskName", Utils.replaceBadChars(actDiagId)));
@@ -89,17 +88,15 @@ public class ActivityGenerator {
             for (GraphEntity ge : diagram.getEntities()) {
                 if (ge.getType().equals("TimeInterval")) {
                     // Define class structure
+                    String timeIntervalID = Utils.replaceBadChars(ge.getID());
                     Repeat rep = new Repeat("tis");
-                    rep.add(new Var("tisName", Utils.replaceBadChars(ge.getID())));
+                    rep.add(new Var("tisName", timeIntervalID));
                     seq.addRepeat(rep);
                     GraphAttribute ga = ge
                             .getAttributeByName(ACTIVITY_SPEC_FIELD);
-                    System.out.println("ACTIVITY_SPEC_FIELD (" + ge.getID()
-                            + "): " + ga);
                     if (ga != null) {
                         String actDiagId = ga.getSimpleValue();
                         if (actDiagId != null && !actDiagId.equals("")) {
-                            System.out.println("**" + actDiagId);
                             Graph actDiagram = Utils.getGraphByName(actDiagId,
                                     browser);
                             if (actDiagram != null) {
@@ -143,8 +140,8 @@ public class ActivityGenerator {
                         // condition
                         Repeat rep2 = new Repeat("regTrans");
                         repFather.add(rep2);
-                        rep2.add(new Var("actSource", activityName));
-                        rep2.add(new Var("actTarget", nextAct.getID()));
+                        rep2.add(new Var("actSource", Utils.replaceBadChars(activityName)));
+                        rep2.add(new Var("actTarget", Utils.replaceBadChars(nextAct.getID())));
                     }
                 }
             } else if (activity.getType().equals(IF_FLOW_CONTROL_TYPE)) {
