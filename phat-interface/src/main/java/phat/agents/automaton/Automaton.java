@@ -21,6 +21,7 @@ package phat.agents.automaton;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -124,6 +125,23 @@ public abstract class Automaton {
             al.preInit(this);
         }
     }
+    
+    public Automaton containsStateOfKind(Class<? extends Automaton> targetClass){        
+        Iterator<Automaton> iterator = this.pendingTransitions.iterator();
+		Automaton next;
+		while (iterator.hasNext()){
+			next=iterator.next();
+        	if (targetClass.isAssignableFrom(next.getClass())){
+        		return next;
+        	} else{
+        		Automaton result = next.containsStateOfKind(targetClass);
+        		if (result!=null)
+        			return result;
+        }    	}
+    	return null;
+    }
+    
+
 
     void notifityPostInitToListeners() {
         for (AutomatonListener al : listeners) {

@@ -15,6 +15,7 @@ public class AgentPHATEvent extends RemotePHATEvent implements Serializable{
 
 	private BodyPosture bodyPosture;
 	private String nextActionName;
+	private String aided;
 
 	public BodyPosture getBodyPosture() {
 		return bodyPosture;
@@ -54,6 +55,14 @@ public class AgentPHATEvent extends RemotePHATEvent implements Serializable{
 					super.equals(object);
 		}
 		return false;
+	}
+
+	public void setAided(String aided) {
+		this.aided=aided;
+	}
+	
+	public String getAided(){
+		return aided;
 	}
 
 }

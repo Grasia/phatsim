@@ -35,7 +35,19 @@ import phat.commands.PHATCommandListener;
 public class MoveToBodyLocAutomaton extends SimpleState implements PHATCommandListener {
 
     String destinyBodyName;
-    PHATCommand moveToBodyCommand;
+    public String getDestinyBodyName() {
+		return destinyBodyName;
+	}
+
+	public PHATCommand getMoveToBodyCommand() {
+		return moveToBodyCommand;
+	}
+
+	public boolean isDestinyReached() {
+		return destinyReached;
+	}
+
+	PHATCommand moveToBodyCommand;
     boolean destinyReached = false;
     float speed = -1f;
     

@@ -31,6 +31,7 @@ import java.util.List;
 import phat.PHATInterface;
 import phat.agents.automaton.Automaton;
 import phat.agents.automaton.AutomatonListener;
+import phat.agents.automaton.MoveToBodyLocAutomaton;
 import phat.agents.events.PHATEvent;
 import phat.agents.events.PHATEventManager;
 import phat.body.BodiesAppState;
@@ -59,6 +60,7 @@ public abstract class Agent implements PHATAgentTick {
 			instance.listened(word, location);
 		}
 	}
+	
 
 	private void registerListenerIntoAutomaton(){
 		if (getAutomaton()!=null && getListener()!=null){
@@ -83,12 +85,18 @@ public abstract class Agent implements PHATAgentTick {
 						Automaton nextAutomaton) {
 					
 					AgentPHATEvent currentEvent=null;
+					String aided=null;
+					Automaton result = nextAutomaton.containsStateOfKind(MoveToBodyLocAutomaton.class);
+					if (result!=null){
+						aided=((MoveToBodyLocAutomaton)result).getDestinyBodyName();
+					}
 					if (automaton.getLeafAutomaton()!=null){
 						currentEvent=
 								new AgentPHATEvent(getId(), 
 										getLocation(), 
 										getTime(), getBodyPosture(),
 										automaton.getLeafAutomaton().getName());
+						
 						
 
 					} else {
@@ -97,8 +105,10 @@ public abstract class Agent implements PHATAgentTick {
 										getLocation(), 
 										getTime(), getBodyPosture(),
 										"undertermined");
+						
 
 					}
+					currentEvent.setAided(aided);
 					System.out.println("Registrandoooooo2 "+currentEvent);
 					if (lastEvent==null ||(lastEvent!=null && !lastEvent.similar(currentEvent))){
 						lastEvent=currentEvent;
