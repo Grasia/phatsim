@@ -19,15 +19,18 @@
  */
 package phat.world;
 
+import java.io.Serializable;
+import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 /**
  * Calendar of the simulation.
  * 
  * @author pablo
  */
-public class PHATCalendar {            
+public class PHATCalendar implements Serializable{            
     Calendar calendar;
     
     public static void main(String [] args) {
@@ -36,9 +39,17 @@ public class PHATCalendar {
         System.out.println("Calendar = "+c.toString());
         System.out.println("Other!");
     }
-    
+    java.util.Date d=new java.util.Date();
     public PHATCalendar() {
-        this(2013, 1, 1, 7, 0, 0);
+    	
+        calendar = Calendar.getInstance();
+//        calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+//        calendar.set(Calendar.YEAR, d.getYear());
+//        calendar.set(Calendar.MONTH, d.getMonth()-1);
+//        calendar.set(Calendar.DAY_OF_MONTH, d.getDay()-1);
+//        calendar.set(Calendar.HOUR_OF_DAY, d.getHours());
+//        calendar.set(Calendar.MINUTE, d.getMinutes());
+//        calendar.set(Calendar.SECOND, d.getSeconds());
     }
     
     @Override
@@ -74,7 +85,7 @@ public class PHATCalendar {
     }
     
     public long getTimeInMillis() {
-        return calendar.getTimeInMillis();
+        return calendar.getTime().getTime();
     }
     
     @Override

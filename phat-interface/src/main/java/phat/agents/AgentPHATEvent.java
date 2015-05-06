@@ -43,7 +43,7 @@ public class AgentPHATEvent extends RemotePHATEvent implements Serializable{
 	}
 	
 	public String toString(){
-		return getId()+","+getTime()+","+getLocation()+","+getBodyPosture()+","+getNextActionName();
+		return "AgentPHATEvent:"+getId()+","+getTime()+","+getLocation()+","+getBodyPosture()+","+getNextActionName();
 	}
 
 	public boolean equals(Object object){

@@ -504,6 +504,7 @@ public abstract class Automaton {
      *
      * @return
      */
+    
     public boolean isFinished(PHATInterface phatInterface) {
         if (finishCondition != null && finishCondition.evaluate(agent)) {
             return true;

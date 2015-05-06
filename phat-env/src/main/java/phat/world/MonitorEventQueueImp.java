@@ -54,7 +54,7 @@ public class MonitorEventQueueImp implements MonitorEventQueue {
 	@Override
 	public synchronized Vector<RemotePHATEvent> retrieveAllEvents(){
 		Vector<RemotePHATEvent> events=new Vector<RemotePHATEvent>();
-		events.addAll(events);
+		events.addAll(queue);
 		queue.clear();
 		return events;
 		

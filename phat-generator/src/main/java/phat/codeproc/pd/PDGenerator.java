@@ -296,6 +296,7 @@ public class PDGenerator {
 						taskSentence = "new " + Utils.replaceBadChars(diagRef.getSimpleValue()) + "Task(agent)";
 					}
 					selectRep.add(new Var("taskSentence", taskSentence));
+					selectRep.add(new Var("taskSentenceClass", Utils.replaceBadChars(diagRef.getSimpleValue()) + "Task.class"));
 					filterSet.add(selectRep);
 				} catch (NotFound ex) {
 					Logger.getLogger(PDGenerator.class.getName()).log(Level.SEVERE, null, ex);

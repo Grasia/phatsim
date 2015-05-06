@@ -10,6 +10,8 @@ public class RemotePHATEvent implements Serializable{
 
 	private String id;
 	private Vector3f location;
+	private PHATCalendar time;
+	
 	public String getId() {
 		return id;
 	}
@@ -18,11 +20,11 @@ public class RemotePHATEvent implements Serializable{
 		return location;
 	}
 
-	public PHATCalendar getTime() {
-		return time;
+	public long getTime() {
+		return time.getTimeInMillis();
 	}
 
-	private PHATCalendar time;
+	
 
 	public RemotePHATEvent(String id, Vector3f location, PHATCalendar time) {
 		this.id=id;

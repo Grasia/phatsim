@@ -89,6 +89,7 @@ public abstract class Agent implements PHATAgentTick {
 										getLocation(), 
 										getTime(), getBodyPosture(),
 										automaton.getLeafAutomaton().getName());
+						
 
 					} else {
 						currentEvent=
@@ -98,7 +99,7 @@ public abstract class Agent implements PHATAgentTick {
 										"undertermined");
 
 					}
-
+					System.out.println("Registrandoooooo2 "+currentEvent);
 					if (lastEvent==null ||(lastEvent!=null && !lastEvent.similar(currentEvent))){
 						lastEvent=currentEvent;
 						try {
@@ -111,6 +112,7 @@ public abstract class Agent implements PHATAgentTick {
 
 
 					}
+					nextAutomaton.addListener(this);
 
 
 

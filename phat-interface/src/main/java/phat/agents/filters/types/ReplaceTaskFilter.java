@@ -19,6 +19,8 @@
  */
 package phat.agents.filters.types;
 
+import java.lang.reflect.InvocationTargetException;
+
 import phat.agents.Agent;
 import phat.agents.automaton.Automaton;
 
@@ -27,14 +29,22 @@ import phat.agents.automaton.Automaton;
  * @author pablo
  */
 public class ReplaceTaskFilter extends Filter {
-    Automaton task;
+	Class<? extends Automaton> task;
     
     @Override
     public Automaton apply(Agent agent, Automaton automaton) {
-        return task;
+    	Automaton filterTask=null;
+		try {
+			filterTask = task.getConstructor(Agent.class).newInstance(agent);
+		} catch (InstantiationException | IllegalAccessException
+				| IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+        return filterTask;
     }
 
-    public ReplaceTaskFilter setTask(Automaton task) {
+    public ReplaceTaskFilter setTask(Class<? extends Automaton> task) {
         this.task = task;
         return this;
     }

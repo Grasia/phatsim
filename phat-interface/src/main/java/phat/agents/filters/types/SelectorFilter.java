@@ -34,25 +34,25 @@ public class SelectorFilter extends Filter {
 
     @Override
     public boolean checkCondition(Agent agent, Automaton automaton) {
-        /*System.out.println("SelectorFilter: "+agent.getId()+", "+automaton.getMetadata("SOCIAALML_ENTITY_ID"));
+        System.out.println("SelectorFilter: "+agent.getId()+", "+automaton.getMetadata("SOCIAALML_ENTITY_ID"));
         for(String types: taskTypes) {
             System.out.println("\t-"+types);
-        }*/
+        }
         if (super.checkCondition(agent, automaton)) {
 
             if (taskTypes.isEmpty()) {
-                //System.out.println("true");
+                System.out.println("true");
                 return true;
             }
 
             String entityType = automaton.getMetadata("SOCIAALML_ENTITY_TYPE");
             String entityID = automaton.getMetadata("SOCIAALML_ENTITY_ID");
             if (entityID != null && taskTypes.contains(entityID)) {
-                //System.out.println("true");
+                System.out.println("true");
                 return true;
             }
         }
-        //System.out.println("false");
+        System.out.println("false");
         return false;
     }
 

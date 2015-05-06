@@ -35,7 +35,7 @@ public class @@@v@@@dpName@@@/v@@@_@@@v@@@actorname@@@/v@@@ extends DiseaseManag
 		    @@@repeat id="FUnableFilter"@@@ @@@/repeat@@@
 		    @@@repeat id="FChangeToolFilter"@@@ @@@/repeat@@@
 		    @@@repeat id="FChangeTargetObjFilter"@@@ @@@/repeat@@@
-		    @@@repeat id="FReplaceTaskFilter"@@@ReplaceTaskFilter @@@v@@@filterName@@@/v@@@ = new ReplaceTaskFilter().setTask(@@@v@@@taskSentence@@@/v@@@);
+		    @@@repeat id="FReplaceTaskFilter"@@@ReplaceTaskFilter @@@v@@@filterName@@@/v@@@ = new ReplaceTaskFilter().setTask(@@@v@@@taskSentenceClass@@@/v@@@);
 		    @@@v@@@filterName@@@/v@@@.setCondition(@@@v@@@filterCond@@@/v@@@);@@@/repeat@@@
 		    @@@repeat id="FModifyPlaceFilter"@@@ @@@/repeat@@@
 		    @@@repeat id="FDelayFilter"@@@DelayFilter @@@v@@@filterName@@@/v@@@ = new DelayFilter();

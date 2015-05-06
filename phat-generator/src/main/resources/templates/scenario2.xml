@@ -1,5 +1,6 @@
 @@@program xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"@@@
 	@@@repeat id="simInitialization"@@@
+	
 	@@@saveto@@@
 		@@@file overwrite="yes"@@@
 			@@@v@@@output@@@/v@@@/phat/sim/Main@@@v@@@simName@@@/v@@@PHATSimulation.java@@@/file@@@
@@ -111,6 +112,99 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
 
 @@@/text@@@
 	@@@/saveto@@@
+	
+	
+	@@@saveto@@@
+		@@@file overwrite="yes"@@@
+			@@@v@@@output@@@/v@@@/phat/sim/Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices.java@@@/file@@@
+@@@text@@@
+package phat.sim;
+
+
+import java.rmi.AlreadyBoundException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+
+import phat.agents.Agent;
+import phat.body.BodiesAppState;
+import phat.body.commands.*;
+import phat.devices.commands.*;
+import phat.config.*;
+import phat.world.MonitorEventQueue;
+import phat.world.MonitorEventQueueImp;
+import phat.world.WorldAppState;
+import phat.structures.houses.HouseFactory;
+import phat.PHATInitializer;
+import phat.PHATInterface;
+import phat.agents.impl.*;
+
+/**
+ *
+ * @author pablo
+ */
+public class Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices implements PHATInitializer {
+	static MonitorEventQueueImp meq=new MonitorEventQueueImp();
+    public static void main(String[] args) throws RemoteException, AlreadyBoundException, NotBoundException {
+    	meq.startServer(MonitorEventQueue.DefaultName);
+        Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices sim = new Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices();
+        PHATInterface phat = new PHATInterface(sim);
+        phat.setSeed(@@@v@@@seedValue@@@/v@@@L);
+        phat.start();
+    }
+
+    @Override
+    public void initWorld(WorldConfigurator worldConfig) {
+        worldConfig.setTime(@@@v@@@year@@@/v@@@, @@@v@@@month@@@/v@@@, @@@v@@@day@@@/v@@@, @@@v@@@hour@@@/v@@@, @@@v@@@min@@@/v@@@, @@@v@@@sec@@@/v@@@);
+        worldConfig.setTimeVisible(true);
+        worldConfig.setLandType(WorldAppState.LandType.Grass);
+    }
+
+    @Override
+    public void initHouse(HouseConfigurator houseConfig) {
+        houseConfig.addHouseType("House1", HouseFactory.HouseType.House3room2bath);
+    }
+
+    @Override
+    public void initBodies(BodyConfigurator bodyConfig) {
+       @@@repeat id="bodies"@@@
+       bodyConfig.createBody(BodiesAppState.BodyType.@@@v@@@bodyType@@@/v@@@, "@@@v@@@actorname@@@/v@@@");
+       bodyConfig.runCommand(new BodyLabelCommand("@@@v@@@actorname@@@/v@@@", @@@v@@@showName@@@/v@@@));
+       
+       // Initial locations
+       @@@repeat id="initLocRep"@@@bodyConfig.setInSpace("@@@v@@@actorname@@@/v@@@", "House1", "@@@v@@@iniLoc@@@/v@@@");
+        @@@/repeat@@@
+       bodyConfig.runCommand(new SetBodyHeightCommand("@@@v@@@actorname@@@/v@@@", 1.7f));
+       @@@/repeat@@@
+       @@@repeat id="CameraToBodyInit"@@@
+        SetCameraToBodyCommand setCameraToBodyCommand = new SetCameraToBodyCommand("@@@v@@@actorname@@@/v@@@");
+        setCameraToBodyCommand.setFront(@@@v@@@isinfrontofhuman@@@/v@@@);
+        setCameraToBodyCommand.setDistance(@@@v@@@distance@@@/v@@@f);
+        setCameraToBodyCommand.setHeight(@@@v@@@elevation@@@/v@@@f);
+        bodyConfig.runCommand(setCameraToBodyCommand);@@@/repeat@@@
+    }
+    
+    @Override
+    public void initDevices(DeviceConfigurator deviceConfig) {
+    }
+    
+    @Override
+    public void initAgents(AgentConfigurator agentsConfig) {
+       @@@repeat id="agent"@@@
+       {@@@v@@@agentname@@@/v@@@Agent patient=new @@@v@@@agentname@@@/v@@@Agent("@@@v@@@agentname@@@/v@@@","@@@v@@@simName@@@/v@@@" );
+       patient.registerListener(meq); 
+       agentsConfig.add(patient);}@@@/repeat@@@
+    }
+    
+    @Override
+    public String getTittle() {
+        return "PHAT-@@@v@@@simName@@@/v@@@";
+    }
+}
+
+
+@@@/text@@@
+	@@@/saveto@@@
+	
 
 @@@saveto@@@
 		@@@file overwrite="yes"@@@
