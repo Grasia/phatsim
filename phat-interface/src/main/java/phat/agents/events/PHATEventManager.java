@@ -19,8 +19,10 @@
  */
 package phat.agents.events;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
@@ -37,7 +39,7 @@ import phat.agents.automaton.InterruptionAutomaton;
 public class PHATEventManager {
 
     Agent agent;
-    Map<String, EventProcessor> eventsMapping = new HashMap<>();
+    Map<String,  EventProcessor> eventsMapping = new Hashtable<String, EventProcessor > ();
     List<PHATEvent> events = new ArrayList<>();
     PHATEvent currentEvent;
 
@@ -55,7 +57,10 @@ public class PHATEventManager {
                 continue;
             }
             if (event.isPerceptible(agent)) {
-                EventProcessor ep = eventsMapping.get(event.getId());
+                EventProcessor ep=null;
+		
+					ep = eventsMapping.get(event.getId());
+				
                 if (ep != null) {
                     Automaton automaton = ep.process(agent);
                     if (automaton != null) {
@@ -100,7 +105,7 @@ public class PHATEventManager {
         return !events.isEmpty();
     }
 
-    public void addMap(String eventId, EventProcessor behavior) {
+    public void addMap(String eventId, EventProcessor  behavior) {
         eventsMapping.put(eventId, behavior);
     }
 }

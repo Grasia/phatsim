@@ -19,6 +19,8 @@
  */
 package phat.agents.events;
 
+import java.lang.reflect.InvocationTargetException;
+
 import phat.agents.Agent;
 import phat.agents.automaton.Automaton;
 import phat.agents.automaton.conditions.AutomatonCondition;
@@ -26,10 +28,10 @@ import phat.agents.automaton.conditions.AutomatonCondition;
 public class EventProcessor {
 	String eventId;
 	AutomatonCondition condition;
-	Automaton activity;
+	Class<? extends  Automaton> activity;
 	
 	public EventProcessor(String eventId, AutomatonCondition condition,
-			Automaton activity) {
+			Class<? extends  Automaton> activity) {
 		super();
 		this.eventId = eventId;
 		this.condition = condition;
@@ -38,7 +40,13 @@ public class EventProcessor {
 	
 	public Automaton process(Agent agent) {
 		if(condition == null || condition.evaluate(agent)) {
-			return activity;
+			try {
+				return activity.getConstructor(Agent.class).newInstance(agent);
+			} catch (InstantiationException | IllegalAccessException
+					| IllegalArgumentException | InvocationTargetException
+					| NoSuchMethodException | SecurityException e) {
+				e.printStackTrace();
+			}
 		}
 		return null;
 	}

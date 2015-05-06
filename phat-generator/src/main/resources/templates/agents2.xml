@@ -49,7 +49,7 @@ public class @@@v@@@actorname@@@/v@@@Agent extends Agent {
 	    	getEventManager().addMap("@@@v@@@eventId@@@/v@@@", 
 	    		new EventProcessor("@@@v@@@eventId@@@/v@@@", 
 	    				@@@v@@@eventCondition@@@/v@@@, 
-	    				new @@@v@@@acticity@@@/v@@@Activity(this)));
+	    				@@@v@@@acticity@@@/v@@@Activity.class));
 	    	@@@/repeat@@@
 
     	
