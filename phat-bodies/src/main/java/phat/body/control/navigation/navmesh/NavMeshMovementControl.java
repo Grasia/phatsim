@@ -191,7 +191,7 @@ public class NavMeshMovementControl extends AbstractControl implements Autonomou
 
     private void moveToNewPoint(Vector3f destiny, float minDist) {
         StraightMovementControl straightMovementControl =
-                new StraightMovementControl(minDist);
+                new StraightMovementControl(0.1f);
         spatial.addControl(straightMovementControl);
         straightMovementControl.moveTo(destiny);
     }

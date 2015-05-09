@@ -133,7 +133,7 @@ public class SitDownCommand extends PHATCommand implements AutonomousControlList
                         return loc.add(dir.mult(0.5f));
                     }
                 }, this);
-                goToCommand.setMinDistance(0.05f);
+                goToCommand.setMinDistance(0.2f);
                 bodiesAppState.runCommand(goToCommand);
                 return;
             }
