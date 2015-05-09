@@ -22,6 +22,7 @@ package phat.agents.automaton;
 import java.util.ArrayList;
 import phat.PHATInterface;
 import phat.agents.Agent;
+import static phat.agents.automaton.Automaton.ECHO;
 
 /**
  *
@@ -34,7 +35,7 @@ public abstract class TimeIntervalAutomaton extends Automaton {
     }
     
     public abstract void initSubAutomaton();
-
+    
     @Override
     public void initState(PHATInterface phatInterface) {
         initSubAutomaton();

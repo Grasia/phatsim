@@ -133,15 +133,23 @@ public class ActivityGenerator {
                 repFather.add(rep);
                 rep.add(new Var("actName", Utils.replaceBadChars(activityName)));
 
-                for (GraphEntity nextAct : Utils.getTargetsEntity(activity,
-                        NEXT_ACTIVITY_REL)) {
-                    if (nextAct.getType().equals(ACTIVITY_TYPE)) {
-                        // registers a transition between activities without any
-                        // condition
-                        Repeat rep2 = new Repeat("regTrans");
-                        repFather.add(rep2);
-                        rep2.add(new Var("actSource", Utils.replaceBadChars(activityName)));
-                        rep2.add(new Var("actTarget", Utils.replaceBadChars(nextAct.getID())));
+                Collection<GraphEntity> nextEntities = Utils.getTargetsEntity(activity,
+                        NEXT_ACTIVITY_REL);
+                if (nextEntities.isEmpty()) {
+                    // It is a last activity, the automaton should finish after the execution
+                    Repeat rep2 = new Repeat("regLastActivityRep");
+                    repFather.add(rep2);
+                    rep2.add(new Var("finalActivity", Utils.replaceBadChars(activityName)));
+                } else {
+                    for (GraphEntity nextAct : nextEntities) {
+                        if (nextAct.getType().equals(ACTIVITY_TYPE)) {
+                            // registers a transition between activities without any
+                            // condition
+                            Repeat rep2 = new Repeat("regTrans");
+                            repFather.add(rep2);
+                            rep2.add(new Var("actSource", Utils.replaceBadChars(activityName)));
+                            rep2.add(new Var("actTarget", Utils.replaceBadChars(nextAct.getID())));
+                        }
                     }
                 }
             } else if (activity.getType().equals(IF_FLOW_CONTROL_TYPE)) {

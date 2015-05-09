@@ -28,108 +28,191 @@ import ingenias.generator.browser.GraphEntity;
 import ingenias.generator.browser.GraphRelationship;
 import ingenias.generator.datatemplate.Repeat;
 import ingenias.generator.datatemplate.Var;
+import java.util.Collection;
 
 import java.util.Vector;
 
 public class TimeIntervalsGenerator {
-	final static String TIME_INTERVAL_TYPE = "TimeInterval";
-	final static String INTERVAL_CLOCK_REL = "IntervalClockTime";
-	final static String ADLProfile_SPEC_DIAGRAM = "ADLProfile";
 
-	final static String HOURS_FIELD = "HoursField";
-	final static String MINS_FIELD = "MinutesField";
-	final static String SECS_FIELD = "SecondsField";
+    final static String TIME_INTERVAL_TYPE = "TimeInterval";
+    final static String INTERVAL_CLOCK_REL = "IntervalClockTime";
+    final static String ADLProfile_SPEC_DIAGRAM = "ADLProfile";
+    final static String HOURS_FIELD = "HoursField";
+    final static String MINS_FIELD = "MinutesField";
+    final static String SECS_FIELD = "SecondsField";
+    Browser browser;
 
-	Browser browser;
+    public TimeIntervalsGenerator(Browser browser) {
+        this.browser = browser;
+    }
 
-	public TimeIntervalsGenerator(Browser browser) {
-		this.browser = browser;
-	}
+    public void generateADL(String humanId, Repeat repFather) throws NotFound,
+            NullEntity {
 
-	public void generateADL(String humanId, Repeat repFather) throws NotFound,
-			NullEntity {
+        GraphEntity adl = getADL(humanId, browser);
+        if (adl == null) {
+            return;
+        }
+        GraphAttribute ga = adl.getAttributeByName("ADLSpecField");
+        if (ga == null || ga.getSimpleValue().equals("")) {
+            return;
+        }
 
-		GraphEntity adl = getADL(humanId, browser);
-		if(adl == null)
-			return;
-		GraphAttribute ga = adl.getAttributeByName("ADLSpecField");
-		if (ga == null || ga.getSimpleValue().equals("")) {
-			return;
-		}
+        String adlDiagName = ga.getSimpleValue();
+        System.out.println("GENERATE ADL: " + humanId);
+        System.out.println("ADL = " + adlDiagName);
+        Graph adlSpec = browser.getGraph(adlDiagName);
 
-		String adlDiagName = ga.getSimpleValue();
-		System.out.println("GENERATE ADL: " + humanId);
-		System.out.println("ADL = " + adlDiagName);
-		Graph adlSpec = browser.getGraph(adlDiagName);
-		if (adlSpec != null && adlSpec.getEntities().length > 0) {
-			System.out.println("ADL no empty!");
-			GraphEntity ge = Utils.getFirstEntity(adlSpec);
-			Repeat repFirst = new Repeat("firstTimeInterval");
-			repFather.add(repFirst);
-			repFirst.add(new Var("tiname", Utils.replaceBadChars(ge.getID())));
+        if (adlSpec != null && adlSpec.getEntities().length > 0) {
+            System.out.println("ADL no empty!");
+            GraphEntity ge = Utils.getFirstEntity(adlSpec);
+            Repeat repFirst = new Repeat("firstTimeInterval");
+            repFather.add(repFirst);
+            repFirst.add(new Var("tiname", Utils.replaceBadChars(ge.getID())));
 
-			while (ge != null) {
-				System.out.println(ge.getType() + ": " + ge.getID());
-				if (ge.getType().equals(TIME_INTERVAL_TYPE)) {
-					String timeIntervalName = ge.getID();
-					Repeat rep = new Repeat("timeInstance");
-					repFather.add(rep);
-					rep.add(new Var("tiname", Utils.replaceBadChars(timeIntervalName)));
-					GraphEntity geClock = Utils.getTargetEntity(ge,
-							INTERVAL_CLOCK_REL);
-					if (geClock != null) {
-						GraphAttribute gaHours = geClock
-								.getAttributeByName(HOURS_FIELD);
-						int hours = Integer.parseInt(gaHours.getSimpleValue());
-						GraphAttribute gaMins = geClock
-								.getAttributeByName("MinutesField");
-						int mins = Integer.parseInt(gaMins.getSimpleValue());
-						GraphAttribute gaSecs = geClock
-								.getAttributeByName(SECS_FIELD);
-						int secs = Integer.parseInt(gaSecs.getSimpleValue());
-						System.out.println(geClock.getID() + ": " + hours + ":"
-								+ mins + ":" + secs);
-						Repeat rep2 = new Repeat("timeTransition");
-						rep.add(rep2);
-						rep.add(new Var("hours", String.valueOf(hours)));
-						rep.add(new Var("minutes", String.valueOf(mins)));
-						rep.add(new Var("seconds", String.valueOf(secs)));
-					}
-					System.out.println("NextTimeInterval of " + ge.getID());
-					GraphEntity geNext = Utils.getTargetEntity(ge,
-							"NextTimeInterval");
-					if (geNext != null) {
-						Repeat rep3 = new Repeat("regTrans");
-						repFather.add(rep3);
-						rep3.add(new Var("tinameS", Utils.replaceBadChars(ge.getID())));
-						rep3.add(new Var("tinameT", Utils.replaceBadChars(geNext.getID())));
-					}
-					ge = geNext;
-				} else {
-					System.out.println(ge.getType() + ": " + ge.getID());
-					break;
-				}
-			}
-		}
-	}
+            for (GraphEntity timeInterval : adlSpec.getEntities()) {
+                if (timeInterval.getType().equals(TIME_INTERVAL_TYPE)) {
+                    String timeIntervalName = timeInterval.getID();
 
-	public static GraphEntity getADL(String humanId, Browser browser) {
-		GraphEntity result = null;
-		try {
-			GraphEntity[] entities = browser.getAllEntities();
-			for (GraphEntity adl : entities) {
-				if (adl.getType().equalsIgnoreCase(ADLProfile_SPEC_DIAGRAM)) {					
-					Vector<GraphRelationship> rels = adl.getAllRelationships("ProfileOf");
-					for (GraphRelationship rel:rels){
-					 GraphEntity connectedHuman = Utils.getTargetEntity(adl, rel);	
-					 if (connectedHuman!=null && connectedHuman.getID().equalsIgnoreCase(humanId))
-						 return adl;
-					}					
-				}
-			}
-		} catch (Throwable ex) {
-			ex.printStackTrace();
-		}
-		return result;
-	}
+                    Repeat rep = new Repeat("timeInstance");
+                    repFather.add(rep);
+                    rep.add(new Var("tiname", Utils.replaceBadChars(timeIntervalName)));
+
+                    GraphEntity geClock = Utils.getTargetEntity(ge,
+                            INTERVAL_CLOCK_REL);
+                    if (geClock != null) {
+                        GraphAttribute gaHours = geClock
+                                .getAttributeByName(HOURS_FIELD);
+                        int hours = Integer.parseInt(gaHours.getSimpleValue());
+                        GraphAttribute gaMins = geClock
+                                .getAttributeByName("MinutesField");
+                        int mins = Integer.parseInt(gaMins.getSimpleValue());
+                        GraphAttribute gaSecs = geClock
+                                .getAttributeByName(SECS_FIELD);
+                        int secs = Integer.parseInt(gaSecs.getSimpleValue());
+                        System.out.println(geClock.getID() + ": " + hours + ":"
+                                + mins + ":" + secs);
+                        Repeat rep2 = new Repeat("timeTransition");
+                        rep.add(rep2);
+                        rep.add(new Var("hours", String.valueOf(hours)));
+                        rep.add(new Var("minutes", String.valueOf(mins)));
+                        rep.add(new Var("seconds", String.valueOf(secs)));
+                    }
+
+                    Collection<GraphEntity> nextEntities = Utils.getTargetsEntity(timeInterval,
+                            "NextTimeInterval");
+                    if (nextEntities.isEmpty()) {
+                        // It is the last time interval
+                        System.out.println("REGISTER FINAL STATE!!!!! -> " + Utils.replaceBadChars(ge.getID()));
+                        Repeat rep3 = new Repeat("regLastActivityRep");
+                        repFather.add(rep3);
+                        rep3.add(new Var("finalActivity", Utils.replaceBadChars(ge.getID())));
+                    } else {
+                        for (GraphEntity timeIntervalNext : nextEntities) {
+                            Repeat rep3 = new Repeat("regTrans");
+                            repFather.add(rep3);
+                            rep3.add(new Var("tinameS", Utils.replaceBadChars(timeInterval.getID())));
+                            rep3.add(new Var("tinameT", Utils.replaceBadChars(timeIntervalNext.getID())));
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void generateADLBack(String humanId, Repeat repFather) throws NotFound,
+            NullEntity {
+
+        GraphEntity adl = getADL(humanId, browser);
+        if (adl == null) {
+            return;
+        }
+        GraphAttribute ga = adl.getAttributeByName("ADLSpecField");
+        if (ga == null || ga.getSimpleValue().equals("")) {
+            return;
+        }
+
+        String adlDiagName = ga.getSimpleValue();
+        System.out.println("GENERATE ADL: " + humanId);
+        System.out.println("ADL = " + adlDiagName);
+        Graph adlSpec = browser.getGraph(adlDiagName);
+        if (adlSpec != null && adlSpec.getEntities().length > 0) {
+            System.out.println("ADL no empty!");
+            GraphEntity ge = Utils.getFirstEntity(adlSpec);
+            Repeat repFirst = new Repeat("firstTimeInterval");
+            repFather.add(repFirst);
+            repFirst.add(new Var("tiname", Utils.replaceBadChars(ge.getID())));
+
+            System.out.println("----------> First: " + Utils.replaceBadChars(ge.getID()));
+            while (ge != null) {
+                System.out.println(ge.getType() + ": " + ge.getID());
+                if (ge.getType().equals(TIME_INTERVAL_TYPE)) {
+                    String timeIntervalName = ge.getID();
+                    Repeat rep = new Repeat("timeInstance");
+                    repFather.add(rep);
+                    rep.add(new Var("tiname", Utils.replaceBadChars(timeIntervalName)));
+                    GraphEntity geClock = Utils.getTargetEntity(ge,
+                            INTERVAL_CLOCK_REL);
+                    if (geClock != null) {
+                        GraphAttribute gaHours = geClock
+                                .getAttributeByName(HOURS_FIELD);
+                        int hours = Integer.parseInt(gaHours.getSimpleValue());
+                        GraphAttribute gaMins = geClock
+                                .getAttributeByName("MinutesField");
+                        int mins = Integer.parseInt(gaMins.getSimpleValue());
+                        GraphAttribute gaSecs = geClock
+                                .getAttributeByName(SECS_FIELD);
+                        int secs = Integer.parseInt(gaSecs.getSimpleValue());
+                        System.out.println(geClock.getID() + ": " + hours + ":"
+                                + mins + ":" + secs);
+                        Repeat rep2 = new Repeat("timeTransition");
+                        rep.add(rep2);
+                        rep.add(new Var("hours", String.valueOf(hours)));
+                        rep.add(new Var("minutes", String.valueOf(mins)));
+                        rep.add(new Var("seconds", String.valueOf(secs)));
+                    }
+                    System.out.println("NextTimeInterval of " + ge.getID());
+                    GraphEntity geNext = Utils.getTargetEntity(ge,
+                            "NextTimeInterval");
+                    if (geNext != null) {
+                        Repeat rep3 = new Repeat("regTrans");
+                        repFather.add(rep3);
+                        rep3.add(new Var("tinameS", Utils.replaceBadChars(ge.getID())));
+                        rep3.add(new Var("tinameT", Utils.replaceBadChars(geNext.getID())));
+                    } else {
+                        // It is the last time interval
+                        System.out.println("REGISTER FINAL STATE!!!!! -> " + Utils.replaceBadChars(ge.getID()));
+                        Repeat rep3 = new Repeat("regLastActivityRep");
+                        repFather.add(rep3);
+                        rep3.add(new Var("finalActivity", Utils.replaceBadChars(ge.getID())));
+                    }
+                    ge = geNext;
+                } else {
+                    System.out.println(ge.getType() + ": " + ge.getID());
+                    break;
+                }
+            }
+        }
+    }
+
+    public static GraphEntity getADL(String humanId, Browser browser) {
+        GraphEntity result = null;
+        try {
+            GraphEntity[] entities = browser.getAllEntities();
+            for (GraphEntity adl : entities) {
+                if (adl.getType().equalsIgnoreCase(ADLProfile_SPEC_DIAGRAM)) {
+                    Vector<GraphRelationship> rels = adl.getAllRelationships("ProfileOf");
+                    for (GraphRelationship rel : rels) {
+                        GraphEntity connectedHuman = Utils.getTargetEntity(adl, rel);
+                        if (connectedHuman != null && connectedHuman.getID().equalsIgnoreCase(humanId)) {
+                            return adl;
+                        }
+                    }
+                }
+            }
+        } catch (Throwable ex) {
+            ex.printStackTrace();
+        }
+        return result;
+    }
 }

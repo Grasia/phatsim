@@ -303,9 +303,14 @@ public class FSM extends Automaton {
             // si no, llamar a decidir una transición
             Automaton nstate = decideTransition(phatInterface);
             if (nstate != null) {
-                currentState = nstate;           
+                currentState = nstate;        
+                if(currentState.isFinished(phatInterface)) {
+                    currentState.restart(phatInterface);
+                    currentState.initState(phatInterface);
+                } else {
                 currentState.restart(phatInterface);// reiniciar estado por si
                 // ya se había usado
+                }
             }
             if (ECHO) {
                 System.out.println(agent.getId() + " with automaton " + name

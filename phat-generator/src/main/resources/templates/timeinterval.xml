@@ -41,6 +41,8 @@ public class @@@v@@@tisName@@@/v@@@TIA extends TimeIntervalAutomaton {
         }@@@/repeat@@@
     	@@@repeat id="regTrans"@@@fsm.registerTransition(@@@v@@@actSource@@@/v@@@Activity, @@@v@@@actTarget@@@/v@@@Activity);
     	@@@/repeat@@@
+        @@@repeat id="regLastActivityRep"@@@
+        fsm.registerFinalState(@@@v@@@finalActivity@@@/v@@@Activity);@@@/repeat@@@
     	// DoNothing due to no activity defined
     	@@@repeat id="noActivities"@@@Automaton doNothing = new DoNothing(agent, "DoNothing due to no activity defined");
     	doNothing.setFinishCondition(new TimerFinishedCondition(0, 0, 1));
