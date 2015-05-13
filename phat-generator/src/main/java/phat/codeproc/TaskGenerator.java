@@ -170,7 +170,19 @@ public class TaskGenerator {
                 automaton += ".setCanBeInterrupted(" + canBeIterrupted + ")";
                 return automaton;
             }
-        } else if (taskGE.getType().equals(TYPE_USE_TASK)) {
+        } else if (taskGE.getType().equals("WaitForBodyClose")) {
+			GraphAttribute humanGA = taskGE.getAttributeByName("HumanTarget");
+			if (humanGA.getSimpleValue() != null
+					&& !humanGA.getSimpleValue().equals("")) {
+				String automaton = "new WaitForCloseToBodyAutomaton(agent, \""
+						+ Utils.replaceBadChars(taskGE.getID()) + "\", \""
+						+ humanGA.getSimpleValue() + "\")" + "\n";
+				
+				automaton += ".setCanBeInterrupted(" + canBeIterrupted + ")";
+				return automaton;
+			}
+        }
+		 else if (taskGE.getType().equals(TYPE_USE_TASK)) {
             GraphAttribute durationGA = taskGE
                     .getAttributeByName("BTaskDuration");
             int duration = 1;

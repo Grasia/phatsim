@@ -16,6 +16,22 @@ public class AgentPHATEvent extends RemotePHATEvent implements Serializable{
 	private BodyPosture bodyPosture;
 	private String nextActionName;
 	private String aided;
+	private String waitingForAssistance;
+
+	public AgentPHATEvent(String id, Vector3f location, PHATCalendar time,
+			BodyPosture bodyPosture, String nextActionName){
+		super(id,location,time);
+		this.bodyPosture=bodyPosture;
+		this.nextActionName=nextActionName;
+	}
+	
+	public String getWaitingForAssistance() {
+		return waitingForAssistance;
+	}
+
+	public void setWaitingForAssistance(String waitingForAssistance) {
+		this.waitingForAssistance = waitingForAssistance;
+	}
 
 	public BodyPosture getBodyPosture() {
 		return bodyPosture;
@@ -23,13 +39,6 @@ public class AgentPHATEvent extends RemotePHATEvent implements Serializable{
 
 	public String getNextActionName() {
 		return nextActionName;
-	}
-
-	public AgentPHATEvent(String id, Vector3f location, PHATCalendar time,
-			BodyPosture bodyPosture, String nextActionName){
-		super(id,location,time);
-		this.bodyPosture=bodyPosture;
-		this.nextActionName=nextActionName;
 	}
 
 	public boolean similar(RemotePHATEvent object){

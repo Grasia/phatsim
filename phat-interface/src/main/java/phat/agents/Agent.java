@@ -28,10 +28,13 @@ import com.jme3.math.Vector3f;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jfree.util.WaitingImageObserver;
+
 import phat.PHATInterface;
 import phat.agents.automaton.Automaton;
 import phat.agents.automaton.AutomatonListener;
 import phat.agents.automaton.MoveToBodyLocAutomaton;
+import phat.agents.automaton.WaitForCloseToBodyAutomaton;
 import phat.agents.events.PHATEvent;
 import phat.agents.events.PHATEventManager;
 import phat.body.BodiesAppState;
@@ -90,15 +93,19 @@ public abstract class Agent implements PHATAgentTick {
 					if (result!=null){
 						aided=((MoveToBodyLocAutomaton)result).getDestinyBodyName();
 					}
+					
+					String waitingForAssistance=null;
+					
+					if (nextAutomaton instanceof WaitForCloseToBodyAutomaton){
+						waitingForAssistance=((WaitForCloseToBodyAutomaton)nextAutomaton).getDestinyBodyName();
+					}
+					
 					if (automaton.getLeafAutomaton()!=null){
 						currentEvent=
 								new AgentPHATEvent(getId(), 
 										getLocation(), 
 										getTime(), getBodyPosture(),
 										automaton.getLeafAutomaton().getName());
-						
-						
-
 					} else {
 						currentEvent=
 								new AgentPHATEvent(getId(), 
@@ -109,6 +116,7 @@ public abstract class Agent implements PHATAgentTick {
 
 					}
 					currentEvent.setAided(aided);
+					currentEvent.setWaitingForAssistance(waitingForAssistance);
 					System.out.println("Registrandoooooo2 "+currentEvent);
 					if (lastEvent==null ||(lastEvent!=null && !lastEvent.similar(currentEvent))){
 						lastEvent=currentEvent;
@@ -119,8 +127,6 @@ public abstract class Agent implements PHATAgentTick {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}	
-
-
 					}
 					nextAutomaton.addListener(this);
 
