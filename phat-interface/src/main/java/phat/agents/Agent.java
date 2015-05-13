@@ -33,6 +33,7 @@ import org.jfree.util.WaitingImageObserver;
 import phat.PHATInterface;
 import phat.agents.automaton.Automaton;
 import phat.agents.automaton.AutomatonListener;
+import phat.agents.automaton.MainAutomaton;
 import phat.agents.automaton.MoveToBodyLocAutomaton;
 import phat.agents.automaton.WaitForCloseToBodyAutomaton;
 import phat.agents.events.PHATEvent;
@@ -63,11 +64,11 @@ public abstract class Agent implements PHATAgentTick {
 			instance.listened(word, location);
 		}
 	}
-	
+
 
 	private void registerListenerIntoAutomaton(){
 		if (getAutomaton()!=null && getListener()!=null){
-			
+
 			getAutomaton().addListener(new AutomatonListener() {
 
 				private AgentPHATEvent lastEvent=null;
@@ -79,27 +80,27 @@ public abstract class Agent implements PHATAgentTick {
 
 				@Override
 				public void postInit(Automaton automaton) {
-					
+
 
 				}
 
 				@Override
 				public void nextAutomaton(Automaton previousAutomaton,
 						Automaton nextAutomaton) {
-					
+
 					AgentPHATEvent currentEvent=null;
 					String aided=null;
 					Automaton result = nextAutomaton.containsStateOfKind(MoveToBodyLocAutomaton.class);
 					if (result!=null){
 						aided=((MoveToBodyLocAutomaton)result).getDestinyBodyName();
 					}
-					
+
 					String waitingForAssistance=null;
-					
+
 					if (nextAutomaton instanceof WaitForCloseToBodyAutomaton){
 						waitingForAssistance=((WaitForCloseToBodyAutomaton)nextAutomaton).getDestinyBodyName();
 					}
-					
+
 					if (automaton.getLeafAutomaton()!=null){
 						currentEvent=
 								new AgentPHATEvent(getId(), 
@@ -112,7 +113,7 @@ public abstract class Agent implements PHATAgentTick {
 										getLocation(), 
 										getTime(), getBodyPosture(),
 										"undertermined");
-						
+
 
 					}
 					currentEvent.setAided(aided);
@@ -218,13 +219,18 @@ public abstract class Agent implements PHATAgentTick {
 			eventManager.process(phatInterface);
 		}
 		if (automaton != null) {
-			//System.out.println(bodyId+": "+automaton.getCurrentAction());
 			automaton.nextState(phatInterface);
+			if (automaton.isIdle()){			
+				initAutomaton();
+			}
 
+		} else{
+			initAutomaton();
 		}
 
 
 	}
+
 
 	public Vector3f getLocation() {
 		return agentsAppState.getBodiesAppState().getLocation(bodyId);

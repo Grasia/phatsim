@@ -26,9 +26,12 @@ import phat.agents.Agent;
 
 public class MainAutomaton extends Automaton {
 
+
+
 	public MainAutomaton(Agent agent) {
 		super(agent);
 	}
+	
 
 	@Override
 	public void initState(PHATInterface phatInterface) {

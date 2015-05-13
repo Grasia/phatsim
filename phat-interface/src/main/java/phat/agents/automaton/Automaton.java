@@ -103,6 +103,9 @@ public abstract class Automaton {
     protected AutomatonCondition finishCondition;
     List<AutomatonListener> listeners = new ArrayList<>();
     boolean canBeInterrupted = true;
+	private boolean idle;
+
+
 
     public void addListener(AutomatonListener l) {
         if(!listeners.contains(l)) {
@@ -125,6 +128,14 @@ public abstract class Automaton {
             al.preInit(this);
         }
     }
+    
+	public boolean isIdle(){
+		return this.idle;
+	}
+	
+	public void setIdle(boolean idle){
+		this.idle=idle;
+	}
     
     public Automaton containsStateOfKind(Class<? extends Automaton> targetClass){        
         Iterator<Automaton> iterator = this.pendingTransitions.iterator();
@@ -391,7 +402,9 @@ public abstract class Automaton {
                 currentState.setFinished(true);// fijar como terminado
                 currentState.notifityListeners(true);
             }
-            if (!pendingTransitions.isEmpty()) {// tomar siguiente transición
+            if (!pendingTransitions.isEmpty()) {
+            	this.setIdle(false);
+            	// tomar siguiente transición
                 // pendiente (tanto si es como
                 // estado inicial o como
                 // siguiente)
@@ -406,7 +419,8 @@ public abstract class Automaton {
                 }
             } else {// si no hay transiciones pendintes ir a estado por defecto
                 // (tanto si es como estado inicial o como siguiente)
-                currentState = getDefaultState(phatInterface);
+                currentState = getDefaultState(phatInterface);      
+                this.setIdle(true);
                 if(currentState != null) {
                     notifyNextAutomaton(currentState);
                 }
