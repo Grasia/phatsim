@@ -22,6 +22,8 @@ package phat.body.commands;
 import com.jme3.app.Application;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
+import java.util.Observable;
+import java.util.Observer;
 
 import java.util.logging.Level;
 
@@ -29,85 +31,80 @@ import phat.body.BodiesAppState;
 import phat.body.control.navigation.AutonomousControlListener;
 import phat.body.control.navigation.navmesh.NavMeshMovementControl;
 import phat.body.control.physics.PHATCharacterControl;
+import phat.body.sensing.BasicObjectPerceptionControl;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
 
 /**
- * 
+ *
  * @author pablo
  */
 public class WaitForCloseToBodyCommand extends PHATCommand implements
-AutonomousControlListener {
+        Observer {
 
-	private String bodyId;
-	private String targetBodyId;
+    private String bodyId;
+    private String targetBodyId;
 
-	public WaitForCloseToBodyCommand(String bodyId, String targetBodyId,
-			PHATCommandListener listener) {
-		super(listener);
-		this.bodyId = bodyId;
-		this.targetBodyId = targetBodyId;
-		logger.log(Level.INFO, "New Command: {0}", new Object[] { this });
-	}
-
-	public WaitForCloseToBodyCommand(String bodyId, String targetBodyId) {
-		this(bodyId, targetBodyId, null);
-	}
-    public float getDistanceToTarget(Vector3f l1, Vector3f l2) {
-        Vector3f loc = l1.clone();
-        Vector3f target = l2.clone();
-        if (Math.abs(target.getY() - loc.getY()) < 2f) {
-            return target.setY(0f).distance(loc.setY(0f));
-        }
-        return target.distance(loc);
+    private BasicObjectPerceptionControl perceptionControl;
+    
+    BodiesAppState bodiesAppState;
+    Node body;
+    
+    public WaitForCloseToBodyCommand(String bodyId, String targetBodyId,
+            PHATCommandListener listener) {
+        super(listener);
+        this.bodyId = bodyId;
+        this.targetBodyId = targetBodyId;
+        logger.log(Level.INFO, "New Command: {0}", new Object[]{this});
     }
-	
-	
-	@Override
-	public void runCommand(Application app) {
-		BodiesAppState bodiesAppState = app.getStateManager().getState(
-				BodiesAppState.class);
 
-		final Node body = bodiesAppState.getBody(bodyId);
+    public WaitForCloseToBodyCommand(String bodyId, String targetBodyId) {
+        this(bodyId, targetBodyId, null);
+    }
 
-		if (body != null && body.getParent() != null) {
-			final Node targetBody = bodiesAppState.getBody(targetBodyId);
+    @Override
+    public void runCommand(Application app) {
+        bodiesAppState = app.getStateManager().getState(
+                BodiesAppState.class);
 
-			new Thread(){
-				public void run(){
-					while (getDistanceToTarget(targetBody
-							.getControl(NavMeshMovementControl.class).
-							getLocation(),body.getControl(
-									NavMeshMovementControl.class).getLocation())>=0.5 || getState().equals(phat.commands.PHATCommand.State.Interrupted)){
-						try {
-							Thread.currentThread().sleep(500);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-					setState(phat.commands.PHATCommand.State.Success);
-				}
-			}.start();
-		}
+        body = bodiesAppState.getBody(bodyId);
 
-	}
+        if (body != null && body.getParent() != null) {
+            final Node targetBody = bodiesAppState.getBody(targetBodyId);
+            
+            perceptionControl = new BasicObjectPerceptionControl();
+            perceptionControl.setTarget(targetBody);
+            perceptionControl.setDistance(0.5f);
+            perceptionControl.setFrecuency(0.5f);
+            perceptionControl.addObserver(this);
+            
+            body.addControl(perceptionControl);
+        }
 
-	@Override
-	public void interruptCommand(Application app) {
-		BodiesAppState bodiesAppState = app.getStateManager().getState(
-				BodiesAppState.class);
-		setState(State.Interrupted);
-	}
+    }
 
-	@Override
-	public void destinationReached(Vector3f destination) {
-		setState(State.Success);
-	}
+    private void removePerceptionControl() {
+        if (body != null && body.getParent() != null) {
+            body.removeControl(perceptionControl);
+        }
+    }
+    
+    @Override
+    public void interruptCommand(Application app) {
+        removePerceptionControl();
+        setState(State.Interrupted);
+    }
 
-	@Override
-	public String toString() {
-		return getClass().getSimpleName() + "(" + bodyId + ",targetBodyId="
-				+ targetBodyId + ")";
-	}
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + bodyId + ",targetBodyId="
+                + targetBodyId + ")";
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        removePerceptionControl();
+        setState(phat.commands.PHATCommand.State.Success);
+    }
 }

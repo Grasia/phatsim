@@ -36,22 +36,22 @@ import phat.commands.PHATCommandListener;
 public class WaitForCloseToBodyAutomaton extends SimpleState implements PHATCommandListener {
 
     String destinyBodyName;
+
     public String getDestinyBodyName() {
-		return destinyBodyName;
-	}
+        return destinyBodyName;
+    }
 
-	public PHATCommand getMoveToBodyCommand() {
-		return waitForBodyClose;
-	}
+    public PHATCommand getMoveToBodyCommand() {
+        return waitForBodyClose;
+    }
 
-	public boolean isDestinyReached() {
-		return destinyReached;
-	}
-
-	PHATCommand waitForBodyClose;
+    public boolean isDestinyReached() {
+        return destinyReached;
+    }
+    PHATCommand waitForBodyClose;
     boolean destinyReached = false;
     float speed = -1f;
-    
+
     public WaitForCloseToBodyAutomaton(Agent agent, String name, String destinyBodyName) {
         this(agent, name, destinyBodyName, 1f);
     }
@@ -89,11 +89,8 @@ public class WaitForCloseToBodyAutomaton extends SimpleState implements PHATComm
     }
 
     @Override
-    public void initState(PHATInterface phatInterface) {      
-        	waitForBodyClose = new WaitForCloseToBodyCommand(agent.getId(), destinyBodyName,this);
+    public void initState(PHATInterface phatInterface) {
+        waitForBodyClose = new WaitForCloseToBodyCommand(agent.getId(), destinyBodyName, this);
         agent.runCommand(waitForBodyClose);
     }
-
-
-
 }
