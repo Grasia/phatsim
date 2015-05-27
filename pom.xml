@@ -23,9 +23,9 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:svn:http://ingenias.svn.sourceforge.net/svnroot/ingenias/trunk/IDKMaven</connection>
-        <developerConnection>scm:svn:https://ingenias.svn.sourceforge.net/svnroot/ingenias/trunk/IDKMaven</developerConnection>
-        <url>http://ingenias.svn.sourceforge.net/svnroot/ingenias/trunk/IDKMaven</url>		
+        <connection>scm:git:git://git.code.sf.net/p/phatsim/code</connection>
+        <developerConnection>scm:git:ssh://pcampillo@git.code.sf.net/p/phatsim/code</developerConnection>
+        <url>https://sourceforge.net/p/phatsim/code/ci/master/tree/</url>		
     </scm>
 
     <developers>
