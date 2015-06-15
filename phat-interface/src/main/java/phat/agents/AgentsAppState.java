@@ -30,6 +30,7 @@ import com.jme3.scene.Node;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import phat.PHATInterface;
@@ -38,6 +39,7 @@ import phat.agents.events.PHATEvent;
 import phat.agents.events.PHATEventManager;
 import phat.body.BodiesAppState;
 import phat.commands.PHATCommand;
+import phat.gui.logging.LoggingViewerAppState;
 import phat.structures.houses.HouseAppState;
 import phat.world.WorldAppState;
 
@@ -122,5 +124,13 @@ public class AgentsAppState extends AbstractAppState {
 
     public PHATInterface getPHAInterface() {
         return phatInterface;
+    }
+    
+    public Set<String> getAgentIds() {
+        return availableAgents.keySet();
+    }
+    
+    public Agent getAgent(String id) {
+        return availableAgents.get(id);
     }
 }

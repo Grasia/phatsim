@@ -26,6 +26,7 @@ import ingenias.exception.NotInitialised;
 import ingenias.exception.NullEntity;
 import ingenias.generator.browser.Browser;
 import ingenias.generator.browser.Graph;
+import ingenias.generator.browser.GraphAttribute;
 import ingenias.generator.browser.GraphEntity;
 import ingenias.generator.browser.GraphRelationship;
 import ingenias.generator.browser.GraphRole;
@@ -775,4 +776,13 @@ public class Utils {
 		}
 		return false;
 	}
+        
+        public static String getAttributeByName(GraphEntity ge, String attributeName) {
+            for(GraphAttribute ga: ge.getAllAttrs()) {
+                if(ga.getName().equals(attributeName)) {
+                    return ga.getSimpleValue();
+                }
+            }
+            return "";
+        }
 }

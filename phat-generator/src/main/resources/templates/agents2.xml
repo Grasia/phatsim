@@ -25,10 +25,10 @@ public class @@@v@@@actorname@@@/v@@@Agent extends Agent {
 
     @Override
     protected void initAutomaton() {
-   	    	FSM fsm = new FSM(this, 1,"FSM-@@@v@@@actorname@@@/v@@@");
+   	    	FSM fsm = new TimeIntervalManager(this, 1,"FSM-@@@v@@@actorname@@@/v@@@");
 	    	@@@repeat id="timeInstance"@@@Transition @@@v@@@tiname@@@/v@@@Transition = new Transition(new @@@v@@@tiname@@@/v@@@TIA(this));
-	    	@@@repeat id="timeTransition"@@@@@@v@@@tiname@@@/v@@@Transition.setCondition(new PastTimeCondition(@@@v@@@hours@@@/v@@@, @@@v@@@minutes@@@/v@@@,@@@v@@@seconds@@@/v@@@)); 
-	    	@@@/repeat@@@ 
+                    @@@repeat id="timeTransition"@@@@@@v@@@tiname@@@/v@@@Transition.setCondition(new PastTimeCondition(@@@v@@@hours@@@/v@@@, @@@v@@@minutes@@@/v@@@,@@@v@@@seconds@@@/v@@@)); 
+                    @@@/repeat@@@ 
 	    	@@@/repeat@@@
 	    	
 	    	@@@repeat id="firstTimeInterval"@@@fsm.registerStartState(@@@v@@@tiname@@@/v@@@Transition.getTarget());

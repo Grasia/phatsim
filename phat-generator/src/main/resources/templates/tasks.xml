@@ -16,6 +16,8 @@ public class @@@v@@@taskName@@@/v@@@Task extends SeqTaskAutomaton {
 
 	public @@@v@@@taskName@@@/v@@@Task(Agent agent) {
         super(agent, "@@@v@@@taskName@@@/v@@@");
+        setMetadata("SOCIAALML_ENTITY_ID", "@@@v@@@taskName@@@/v@@@");
+        setMetadata("SOCIAALML_ENTITY_TYPE", "@@@v@@@taskType@@@/v@@@");
     }
 	
 	@Override

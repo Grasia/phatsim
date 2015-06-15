@@ -50,6 +50,7 @@ import phat.config.impl.HouseConfiguratorImpl;
 import phat.config.impl.WorldConfiguratorImpl;
 import phat.devices.DevicesAppState;
 import phat.gui.GUIMainMenuAppState;
+import phat.gui.logging.LoggingViewerAppState;
 import phat.structures.houses.HouseAppState;
 import phat.util.Debug;
 import phat.world.PHATCalendar;
@@ -150,6 +151,8 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
         agentConfig.getAgentsAppState().setBodiesAppState(bodyConfig.getBodiesAppState());
         app.getStateManager().attach(agentConfig.getAgentsAppState());
 
+        app.getStateManager().attach(new LoggingViewerAppState());
+        
         //app.getStateManager().attach(initAppState);
         initializer.initWorld(worldConfig);
         initializer.initHouse(houseConfig);

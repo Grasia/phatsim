@@ -51,6 +51,7 @@ public class TaskGenerator {
             System.out.println(">" + std.getType() + ":" + Utils.replaceBadChars(std.getID()));
             Repeat rep = new Repeat("tasks");
             rep.add(new Var("taskName", Utils.replaceBadChars(std.getID())));
+            rep.add(new Var("taskType", Utils.replaceBadChars(std.getType())));
             sequence.addRepeat(rep);
 
             generateSeqTaskDiagram(std, rep);
@@ -67,6 +68,14 @@ public class TaskGenerator {
                     + Utils.replaceBadChars(task.getID()) + "\")\n"
                     + ".setMetadata(\"SOCIAALML_ENTITY_TYPE\",\""
                     + task.getType() + "\")";
+            
+            String description = Utils.getAttributeByName(task, "Description");
+            if(description != null && !description.equals("")) {
+                sentence +=  "\n.setMetadata(\"SOCIAALML_DESCRIPTION\",\""
+                        + description + "\");";
+            } else {
+                sentence +=  ";";
+            }
             System.out.println(">>" + sentence);
             if (sentence != null) {
                 Repeat rep = new Repeat("subTasks");

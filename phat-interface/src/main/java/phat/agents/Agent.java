@@ -57,14 +57,27 @@ public abstract class Agent implements PHATAgentTick {
 
 	MonitorEventQueue eventListener=null;
 
+        List<AgentListener> listeners = new ArrayList<AgentListener>();
+        
 	abstract protected void initAutomaton();
 
+        private void notifyAgentListener() {
+            for(AgentListener al: listeners) {
+                al.agentChanged(this);
+            }
+        }
+        
+        public void addListener(AgentListener listener) {
+            if(!listeners.contains(listener)) {
+                listeners.add(listener);
+            }
+        }
+        
 	public static void shout(String word, Vector3f location) {
 		for (Agent instance : instances) {
 			instance.listened(word, location);
 		}
 	}
-
 
 	private void registerListenerIntoAutomaton(){
 		if (getAutomaton()!=null && getListener()!=null){
@@ -207,6 +220,7 @@ public abstract class Agent implements PHATAgentTick {
 	public void setAutomaton(Automaton automaton) {
 		this.automaton = automaton;
 		this.registerListenerIntoAutomaton();
+                notifyAgentListener();
 	}
 
 	@Override

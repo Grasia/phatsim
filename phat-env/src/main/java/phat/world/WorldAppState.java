@@ -33,6 +33,7 @@ import com.jme3.light.DirectionalLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.post.FilterPostProcessor;
+import com.jme3.post.ssao.SSAOFilter;
 import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
@@ -40,6 +41,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.shadow.DirectionalLightShadowFilter;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
+import com.jme3.shadow.SpotLightShadowRenderer;
 /*import com.jme3.shadow.DirectionalLightShadowFilter;
  import com.jme3.shadow.DirectionalLightShadowRenderer;
  import com.jme3.shadow.EdgeFilteringMode;
@@ -109,21 +111,7 @@ public class WorldAppState extends AbstractAppState {
 
         FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
         fpp.addFilter(dlsf);
-
-        /*final SpotLightShadowRenderer slsr = new SpotLightShadowRenderer(assetManager, 512);
-         slsr.setLight(spot);       
-         slsr.setShadowIntensity(0.5f);
-         slsr.setEdgeFilteringMode(EdgeFilteringMode.PCFPOISSON);   
-         app.getViewPort().addProcessor(slsr);
-
-         SpotLightShadowFilter slsf = new SpotLightShadowFilter(assetManager, 512);
-         slsf.setLight(spot);    
-         slsf.setShadowIntensity(0.5f);
-         slsf.setEdgeFilteringMode(EdgeFilteringMode.PCFPOISSON);  
-         slsf.setEnabled(false);
         
-         fpp.addFilter(slsf);*/
-
         app.getViewPort().addProcessor(fpp);
     }
 

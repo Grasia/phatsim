@@ -78,8 +78,10 @@ public class TimeIntervalsGenerator {
                     repFather.add(rep);
                     rep.add(new Var("tiname", Utils.replaceBadChars(timeIntervalName)));
 
-                    GraphEntity geClock = Utils.getTargetEntity(ge,
+                    GraphEntity geClock = Utils.getTargetEntity(timeInterval,
                             INTERVAL_CLOCK_REL);
+                    System.out.println(timeInterval.getID());
+                    System.out.println(INTERVAL_CLOCK_REL+" = "+ geClock);
                     if (geClock != null) {
                         GraphAttribute gaHours = geClock
                                 .getAttributeByName(HOURS_FIELD);
@@ -94,19 +96,19 @@ public class TimeIntervalsGenerator {
                                 + mins + ":" + secs);
                         Repeat rep2 = new Repeat("timeTransition");
                         rep.add(rep2);
-                        rep.add(new Var("hours", String.valueOf(hours)));
-                        rep.add(new Var("minutes", String.valueOf(mins)));
-                        rep.add(new Var("seconds", String.valueOf(secs)));
+                        rep2.add(new Var("hours", String.valueOf(hours)));
+                        rep2.add(new Var("minutes", String.valueOf(mins)));
+                        rep2.add(new Var("seconds", String.valueOf(secs)));
                     }
 
                     Collection<GraphEntity> nextEntities = Utils.getTargetsEntity(timeInterval,
                             "NextTimeInterval");
                     if (nextEntities.isEmpty()) {
                         // It is the last time interval
-                        System.out.println("REGISTER FINAL STATE!!!!! -> " + Utils.replaceBadChars(ge.getID()));
+                        System.out.println("REGISTER FINAL STATE!!!!! -> " + Utils.replaceBadChars(timeInterval.getID()));
                         Repeat rep3 = new Repeat("regLastActivityRep");
                         repFather.add(rep3);
-                        rep3.add(new Var("finalActivity", Utils.replaceBadChars(ge.getID())));
+                        rep3.add(new Var("finalActivity", Utils.replaceBadChars(timeInterval.getID())));
                     } else {
                         for (GraphEntity timeIntervalNext : nextEntities) {
                             Repeat rep3 = new Repeat("regTrans");

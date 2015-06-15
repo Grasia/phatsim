@@ -40,6 +40,10 @@ public class Transition {
 	public void setCondition(AutomatonCondition ac) {
 		this.ac = ac;
 	}
+        
+        public AutomatonCondition getCondition() {
+            return this.ac;
+        }
 	
 	public Automaton getTarget(){
 		return target;

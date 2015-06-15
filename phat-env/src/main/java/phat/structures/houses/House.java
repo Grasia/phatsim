@@ -32,10 +32,15 @@ import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
+import com.jme3.post.FilterPostProcessor;
+import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.SceneGraphVisitor;
 import com.jme3.scene.Spatial;
+import com.jme3.shadow.EdgeFilteringMode;
+import com.jme3.shadow.SpotLightShadowFilter;
+import com.jme3.shadow.SpotLightShadowRenderer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -126,15 +131,13 @@ public class House {
         for (String roomName : getRoomNames()) {
             Node clights = getNode(roomName, "Lights");
             if (clights != null) {
-                LightList ll = clights.getLocalLightList();
-                for (Light l : ll) {
-                    if (l instanceof SpotLight) {
-                        ((SpotLight) l).setPosition(clights
-                                .getWorldTranslation());
-                        add(roomName, l);
-                    }
-                    house.addLight(l);
-                }
+                System.out.println(roomName+" -> new PointLight()");
+                PointLight pl = new PointLight();
+                pl.setColor(ColorRGBA.Yellow);
+                pl.setPosition(clights.getWorldTranslation());
+                pl.setRadius(0.1f);
+                add(roomName, pl);
+                house.addLight(pl);
             }
         }
     }
@@ -154,6 +157,11 @@ public class House {
         for (Light l : lights.get(room)) {
             if (on) {
                 l.setColor(ColorRGBA.White);
+                if(l instanceof PointLight) {
+                    ((PointLight)l).setRadius(4f);
+                    System.out.println("Position = "+((PointLight)l).getPosition());
+                    System.out.println("PointLight radius = "+((PointLight)l).getRadius());
+                }
             } else {
                 l.setColor(l.getColor().mult(0f));
             }

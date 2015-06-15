@@ -97,7 +97,7 @@ public class PDGenerator {
 					System.out.println("\tSymptom = " + symptom.getID());
 					Repeat symptoms = new Repeat("symptoms");
 					rep.add(symptoms);
-					symptoms.add(new Var("symptomName", symptom.getID()));
+					symptoms.add(new Var("symptomName", Utils.replaceBadChars(symptom.getID())));
 					symptoms.add(new Var("symptomType", getSymptomClass(symptom)));
 					Vector<String[]> simulationSymptomLevels = getSymptomLevel(symptom, actor);
 					for (String[] pairSymptonAndSim:simulationSymptomLevels){

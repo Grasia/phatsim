@@ -14,6 +14,9 @@ public class @@@v@@@actName@@@/v@@@Activity extends ActivityAutomaton {
 
 	public @@@v@@@actName@@@/v@@@Activity(Agent agent) {
         super(agent, "@@@v@@@actName@@@/v@@@Activity");
+        setMetadata("SOCIAALML_ENTITY_ID", "@@@v@@@actName@@@/v@@@");
+        setMetadata("SOCIAALML_ENTITY_TYPE", "@@@v@@@actType@@@/v@@@");
+        setMetadata("SOCIAALML_DESCRIPTION", "@@@v@@@actDescription@@@/v@@@");
     }
 	
 	@Override

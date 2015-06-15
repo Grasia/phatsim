@@ -435,7 +435,7 @@ public abstract class Automaton {
                 // finalizado y se devuelve para dar
                 // control al autómata padre
                 this.setFinished(true);
-                notifityListeners(true);
+                //notifityListeners(true);
                 if (ECHO) {
                     System.out
                             .println(agent.getId()

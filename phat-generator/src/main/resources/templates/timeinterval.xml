@@ -18,6 +18,8 @@ public class @@@v@@@tisName@@@/v@@@TIA extends TimeIntervalAutomaton {
 
 	public @@@v@@@tisName@@@/v@@@TIA(Agent agent) {
         super(agent, "@@@v@@@tisName@@@/v@@@TIA");
+        setMetadata("SOCIAALML_ENTITY_ID", "@@@v@@@tisName@@@/v@@@");
+        setMetadata("SOCIAALML_ENTITY_TYPE", "@@@v@@@tisType@@@/v@@@");
     }
 	
 	@Override

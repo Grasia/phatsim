@@ -27,6 +27,7 @@ public class PastTimeCondition implements AutomatonCondition {
     int hours;
     int minutes;
     int seconds;
+    int marginInSecs = 30*60;
 
     public PastTimeCondition(int hours, int minutes, int seconds) {
         super();
@@ -37,7 +38,7 @@ public class PastTimeCondition implements AutomatonCondition {
 
     @Override
     public boolean evaluate(Agent agent) {
-        return agent.getTime().pastTime(hours, minutes, seconds);
+        return agent.getTime().pastTime(hours, minutes, seconds, marginInSecs);
     }
 
     @Override

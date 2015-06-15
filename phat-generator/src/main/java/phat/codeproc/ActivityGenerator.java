@@ -65,6 +65,8 @@ public class ActivityGenerator {
             if (ge.getType().equals(ACTIVITY_TYPE)) {
                 Repeat rep = new Repeat("activities");
                 rep.add(new Var("actName", Utils.replaceBadChars(ge.getID())));
+                rep.add(new Var("actType", Utils.replaceBadChars(ge.getType())));
+                rep.add(new Var("actDescription", Utils.getAttributeByName(ge, "Description")));
                 seq.addRepeat(rep);
 
                 GraphAttribute ga = ge
@@ -89,8 +91,10 @@ public class ActivityGenerator {
                 if (ge.getType().equals("TimeInterval")) {
                     // Define class structure
                     String timeIntervalID = Utils.replaceBadChars(ge.getID());
+                    String timeIntervalType = Utils.replaceBadChars(ge.getType());
                     Repeat rep = new Repeat("tis");
                     rep.add(new Var("tisName", timeIntervalID));
+                    rep.add(new Var("tisType", timeIntervalType));
                     seq.addRepeat(rep);
                     GraphAttribute ga = ge
                             .getAttributeByName(ACTIVITY_SPEC_FIELD);

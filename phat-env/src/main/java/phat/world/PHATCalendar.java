@@ -52,6 +52,11 @@ public class PHATCalendar implements Serializable{
 //        calendar.set(Calendar.SECOND, d.getSeconds());
     }
     
+    public PHATCalendar(PHATCalendar copy) {
+        calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(copy.getTimeInMillis());
+    }
+    
     @Override
     public Object clone() {
     	return new PHATCalendar(getYear(), getMonth(), getDayOfMonth(), getHourOfDay(), getMinute(), getSecond());
@@ -99,10 +104,10 @@ public class PHATCalendar implements Serializable{
     	return millis/1000;
     }
     
-    public boolean pastTime(int hours, int minutes, int seconds) {
+    public boolean pastTime(int hours, int minutes, int seconds, int marginInSecs) {
     	int secondsOfDay = getHourOfDay()*3600+getMinute()*60+getSecond();
     	int refSec = hours*3600+minutes*60+seconds;
-    	return secondsOfDay > refSec;
+        return secondsOfDay > refSec && ((secondsOfDay - refSec) < marginInSecs);
     }
     
     public int getYear() {

@@ -283,6 +283,7 @@ public class FSM extends Automaton {
 
         // comprobar si estado actual se ha acabado.
         if (currentState.isFinished(phatInterface)) {
+            currentState.setFinished(true);
             currentState.notifityListeners(true);
             printPendingTransitions();
             // comrpobar si era estado final para dar por termiando este
@@ -293,7 +294,7 @@ public class FSM extends Automaton {
             }
             if (this.finalStates.contains(currentState)) {
                 this.setFinished(true);
-                notifityListeners(true);
+                //notifityListeners(true);
                 if (ECHO) {
                     System.out.println(agent.getId() + ", " + name
                             + " automaton finished");
