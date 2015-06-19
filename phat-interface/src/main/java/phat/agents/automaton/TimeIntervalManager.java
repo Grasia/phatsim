@@ -36,26 +36,28 @@ public class TimeIntervalManager extends FSM {
 
     @Override
     public void nextState(PHATInterface phatInterface) {
-        if(currentState != null && areNextStatesAvailable(currentState)) {
+        if (currentState != null && areNextStatesAvailable(currentState)) {
             System.out.println("Set finish!!!");
             currentState.setFinished(true);
         }
         super.nextState(phatInterface);
     }
-    
+
     /**
-     * Return true if there are transitions with the PastTimeCondition 
-     * evaluated as true.
-     * 
+     * Return true if there are transitions with the PastTimeCondition evaluated
+     * as true.
+     *
      * @param source
-     * @return 
+     * @return
      */
     private boolean areNextStatesAvailable(Automaton source) {
         ArrayList<Transition> r = possibleTransitions.get(source);
-        for (Transition t : r) {
-            if (t.getCondition() instanceof PastTimeCondition) {
-                if (t.evaluate()) {
-                    return true;
+        if (r != null) {
+            for (Transition t : r) {
+                if (t.getCondition() instanceof PastTimeCondition) {
+                    if (t.evaluate()) {
+                        return true;
+                    }
                 }
             }
         }
