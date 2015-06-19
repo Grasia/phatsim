@@ -124,11 +124,11 @@ public class ShitDownTest implements PHATInitAppListener {
             
             @Override
             public void update(float f) {
-                if(!standUp2 && seAPI.getWorldAppState().getCalendar().pastTime(12, 0, 55)) {
+                if(!standUp2 && seAPI.getWorldAppState().getCalendar().pastTime(12, 0, 55, 10*60)) {
                     bodiesAppState.runCommand(new StandUpCommand("Patient"));
                     standUp2 = true;
                 }
-                if (!standUp && seAPI.getWorldAppState().getCalendar().pastTime(12, 0, 20)) {
+                if (!standUp && seAPI.getWorldAppState().getCalendar().pastTime(12, 0, 20, 10*60)) {
                     final GoCloseToObjectCommand gctoc = new GoCloseToObjectCommand("Patient", "Chair1", new PHATCommandListener() {
 
                         @Override

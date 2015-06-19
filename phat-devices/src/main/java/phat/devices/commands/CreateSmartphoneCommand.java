@@ -45,9 +45,9 @@ import phat.util.SpatialUtils;
 public class CreateSmartphoneCommand extends PHATDeviceCommand {
 
     private String smartphoneId;
-    private boolean cameraSensor = false;
-    private boolean accelerometerSensor = false;
-    private boolean microphoneSensor = false;
+    private boolean cameraSensor = true;
+    private boolean accelerometerSensor = true;
+    private boolean microphoneSensor = true;
     private boolean attachCoordinateAxes = false;
     private Vector3f dimensions = new Vector3f(0.048f, 0.08f, 0.002f);
 
