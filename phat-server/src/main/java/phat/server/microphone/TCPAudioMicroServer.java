@@ -31,6 +31,7 @@ import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import phat.mobile.servicemanager.server.ServiceManagerServer;
+import phat.sensors.microphone.MicrophoneControl;
 import phat.sensors.microphone.MicrophoneData;
 import phat.server.TCPSensorServer;
 import sim.android.media.service.AudioStreamDataPacket;
@@ -44,10 +45,12 @@ public class TCPAudioMicroServer implements SensorListener, TCPSensorServer {
     private Thread serverThread;
     private Socket socket;
     private boolean endServer = false;
+    MicrophoneControl mc;
 
-    public TCPAudioMicroServer(InetAddress ip, int port) throws IOException {
+    public TCPAudioMicroServer(InetAddress ip, int port, MicrophoneControl mc) throws IOException {
         this.ip = ip.getHostAddress();
         this.port = port;
+        this.mc = mc;
         serverSocket = new ServerSocket(port, 0, ip);        
     }
 
@@ -85,6 +88,7 @@ public class TCPAudioMicroServer implements SensorListener, TCPSensorServer {
 
     private synchronized void upClient(Socket socket) {
         this.socket = socket;
+        mc.add(this);
         try {
             this.oos = new ObjectOutputStream(socket.getOutputStream());
         } catch (IOException ex) {
@@ -117,6 +121,7 @@ public class TCPAudioMicroServer implements SensorListener, TCPSensorServer {
 
     @Override
     public void stop() {
+        mc.remove(this);
         try {
             endServer = true;
             serverThread.interrupt();

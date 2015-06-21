@@ -31,6 +31,7 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import phat.sensors.accelerometer.AccelerationData;
+import phat.sensors.accelerometer.AccelerometerControl;
 import phat.server.TCPSensorServer;
 import sim.android.hardware.service.SimSensorEvent;
 
@@ -43,10 +44,12 @@ public class TCPAccelerometerServer implements SensorListener, TCPSensorServer {
     private Thread serverThread;
     private Socket socket;
     private boolean endServer = false;
+    AccelerometerControl accSensor;
 
-    public TCPAccelerometerServer(InetAddress ip, int port) throws IOException {
+    public TCPAccelerometerServer(InetAddress ip, int port, AccelerometerControl accSensor) throws IOException {
         this.ip = ip.getHostAddress();
         this.port = port;
+        this.accSensor = accSensor;
         serverSocket = new ServerSocket(port, 0, ip);        
     }
 
@@ -84,6 +87,7 @@ public class TCPAccelerometerServer implements SensorListener, TCPSensorServer {
 
     private synchronized void upClient(Socket socket) {
         this.socket = socket;
+        accSensor.add(this);
         try {
             this.oos = new ObjectOutputStream(socket.getOutputStream());
         } catch (IOException ex) {
@@ -95,6 +99,7 @@ public class TCPAccelerometerServer implements SensorListener, TCPSensorServer {
 
     @Override
     public void stop() {
+        accSensor.remove(this);
         try {
             endServer = true;
             serverThread.interrupt();

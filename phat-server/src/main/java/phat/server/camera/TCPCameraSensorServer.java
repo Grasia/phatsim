@@ -53,10 +53,12 @@ public class TCPCameraSensorServer implements SensorListener, TCPSensorServer {
     final Object mutex0 = new Object();
     final Object mutex1 = new Object();
     final Object mutex2 = new Object();
-    
-    public TCPCameraSensorServer(InetAddress ip, int port) throws IOException {
+    CameraSensor cameraSensor;
+
+    public TCPCameraSensorServer(InetAddress ip, int port, CameraSensor cameraSensor) throws IOException {
         this.ip = ip.getHostAddress();
         this.port = port;
+        this.cameraSensor = cameraSensor;
         serverSocket = new ServerSocket(port, 0, ip);
     }
 
@@ -94,6 +96,7 @@ public class TCPCameraSensorServer implements SensorListener, TCPSensorServer {
 
     private synchronized void upClient(Socket socket) {
         this.socket = socket;
+        cameraSensor.add(this);
         try {
             this.oos = new ObjectOutputStream(socket.getOutputStream());
         } catch (IOException ex) {
@@ -105,6 +108,7 @@ public class TCPCameraSensorServer implements SensorListener, TCPSensorServer {
 
     @Override
     public void stop() {
+        cameraSensor.remove(this);
         try {
             endServer = true;
             serverThread.interrupt();

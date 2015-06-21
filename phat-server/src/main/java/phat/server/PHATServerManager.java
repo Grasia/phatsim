@@ -55,13 +55,11 @@ public class PHATServerManager {
         int port = ServiceManagerServer.getInstance().getNextPort();
         try {
             System.out.println("IP:PORT -> " + inetAddress + ":" + port);
-            ams = new TCPAudioMicroServer(inetAddress, port);
+            ams = new TCPAudioMicroServer(inetAddress, port, mc);
         } catch (IOException ex) {
             Logger.getLogger(PHATServerManager.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
-
-        mc.add(ams);
 
         registerService(id, ams, Service.MICROPHONE);
 
@@ -77,13 +75,11 @@ public class PHATServerManager {
         int port = ServiceManagerServer.getInstance().getNextPort();
         try {
             System.out.println("IP:PORT -> " + inetAddress + ":" + port);
-            ams = new TCPCameraSensorServer(inetAddress, port);
+            ams = new TCPCameraSensorServer(inetAddress, port, cameraSensor);
         } catch (IOException ex) {
             Logger.getLogger(PHATServerManager.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
-
-        cameraSensor.add(ams);
 
         registerService(id, ams, Service.CAMERA);
 
@@ -99,13 +95,11 @@ public class PHATServerManager {
         int port = ServiceManagerServer.getInstance().getNextPort();
         try {
             System.out.println("IP:PORT -> " + inetAddress + ":" + port);
-            ams = new TCPAccelerometerServer(inetAddress, port);
+            ams = new TCPAccelerometerServer(inetAddress, port, accSensor);
         } catch (IOException ex) {
             Logger.getLogger(PHATServerManager.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
-
-        accSensor.add(ams);
 
         registerService(id, ams, Service.ACCELEROMETER);
 
@@ -144,7 +138,7 @@ public class PHATServerManager {
     public String getIP() {
         return inetAddress.getHostAddress();
     }
-
+    
     public int getPort() {
         return CommonVars.SERVICE_MANAGER_SERVER_PORT;
     }

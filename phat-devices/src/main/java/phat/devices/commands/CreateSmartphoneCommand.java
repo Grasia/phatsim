@@ -82,7 +82,7 @@ public class CreateSmartphoneCommand extends PHATDeviceCommand {
         if (microphoneSensor) {
             SmartPhoneFactory.enableMicrophoneFacility(smartphone);
         }
-        if (cameraSensor) {
+        if (cameraSensor) {            
             SmartPhoneFactory.enableCameraFacility(smartphone);
         }
 
