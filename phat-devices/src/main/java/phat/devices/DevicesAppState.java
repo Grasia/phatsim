@@ -27,11 +27,14 @@ import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import phat.commands.PHATCommand;
+import phat.devices.commands.DisplayAVDScreenCommand;
 import phat.devices.commands.PHATDeviceCommand;
 import phat.devices.smartphone.SmartPhoneFactory;
 import phat.mobile.adm.AndroidVirtualDevice;
@@ -130,6 +133,25 @@ public class DevicesAppState extends AbstractAppState {
     @Override
     public void cleanup() {
         super.cleanup();
+        // close connections with emulators
+        Set<String> ids = availableAVDs.keySet();
+        if (ids != null) {
+            for (String id : ids) {
+                AndroidVirtualDevice avd = availableAVDs.get(id);
+                String avdId = avd.getAvdName();
+                new DisplayAVDScreenCommand(id, avdId, false)
+                .run(app);
+                // Try to exit from an application
+                // TODO Improve it
+                avd.pressBackPhysicalButton();
+                avd.pressBackPhysicalButton();
+            }
+            
+        }
+        if (ids != null && !ids.isEmpty()) {
+            AndroidVirtualDevice.shutdown();
+        }
+        
         if (serverManager != null) {
             System.out.println("ServerManager Stopped!!");
             serverManager.stop();

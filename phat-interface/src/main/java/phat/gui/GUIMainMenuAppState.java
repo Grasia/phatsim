@@ -25,6 +25,7 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.input.event.MouseButtonEvent;
 import com.jme3.math.Vector2f;
 import phat.app.PHATApplication;
+import phat.gui.logging.LoggingViewerAppState;
 import phat.gui.screenshot.GUIScreenShotAppState;
 import phat.gui.time.TimeAppState;
 import phat.util.PHATScreenshotAppState;
@@ -210,6 +211,18 @@ public class GUIMainMenuAppState extends AbstractAppState {
                 //screenShotState.takeScreenshot();
                 app.getStateManager().detach(this);
                 takeScreenshot();
+                break;
+            case 1:
+                LoggingViewerAppState log = app.getStateManager().getState(LoggingViewerAppState.class);
+                if(log == null) {
+                    log = new LoggingViewerAppState();
+                    app.getStateManager().attach(this);
+                }
+                if(log.isShown()) {
+                    log.hide();
+                } else {
+                    log.show();
+                }
                 break;
         }
     }

@@ -30,12 +30,14 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import phat.sensors.camera.CameraSensor;
 import phat.sensors.camera.CameraSensorData;
 import phat.server.TCPSensorServer;
+import phat.server.microphone.TCPAudioMicroServer;
 import phat.util.PHATImageUtils;
 import sim.android.hardware.service.CameraImageCapture;
 
@@ -79,10 +81,16 @@ public class TCPCameraSensorServer implements SensorListener, TCPSensorServer {
             public void run() {
                 try {
                     while (!endServer) {
-                        Socket socket = serverSocket.accept();
-                        socket.setSendBufferSize(800 * 480 * 4 * IMG_BUFFER);
-                        System.out.println("*Nuevo Cliente: " + socket);
-                        upClient(socket);
+                        try {
+                            Socket socket = serverSocket.accept();
+                            socket.setSendBufferSize(800 * 480 * 4 * IMG_BUFFER);
+                            System.out.println("*Nuevo Cliente: " + socket);
+                            upClient(socket);
+                        } catch (SocketException ex) {
+                            if(!endServer) {
+                                Logger.getLogger(TCPAudioMicroServer.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(TCPCameraSensorServer.class.getName()).log(Level.SEVERE, null, ex);
@@ -111,7 +119,7 @@ public class TCPCameraSensorServer implements SensorListener, TCPSensorServer {
         cameraSensor.remove(this);
         try {
             endServer = true;
-            serverThread.interrupt();
+            serverSocket.close();
 
             if (oos != null) {
                 oos.close();
@@ -177,8 +185,8 @@ public class TCPCameraSensorServer implements SensorListener, TCPSensorServer {
             CameraSensor cs = (CameraSensor) source;
             CameraSensorData csd = (CameraSensorData) sd;
 
-            synchronized(mutex0) {
-                if(imgSending >= 2) {
+            synchronized (mutex0) {
+                if (imgSending >= 2) {
                     return;
                 }
                 imgSending++;
@@ -198,7 +206,7 @@ public class TCPCameraSensorServer implements SensorListener, TCPSensorServer {
             synchronized (mutex2) {
                 send(cic);
             }
-            synchronized(mutex0) {
+            synchronized (mutex0) {
                 imgSending--;
             }
             /*if (socket != null && socket.isConnected() && oos != null) {

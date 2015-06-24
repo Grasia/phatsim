@@ -45,8 +45,8 @@
         <developername>Pablo Campillo-Sanchez</developername>
         <developeremail>pabcampi@ucm.es</developeremail>
         <jme.version>3.0.1</jme.version>
-        <jali.version>1.0.2</jali.version>
-        <jdos.version>1.0.1</jdos.version>
+        <jali.version>1.0.3-SNAPSHOT</jali.version>
+        <jdos.version>1.0.2-SNAPSHOT</jdos.version>
     </properties>
     
     <modules>

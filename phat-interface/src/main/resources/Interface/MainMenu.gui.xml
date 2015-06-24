@@ -53,6 +53,7 @@ and open the template in the editor.
         
         <component type="Menu" id="ToolsMenu" position="0,0">
             <method name="addMenuItem" param0="Take snapshot" param1="1" param2="null" />
+            <method name="addMenuItem" param0="Log viewer" param1="2" param2="null"/>
             <eventMethod name="onMenuItemClicked" stateMethodName="toolsMenuClick" />
         </component>
         

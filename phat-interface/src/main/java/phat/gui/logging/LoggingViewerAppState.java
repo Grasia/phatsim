@@ -46,6 +46,7 @@ public class LoggingViewerAppState extends AbstractAppState implements Automaton
     LogRecordTableModel tableModel;
     PHATCalendar simStartTime;
     PHATCalendar simTime;
+    JFrame frame;
     
     Map<String, Logger> loggers = new HashMap<>();
     
@@ -89,8 +90,8 @@ public class LoggingViewerAppState extends AbstractAppState implements Automaton
             @Override
             public void run() {
                 //Create and set up the window.
-                JFrame frame = new JFrame("PHAT Log viewer");
-                frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                frame = new JFrame("PHAT Log viewer");
+                //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
                 //Create and set up the content pane.
                 LogViewerPanel newContentPane = new LogViewerPanel(tableModel);
@@ -99,7 +100,6 @@ public class LoggingViewerAppState extends AbstractAppState implements Automaton
 
                 //Display the window.
                 frame.pack();
-                frame.setVisible(true);
             }
         });
     }
@@ -110,9 +110,26 @@ public class LoggingViewerAppState extends AbstractAppState implements Automaton
 
     }
 
+    public void show() {
+        frame.setVisible(true);
+    }
+    
+    public boolean isShown() {
+        return frame.isVisible();
+    }
+    
+    public void hide() {
+        frame.setVisible(false);
+    }
+    
     @Override
     public void cleanup() {
         super.cleanup();
+        
+        if(frame != null) {
+            frame.setVisible(false);
+            frame.dispose();
+        }
     }
 
     @Override

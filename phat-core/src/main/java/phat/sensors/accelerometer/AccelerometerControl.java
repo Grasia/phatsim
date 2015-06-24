@@ -88,7 +88,7 @@ public class AccelerometerControl extends Sensor {
     }
 
     private Quaternion getRotation() {
-        if (rbc.isEnabled()) {
+        if (rbc != null && rbc.isEnabled()) {
             return rbc.getPhysicsRotation();
         } else {
             return spatial.getWorldRotation();

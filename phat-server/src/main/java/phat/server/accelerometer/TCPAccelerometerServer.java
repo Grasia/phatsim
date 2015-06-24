@@ -28,6 +28,7 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import phat.sensors.accelerometer.AccelerationData;
@@ -50,7 +51,7 @@ public class TCPAccelerometerServer implements SensorListener, TCPSensorServer {
         this.ip = ip.getHostAddress();
         this.port = port;
         this.accSensor = accSensor;
-        serverSocket = new ServerSocket(port, 0, ip);        
+        serverSocket = new ServerSocket(port, 0, ip);
     }
 
     @Override
@@ -66,14 +67,19 @@ public class TCPAccelerometerServer implements SensorListener, TCPSensorServer {
     @Override
     public void start() {
         serverThread = new Thread(new Runnable() {
-
             @Override
             public void run() {
                 try {
                     while (!endServer) {
-                        Socket socket = serverSocket.accept();
-                        System.out.println("Nuevo Cliente: "+socket);
-                        upClient(socket);
+                        try {
+                            Socket socket = serverSocket.accept();
+                            System.out.println("Nuevo Cliente: " + socket);
+                            upClient(socket);
+                        } catch (SocketException ex) {
+                            if(!endServer) {
+                                Logger.getLogger(TCPAudioMicroServer.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(TCPAudioMicroServer.class.getName()).log(Level.SEVERE, null, ex);
@@ -102,8 +108,8 @@ public class TCPAccelerometerServer implements SensorListener, TCPSensorServer {
         accSensor.remove(this);
         try {
             endServer = true;
-            serverThread.interrupt();
-            
+            serverSocket.close();
+
             if (oos != null) {
                 oos.close();
                 oos = null;
@@ -132,9 +138,9 @@ public class TCPAccelerometerServer implements SensorListener, TCPSensorServer {
                     data[2] = accData.getZ();
                     SimSensorEvent sse = new SimSensorEvent(
                             SimSensorEvent.TYPE_ACCELEROMETER,
-                            data, 
+                            data,
                             0,
-                            Math.round(1f/accData.getInterval()));
+                            Math.round(1f / accData.getInterval()));
                     oos.writeObject(sse);
                     oos.flush();
                     oos.reset();

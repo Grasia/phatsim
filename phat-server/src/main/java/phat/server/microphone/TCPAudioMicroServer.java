@@ -27,6 +27,7 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,7 +52,7 @@ public class TCPAudioMicroServer implements SensorListener, TCPSensorServer {
         this.ip = ip.getHostAddress();
         this.port = port;
         this.mc = mc;
-        serverSocket = new ServerSocket(port, 0, ip);        
+        serverSocket = new ServerSocket(port, 0, ip);
     }
 
     @Override
@@ -67,14 +68,19 @@ public class TCPAudioMicroServer implements SensorListener, TCPSensorServer {
     @Override
     public void start() {
         serverThread = new Thread(new Runnable() {
-
             @Override
             public void run() {
                 try {
                     while (!endServer) {
-                        Socket socket = serverSocket.accept();
-                        System.out.println("Nuevo Cliente: "+socket);
-                        upClient(socket);
+                        try {
+                            Socket socket = serverSocket.accept();
+                            System.out.println("Nuevo Cliente: " + socket);
+                            upClient(socket);
+                        } catch (SocketException ex) {
+                            if(!endServer) {
+                                Logger.getLogger(TCPAudioMicroServer.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
                     }
                 } catch (IOException ex) {
                     Logger.getLogger(TCPAudioMicroServer.class.getName()).log(Level.SEVERE, null, ex);
@@ -124,8 +130,8 @@ public class TCPAudioMicroServer implements SensorListener, TCPSensorServer {
         mc.remove(this);
         try {
             endServer = true;
-            serverThread.interrupt();
-            
+            serverSocket.close();
+
             if (oos != null) {
                 oos.close();
                 oos = null;
@@ -152,7 +158,7 @@ public class TCPAudioMicroServer implements SensorListener, TCPSensorServer {
                     int numSamples = microphoneData.getAudioFormat().getSampleSizeInBits();
                     byte[] data = new byte[totalSize];
                     System.arraycopy(microphoneData.getData(), 0, data, 0, totalSize);
-                    AudioStreamDataPacket asdp = new AudioStreamDataPacket(data, numSamples, totalSize/numSamples);
+                    AudioStreamDataPacket asdp = new AudioStreamDataPacket(data, numSamples, totalSize / numSamples);
                     oos.writeObject(asdp);
                     oos.flush();
                     oos.reset();

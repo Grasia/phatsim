@@ -21,7 +21,6 @@ package phat.devices.commands;
 
 import com.jme3.app.Application;
 import com.jme3.scene.Node;
-import edu.cmu.sphinx.frontend.filter.Preemphasizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import phat.commands.PHATCommandListener;
@@ -37,17 +36,27 @@ public class PressOnScreen extends PHATDeviceCommand {
     private String smartphoneId;
     private int x;
     private int y;
+    private int duration = 0;
     TouchingThread thread;
 
     public PressOnScreen(String smartphoneId, int x, int y) {
-        this(smartphoneId, x, y, null);
+        this(smartphoneId, x, y, 0, null);
+    }
+
+    public PressOnScreen(String smartphoneId, int x, int y, int duration) {
+        this(smartphoneId, x, y, duration, null);
     }
 
     public PressOnScreen(String smartphoneId, int x, int y, PHATCommandListener listener) {
+        this(smartphoneId, x, y, 0, null);
+    }
+
+    public PressOnScreen(String smartphoneId, int x, int y, int duration, PHATCommandListener listener) {
         super(listener);
         this.smartphoneId = smartphoneId;
         this.x = x;
         this.y = y;
+        this.duration = duration;
         logger.log(Level.INFO, "New Command: {0}", new Object[]{this});
     }
 
@@ -58,6 +67,7 @@ public class PressOnScreen extends PHATDeviceCommand {
     }
 
     class TouchingThread extends Thread {
+
         Application app;
         PressOnScreen pos;
 
@@ -65,7 +75,7 @@ public class PressOnScreen extends PHATDeviceCommand {
             this.app = app;
             this.pos = pos;
         }
-        
+
         @Override
         public void run() {
             DevicesAppState devicesAppState = app.getStateManager().getState(DevicesAppState.class);
@@ -73,13 +83,17 @@ public class PressOnScreen extends PHATDeviceCommand {
             if (smartphone != null) {
                 AndroidVirtualDevice avd = devicesAppState.getAVD(smartphoneId);
                 if (avd != null) {
-                    avd.touchDown(x, y);
-                    try {
-                        sleep(700);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(PressOnScreen.class.getName()).log(Level.SEVERE, null, ex);
+                    if (duration == 0) {
+                        avd.tap(x, y);
+                    } else {
+                        avd.touchDown(x, y);
+                        try {
+                            sleep(duration);
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(PressOnScreen.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        avd.touchUp(x, y);
                     }
-                    avd.touchUp(x, y);
                     pos.setState(PressOnScreen.State.Success);
                     return;
                 }

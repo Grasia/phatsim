@@ -42,15 +42,25 @@ public class DisplayAVDScreenCommand extends PHATDeviceCommand {
     private String smartphoneId;
     private String avdId;
     private float frecuency = 1f;
+    private boolean on = true;
 
     public DisplayAVDScreenCommand(String smartphoneId, String avdId) {
         this(smartphoneId, avdId, null);
     }
 
+    public DisplayAVDScreenCommand(String smartphoneId, String avdId, boolean on) {
+        this(smartphoneId, avdId, on, null);
+    }
+
     public DisplayAVDScreenCommand(String smartphoneId, String avdId, PHATCommandListener listener) {
+        this(smartphoneId, avdId, true, null);
+    }
+
+    public DisplayAVDScreenCommand(String smartphoneId, String avdId, boolean on, PHATCommandListener listener) {
         super(listener);
         this.smartphoneId = smartphoneId;
         this.avdId = avdId;
+        this.on = on;
         logger.log(Level.INFO, "New Command: {0}", new Object[]{this});
     }
 
@@ -61,31 +71,33 @@ public class DisplayAVDScreenCommand extends PHATDeviceCommand {
         AndroidVirtualDevice avd = devicesAppState.getAVD(smartphoneId);
         if (device != null && avd != null) {
             List<Spatial> screens = SpatialUtils.getSpatialsByRole(device, "Screen");
-            System.out.println("#Screen = "+screens.size());
+            System.out.println("#Screen = " + screens.size());
             if (screens.size() > 0) {
                 Spatial screen = screens.get(0);
-                screen.setMaterial(new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md"));
                 ScreenAVDControl c = screen.getControl(ScreenAVDControl.class);
-                if (c == null) {
+                if (on && c == null) {
+                    screen.setMaterial(new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md"));
                     c = new ScreenAVDControl((Geometry) screen, avd);
                     screen.addControl(c);
+                    c.setFrecuency(frecuency);
+
+                } else if (!on && c != null) {
+                    screen.removeControl(c);
                 }
-                c.setFrecuency(frecuency);
                 setState(State.Success);
+                return;
             }
-            return;
         }
         setState(State.Fail);
     }
-
-    @Override
-    public void interruptCommand(Application app) {
+@Override
+        public void interruptCommand(Application app) {
         setState(State.Interrupted);
     }
 
     @Override
-    public String toString() {
-        return getClass().getSimpleName() + "(" + smartphoneId + ", " + avdId + ")";
+        public String toString() {
+        return getClass().getSimpleName() + "(" + smartphoneId + ", " + avdId + ", " + on + ")";
     }
 
     public float getFrecuency() {

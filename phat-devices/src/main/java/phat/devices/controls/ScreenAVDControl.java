@@ -52,7 +52,8 @@ public class ScreenAVDControl extends AbstractControl {
     int index = -1;
     int imagCont = 0;
     Thread imageCapture;
-
+    boolean finish;
+    
     public ScreenAVDControl(Geometry display, AndroidVirtualDevice avd) {
         this.display = display;
         this.avd = avd;
@@ -67,7 +68,7 @@ public class ScreenAVDControl extends AbstractControl {
             imageCapture = new Thread() {
                 @Override
                 public void run() {
-                    while (true) {
+                    while (!finish) {
                         long t1 = System.currentTimeMillis();
                         BufferedImage bi = avd.takeSnapshot();
                         long t2 = System.currentTimeMillis();
@@ -87,7 +88,7 @@ public class ScreenAVDControl extends AbstractControl {
             };
             imageCapture.start();
         } else {
-            imageCapture.interrupt();
+            finish = true;
         }
     }
 
