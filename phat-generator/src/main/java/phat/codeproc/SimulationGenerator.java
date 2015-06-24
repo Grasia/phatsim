@@ -149,7 +149,7 @@ public class SimulationGenerator {
         GraphAttribute world = ge.getAttributeByName("SimulationSeedField");
         
         String seedValue = "0";
-        if(world != null) {
+        if(world != null && !world.getSimpleValue().equals("")) {
             seedValue = world.getSimpleValue();            
         }
         rep.add(new Var("seedValue", seedValue));
