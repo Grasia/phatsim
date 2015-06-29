@@ -46,15 +46,16 @@ public class PHATEventManager {
         this.agent = agent;
     }
 
-    public void add(PHATEvent event) {
+    public synchronized void add(PHATEvent event) {
         events.add(event);
     }
 
-    public void process(PHATInterface phatInterface) {
+    public synchronized void process(PHATInterface phatInterface) {
+	List<PHATEvent> eventsToRemove = new ArrayList<>();
         for (PHATEvent event : events) {
             if (!event.state.equals(PHATEvent.State.Started)) {
                 eventHistory.add(event);
-                events.remove(event);
+                eventsToRemove.add(event);
                 continue;
             }
             if (event.isPerceptible(agent)) {
@@ -91,7 +92,7 @@ public class PHATEventManager {
                                 agent.getAutomaton().printPendingTransitions();
                                 event.setEventState(PHATEvent.State.Assigned);
                                 eventHistory.add(event);
-                                events.remove(event);
+                                eventsToRemove.add(event);
                             } else {
                                 System.out.println(currentAction.getName() + " NO Interrupted!");
                             }
@@ -99,11 +100,12 @@ public class PHATEventManager {
                     } else {
                         event.setEventState(PHATEvent.State.Ignored);
                         eventHistory.add(event);
-                        events.remove(event);
+                        eventsToRemove.add(event);
                     }
                 }
             }
         }
+	events.removeAll(eventsToRemove);
     }
 
     public PHATEvent getEvent(String id) {
