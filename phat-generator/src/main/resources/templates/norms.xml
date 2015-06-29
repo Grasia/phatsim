@@ -1,0 +1,157 @@
+@@@program xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"@@@
+
+@@@repeat id="norms"@@@
+
+	@@@saveto@@@
+		@@@file overwrite="yes"@@@
+			@@@v@@@output@@@/v@@@/sociaal/norms/@@@v@@@normname@@@/v@@@.java@@@/file@@@
+@@@text@@@
+package sociaal.norms;
+
+import sociaal.PunishmentNorm;
+
+public class @@@v@@@normname@@@/v@@@ extends PunishmentNorm {
+
+	public @@@v@@@normname@@@/v@@@(String name, String responsible,org.drools.core.spi.KnowledgeHelper kb) {
+		super(name,responsible, kb);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public boolean shouldPunish(long millis) {
+		// TODO Auto-generated method stub
+		return true;
+	}
+
+	@Override
+	public void performPunishment() {
+		
+
+	}
+
+}
+
+
+@@@/text@@@
+	@@@/saveto@@@
+	@@@/repeat@@@
+
+
+
+	@@@saveto@@@
+		@@@file overwrite="yes"@@@
+			@@@v@@@output@@@/v@@@/rules.drl@@@/file@@@
+@@@text@@@
+
+package sociaal;
+
+dialect "mvel"
+
+import jade.lang.acl.ACLMessage;
+import jade.domain.introspection.Event;
+import phat.agents.AgentPHATEvent;
+import phat.body.BodyUtils.BodyPosture;
+import phat.world.MonitorEventQueue;
+import phat.world.MonitorEventQueueImp;
+import phat.world.PHATCalendar;
+import sociaal.*;
+import sociaal.ontology.*;
+import sociaal.*;
+import sociaal.norms.*;
+
+rule "init"
+when
+then
+	insert(new Partner("system"));
+	NormPerformanceDisplay.getInstance().addPartner("system");
+end
+
+
+rule "Clean working memory. Remove events older than 2 seconds"
+when
+		$f2: AgentPHATEvent()
+		$f1: AgentPHATEvent(time-$f2.getTime()>60000)
+then
+		retract( $f2 ) ;
+		System.out.println("cleaning too old fact"+$f2.toString);
+end
+
+/*******************************************************/
+// Norm violation detection
+/*******************************************************/
+
+@@@repeat id="norms"@@@
+rule "violation detected: @@@v@@@normname@@@/v@@@"
+when 
+@@@repeat id="normscondition"@@@
+	$ap1: ActionPerformed(responsible=="@@@v@@@normrolecondition@@@/v@@@",actionType=="@@@v@@@normactioncondition@@@/v@@@")
+@@@/repeat@@@
+	not (ActionPerformed(responsible=="@@@v@@@normrolecondition@@@/v@@@",actionType!="WaitTask" && actionType!="AskForHelp" && actionType!="WaitForBodyClose" ,getTime()>$ap1.getTime()))
+	not (ActionPerformed(responsible=="@@@v@@@normrole@@@/v@@@",actionType=="@@@v@@@normdeonticaction@@@/v@@@",getTime()-$ap1.getTime()<@@@v@@@normtimewindow@@@/v@@@))
+	(ActionPerformed(getTime()-$ap1.getTime()>=@@@v@@@normtimewindow@@@/v@@@))
+then
+	insertLogical(new @@@v@@@normname@@@/v@@@("Violated@@@v@@@normname@@@/v@@@","@@@v@@@normrole@@@/v@@@",this));
+	NormPerformanceDisplay.getInstance().addViolation("@@@v@@@normname@@@/v@@@","@@@v@@@normrole@@@/v@@@");
+end
+
+rule "violation restored: @@@v@@@normname@@@/v@@@"
+when 
+	$v: @@@v@@@normname@@@/v@@@(name=="Violated@@@v@@@normname@@@/v@@@",responsible=="@@@v@@@normrole@@@/v@@@")
+	ActionPerformed(responsible=="@@@v@@@normrole@@@/v@@@",actionType=="@@@v@@@normdeonticaction@@@/v@@@")
+then
+	retract($v);
+end
+
+@@@/repeat@@@
+
+/*******************************************************/
+// Punishment norms
+/*******************************************************/
+
+rule "punishment: if a punishment norm holds after with the periodicity indicated by the norm"
+	when 
+		$fn: PunishmentNorm()
+		$te: PerformPunishment(prule==$fn) 
+	then
+		$fn.performPunishment();
+		NormPerformanceDisplay.getInstance().addPunishment($fn.getName(),$fn.getResponsible());
+end
+
+/*******************************************************/
+// transforming events into meaningful institutional facts
+/*******************************************************/
+rule "countas: Identify participating partners"
+ salience 100
+	when
+ 		$ae: AgentPHATEvent()
+ 		not ($pa: (Partner(id.equals($ae.id))))
+	then
+		insert( new Partner($ae.getId()) ) ;
+		NormPerformanceDisplay.getInstance().addPartner($ae.getId());
+end
+
+rule "countas: Identify participating agents"
+ salience 100
+	when
+ 		$c1 : ACLMessage()
+ 		not ($pa: (AgentPartner(id.equals($c1.sender.getLocalName()))))		
+	then
+		insert( new AgentPartner($c1.sender.getLocalName()) ) ;
+		NormPerformanceDisplay.getInstance().addPartner($c1.sender.getLocalName());
+end
+
+
+rule "countas: action performed by an individual"
+ salience 100
+	when
+ 		$ae: AgentPHATEvent()
+	then
+		insertLogical( new ActionPerformed($ae.getId(),$ae.getActionType()),$ae.getTime() ) ;
+end
+
+
+
+
+@@@/text@@@
+	@@@/saveto@@@
+@@@/program@@@
