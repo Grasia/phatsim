@@ -35,6 +35,7 @@ import phat.agents.automaton.Automaton;
 import phat.agents.automaton.AutomatonListener;
 import phat.agents.automaton.MainAutomaton;
 import phat.agents.automaton.MoveToBodyLocAutomaton;
+import phat.agents.automaton.SimpleState;
 import phat.agents.automaton.WaitForCloseToBodyAutomaton;
 import phat.agents.events.PHATEvent;
 import phat.agents.events.PHATEventManager;
@@ -127,7 +128,7 @@ public abstract class Agent implements PHATAgentTick {
 
                     }
                     currentEvent.setAided(aided);
-                    currentEvent.setWaitingForAssistance(waitingForAssistance);
+					currentEvent.setActionType(nextAutomaton.getMetadata("SOCIAALML_ENTITY_TYPE"));
                     System.out.println("Registrandoooooo2 " + currentEvent);
                     if (lastEvent == null || (lastEvent != null && !lastEvent.similar(currentEvent))) {
                         lastEvent = currentEvent;

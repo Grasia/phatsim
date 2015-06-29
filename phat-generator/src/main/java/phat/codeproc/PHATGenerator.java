@@ -29,6 +29,7 @@ import ingenias.generator.browser.Browser;
 import ingenias.generator.browser.Graph;
 import ingenias.generator.browser.GraphAttribute;
 import ingenias.generator.browser.GraphEntity;
+import ingenias.generator.datatemplate.Repeat;
 import ingenias.generator.datatemplate.Sequences;
 import ingenias.generator.datatemplate.Var;
 import ingenias.generator.interpreter.SplitHandler;
@@ -101,7 +102,7 @@ ingenias.editor.extension.BasicCodeGeneratorImp {
 		this.addTemplate("templates/disease_profile.xml");
                 this.addTemplate("templates/filters/symptom_evolution.xml");
 		this.addTemplate("templates/buildext.xml");
-
+		this.addTemplate("templates/norms.xml");
 	}
 
 	public PHATGenerator(Browser browser) throws Exception {
@@ -114,6 +115,7 @@ ingenias.editor.extension.BasicCodeGeneratorImp {
 		this.addTemplate("templates/disease_profile.xml");
                 this.addTemplate("templates/filters/symptom_evolution.xml");
 		this.addTemplate("templates/buildext.xml");
+		this.addTemplate("templates/norms.xml");
 	}
 
 	public String getVersion() {
@@ -139,7 +141,7 @@ ingenias.editor.extension.BasicCodeGeneratorImp {
 				boolean allFilesExist=checkFiles(prefix);
 				StringBuffer sb =  FileUtils.readFile(args[0]);			
 				byte[] checksum =getCheckSum(sb.toString());		
-				
+
 				if (!java.util.Arrays.equals(getLastCheckSum(new File(args[0]).getAbsolutePath()),checksum)
 						|| !allFilesExist || (args.length==3 && args[2].equalsIgnoreCase("true"))){ 
 					ingenias.editor.Log.initInstance(new PrintWriter(System.out));
@@ -222,7 +224,70 @@ ingenias.editor.extension.BasicCodeGeneratorImp {
 			new TaskGenerator(getBrowser(), seq).generateAllSeqTasks();
 			new ActivityGenerator(getBrowser()).generateTimeIntervals(seq);
                         new SymptomEvolutionGenerator(browser).generateFSMSymptomEvolutionClasses(seq);
-			new SimulationGenerator(browser).generateSimulations(seq);			
+			new SimulationGenerator(browser).generateSimulations(seq);	
+         	GraphEntity[] entities = browser.getAllEntities();
+			Vector<String> errors=new Vector<String>();
+			for (GraphEntity norm:entities){
+				if (norm.getType().equals("ConsecutiveActions")){
+					Repeat ruleRep=new Repeat("norms");
+					seq.addRepeat(ruleRep);
+					ruleRep.add(new Var("normname",Utils.replaceBadChars(norm.getID())));
+					GraphEntity[] actionconditions = Utils.getRelatedElements(norm, "ActionHappeningAfterwards", "ActionHappeningAfterwardstarget");
+					if (actionconditions.length>1)
+						errors.add("There should be only one instance of ActionsHappeningAfterwards connected to "+norm);
+
+					if (actionconditions.length==0)
+						errors.add("There should one instance of ActionsHappeningAfterwards connected to "+norm);
+					if (errors.isEmpty()){
+						GraphEntity[] roleCondition = Utils.getRelatedElements(actionconditions[0],"ActionResponsible", "ActionResponsibletarget");
+						
+						ruleRep.add(new Var("normtimewindow",Utils.replaceBadChars(actionconditions[0].getAttributeByName("WithinTheTimeWindow").getSimpleValue())));
+						;	
+						if (roleCondition.length==0)
+							errors.add("There should one instance of Human connected to "+actionconditions[0]);
+						if (roleCondition.length>1)
+							errors.add("There should only one instance of Human connected to "+actionconditions[0]);
+						if (errors.isEmpty())
+							ruleRep.add(new Var("normrolecondition",Utils.replaceBadChars(roleCondition[0].getID())));	
+
+						GraphEntity[] actionCondition = Utils.getRelatedElements(actionconditions[0],"AffectedAction", "AffectedActiontarget");
+						if (actionCondition.length==0)
+							errors.add("There should one instance of Task connected to "+actionconditions[0]);
+						if (errors.isEmpty())
+						for (GraphEntity action:actionCondition){		
+							Repeat normactioncondition=new Repeat("normscondition");
+							ruleRep.add(normactioncondition);
+							normactioncondition.add(new Var("normactioncondition",Utils.replaceBadChars(action.getType())));
+						}
+						
+						
+						GraphEntity[] deonticAction = Utils.getRelatedElements(norm,"DeonticAssignement", "DeonticAssignementtarget");
+						if (deonticAction.length==0)
+							errors.add("There should one instance of Task connected to "+norm);
+						if (deonticAction.length>1)
+							errors.add("There should only one instance of Task connected to "+norm);
+						if (errors.isEmpty())
+							ruleRep.add(new Var("normdeonticaction",Utils.replaceBadChars(deonticAction[0].getType())));
+
+						GraphEntity[] normroles = Utils.getRelatedElements(norm, "Role", "Roletarget");
+						if (deonticAction.length==0)
+							errors.add("There should one instance of Human connected to "+norm);
+						if (deonticAction.length>1)
+							errors.add("There should only one instance of Human connected to "+norm);
+						if (errors.isEmpty())
+							ruleRep.add(new Var("normrole",Utils.replaceBadChars(normroles[0].getID())));
+
+
+
+					}
+				}
+				if (!errors.isEmpty()){
+					this.fatalError();
+					for (String error:errors){
+						Log.getInstance().logERROR(error);
+					}
+				}
+			}		
 		} catch (Throwable ex) {
 			ex.printStackTrace();
 		}
