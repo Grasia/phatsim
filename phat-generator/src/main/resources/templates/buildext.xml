@@ -15,6 +15,25 @@
 		</classpath>
         </java>
 </target>
+<target name="run@@@v@@@simName@@@/v@@@NoDevices" depends="compile">
+        <java fork="true" failonerror="true" maxmemory="300m"
+              classname="phat.sim.Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices">
+		<classpath>			  
+			<pathelement path="${maven.build.outputDir}" />
+			<pathelement path="${mavenclasspath}" />              
+		</classpath>
+        </java>
+</target>
+
+<target name="run@@@v@@@simName@@@/v@@@OnlyDevices" depends="compile">
+        <java fork="true" failonerror="true" maxmemory="300m"
+              classname="phat.sim.Main@@@v@@@simName@@@/v@@@PHATSimulationOnlyDevices">
+		<classpath>			  
+			<pathelement path="${maven.build.outputDir}" />
+			<pathelement path="${mavenclasspath}" />              
+		</classpath>
+        </java>
+</target>
   <target name="package@@@v@@@simName@@@/v@@@" depends="compile">
    <maven basedir="${pom.dir}" goal="package" resultproperty="maven.build.result" options="-e -Dbuild.for.prod=false -Djavac.debug=true -Djavac.optimize=false -Dshade.mainName=@@@v@@@simName@@@/v@@@ -Dshade.mainClass=phat.sim.Main@@@v@@@simName@@@/v@@@PHATSimulation"/>
  </target>
