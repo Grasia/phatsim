@@ -37,4 +37,5 @@ public interface AutomatonCondition {
 	boolean evaluate(Agent agent);
         void automatonInterrupted(Automaton automaton);
         void automatonResumed(Automaton automaton);
+        void automatonReset(Automaton automaton);
 }

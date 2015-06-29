@@ -17,40 +17,54 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package phat.agents.automaton.conditions;
+package phat.agents.events;
 
 import phat.agents.Agent;
 import phat.agents.automaton.Automaton;
+import phat.agents.automaton.AutomatonListener;
 
-public class ProbCondition implements AutomatonCondition {
+public class PHATEventForAll extends PHATEvent implements AutomatonListener {
 
-    float prob;
+    Agent agent;
 
-    public ProbCondition(float prob) {
-        super();
-        this.prob = prob;
-    }
-
-    private float getRandomValue(Agent agent) {
-        return agent.getAgentsAppState().getPHAInterface().getRandom().nextFloat();
+    public PHATEventForAll(Agent agent, String id, EventSource eventSource) {
+        super(id, eventSource);
+        this.agent = agent;
     }
 
     @Override
-    public boolean evaluate(Agent agent) {
-        float v = getRandomValue(agent);
-        boolean value =  (v <= prob);
-        return value;
+    public void automatonFinished(Automaton automaton, boolean isSuccessful) {
+        if (isSuccessful) {
+            agent.getAgentsAppState().add(this);
+        }
+    }
+
+    @Override
+    public void nextAutomaton(Automaton previousAutomaton, Automaton nextAutomaton) {
+    }
+
+    @Override
+    public void preInit(Automaton automaton) {
+        
+    }
+
+    @Override
+    public void postInit(Automaton automaton) {
+        
     }
 
     @Override
     public void automatonInterrupted(Automaton automaton) {
+        
     }
 
     @Override
-    public void automatonResumed(Automaton automaton) {
+    public void automatonResumed(Automaton resumedAutomaton) {
+        
     }
-    
+
     @Override
-    public void automatonReset(Automaton automaton) {
+    public boolean isPerceptible(Agent agent) {
+        return true;
     }
 }

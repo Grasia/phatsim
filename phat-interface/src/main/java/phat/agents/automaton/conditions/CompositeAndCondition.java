@@ -19,38 +19,58 @@
  */
 package phat.agents.automaton.conditions;
 
+import java.util.ArrayList;
+import java.util.List;
 import phat.agents.Agent;
 import phat.agents.automaton.Automaton;
 
-public class ProbCondition implements AutomatonCondition {
+public class CompositeAndCondition implements AutomatonCondition {
 
-    float prob;
+    List<AutomatonCondition> conditions = new ArrayList<>();
 
-    public ProbCondition(float prob) {
-        super();
-        this.prob = prob;
-    }
-
-    private float getRandomValue(Agent agent) {
-        return agent.getAgentsAppState().getPHAInterface().getRandom().nextFloat();
+    public CompositeAndCondition(AutomatonCondition ... conds) {
+        for(AutomatonCondition ac: conds) {
+            conditions.add(ac);
+        }
     }
 
     @Override
     public boolean evaluate(Agent agent) {
-        float v = getRandomValue(agent);
-        boolean value =  (v <= prob);
-        return value;
+        for(AutomatonCondition ac: conditions) {
+            if(!ac.evaluate(agent)) {
+                return false;
+            }
+        }
+        CompositeAndCondition cac = new CompositeAndCondition(
+                new CompositeAndCondition(),
+                new CompositeAndCondition(),
+                new CompositeAndCondition(),
+                new CompositeAndCondition());
+        return true;
     }
 
     @Override
     public void automatonInterrupted(Automaton automaton) {
+        for(AutomatonCondition ac: conditions) {
+            ac.automatonInterrupted(automaton);
+        }
     }
 
     @Override
     public void automatonResumed(Automaton automaton) {
+        for(AutomatonCondition ac: conditions) {
+            ac.automatonResumed(automaton);
+        }
     }
     
     @Override
     public void automatonReset(Automaton automaton) {
+        for(AutomatonCondition ac: conditions) {
+            ac.automatonReset(automaton);
+        }
+    }
+    
+    public void add(AutomatonCondition ac) {
+        conditions.add(ac);
     }
 }

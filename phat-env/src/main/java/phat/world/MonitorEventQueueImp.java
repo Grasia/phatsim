@@ -42,9 +42,9 @@ public class MonitorEventQueueImp implements MonitorEventQueue {
 		MonitorEventQueue stub = (MonitorEventQueue) UnicastRemoteObject.exportObject(this, 0); // Exports remote object		
 		registry.bind(name, stub); // Binds a remote reference
 		registry.lookup(name);
-		
-	}
 
+        }
+        
 	@Override
 	public synchronized void notifyEvent(RemotePHATEvent event) {	
 		System.out.println(event);

@@ -26,8 +26,6 @@ import java.util.Map;
 import phat.agents.Agent;
 import phat.agents.automaton.Automaton;
 import phat.agents.filters.types.Filter;
-import phat.body.commands.TremblingHandCommand;
-import phat.body.commands.TremblingHeadCommand;
 
 /**
  *
@@ -38,12 +36,12 @@ public class Symptom {
     DiseaseManager diseaseManager;
 
     public enum Level {
-
-        None, Low, Medium, High
+        NONE, LOW, MEDIUM, HIGH
     };
     Map<Level, List<Filter>> filters = new HashMap<>();
     String symptomType;
-    Level currentLevel = Level.None;
+    Level currentLevel = Level.NONE;
+    SymptomEvolution symptomEvolution;
 
     public Symptom(String symptomType) {
         this.symptomType = symptomType;
@@ -86,5 +84,13 @@ public class Symptom {
 
     public void setDiseaseManager(DiseaseManager diseaseManager) {
         this.diseaseManager = diseaseManager;
+    }
+
+    public SymptomEvolution getSymptomEvolution() {
+        return symptomEvolution;
+    }
+
+    public void setSymptomEvolution(SymptomEvolution symptomEvolution) {
+        this.symptomEvolution = symptomEvolution;
     }
 }

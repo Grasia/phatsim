@@ -44,7 +44,8 @@ public class @@@v@@@actorname@@@/v@@@Agent extends Agent {
 	        mainAutomaton.addListener(new AutomatonIcon());
 	        
 	        setAutomaton(mainAutomaton);	   	
-		    @@@repeat id="filterManager"@@@new @@@v@@@fmName@@@/v@@@_@@@v@@@actorname@@@/v@@@(this, simulation);@@@/repeat@@@
+		@@@repeat id="filterManager"@@@
+                setDiseaseManager(new @@@v@@@fmName@@@/v@@@_@@@v@@@actorname@@@/v@@@(this, simulation));@@@/repeat@@@
 		    
 	    	// Init EventManager
 	    	@@@repeat id="eventProcessor"@@@

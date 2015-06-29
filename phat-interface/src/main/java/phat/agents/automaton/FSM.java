@@ -96,7 +96,7 @@ public class FSM extends Automaton {
             r = new ArrayList<Transition>();
         }
         r.add(new Transition(destiny));
-        possibleTransitions.put(source, r);        
+        possibleTransitions.put(source, r);
     }
 
     /**
@@ -198,11 +198,11 @@ public class FSM extends Automaton {
         return r.getTarget();
 
     }
-    
+
     @Override
     public void replaceCurrentAutomaton(Automaton automaton) {
-        if(currentState != null) {
-            for(Transition t: possibleTransitions.get(currentState)) {
+        if (currentState != null) {
+            for (Transition t : possibleTransitions.get(currentState)) {
                 registerTransition(automaton, t);
             }
             currentState.setFinished(true);
@@ -252,7 +252,7 @@ public class FSM extends Automaton {
         }
         // si marca de pausa, ignorar
         if (pause) {
-        	return ;
+            return;
         }
         // El estado incial se da en el primer registro.
         if (currentState == null) {
@@ -299,18 +299,20 @@ public class FSM extends Automaton {
                     System.out.println(agent.getId() + ", " + name
                             + " automaton finished");
                 }
-                return ;
+                return;
             }
             // si no, llamar a decidir una transición
             Automaton nstate = decideTransition(phatInterface);
             if (nstate != null) {
-                currentState = nstate;        
-                if(currentState.isFinished(phatInterface)) {
+                currentState = nstate;
+                if (currentState.isFinished(phatInterface)) {
                     currentState.restart(phatInterface);
+                    restartConditionsOfTransitions(currentState);
                     currentState.initState(phatInterface);
                 } else {
-                currentState.restart(phatInterface);// reiniciar estado por si
-                // ya se había usado
+                    currentState.restart(phatInterface);// reiniciar estado por si
+                    // ya se había usado
+                    restartConditionsOfTransitions(currentState);
                 }
             }
             if (ECHO) {
@@ -325,7 +327,16 @@ public class FSM extends Automaton {
             // bez subestados, es
             // automata jerárquico.
         }
-       
+
+    }
+
+    private void restartConditionsOfTransitions(Automaton automaton) {
+        List<Transition> transitions = possibleTransitions.get(automaton);
+        if (transitions != null) {
+            for (Transition t : possibleTransitions.get(automaton)) {
+                t.getCondition().automatonReset(automaton);
+            }
+        }
     }
 
     /**

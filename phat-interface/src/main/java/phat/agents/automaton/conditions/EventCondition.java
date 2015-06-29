@@ -19,27 +19,44 @@
  */
 package phat.agents.automaton.conditions;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import phat.agents.Agent;
 import phat.agents.automaton.Automaton;
+import phat.agents.events.PHATEvent;
+import phat.agents.events.PHATEventManager;
 
-public class ProbCondition implements AutomatonCondition {
+public class EventCondition implements AutomatonCondition {
 
-    float prob;
+    private final static Logger logger = Logger.getLogger(EventCondition.class.getName()); 
 
-    public ProbCondition(float prob) {
-        super();
-        this.prob = prob;
+    String idEvent;
+
+    public EventCondition(String idEvent) {
+        this.idEvent = idEvent;
     }
 
-    private float getRandomValue(Agent agent) {
-        return agent.getAgentsAppState().getPHAInterface().getRandom().nextFloat();
-    }
-
+    /**
+     * Return true if the agent has a symptom with the name symptomName 
+     * and the same level of symptomLevel
+     * or if the agent doesn't have the symptome and symptomLeve == "NONE",
+     * in another case it returns false;
+     * 
+     * @param agent
+     * @return 
+     */
     @Override
     public boolean evaluate(Agent agent) {
-        float v = getRandomValue(agent);
-        boolean value =  (v <= prob);
-        return value;
+        PHATEventManager em = agent.getEventManager();
+        if (em != null) {
+            PHATEvent event = em.getEvent(idEvent);
+            if (event != null) {
+                return true;
+            }
+        } else {
+            logger.log(Level.WARNING, "Agent {0} hasn't got EventManager!", new Object[]{agent.getId()});
+        }
+        return false;
     }
 
     @Override

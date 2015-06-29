@@ -17,40 +17,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package phat.agents.automaton.conditions;
+package phat.agents.filters;
 
-import phat.agents.Agent;
-import phat.agents.automaton.Automaton;
+import phat.PHATInterface;
 
-public class ProbCondition implements AutomatonCondition {
-
-    float prob;
-
-    public ProbCondition(float prob) {
-        super();
-        this.prob = prob;
-    }
-
-    private float getRandomValue(Agent agent) {
-        return agent.getAgentsAppState().getPHAInterface().getRandom().nextFloat();
-    }
-
-    @Override
-    public boolean evaluate(Agent agent) {
-        float v = getRandomValue(agent);
-        boolean value =  (v <= prob);
-        return value;
-    }
-
-    @Override
-    public void automatonInterrupted(Automaton automaton) {
-    }
-
-    @Override
-    public void automatonResumed(Automaton automaton) {
-    }
-    
-    @Override
-    public void automatonReset(Automaton automaton) {
-    }
+/**
+ *
+ * @author pablo
+ */
+public interface SymptomEvolution {
+    public Symptom updateSymptom(PHATInterface phat);
+    public Symptom getSymptom();
 }

@@ -46,6 +46,11 @@ public class TimerFinishedCondition implements AutomatonCondition {
         return secs - secondsInterrupted >= seconds;
     }
 
+    @Override
+    public void automatonReset(Automaton automaton) {
+        init = false;
+    }
+    
     public long getSeconds() {
         return seconds;
     }

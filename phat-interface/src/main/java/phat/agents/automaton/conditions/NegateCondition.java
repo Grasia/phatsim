@@ -42,4 +42,8 @@ public class NegateCondition implements AutomatonCondition {
     @Override
     public void automatonResumed(Automaton automaton) {
     }
+    
+    @Override
+    public void automatonReset(Automaton automaton) {
+    }
 }

@@ -19,8 +19,10 @@
  */
 package phat.agents.filters;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import phat.PHATInterface;
 import phat.agents.Agent;
 import phat.agents.automaton.Automaton;
 import phat.agents.automaton.AutomatonListener;
@@ -47,6 +49,21 @@ public class DiseaseManager implements AutomatonListener {
         symptomMap.put(symptom.getSymptomType(), symptom);
     }
 
+    public Symptom getSymptom(String name) {
+        return symptomMap.get(name);
+    }
+
+    public void updateSymptoms(PHATInterface phatInterface) {
+        Collection<Symptom> symptoms = symptomMap.values();
+        if (symptoms != null && !symptoms.isEmpty()) {
+            for (Symptom s : symptoms) {
+                if (s.getSymptomEvolution() != null) {
+                    s.getSymptomEvolution().updateSymptom(phatInterface);
+                }
+            }
+        }
+    }
+
     public String getStage() {
         return stage;
     }
@@ -58,10 +75,9 @@ public class DiseaseManager implements AutomatonListener {
     public Agent getAgent() {
         return agent;
     }
-    
+
     @Override
     public void preInit(Automaton automaton) {
-        
     }
 
     @Override
@@ -76,7 +92,7 @@ public class DiseaseManager implements AutomatonListener {
                 }
             }
             Filter.markFiltered(nextAutomaton);
-        }      
+        }
         nextAutomaton.addListener(this);
     }
 
@@ -90,11 +106,9 @@ public class DiseaseManager implements AutomatonListener {
 
     @Override
     public void automatonInterrupted(Automaton automaton) {
-       
     }
 
     @Override
     public void automatonResumed(Automaton resumedAutomaton) {
-    
     }
 }

@@ -38,6 +38,7 @@ import phat.agents.automaton.MoveToBodyLocAutomaton;
 import phat.agents.automaton.WaitForCloseToBodyAutomaton;
 import phat.agents.events.PHATEvent;
 import phat.agents.events.PHATEventManager;
+import phat.agents.filters.DiseaseManager;
 import phat.body.BodiesAppState;
 import phat.body.BodyUtils;
 import phat.body.BodyUtils.BodyPosture;
@@ -47,238 +48,241 @@ import phat.world.PHATCalendar;
 
 public abstract class Agent implements PHATAgentTick {
 
-	protected Automaton automaton;
-	boolean init = false;
-	AgentsAppState agentsAppState;
-	private Hashtable<String, Vector3f> listened = new Hashtable<String, Vector3f>();
-	private static Vector<Agent> instances = new Vector<Agent>();
-	private String bodyId;
-	PHATEventManager eventManager;
+    protected Automaton automaton;
+    boolean init = false;
+    AgentsAppState agentsAppState;
+    private Hashtable<String, Vector3f> listened = new Hashtable<String, Vector3f>();
+    private static Vector<Agent> instances = new Vector<Agent>();
+    private String bodyId;
+    PHATEventManager eventManager;
+    DiseaseManager diseaseManager;
+    MonitorEventQueue eventListener = null;
+    List<AgentListener> listeners = new ArrayList<AgentListener>();
 
-	MonitorEventQueue eventListener=null;
+    abstract protected void initAutomaton();
 
-        List<AgentListener> listeners = new ArrayList<AgentListener>();
-        
-	abstract protected void initAutomaton();
+    private void notifyAgentListener() {
+        for (AgentListener al : listeners) {
+            al.agentChanged(this);
+        }
+    }
 
-        private void notifyAgentListener() {
-            for(AgentListener al: listeners) {
-                al.agentChanged(this);
+    public void addListener(AgentListener listener) {
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
+    }
+
+    public static void shout(String word, Vector3f location) {
+        for (Agent instance : instances) {
+            instance.listened(word, location);
+        }
+    }
+
+    private void registerListenerIntoAutomaton() {
+        if (getAutomaton() != null && getListener() != null) {
+
+            getAutomaton().addListener(new AutomatonListener() {
+                private AgentPHATEvent lastEvent = null;
+
+                @Override
+                public void preInit(Automaton automaton) {
+                    // TODO Auto-generated method stub
+                }
+
+                @Override
+                public void postInit(Automaton automaton) {
+                }
+
+                @Override
+                public void nextAutomaton(Automaton previousAutomaton,
+                        Automaton nextAutomaton) {
+
+                    AgentPHATEvent currentEvent = null;
+                    String aided = null;
+                    Automaton result = nextAutomaton.containsStateOfKind(MoveToBodyLocAutomaton.class);
+                    if (result != null) {
+                        aided = ((MoveToBodyLocAutomaton) result).getDestinyBodyName();
+                    }
+
+                    String waitingForAssistance = null;
+
+                    if (nextAutomaton instanceof WaitForCloseToBodyAutomaton) {
+                        waitingForAssistance = ((WaitForCloseToBodyAutomaton) nextAutomaton).getDestinyBodyName();
+                    }
+
+                    if (automaton.getLeafAutomaton() != null) {
+                        currentEvent =
+                                new AgentPHATEvent(getId(),
+                                getLocation(),
+                                getTime(), getBodyPosture(),
+                                automaton.getLeafAutomaton().getName());
+                    } else {
+                        currentEvent =
+                                new AgentPHATEvent(getId(),
+                                getLocation(),
+                                getTime(), getBodyPosture(),
+                                "undertermined");
+
+
+                    }
+                    currentEvent.setAided(aided);
+                    currentEvent.setWaitingForAssistance(waitingForAssistance);
+                    System.out.println("Registrandoooooo2 " + currentEvent);
+                    if (lastEvent == null || (lastEvent != null && !lastEvent.similar(currentEvent))) {
+                        lastEvent = currentEvent;
+                        try {
+                            System.out.println("Registrandoooooo1");
+                            eventListener.notifyEvent(currentEvent);
+                        } catch (RemoteException e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                    nextAutomaton.addListener(this);
+
+
+
+                }
+
+                @Override
+                public void automatonResumed(Automaton resumedAutomaton) {
+                    // TODO Auto-generated method stub
+                }
+
+                @Override
+                public void automatonInterrupted(Automaton automaton) {
+                    // TODO Auto-generated method stub
+                }
+
+                @Override
+                public void automatonFinished(Automaton automaton, boolean isSuccessful) {
+                    // TODO Auto-generated method stub
+                }
+            });
+        }
+
+    }
+
+    public void registerListener(MonitorEventQueue meq) {
+        eventListener = meq;
+        registerListenerIntoAutomaton();
+    }
+
+    public MonitorEventQueue getListener() {
+        return eventListener;
+    }
+
+    public String getId() {
+        return bodyId;
+    }
+
+    public Agent(String bodyId) {
+        this.bodyId = bodyId;
+        instances.add(this);
+        eventManager = new PHATEventManager(this);
+    }
+
+    protected Vector3f haveIHeard(String word) {
+        Vector<String> candidates = new Vector<String>();
+        for (String c : listened.keySet()) {
+            if (c.toLowerCase().indexOf(word.toLowerCase()) >= 0) {
+                candidates.add(c);
             }
         }
-        
-        public void addListener(AgentListener listener) {
-            if(!listeners.contains(listener)) {
-                listeners.add(listener);
-            }
+        if (candidates.isEmpty()) {
+            return null;
         }
-        
-	public static void shout(String word, Vector3f location) {
-		for (Agent instance : instances) {
-			instance.listened(word, location);
-		}
-	}
+        return listened.get(candidates.firstElement());
+    }
 
-	private void registerListenerIntoAutomaton(){
-		if (getAutomaton()!=null && getListener()!=null){
+    public void listened(String word, Vector3f source) {
+        this.listened.put(word, source);
+    }
 
-			getAutomaton().addListener(new AutomatonListener() {
+    public String getCurrentAction() {
+        if (automaton != null) {
+            return automaton.getCurrentAction();
+        }
+        return "";
+    }
 
-				private AgentPHATEvent lastEvent=null;
-				@Override
-				public void preInit(Automaton automaton) {
-					// TODO Auto-generated method stub
+    public Automaton getAutomaton() {
+        return automaton;
+    }
 
-				}
+    public void setAutomaton(Automaton automaton) {
+        this.automaton = automaton;
+        this.registerListenerIntoAutomaton();
+        notifyAgentListener();
+    }
 
-				@Override
-				public void postInit(Automaton automaton) {
+    @Override
+    public void update(PHATInterface phatInterface) {
+        if (!init) {
+            initAutomaton();
+            init = true;
+        }
+        if (diseaseManager != null) {
+            diseaseManager.updateSymptoms(phatInterface);
+        }
+        if (eventManager.areEvents()) {
+            eventManager.process(phatInterface);
+        }
+        if (automaton != null) {
+            automaton.nextState(phatInterface);
+            if (automaton.isIdle()) {
+                initAutomaton();
+            }
 
-
-				}
-
-				@Override
-				public void nextAutomaton(Automaton previousAutomaton,
-						Automaton nextAutomaton) {
-
-					AgentPHATEvent currentEvent=null;
-					String aided=null;
-					Automaton result = nextAutomaton.containsStateOfKind(MoveToBodyLocAutomaton.class);
-					if (result!=null){
-						aided=((MoveToBodyLocAutomaton)result).getDestinyBodyName();
-					}
-
-					String waitingForAssistance=null;
-
-					if (nextAutomaton instanceof WaitForCloseToBodyAutomaton){
-						waitingForAssistance=((WaitForCloseToBodyAutomaton)nextAutomaton).getDestinyBodyName();
-					}
-
-					if (automaton.getLeafAutomaton()!=null){
-						currentEvent=
-								new AgentPHATEvent(getId(), 
-										getLocation(), 
-										getTime(), getBodyPosture(),
-										automaton.getLeafAutomaton().getName());
-					} else {
-						currentEvent=
-								new AgentPHATEvent(getId(), 
-										getLocation(), 
-										getTime(), getBodyPosture(),
-										"undertermined");
+        } else {
+            initAutomaton();
+        }
 
 
-					}
-					currentEvent.setAided(aided);
-					currentEvent.setWaitingForAssistance(waitingForAssistance);
-					System.out.println("Registrandoooooo2 "+currentEvent);
-					if (lastEvent==null ||(lastEvent!=null && !lastEvent.similar(currentEvent))){
-						lastEvent=currentEvent;
-						try {
-							System.out.println("Registrandoooooo1");
-							eventListener.notifyEvent(currentEvent);
-						} catch (RemoteException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}	
-					}
-					nextAutomaton.addListener(this);
+    }
 
+    public Vector3f getLocation() {
+        return agentsAppState.getBodiesAppState().getLocation(bodyId);
+    }
 
+    public void runCommand(PHATCommand command) {
+        agentsAppState.getBodiesAppState().runCommand(command);
+    }
 
-				}
+    public PHATCalendar getTime() {
+        return agentsAppState.getBodiesAppState().getTime();
+    }
 
-				@Override
-				public void automatonResumed(Automaton resumedAutomaton) {
-					// TODO Auto-generated method stub
+    public void setAgentsAppState(AgentsAppState agentsAppState) {
+        this.agentsAppState = agentsAppState;
+    }
 
-				}
+    public AgentsAppState getAgentsAppState() {
+        return agentsAppState;
+    }
 
-				@Override
-				public void automatonInterrupted(Automaton automaton) {
-					// TODO Auto-generated method stub
+    public PHATEventManager getEventManager() {
+        return eventManager;
+    }
 
-				}
+    public boolean isInTheWorld() {
+        return agentsAppState.getBodiesAppState().isBodyInTheWorld(bodyId);
+    }
 
-				@Override
-				public void automatonFinished(Automaton automaton, boolean isSuccessful) {
-					// TODO Auto-generated method stub
+    public BodiesAppState getBodiesAppState() {
+        return agentsAppState.getBodiesAppState();
+    }
 
-				}
-			});
-		}
+    public BodyPosture getBodyPosture() {
+        return BodyUtils.getBodyPosture(getBodiesAppState().getBody(bodyId));
+    }
 
-	}
+    public DiseaseManager getDiseaseManager() {
+        return diseaseManager;
+    }
 
-	public void registerListener(MonitorEventQueue meq) {
-		eventListener=meq;		
-		registerListenerIntoAutomaton();
-	}    
-
-	public MonitorEventQueue getListener() {
-		return eventListener;
-	}  
-
-	public String getId() {
-		return bodyId;
-	}
-
-	public Agent(String bodyId) {
-		this.bodyId = bodyId;
-		instances.add(this);
-		eventManager = new PHATEventManager(this);
-	}
-
-	protected Vector3f haveIHeard(String word) {
-		Vector<String> candidates = new Vector<String>();
-		for (String c : listened.keySet()) {
-			if (c.toLowerCase().indexOf(word.toLowerCase()) >= 0) {
-				candidates.add(c);
-			}
-		}
-		if (candidates.isEmpty()) {
-			return null;
-		}
-		return listened.get(candidates.firstElement());
-	}
-
-	public void listened(String word, Vector3f source) {
-		this.listened.put(word, source);
-	}
-
-	public String getCurrentAction() {
-		if (automaton != null) {
-			return automaton.getCurrentAction();
-		}
-		return "";
-	}
-
-	public Automaton getAutomaton() {
-		return automaton;
-	}
-
-	public void setAutomaton(Automaton automaton) {
-		this.automaton = automaton;
-		this.registerListenerIntoAutomaton();
-                notifyAgentListener();
-	}
-
-	@Override
-	public void update(PHATInterface phatInterface) {
-		if (!init) {
-			initAutomaton();
-			init = true;
-		}
-		if(eventManager.areEvents()) {
-			eventManager.process(phatInterface);
-		}
-		if (automaton != null) {
-			automaton.nextState(phatInterface);
-			if (automaton.isIdle()){			
-				initAutomaton();
-			}
-
-		} else{
-			initAutomaton();
-		}
-
-
-	}
-
-
-	public Vector3f getLocation() {
-		return agentsAppState.getBodiesAppState().getLocation(bodyId);
-	}
-
-	public void runCommand(PHATCommand command) {
-		agentsAppState.getBodiesAppState().runCommand(command);
-	}
-
-	public PHATCalendar getTime() {
-		return agentsAppState.getBodiesAppState().getTime();
-	}
-
-	public void setAgentsAppState(AgentsAppState agentsAppState) {
-		this.agentsAppState = agentsAppState;
-	}
-
-	public AgentsAppState getAgentsAppState() {
-		return agentsAppState;
-	}
-
-	public PHATEventManager getEventManager() {
-		return eventManager;
-	}
-
-	public boolean isInTheWorld() {
-		return agentsAppState.getBodiesAppState().isBodyInTheWorld(bodyId);
-	}
-
-	public BodiesAppState getBodiesAppState() {
-		return agentsAppState.getBodiesAppState();
-	}
-
-	public BodyPosture getBodyPosture() {
-		return BodyUtils.getBodyPosture(getBodiesAppState().getBody(bodyId));
-	}
+    public void setDiseaseManager(DiseaseManager diseaseManager) {
+        this.diseaseManager = diseaseManager;
+    }
 }

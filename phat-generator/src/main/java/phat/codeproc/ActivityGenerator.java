@@ -177,7 +177,7 @@ public class ActivityGenerator {
         GraphEntity nextTrueGE = Utils.getTargetEntity(ifnode, TRUE_FLOW_REL);
         GraphEntity nextFalseGE = Utils.getTargetEntity(ifnode, FALSE_FLOW_REL);
 
-        String condSentence = ConditionGenerator.generateCondition(conds);
+        String condSentence = ConditionGenerator.generateAndCondition(conds);
         Repeat repCond = new Repeat("regCondTrans");
         repFather.add(repCond);
         repCond.add(new Var("condInst", condSentence));

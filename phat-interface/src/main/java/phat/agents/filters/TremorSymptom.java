@@ -20,10 +20,10 @@
 package phat.agents.filters;
 
 import phat.agents.Agent;
-import static phat.agents.filters.Symptom.Level.High;
-import static phat.agents.filters.Symptom.Level.Low;
-import static phat.agents.filters.Symptom.Level.Medium;
-import static phat.agents.filters.Symptom.Level.None;
+import static phat.agents.filters.Symptom.Level.HIGH;
+import static phat.agents.filters.Symptom.Level.LOW;
+import static phat.agents.filters.Symptom.Level.MEDIUM;
+import static phat.agents.filters.Symptom.Level.NONE;
 import phat.body.commands.TremblingHandCommand;
 import phat.body.commands.TremblingHeadCommand;
 
@@ -45,22 +45,22 @@ public class TremorSymptom extends Symptom {
         this.currentLevel = currentLevel;
         Agent agent = diseaseManager.getAgent();
         switch (this.currentLevel) {
-            case None:
+            case NONE:
                 agent.runCommand(new TremblingHeadCommand(agent.getId(), false));
                 agent.runCommand(new TremblingHandCommand(agent.getId(), false, true));
                 agent.runCommand(new TremblingHandCommand(agent.getId(), false, false));
                 break;
-            case Low:
+            case LOW:
                 agent.runCommand(new TremblingHeadCommand(agent.getId(), false));
                 agent.runCommand(new TremblingHandCommand(agent.getId(), false, true));
                 agent.runCommand(new TremblingHandCommand(agent.getId(), true, false));
                 break;
-            case Medium:
+            case MEDIUM:
                 agent.runCommand(new TremblingHeadCommand(agent.getId(), true));
                 agent.runCommand(new TremblingHandCommand(agent.getId(), false, true));
                 agent.runCommand(new TremblingHandCommand(agent.getId(), true, false));
                 break;
-            case High:
+            case HIGH:
                 TremblingHeadCommand head = new TremblingHeadCommand(agent.getId(), true);
                 head.setAngular(new Float(Math.PI*0.5f));
                 agent.runCommand(head);

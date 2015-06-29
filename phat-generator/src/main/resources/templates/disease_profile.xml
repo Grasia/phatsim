@@ -24,6 +24,7 @@ public class @@@v@@@dpName@@@/v@@@_@@@v@@@actorname@@@/v@@@ extends DiseaseManag
         setStage("@@@v@@@stageName@@@/v@@@");
         @@@repeat id="symptoms"@@@
         @@@v@@@symptomType@@@/v@@@ @@@v@@@symptomName@@@/v@@@ = new @@@v@@@symptomType@@@/v@@@("@@@v@@@symptomName@@@/v@@@");
+        @@@v@@@symptomName@@@/v@@@.setSymptomEvolution(@@@v@@@sympEvoInstance@@@/v@@@);
         add(@@@v@@@symptomName@@@/v@@@);
     	switch (simulation){
     	@@@repeat id="siminit"@@@

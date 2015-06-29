@@ -519,6 +519,9 @@ public abstract class Automaton {
      * @param simState
      */
     public void restart(PHATInterface phatInterface) {
+        if (finishCondition != null) {
+            finishCondition.automatonReset(this);
+        }
         setFinished(false);
         currentState = null;
         pause = false;

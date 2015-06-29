@@ -62,7 +62,7 @@ public class InteractionDiagramGenerator {
 				Repeat repEP = new Repeat("eventProcessor");
 				repFather.add(repEP);
 				repEP.add(new Var("eventId", Utils.replaceBadChars(event.getID())));
-				repEP.add(new Var("eventCondition", ConditionGenerator.generateCondition(conds)));
+				repEP.add(new Var("eventCondition", ConditionGenerator.generateAndCondition(conds)));
 				repEP.add(new Var("acticity", Utils.replaceBadChars(activity.getID())));
 			}
 		}

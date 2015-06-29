@@ -19,10 +19,16 @@
  */
 package phat.agents.automaton.conditions;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import phat.agents.Agent;
 import phat.agents.automaton.Automaton;
+import phat.agents.filters.DiseaseManager;
+import phat.agents.filters.Symptom;
 
 public class SymptomCondition implements AutomatonCondition {
+
+    private final static Logger logger = Logger.getLogger(SymptomCondition.class.getName()); 
 
     String symptomName;
     String symptomLevel;
@@ -32,11 +38,39 @@ public class SymptomCondition implements AutomatonCondition {
         this.symptomLevel = symptomLevel;
     }
 
+    /**
+     * Return true if the agent has a symptom with the name symptomName 
+     * and the same level of symptomLevel
+     * or if the agent doesn't have the symptome and symptomLeve == "NONE",
+     * in another case it returns false;
+     * 
+     * @param agent
+     * @return 
+     */
     @Override
     public boolean evaluate(Agent agent) {
-        return true;
+        DiseaseManager dm = agent.getDiseaseManager();
+        if (dm != null) {
+            Symptom s = dm.getSymptom(symptomName);
+            if (s != null) {
+                if (s.getCurrentLevel().equals(Symptom.Level.valueOf(symptomLevel))) {
+                    return true;
+                }
+            } else {
+                logger.log(Level.WARNING, "Agent {0} hasn't got symptom {1}!", new Object[]{agent.getId(), symptomName});
+                return symptomLevel.equals(Symptom.Level.NONE.name());
+            }
+        } else {
+            logger.log(Level.WARNING, "Agent {0} hasn't got DiseaseManager", new Object[]{agent.getId()});
+            return symptomLevel.equals(Symptom.Level.NONE.name());
+        }
+        return false;
     }
 
+    @Override
+    public void automatonReset(Automaton automaton) {
+    }
+    
     @Override
     public void automatonInterrupted(Automaton automaton) {
     }

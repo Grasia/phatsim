@@ -17,39 +17,53 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package phat.agents.automaton.conditions;
+package phat.agents.filters;
 
+import phat.PHATInterface;
 import phat.agents.Agent;
-import phat.agents.automaton.Automaton;
+import phat.agents.automaton.SimpleState;
 
-public class PastTimeCondition implements AutomatonCondition {
+/**
+ *
+ * @author pablo
+ */
+public class SymptomState extends SimpleState {
 
-    int hours;
-    int minutes;
-    int seconds;
-    int marginInSecs = 30*60;
+    Symptom symptom;
+    Symptom.Level level;
 
-    public PastTimeCondition(int hours, int minutes, int seconds) {
-        super();
-        this.hours = hours;
-        this.minutes = minutes;
-        this.seconds = seconds;
+    /**
+     * @param personImplementingAutomaton
+     * @param name
+     */
+    public SymptomState(Agent agent, Symptom symptom, Symptom.Level level) {
+        super(agent, 0, symptom.getSymptomType() + "-" + level.name());
+        this.symptom = symptom;
+        this.level = level;
     }
 
     @Override
-    public boolean evaluate(Agent agent) {
-        return agent.getTime().pastTime(hours, minutes, seconds, marginInSecs);
+    public void interrupt() {
+        super.interrupt();
+        setFinished(true);
     }
 
     @Override
-    public void automatonReset(Automaton automaton) {
-    }
-    
-    @Override
-    public void automatonInterrupted(Automaton automaton) {
+    public void simpleNextState(PHATInterface phatInterface) {
+        if (!symptom.getCurrentLevel().equals(level)) {
+            symptom.setCurrentLevel(level);
+        }
     }
 
     @Override
-    public void automatonResumed(Automaton automaton) {
+    public void initState(PHATInterface phatInterface) {
+    }
+
+    public Symptom getSymptom() {
+        return symptom;
+    }
+
+    public Symptom.Level getLevel() {
+        return level;
     }
 }

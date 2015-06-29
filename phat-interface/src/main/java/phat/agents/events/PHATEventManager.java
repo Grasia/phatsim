@@ -19,9 +19,7 @@
  */
 package phat.agents.events;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -39,8 +37,9 @@ import phat.agents.automaton.InterruptionAutomaton;
 public class PHATEventManager {
 
     Agent agent;
-    Map<String,  EventProcessor> eventsMapping = new Hashtable<String, EventProcessor > ();
+    Map<String, EventProcessor> eventsMapping = new Hashtable<String, EventProcessor>();
     List<PHATEvent> events = new ArrayList<>();
+    List<PHATEvent> eventHistory = new ArrayList<>();
     PHATEvent currentEvent;
 
     public PHATEventManager(Agent agent) {
@@ -54,13 +53,15 @@ public class PHATEventManager {
     public void process(PHATInterface phatInterface) {
         for (PHATEvent event : events) {
             if (!event.state.equals(PHATEvent.State.Started)) {
+                eventHistory.add(event);
+                events.remove(event);
                 continue;
             }
             if (event.isPerceptible(agent)) {
-                EventProcessor ep=null;
-		
-					ep = eventsMapping.get(event.getId());
-				
+                EventProcessor ep = null;
+
+                ep = eventsMapping.get(event.getId());
+
                 if (ep != null) {
                     Automaton automaton = ep.process(agent);
                     if (automaton != null) {
@@ -74,38 +75,53 @@ public class PHATEventManager {
                                 Automaton ca = agent.getAutomaton();
                                 ca.interrupt();
                                 agent.setAutomaton(ia);
-                                System.out.println("agent id = "+agent.getId());
-                                System.out.println("Event id = "+event.id);
+                                System.out.println("agent id = " + agent.getId());
+                                System.out.println("Event id = " + event.id);
                                 System.out.println("NotofyNextAutomaton1234");
                                 ca.notifyNextAutomaton(ia);
                                 /*if(currentAction != null) {
-                                    System.out.println("Current task = "
-                                    + aa.getLeafAutomaton().getName());
-                                    currentAction.interrupt();
-                                }
-                                aa.interrupt();
-                                aa.addTransition(automaton, true);
-                                aa.initState(phatInterface);
-                                aa.printPendingTransitions();*/
+                                 System.out.println("Current task = "
+                                 + aa.getLeafAutomaton().getName());
+                                 currentAction.interrupt();
+                                 }
+                                 aa.interrupt();
+                                 aa.addTransition(automaton, true);
+                                 aa.initState(phatInterface);
+                                 aa.printPendingTransitions();*/
                                 agent.getAutomaton().printPendingTransitions();
                                 event.setEventState(PHATEvent.State.Assigned);
+                                eventHistory.add(event);
+                                events.remove(event);
                             } else {
                                 System.out.println(currentAction.getName() + " NO Interrupted!");
                             }
                         }
                     } else {
                         event.setEventState(PHATEvent.State.Ignored);
+                        eventHistory.add(event);
+                        events.remove(event);
                     }
                 }
             }
         }
     }
 
+    public PHATEvent getEvent(String id) {
+        if (!events.isEmpty()) {
+            for (PHATEvent e : events) {
+                if (e.getId().equals(id)) {
+                    return e;
+                }
+            }
+        }
+        return null;
+    }
+
     public boolean areEvents() {
         return !events.isEmpty();
     }
 
-    public void addMap(String eventId, EventProcessor  behavior) {
+    public void addMap(String eventId, EventProcessor behavior) {
         eventsMapping.put(eventId, behavior);
     }
 }

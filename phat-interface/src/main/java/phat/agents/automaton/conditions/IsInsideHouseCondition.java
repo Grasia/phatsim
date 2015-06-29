@@ -40,4 +40,8 @@ public class IsInsideHouseCondition implements AutomatonCondition {
     @Override
     public void automatonResumed(Automaton automaton) {
     }
+    
+    @Override
+    public void automatonReset(Automaton automaton) {
+    }
 }

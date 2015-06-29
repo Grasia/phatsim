@@ -19,6 +19,7 @@
  */
 package phat.codeproc;
 
+import phat.codeproc.pd.SymptomEvolutionGenerator;
 import ingenias.editor.Log;
 import ingenias.editor.ModelJGraph;
 import ingenias.editor.ProjectProperty;
@@ -98,6 +99,7 @@ ingenias.editor.extension.BasicCodeGeneratorImp {
 		this.addTemplate("templates/activities.xml");
 		this.addTemplate("templates/tasks.xml");
 		this.addTemplate("templates/disease_profile.xml");
+                this.addTemplate("templates/filters/symptom_evolution.xml");
 		this.addTemplate("templates/buildext.xml");
 
 	}
@@ -110,6 +112,7 @@ ingenias.editor.extension.BasicCodeGeneratorImp {
 		this.addTemplate("templates/activities.xml");
 		this.addTemplate("templates/tasks.xml");
 		this.addTemplate("templates/disease_profile.xml");
+                this.addTemplate("templates/filters/symptom_evolution.xml");
 		this.addTemplate("templates/buildext.xml");
 	}
 
@@ -218,6 +221,7 @@ ingenias.editor.extension.BasicCodeGeneratorImp {
 			new AgentsGenerator(browser).generateAgents(seq);
 			new TaskGenerator(getBrowser(), seq).generateAllSeqTasks();
 			new ActivityGenerator(getBrowser()).generateTimeIntervals(seq);
+                        new SymptomEvolutionGenerator(browser).generateFSMSymptomEvolutionClasses(seq);
 			new SimulationGenerator(browser).generateSimulations(seq);			
 		} catch (Throwable ex) {
 			ex.printStackTrace();
