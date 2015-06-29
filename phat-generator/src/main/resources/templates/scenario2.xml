@@ -21,6 +21,7 @@ import phat.world.MonitorEventQueue;
 import phat.world.MonitorEventQueueImp;
 import phat.world.WorldAppState;
 import phat.structures.houses.HouseFactory;
+import phat.structures.houses.commands.*;
 import phat.PHATInitializer;
 import phat.PHATInterface;
 import phat.agents.impl.*;
@@ -67,7 +68,8 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
         setCameraToBodyCommand.setFront(@@@v@@@isinfrontofhuman@@@/v@@@);
         setCameraToBodyCommand.setDistance(@@@v@@@distance@@@/v@@@f);
         setCameraToBodyCommand.setHeight(@@@v@@@elevation@@@/v@@@f);
-        bodyConfig.runCommand(setCameraToBodyCommand);@@@/repeat@@@
+        bodyConfig.runCommand(setCameraToBodyCommand);
+        bodyConfig.runCommand(new SetTransparentLevelOfWallsCommand("House1", 0.5f));@@@/repeat@@@
     }
     
     @Override
