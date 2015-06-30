@@ -86,9 +86,8 @@ when
 @@@repeat id="normscondition"@@@
 	$ap1: ActionPerformed(responsible=="@@@v@@@normrolecondition@@@/v@@@",actionType=="@@@v@@@normactioncondition@@@/v@@@")
 @@@/repeat@@@
-	not (ActionPerformed(responsible=="@@@v@@@normrolecondition@@@/v@@@",actionType!="WaitTask" && actionType!="AskForHelp" && actionType!="WaitForBodyClose" ,getTime()>$ap1.getTime()))
-	not (ActionPerformed(responsible=="@@@v@@@normrole@@@/v@@@",actionType=="@@@v@@@normdeonticaction@@@/v@@@",getTime()-$ap1.getTime()<@@@v@@@normtimewindow@@@/v@@@))
-	(ActionPerformed(getTime()-$ap1.getTime()>=@@@v@@@normtimewindow@@@/v@@@))
+	not (ActionPerformed(responsible=="@@@v@@@normrolecondition@@@/v@@@",actionType!="WaitTask" && actionType!="AskForHelp" && actionType!="WaitForBodyClose" ,getTime()>$ap1.getTime())
+	or ActionPerformed(responsible=="@@@v@@@normrole@@@/v@@@",actionType=="@@@v@@@normdeonticaction@@@/v@@@",getTime()-$ap1.getTime()<@@@v@@@normtimewindow@@@/v@@@))	
 then
 	insertLogical(new @@@v@@@normname@@@/v@@@("Violated@@@v@@@normname@@@/v@@@","@@@v@@@normrole@@@/v@@@",this));
 	NormPerformanceDisplay.getInstance().addViolation("@@@v@@@normname@@@/v@@@","@@@v@@@normrole@@@/v@@@");
