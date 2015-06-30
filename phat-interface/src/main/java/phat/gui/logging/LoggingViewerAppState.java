@@ -154,7 +154,7 @@ public class LoggingViewerAppState extends AbstractAppState implements Automaton
         
         Logger logger = loggers.get(automaton.getAgent().getId());
         
-        Object[] params = {time, state, taskID, taskType};
+        Object[] params = {time, state, taskID, taskType, automaton};
         logger.log(Level.INFO, message, params);
     }
     

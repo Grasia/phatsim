@@ -73,4 +73,20 @@ public class CompositeAndCondition implements AutomatonCondition {
     public void add(AutomatonCondition ac) {
         conditions.add(ac);
     }
+    
+    @Override
+    public String toString() {
+        String result = "CompositeAndCondition(";
+        
+        for(int i = 0; i < conditions.size(); i++) {
+            AutomatonCondition ac = conditions.get(i);
+            result+=ac.toString();
+            if(i < conditions.size()-1) {
+                result += ",";
+            }
+        }
+        
+        result += ")";
+        return result;
+    }
 }

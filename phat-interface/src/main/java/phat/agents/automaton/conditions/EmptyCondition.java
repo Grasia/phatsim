@@ -40,4 +40,9 @@ public class EmptyCondition implements AutomatonCondition {
     @Override
     public void automatonReset(Automaton automaton) {
     }
+    
+    @Override
+    public String toString() {
+        return "EmptyCondition()";
+    }
 }

@@ -52,4 +52,25 @@ public class PastTimeCondition implements AutomatonCondition {
     @Override
     public void automatonResumed(Automaton automaton) {
     }
+
+    public int getHours() {
+        return hours;
+    }
+
+    public int getMinutes() {
+        return minutes;
+    }
+
+    public int getSeconds() {
+        return seconds;
+    }
+
+    public int getMarginInSecs() {
+        return marginInSecs;
+    }
+    
+    @Override
+    public String toString() {
+        return "PastTimeCondition("+hours+","+minutes+","+seconds+","+marginInSecs+")";
+    }
 }

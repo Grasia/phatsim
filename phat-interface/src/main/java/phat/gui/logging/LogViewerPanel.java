@@ -17,7 +17,8 @@ public class LogViewerPanel extends JPanel {
 
     public LogViewerPanel(LogRecordTableModel tableModel) {
         JTable table = new JTable(tableModel);
-        table.setPreferredScrollableViewportSize(new Dimension(700, 700));
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+        table.setPreferredScrollableViewportSize(new Dimension(1200, 700));
         table.setFillsViewportHeight(true);
         table.setAutoCreateRowSorter(true);
 
@@ -26,6 +27,7 @@ public class LogViewerPanel extends JPanel {
 
         //Add the scroll pane to this panel.
         add(scrollPane);
+        
     }
     
 }

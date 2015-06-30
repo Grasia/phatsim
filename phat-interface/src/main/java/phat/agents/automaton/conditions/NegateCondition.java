@@ -46,4 +46,13 @@ public class NegateCondition implements AutomatonCondition {
     @Override
     public void automatonReset(Automaton automaton) {
     }
+
+    public AutomatonCondition getCondition() {
+        return condition;
+    }
+    
+    @Override
+    public String toString() {
+        return "NegateCondition("+condition.toString()+")";
+    }
 }

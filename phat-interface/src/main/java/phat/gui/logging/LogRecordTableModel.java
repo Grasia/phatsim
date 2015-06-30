@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.LogRecord;
 import javax.swing.table.AbstractTableModel;
+import phat.agents.automaton.Automaton;
 
 /**
  *
@@ -39,7 +40,7 @@ public class LogRecordTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 6;
+        return 7;
     }
 
     @Override
@@ -56,6 +57,8 @@ public class LogRecordTableModel extends AbstractTableModel {
             case 4:
                 return "Type";
             case 5:
+                return "FinishCondition";
+            case 6:
                 return "Description";
         }
         return "null";
@@ -69,24 +72,34 @@ public class LogRecordTableModel extends AbstractTableModel {
             Object[] params = log.getParameters();
             switch (columnIndex) {
                 case 0:
-                    if(params != null)
-                        return Integer.parseInt((String)log.getParameters()[0]);
+                    if (params != null) {
+                        return Integer.parseInt((String) log.getParameters()[0]);
+                    }
                     break;
                 case 1:
                     return log.getLoggerName();
                 case 2:
-                    if(params != null)
-                        return log.getParameters()[1];
+                    if (params != null) {
+                        return params[1];
+                    }
                     break;
                 case 3:
-                    if(params != null)
-                        return log.getParameters()[2];
+                    if (params != null) {
+                        return params[2];
+                    }
                     break;
                 case 4:
-                    if(params != null)
-                        return log.getParameters()[3];
+                    if (params != null) {
+                        return params[3];
+                    }
                     break;
                 case 5:
+                    if (params != null) {
+                        Automaton aut = (Automaton) params[4];
+                        return aut.getFinishCondition();
+                    }
+                    break;
+                case 6:
                     return log.getMessage();
             }
         }

@@ -26,6 +26,7 @@ import phat.world.PHATCalendar;
 public class TimerFinishedCondition implements AutomatonCondition {
 
     long seconds;
+    long timeLeft;
     long secondsInterrupted = 0;
     PHATCalendar initialTime;
     PHATCalendar interruption;
@@ -43,7 +44,8 @@ public class TimerFinishedCondition implements AutomatonCondition {
             init = true;
         }
         long secs = initialTime.spentTimeTo(agent.getTime());
-        return secs - secondsInterrupted >= seconds;
+        timeLeft = secs - secondsInterrupted;
+        return timeLeft >= seconds;
     }
 
     @Override
@@ -59,6 +61,10 @@ public class TimerFinishedCondition implements AutomatonCondition {
         this.seconds = seconds;
     }
 
+    public long getTimeLeft() {
+        return timeLeft;
+    }
+
     @Override
     public void automatonInterrupted(Automaton automaton) {
         interruption = (PHATCalendar) automaton.getAgent().getTime().clone();
@@ -70,5 +76,10 @@ public class TimerFinishedCondition implements AutomatonCondition {
             secondsInterrupted += interruption.spentTimeTo(automaton.getAgent().getTime());
             interruption = null;
         }
+    }
+    
+    @Override
+    public String toString() {
+        return "TimerFinishedCondition("+seconds+","+timeLeft+")";
     }
 }

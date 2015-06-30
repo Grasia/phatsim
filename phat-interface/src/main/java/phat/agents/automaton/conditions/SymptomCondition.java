@@ -78,4 +78,17 @@ public class SymptomCondition implements AutomatonCondition {
     @Override
     public void automatonResumed(Automaton automaton) {
     }
+
+    public String getSymptomName() {
+        return symptomName;
+    }
+
+    public String getSymptomLevel() {
+        return symptomLevel;
+    }
+    
+    @Override
+    public String toString() {
+        return "SymptomCondition("+symptomName+","+symptomLevel+")";
+    }
 }

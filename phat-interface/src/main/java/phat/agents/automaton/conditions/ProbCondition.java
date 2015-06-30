@@ -53,4 +53,13 @@ public class ProbCondition implements AutomatonCondition {
     @Override
     public void automatonReset(Automaton automaton) {
     }
+
+    public float getProb() {
+        return prob;
+    }
+    
+    @Override
+    public String toString() {
+        return "ProbCondition("+prob+")";
+    }
 }
