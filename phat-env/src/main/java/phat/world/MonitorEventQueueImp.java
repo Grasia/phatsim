@@ -12,6 +12,7 @@ public class MonitorEventQueueImp implements MonitorEventQueue {
 	
 	java.util.concurrent.ConcurrentLinkedQueue<RemotePHATEvent> queue=new java.util.concurrent.ConcurrentLinkedQueue<RemotePHATEvent>();
 	Registry registry =null;
+	private long currentSimTime;
 	
 	public void startServer(String name) throws RemoteException, AlreadyBoundException, NotBoundException{
 		
@@ -49,6 +50,16 @@ public class MonitorEventQueueImp implements MonitorEventQueue {
 	public synchronized void notifyEvent(RemotePHATEvent event) {	
 		System.out.println(event);
 		queue.add(event);		
+	}
+	
+	@Override
+	public synchronized long getSimTime() {	
+		return currentSimTime;		
+	}
+	
+
+	public synchronized void setSimTime(long ctime) {	
+		this.currentSimTime=ctime;	
 	}
 	
 	@Override

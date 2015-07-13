@@ -45,6 +45,7 @@ import phat.body.BodyUtils;
 import phat.body.BodyUtils.BodyPosture;
 import phat.commands.PHATCommand;
 import phat.world.MonitorEventQueue;
+import phat.world.MonitorEventQueueImp;
 import phat.world.PHATCalendar;
 
 public abstract class Agent implements PHATAgentTick {
@@ -57,7 +58,7 @@ public abstract class Agent implements PHATAgentTick {
     private String bodyId;
     PHATEventManager eventManager;
     DiseaseManager diseaseManager;
-    MonitorEventQueue eventListener = null;
+    MonitorEventQueueImp eventListener = null;
     List<AgentListener> listeners = new ArrayList<AgentListener>();
 
     abstract protected void initAutomaton();
@@ -132,13 +133,10 @@ public abstract class Agent implements PHATAgentTick {
                     System.out.println("Registrandoooooo2 " + currentEvent);
                     if (lastEvent == null || (lastEvent != null && !lastEvent.similar(currentEvent))) {
                         lastEvent = currentEvent;
-                        try {
+              
                             System.out.println("Registrandoooooo1");
                             eventListener.notifyEvent(currentEvent);
-                        } catch (RemoteException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
+                 
                     }
                     nextAutomaton.addListener(this);
 
@@ -165,7 +163,7 @@ public abstract class Agent implements PHATAgentTick {
 
     }
 
-    public void registerListener(MonitorEventQueue meq) {
+    public void registerListener(MonitorEventQueueImp meq) {
         eventListener = meq;
         registerListenerIntoAutomaton();
     }
@@ -240,6 +238,7 @@ public abstract class Agent implements PHATAgentTick {
             initAutomaton();
         }
 
+        eventListener.setSimTime(phatInterface.getSimTime().getTimeInMillis());
 
     }
 

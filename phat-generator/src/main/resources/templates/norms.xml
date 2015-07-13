@@ -76,6 +76,17 @@ then
 		System.out.println("cleaning too old fact"+$f2.toString);
 end
 
+
+rule "Clean working memory. Remove time events"
+when
+		$f2: CurrentTime()
+		$f1: CurrentTime(time-$f2.getTime()>60000)
+then
+		retract( $f2 ) ;
+		System.out.println("cleaning too old fact"+$f2.toString);
+end
+
+
 /*******************************************************/
 // Norm violation detection
 /*******************************************************/
@@ -86,8 +97,12 @@ when
 @@@repeat id="normscondition"@@@
 	$ap1: ActionPerformed(responsible=="@@@v@@@normrolecondition@@@/v@@@",actionType=="@@@v@@@normactioncondition@@@/v@@@")
 @@@/repeat@@@
-	not (ActionPerformed(responsible=="@@@v@@@normrolecondition@@@/v@@@",actionType!="WaitTask" && actionType!="AskForHelp" && actionType!="WaitForBodyClose" ,getTime()>$ap1.getTime())
-	or ActionPerformed(responsible=="@@@v@@@normrole@@@/v@@@",actionType=="@@@v@@@normdeonticaction@@@/v@@@",getTime()-$ap1.getTime()<@@@v@@@normtimewindow@@@/v@@@))	
+	not (ActionPerformed(responsible=="@@@v@@@normrolecondition@@@/v@@@",
+		actionType!="WaitTask" && actionType!="SayTask" && actionType!="WaitForBodyClose" ,
+		getTime()>$ap1.getTime()))// filtered tasks happen at the same sim time
+	not (ActionPerformed(responsible=="@@@v@@@normrole@@@/v@@@",actionType=="@@@v@@@normdeonticaction@@@/v@@@",
+		getTime()>=$ap1.getTime() && getTime()-$ap1.getTime()<=@@@v@@@normtimewindow@@@/v@@@))
+	exists (CurrentTime(getTime()>=$ap1.getTime() && getTime()-$ap1.getTime()>=@@@v@@@normtimewindow@@@/v@@@))		
 then
 	insertLogical(new @@@v@@@normname@@@/v@@@("Violated@@@v@@@normname@@@/v@@@","@@@v@@@normrole@@@/v@@@",this));
 	NormPerformanceDisplay.getInstance().addViolation("@@@v@@@normname@@@/v@@@","@@@v@@@normrole@@@/v@@@");
@@ -145,7 +160,7 @@ rule "countas: action performed by an individual"
 	when
  		$ae: AgentPHATEvent()
 	then
-		insertLogical( new ActionPerformed($ae.getId(),$ae.getActionType()),$ae.getTime() ) ;
+		insertLogical( new ActionPerformed($ae.getId(),$ae.getActionType(),$ae.getTime() )) ;
 end
 
 

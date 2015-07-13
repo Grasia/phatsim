@@ -10,5 +10,7 @@ public interface MonitorEventQueue extends Remote {
 	public final  String DefaultName = "simulation";
 	void notifyEvent(RemotePHATEvent event)  throws RemoteException;;
 	Vector<RemotePHATEvent> retrieveAllEvents()  throws RemoteException;;
+	long getSimTime()  throws RemoteException;
+
 
 }
