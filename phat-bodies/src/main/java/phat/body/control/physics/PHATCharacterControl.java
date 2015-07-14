@@ -61,6 +61,7 @@ public class PHATCharacterControl extends BetterCharacterControl implements Cont
     public void update(float tpf) {
         super.update(tpf);
         if (isEnabled()) {
+            getKinematicRagdollControl().setEnabled(false);
             if (location.distance(lastLocation) < 0.001f
                     && walkDirection.length() > 0.1f) {
                 //setGravity(new Vector3f(0f, 1f, 0f));
