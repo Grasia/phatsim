@@ -785,4 +785,12 @@ public class Utils {
             }
             return "";
         }
+        
+        public static String yesNoToTrueFalse(String yesno) {
+            if(yesno.equalsIgnoreCase("Yes")) {
+                return "true";
+            } else {
+                return "false";
+            }
+        }
 }

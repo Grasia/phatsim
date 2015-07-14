@@ -171,6 +171,20 @@ public class SpatialUtils {
         return store;
     }
 
+    public static Spatial getParentSpatialWithRole(Spatial spatial, String role) {
+        Spatial cSpatial = spatial;
+        String cRole;
+        
+        while(cSpatial != null) {
+            cRole = cSpatial.getUserData("ROLE");
+            if(cRole != null && cRole.equals(role)) {
+                return cSpatial;
+            }
+            cSpatial = cSpatial.getParent();
+        }
+        return null;
+    }
+    
     public static List<Spatial> getSpatialsByRole(Spatial rootNode, final String targetRol) {
         final List<Spatial> result = new ArrayList<Spatial>();
 

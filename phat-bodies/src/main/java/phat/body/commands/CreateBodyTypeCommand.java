@@ -63,6 +63,7 @@ public class CreateBodyTypeCommand extends PHATCommand {
         }
         body.setName(bodyId);
         body.setUserData("ID", bodyId);
+        body.setUserData("ROLE", "Body");
         
         GeometryBatchFactory.optimize(body);
         
