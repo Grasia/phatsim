@@ -44,7 +44,10 @@ public class @@@v@@@dpName@@@/v@@@_@@@v@@@actorname@@@/v@@@ extends DiseaseManag
 		    @@@v@@@filterName@@@/v@@@.setCondition(@@@v@@@filterCond@@@/v@@@);@@@/repeat@@@
 		    @@@repeat id="FTaskSelectorFilter"@@@ SelectorFilter @@@v@@@filterName@@@/v@@@ = new SelectorFilter();
 		    @@@v@@@filterName@@@/v@@@.setCondition(@@@v@@@filterCond@@@/v@@@);
-		    @@@repeat id="allowedTaskRep"@@@@@@v@@@filterName@@@/v@@@.add("@@@v@@@taskType@@@/v@@@");@@@/repeat@@@
+                    @@@v@@@filterName@@@/v@@@.setByType(@@@v@@@byType@@@/v@@@);
+		    @@@repeat id="allowedTaskRep"@@@
+                        @@@v@@@filterName@@@/v@@@.addType("@@@v@@@taskType@@@/v@@@");
+                        @@@v@@@filterName@@@/v@@@.addId("@@@v@@@taskId@@@/v@@@");@@@/repeat@@@
 		    @@@/repeat@@@
 		    @@@repeat id="nextFilterRep"@@@@@@v@@@sourceFilter@@@/v@@@.setNextFilter(@@@v@@@targetFilter@@@/v@@@);
 		    @@@/repeat@@@

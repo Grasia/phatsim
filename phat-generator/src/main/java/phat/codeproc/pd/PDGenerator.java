@@ -37,15 +37,8 @@ import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.lang.Validate;
-
 import phat.codeproc.ConditionGenerator;
-import phat.codeproc.InteractionDiagramGenerator;
-import phat.codeproc.TaskGenerator;
-import phat.codeproc.TimeIntervalsGenerator;
 import phat.codeproc.Utils;
-import static phat.codeproc.pd.FilterDiagramGenerator.SELECTOR_FILTER_TYPE;
-import static phat.codeproc.pd.SymptomEvolutionGenerator.logger;
 
 /**
  *
@@ -53,7 +46,7 @@ import static phat.codeproc.pd.SymptomEvolutionGenerator.logger;
  */
 public class PDGenerator {
 
-    final static Logger logger = Logger.getLogger(SymptomEvolutionGenerator.class.getName());
+    final static Logger logger = Logger.getLogger(PDGenerator.class.getName());
     static final String PARKINSON_PROFILE = "ParkinsonsProfile";
     static final String PARKINSON_PROFILE_SPEC_DIAGRAM = "ParkinsonSpecDiagram";
     static final String PD_STAGE = "PDDiseaseStage";
@@ -181,7 +174,7 @@ public class PDGenerator {
                 }
             }
         } catch (NotFound ex) {
-            Logger.getLogger(PDGenerator.class.getName()).log(Level.SEVERE, null, ex);
+            logger.log(Level.SEVERE, null, ex);
         }
         return result;
     }
@@ -277,10 +270,18 @@ public class PDGenerator {
                 filterSet.add(selectRep);
                 selectRep.add(new Var("filterName", Utils.replaceBadChars(filterGE.getID())));
                 selectRep.add(new Var("filterCond", getCondition(filterGraph, filterGE)));
+                String byType = Utils.getAttributeByName(filterGE, "ByType");
+                if(byType == null || byType.equals("")) {
+                    logger.log(Level.WARNING, "ByType field of {0} is not set. Default value is \"Yes\".", 
+                            new  Object[]{filterGE.getID()});
+                    byType = "Yes";
+                }
+                selectRep.add(new Var("byType", Utils.yesNoToTrueFalse(byType)));
                 for (GraphEntity taskGE : Utils.getTargetsEntity(filterGE, "AllowedTask")) {
                     Repeat allowedTaskRep = new Repeat("allowedTaskRep");
                     selectRep.add(allowedTaskRep);
-                    allowedTaskRep.add(new Var("taskType", Utils.replaceBadChars(taskGE.getID())));
+                    allowedTaskRep.add(new Var("taskType", Utils.replaceBadChars(taskGE.getType())));
+                    allowedTaskRep.add(new Var("taskId", Utils.replaceBadChars(taskGE.getID())));
                 }
             }
             for (GraphEntity filterGE : Utils.getEntities(filterGraph, DELAY_FILTER_TYPE)) {

@@ -30,29 +30,25 @@ import phat.agents.automaton.Automaton;
  */
 public class SelectorFilter extends Filter {
 
+    boolean byType = false;
     List<String> taskTypes = new ArrayList<>();
+    List<String> taskIds = new ArrayList<>();
 
     @Override
     public boolean checkCondition(Agent agent, Automaton automaton) {
-        System.out.println("SelectorFilter: "+agent.getId()+", "+automaton.getMetadata("SOCIAALML_ENTITY_ID"));
-        for(String types: taskTypes) {
-            System.out.println("\t-"+types);
-        }
         if (super.checkCondition(agent, automaton)) {
-
-            if (taskTypes.isEmpty()) {
-                System.out.println("true");
-                return true;
-            }
-
-            String entityType = automaton.getMetadata("SOCIAALML_ENTITY_TYPE");
-            String entityID = automaton.getMetadata("SOCIAALML_ENTITY_ID");
-            if (entityID != null && taskTypes.contains(entityID)) {
-                System.out.println("true");
-                return true;
+            if (byType) {
+                String ref = automaton.getMetadata("SOCIAALML_ENTITY_TYPE");
+                if (taskTypes.isEmpty() || (ref != null && taskTypes.contains(ref))) {
+                    return true;
+                }
+            } else {
+                String ref = automaton.getMetadata("SOCIAALML_ENTITY_ID");
+                if (taskTypes.isEmpty() || (ref != null && taskIds.contains(ref))) {
+                    return true;
+                }
             }
         }
-        System.out.println("false");
         return false;
     }
 
@@ -61,7 +57,20 @@ public class SelectorFilter extends Filter {
         return automaton;
     }
 
-    public void add(String taskType) {
+    public void addType(String taskType) {
         taskTypes.add(taskType);
+    }
+
+    public void addId(String taskId) {
+        taskIds.add(taskId);
+    }
+
+    public boolean isByType() {
+        return byType;
+    }
+
+    public SelectorFilter setByType(boolean byType) {
+        this.byType = byType;
+        return this;
     }
 }

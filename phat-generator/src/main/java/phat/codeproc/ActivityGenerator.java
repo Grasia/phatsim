@@ -32,9 +32,13 @@ import ingenias.generator.datatemplate.Var;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import phat.codeproc.pd.PDGenerator;
 
 public class ActivityGenerator {
-
+    final static Logger logger = Logger.getLogger(PDGenerator.class.getName());
+    
     static final String ADL_SPEC_DIAGRAM = "ADLSpecDiagram";
     static final String ACTIVITY_DIAGRAM = "ActivityDiagram";
     static final String ACTIVITY_SPEC_FIELD = "ActivitySpecField";
@@ -121,6 +125,13 @@ public class ActivityGenerator {
             throws NotFound, NullEntity {
 
         GraphEntity ge = Utils.getFirstEntity(adlSpec);
+        if(ge == null) {
+            logger.log(Level.SEVERE, "The diagram {0} is empty or doesn't know "
+                    + "which entity is the first one!", 
+                    new Object[]{adlSpec.getID()});
+            System.exit(0);
+        }
+        
         Repeat repFirst = new Repeat("firstActivity");
         repFather.add(repFirst);
         repFirst.add(new Var("actName", Utils.replaceBadChars(ge.getID())));
