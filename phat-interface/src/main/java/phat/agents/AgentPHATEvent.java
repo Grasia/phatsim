@@ -41,7 +41,7 @@ public class AgentPHATEvent extends RemotePHATEvent implements Serializable{
 	}
 	
 	public boolean isFailure(){
-		return success;
+		return failure;
 	}
 	
 	public void setScope(String scope){
@@ -85,6 +85,14 @@ public class AgentPHATEvent extends RemotePHATEvent implements Serializable{
 					super.equals(object);
 		}
 		return false;
+	}
+	
+	
+
+	@Override
+	public int hashCode() {
+		// TODO Auto-generated method stub
+		return (super.getId()+":"+super.getTime()+":"+this.getBodyPosture()+":"+this.nextActionName).hashCode();
 	}
 
 	public void setAided(String aided) {
