@@ -12,21 +12,25 @@ import sociaal.PunishmentNorm;
 
 public class @@@v@@@normname@@@/v@@@ extends PunishmentNorm {
 
-	public @@@v@@@normname@@@/v@@@(String name, String responsible,org.drools.core.spi.KnowledgeHelper kb) {
-		super(name,responsible, kb);
+	public @@@v@@@normname@@@/v@@@(String name, String responsible,long time, org.drools.core.spi.KnowledgeHelper kb) {
+		super(name,responsible,time, kb);
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
-	public boolean shouldPunish(long millis) {
+	public boolean shouldPunish(long currentSimtime) {
 		// TODO Auto-generated method stub
-		return true;
+		return (currentSimtime-getTime())%3==0 && currentSimtime>getTime(); // every three seconds since violation time
 	}
 
 	@Override
 	public void performPunishment() {
 		
 
+	}
+	
+	public String toString(){
+		return "@@@v@@@normname@@@/v@@@("+this.getResponsible()+","+this.getTime()+")";
 	}
 
 }
@@ -48,15 +52,14 @@ import sociaal.PunishmentNorm;
 
 public class @@@v@@@normname@@@/v@@@ extends PunishmentNorm {
 
-	public @@@v@@@normname@@@/v@@@(String name, String responsible,org.drools.core.spi.KnowledgeHelper kb) {
-		super(name,responsible, kb);
+	public @@@v@@@normname@@@/v@@@(String name, String responsible,long time,org.drools.core.spi.KnowledgeHelper kb) {
+		super(name,responsible, time,kb);
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
-	public boolean shouldPunish(long millis) {
-		// TODO Auto-generated method stub
-		return true;
+	public boolean shouldPunish(long currentSimtime) {
+		return (currentSimtime-getTime())%3==0 && currentSimtime>getTime(); // every three seconds since violation time
 	}
 
 	@Override
@@ -64,6 +67,11 @@ public class @@@v@@@normname@@@/v@@@ extends PunishmentNorm {
 		
 
 	}
+	
+	public String toString(){
+		return "@@@v@@@normname@@@/v@@@("+this.getResponsible()+","+this.getTime()+")";
+	}
+	
 
 }
 
@@ -98,7 +106,7 @@ import sociaal.norms.*;
 rule "init"
 when
 then
-	insert(new Partner("system"));
+	insert(new Partner("system",0));
 	NormPerformanceDisplay.getInstance().addPartner("system");
 end
 
@@ -106,7 +114,7 @@ end
 rule "Clean working memory. Remove events older than 2 seconds"
 when
 		$f2: AgentPHATEvent()
-		$f1: AgentPHATEvent(time-$f2.getTime()>60000)
+		$f1: AgentPHATEvent(time-$f2.getTime()>1200000)
 then
 		retract( $f2 ) ;
 		System.out.println("cleaning too old fact"+$f2.toString);
@@ -116,7 +124,7 @@ end
 rule "Clean working memory. Remove time events"
 when
 		$f2: CurrentTime()
-		$f1: CurrentTime(time-$f2.getTime()>60000)
+		$f1: CurrentTime(time-$f2.getTime()>120000)
 then
 		retract( $f2 ) ;
 		System.out.println("cleaning too old fact"+$f2.toString);
@@ -141,13 +149,10 @@ when
 
     not (ActionPerformed(responsible=="@@@v@@@normrole@@@/v@@@",
         actionType!="WaitTask" && actionType!="SayTask" && actionType!="WaitForBodyClose",
-        getTime()>$ap2.getTime()))// filtered tasks happen at the same sim time
-
-    not (CurrentTime(getTime()>=$ap1.getTime() && getTime()-$ap1.getTime()>=@@@v@@@normtimewindow@@@/v@@@))
+        getTime()>$ap2.getTime() && getTime()>$ap1.getTime() && getTime()-$ap1.getTime()<=@@@v@@@normtimewindow@@@/v@@@))// filtered tasks happen at the same sim time
 
 then
-	insertLogical(new @@@v@@@normname@@@/v@@@("Violated@@@v@@@normname@@@/v@@@","@@@v@@@normrole@@@/v@@@",this));
-	NormPerformanceDisplay.getInstance().addViolation("@@@v@@@normname@@@/v@@@","@@@v@@@normrole@@@/v@@@");
+	insertLogical(new @@@v@@@normname@@@/v@@@("Violated@@@v@@@normname@@@/v@@@","@@@v@@@normrole@@@/v@@@",NormativeSystem.getElapsedSimTimeSeconds(),this));
 end
 // "violation restored: @@@v@@@normname@@@/v@@@" is automatic when there is a new action
 @@@/repeat@@@
@@ -162,22 +167,29 @@ when
 		actionType!="WaitTask" && actionType!="SayTask" && actionType!="WaitForBodyClose" ,
 		getTime()>$ap1.getTime()))// filtered tasks happen at the same sim time
 	not (ActionPerformed(responsible=="@@@v@@@normrole@@@/v@@@",actionType=="@@@v@@@normdeonticaction@@@/v@@@",
-		getTime()>=$ap1.getTime() && getTime()-$ap1.getTime()<=@@@v@@@normtimewindow@@@/v@@@))
+		getTime()>$ap1.getTime() && getTime()-$ap1.getTime()<@@@v@@@normtimewindow@@@/v@@@))
 	exists (CurrentTime(getTime()>=$ap1.getTime() && getTime()-$ap1.getTime()>=@@@v@@@normtimewindow@@@/v@@@))		
 then
-	insertLogical(new @@@v@@@normname@@@/v@@@("Violated@@@v@@@normname@@@/v@@@","@@@v@@@normrole@@@/v@@@",this));
-	NormPerformanceDisplay.getInstance().addViolation("@@@v@@@normname@@@/v@@@","@@@v@@@normrole@@@/v@@@");
+	insertLogical(new @@@v@@@normname@@@/v@@@("Violated@@@v@@@normname@@@/v@@@","@@@v@@@normrole@@@/v@@@",NormativeSystem.getElapsedSimTimeSeconds(),this));
 end
 
 rule "violation restored: @@@v@@@normname@@@/v@@@"
 when 
 	$v: @@@v@@@normname@@@/v@@@(name=="Violated@@@v@@@normname@@@/v@@@",responsible=="@@@v@@@normrole@@@/v@@@")
-	ActionPerformed(responsible=="@@@v@@@normrole@@@/v@@@",actionType=="@@@v@@@normdeonticaction@@@/v@@@")
+	ActionPerformed(responsible=="@@@v@@@normrole@@@/v@@@",actionType=="@@@v@@@normdeonticaction@@@/v@@@", getTime()>$v.getTime())
 then
 	retract($v);
 end
 
 @@@/repeat@@@
+
+
+rule "violation display"
+when 
+	$fn: PunishmentNorm()
+then
+	NormPerformanceDisplay.getInstance().addViolation($fn);
+end
 
 /*******************************************************/
 // Punishment norms
@@ -189,7 +201,7 @@ rule "punishment: if a punishment norm holds after with the periodicity indicate
 		$te: PerformPunishment(prule==$fn) 
 	then
 		$fn.performPunishment();
-		NormPerformanceDisplay.getInstance().addPunishment($fn.getName(),$fn.getResponsible());
+		NormPerformanceDisplay.getInstance().addPunishment($fn);
 end
 
 /*******************************************************/
@@ -201,7 +213,7 @@ rule "countas: Identify participating partners"
  		$ae: AgentPHATEvent()
  		not ($pa: (Partner(id.equals($ae.id))))
 	then
-		insert( new Partner($ae.getId()) ) ;
+		insert( new Partner($ae.getId(),$ae.getElapsedTime()) ) ;
 		NormPerformanceDisplay.getInstance().addPartner($ae.getId());
 end
 
@@ -211,7 +223,7 @@ rule "countas: Identify participating agents"
  		$c1 : ACLMessage()
  		not ($pa: (AgentPartner(id.equals($c1.sender.getLocalName()))))		
 	then
-		insert( new AgentPartner($c1.sender.getLocalName()) ) ;
+		insert( new AgentPartner($c1.sender.getLocalName(),NormativeSystem.getElapsedSimTimeSeconds()))  ;
 		NormPerformanceDisplay.getInstance().addPartner($c1.sender.getLocalName());
 end
 
@@ -221,7 +233,7 @@ rule "countas: action performed by an individual"
 	when
  		$ae: AgentPHATEvent()
 	then
-		insertLogical( new ActionPerformed($ae.getId(),$ae.getActionType(),$ae.getTime() )) ;
+		insertLogical( new ActionPerformed($ae.getId(),$ae.getActionType(),$ae.getElapsedTime() )) ;
 end
 
 
