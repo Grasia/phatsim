@@ -135,14 +135,23 @@ public class GUIMainMenuAppState extends AbstractAppState {
         System.out.println("showMenu!!!");
         mainMenu.showWithEffect();
     }
+    
+    public void pause(){
+    	    		
+    	  playPauseButton.setText("Resume");
+          this.app.setSimSpeed(0f);
+    }
+    
+    public void resume(){
+    	  playPauseButton.setText("Pause");
+          this.app.setSimSpeed(Float.parseFloat(speedLabel.getText()));
+    }
 
     public void playPauseSim(MouseButtonEvent evt, boolean isToggle) {
         if (playPauseButton.getText().equals("Pause")) {
-            playPauseButton.setText("Resume");
-            this.app.setSimSpeed(0f);
+           pause();
         } else {
-            playPauseButton.setText("Pause");
-            this.app.setSimSpeed(Float.parseFloat(speedLabel.getText()));
+           resume();
         }
     }
 
