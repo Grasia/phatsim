@@ -24,7 +24,7 @@ import phat.agents.Agent;
 import phat.agents.automaton.conditions.TimerFinishedCondition;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
-import phat.devices.commands.PressOnScreen;
+import phat.server.commands.PressOnScreen;
 
 /**
  *
@@ -68,6 +68,6 @@ public class PressOnScreenXYAutomaton extends SimpleState implements PHATCommand
     public void initState(PHATInterface phatInterface) {
         setFinishCondition(new TimerFinishedCondition(0, 0, 1));
         pressOnScreenCommand = new PressOnScreen(smartphoneId, x, y, this);
-        phatInterface.getDevicesConfig().runCommand(pressOnScreenCommand);
+        phatInterface.getServerConfig().runCommand(pressOnScreenCommand);
     }
 }

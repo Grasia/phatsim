@@ -19,6 +19,8 @@
  */
 package phat.devices.sensors.presence;
 
+import phat.sensors.presence.PHATPresenceSensor;
+import phat.sensors.presence.PresenceStatePanel;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.bullet.BulletAppState;
@@ -38,9 +40,10 @@ import phat.body.BodiesAppState;
 import phat.body.commands.RandomWalkingCommand;
 import phat.body.commands.SetBodyInCoordenatesCommand;
 import phat.body.commands.SetSpeedDisplacemenetCommand;
+import phat.commands.PHATCommand;
+import phat.commands.PHATCommandListener;
 import phat.devices.DevicesAppState;
-import phat.structures.houses.TestHouse;
-import phat.util.Debug;
+import phat.devices.commands.CreatePresenceSensorCommand;
 import phat.util.SpatialFactory;
 import phat.world.WorldAppState;
 
@@ -48,13 +51,14 @@ import phat.world.WorldAppState;
  *
  * @author pablo
  */
-public class PresenceSensorTest implements PHATInitAppListener {
+public class PresenceSensorTest implements PHATInitAppListener, PHATCommandListener {
 
-    private static final Logger logger = Logger.getLogger(TestHouse.class.getName());
+    private static final Logger logger = Logger.getLogger(PresenceSensorTest.class.getName());
     BodiesAppState bodiesAppState;
     DevicesAppState devicesAppState;
     WorldAppState worldAppState;
-
+    SimpleApplication app;
+    
     JFrame sensorMonitor;
     
     public static void main(String[] args) {
@@ -73,7 +77,8 @@ public class PresenceSensorTest implements PHATInitAppListener {
     @Override
     public void init(SimpleApplication app) {
         SpatialFactory.init(app.getAssetManager(), app.getRootNode());
-
+        this.app = app;
+        
         AppStateManager stateManager = app.getStateManager();
 
         app.getFlyByCamera().setMoveSpeed(10f);
@@ -112,44 +117,58 @@ public class PresenceSensorTest implements PHATInitAppListener {
                 new Vector3f(0.1f, 0.1f, 0.1f), ColorRGBA.Green);
         */
         
+        devicesAppState = new DevicesAppState();
+        stateManager.attach(devicesAppState);
         
+        createBodyPresenceSensor("PresenceSensor1", 
+                new Vector3f(2f, 3f, 3f), 
+                new Vector3f(45f, -90f, 0f));
         
-        PHATPresenceSensor p1 = createPresenceSensor("PresenceSensor1", new Vector3f(2f, 3f, 3f), -FastMath.HALF_PI, app.getRootNode());
-        PresenceStatePanel psp1 = new PresenceStatePanel();
-        p1.add(psp1);
+        CreatePresenceSensorCommand ps1 = new CreatePresenceSensorCommand("PresenceSensor1", this);
+        ps1.setEnableDebug(true);
+        devicesAppState.runCommand(ps1);
         
-        PHATPresenceSensor p2 = createPresenceSensor("PresenceSensor2", new Vector3f(-2f, 3f, 10f), FastMath.HALF_PI, app.getRootNode());
-        PresenceStatePanel psp2 = new PresenceStatePanel();
-        p2.add(psp2);
-                
+        createBodyPresenceSensor("PresenceSensor2", 
+                new Vector3f(-2f, 3f, 10f), 
+                new Vector3f(45f, 90f, 0f));
+        
+        CreatePresenceSensorCommand ps2 = new CreatePresenceSensorCommand("PresenceSensor2", this);
+        ps2.setEnableDebug(true);
+        devicesAppState.runCommand(ps2);
+                        
         sensorMonitor = new JFrame("Sensor Monitoring");
         JPanel content = new JPanel();
         sensorMonitor.setContentPane(content);
-        content.add(psp1);
-        content.add(psp2);
-        sensorMonitor.pack();
         sensorMonitor.setVisible(true); 
     }
     
-    PHATPresenceSensor createPresenceSensor(String name, Vector3f pos, float ori, Node rootNode) {
-        Node sensorBody = new Node();
-        sensorBody.setLocalTranslation(pos);
-        sensorBody.rotate(FastMath.QUARTER_PI, ori, 0f);
-        rootNode.attachChild(sensorBody);
-        
-        PHATPresenceSensor presence = new PHATPresenceSensor(name);
-        presence.setDebug(true);
-        presence.setDistance(5f);
-        presence.sethAngle(180f);
-        presence.setvAngle(30f);
-        presence.setAngleStep(10f); // related with the precission of the sensor
-        
-        sensorBody.addControl(presence);
-        
-        return presence;
+    void createBodyPresenceSensor(String id, Vector3f pos, Vector3f dir) {
+        Node devicePS1 = new Node();
+        devicePS1.setUserData("ROLE", "PresenceSensor");
+        devicePS1.setUserData("ID", id);
+        devicePS1.move(pos);
+        devicePS1.rotate(new Quaternion().fromAngles(dir.x, dir.y, dir.z));
+        app.getRootNode().attachChild(devicePS1);
     }
-    
+        
     public void cleanUp() {
         sensorMonitor.dispose();
+    }
+
+    @Override
+    public void commandStateChanged(PHATCommand command) {
+        if (command instanceof CreatePresenceSensorCommand) {
+            CreatePresenceSensorCommand cpsc = (CreatePresenceSensorCommand) command;
+            Node psNode = devicesAppState.getDevice(cpsc.getPresenceSensorId());
+            if (psNode != null) {
+                PHATPresenceSensor psControl = psNode.getControl(PHATPresenceSensor.class);
+                if (psControl != null) {
+                    PresenceStatePanel psp1 = new PresenceStatePanel();
+                    psControl.add(psp1);
+                    sensorMonitor.getContentPane().add(psp1);
+                    sensorMonitor.pack();
+                }
+            }
+        }
     }
 }

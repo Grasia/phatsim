@@ -75,7 +75,7 @@ public class PHATCalendar implements Serializable{
         calendar = Calendar.getInstance();
         calendar.set(Calendar.YEAR, year);
         calendar.set(Calendar.MONTH, month-1);
-        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth-1);
+        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
         calendar.set(Calendar.MINUTE, min);
         calendar.set(Calendar.SECOND, sec);
@@ -90,7 +90,7 @@ public class PHATCalendar implements Serializable{
     }
     
     public long getTimeInMillis() {
-        return calendar.getTime().getTime();
+        return calendar.getTimeInMillis();
     }
     
     @Override
@@ -119,7 +119,7 @@ public class PHATCalendar implements Serializable{
     }
     
     public int getDayOfMonth() {
-        return calendar.get(Calendar.DAY_OF_MONTH)+1;
+        return calendar.get(Calendar.DAY_OF_MONTH);
     }
     
     public int getDayOfWeek() {

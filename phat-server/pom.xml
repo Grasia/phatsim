@@ -29,8 +29,19 @@
         </dependency>
         
         <dependency>
+            <groupId>net.sf.jdos</groupId>
+            <artifactId>jdos-common</artifactId>
+            <version>${jdos.version}</version>
+        </dependency>
+        
+        <dependency>
             <groupId>net.sf.phat</groupId>
-            <artifactId>phat-audio</artifactId>
+            <artifactId>phat-devices</artifactId>
+            <version>1.0.2-SNAPSHOT</version>
+        </dependency>	
+        <dependency>
+            <groupId>net.sf.phat</groupId>
+            <artifactId>phat-client</artifactId>
             <version>1.0.2-SNAPSHOT</version>
         </dependency>	
     </dependencies>

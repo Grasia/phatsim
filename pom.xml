@@ -54,11 +54,10 @@
         <module>phat-bodies</module>
         <module>phat-core</module>
         <module>phat-audio</module>
-        <module>phat-demos</module>
-        <module>phat-interface</module>        
-        <module>phat-mason</module>
+        <module>phat-interface</module>
         <module>phat-devices</module>
         <module>phat-server</module>
+        <module>phat-client</module>
         <module>phat-generator</module>
     </modules>
     

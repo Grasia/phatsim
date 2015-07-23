@@ -27,8 +27,6 @@ import com.jme3.scene.Spatial;
 import com.jme3.texture.Texture;
 import java.util.logging.Level;
 import phat.commands.PHATCommandListener;
-import phat.devices.DevicesAppState;
-import phat.mobile.adm.AndroidVirtualDevice;
 import phat.structures.houses.HouseAppState;
 import phat.util.SpatialFactory;
 import phat.util.SpatialUtils;

@@ -12,9 +12,14 @@
     <name>PHAT - Devices</name>
 
     <dependencies>        
-        <dependency>
+        <!--dependency>
             <groupId>net.sf.phat</groupId>
             <artifactId>phat-server</artifactId>
+            <version>1.0.2-SNAPSHOT</version>
+        </dependency-->
+        <dependency>
+            <groupId>net.sf.phat</groupId>
+            <artifactId>phat-audio</artifactId>
             <version>1.0.2-SNAPSHOT</version>
         </dependency>
         <dependency>

@@ -38,8 +38,10 @@ import phat.sensors.accelerometer.AccelerometerControl;
 import phat.sensors.camera.CameraSensor;
 import phat.server.microphone.TCPAudioMicroServer;
 import phat.sensors.microphone.MicrophoneControl;
+import phat.sensors.presence.PHATPresenceSensor;
 import phat.server.accelerometer.TCPAccelerometerServer;
 import phat.server.camera.TCPCameraSensorServer;
+import phat.server.presence.TCPPresenceServer;
 
 /**
  *
@@ -110,6 +112,26 @@ public class PHATServerManager {
         return ams;
     }
 
+    public TCPPresenceServer createAndStartPresenceServer(String id, PHATPresenceSensor accSensor) {
+        TCPPresenceServer ams = null;
+        int port = ServiceManagerServer.getInstance().getNextPort();
+        try {
+            System.out.println("IP:PORT -> " + inetAddress + ":" + port);
+            ams = new TCPPresenceServer(inetAddress, port, accSensor);
+        } catch (IOException ex) {
+            Logger.getLogger(PHATServerManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+
+        registerService(id, ams, Service.PRESENCE);
+
+        ams.start();
+
+        add(id, ams);
+
+        return ams;
+    }
+    
     public void stop() {
         for (List<TCPSensorServer> list : tcpSensorServers.values()) {
             for (TCPSensorServer server : list) {

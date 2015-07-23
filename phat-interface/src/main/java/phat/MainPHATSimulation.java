@@ -36,9 +36,7 @@ import phat.agents.automaton.UseObjectAutomaton;
 import phat.agents.automaton.conditions.TimerFinishedCondition;
 import phat.agents.automaton.uses.UseDoorbellAutomaton;
 import phat.body.BodiesAppState;
-import phat.body.commands.BodyLabelCommand;
 import phat.body.commands.SetBodyHeightCommand;
-import phat.body.commands.SetCameraToBodyCommand;
 import phat.body.commands.SetPCListenerToBodyCommand;
 import phat.body.commands.SetStoopedBodyCommand;
 import phat.body.commands.TremblingHandCommand;
@@ -47,12 +45,13 @@ import phat.config.AgentConfigurator;
 import phat.config.BodyConfigurator;
 import phat.config.DeviceConfigurator;
 import phat.config.HouseConfigurator;
+import phat.config.ServerConfigurator;
 import phat.config.WorldConfigurator;
 import phat.devices.commands.CreateSmartphoneCommand;
-import phat.devices.commands.DisplayAVDScreenCommand;
-import phat.devices.commands.SetAndroidEmulatorCommand;
 import phat.devices.commands.SetDeviceOnPartOfBodyCommand;
-import phat.devices.commands.StartActivityCommand;
+import phat.server.commands.DisplayAVDScreenCommand;
+import phat.server.commands.SetAndroidEmulatorCommand;
+import phat.server.commands.StartActivityCommand;
 import phat.structures.houses.HouseFactory;
 import phat.world.WorldAppState;
 
@@ -102,6 +101,10 @@ public class MainPHATSimulation implements PHATInitializer {
     public void initDevices(DeviceConfigurator deviceConfig) {
         deviceConfig.runCommand(new CreateSmartphoneCommand("Smartphone1"));
         deviceConfig.runCommand(new SetDeviceOnPartOfBodyCommand("Relative","Smartphone1", SetDeviceOnPartOfBodyCommand.PartOfBody.Chest));        
+    }
+
+    @Override
+    public void initServer(ServerConfigurator deviceConfig) {
         deviceConfig.runCommand(new SetAndroidEmulatorCommand("Smartphone1", "Smartphone1", "emulator-5554"));
         //deviceConfig.runCommand(new StartActivityCommand("Smartphone1", "phat.android.apps", "CameraCaptureActivity"));
         deviceConfig.runCommand(new StartActivityCommand("Smartphone1", "phat.android.apps", "BodyPositionMonitoring"));
@@ -110,7 +113,7 @@ public class MainPHATSimulation implements PHATInitializer {
         displayCommand.setFrecuency(0.5f);
         deviceConfig.runCommand(displayCommand);
     }
-
+    
     @Override
     public void initAgents(AgentConfigurator agentsConfig) {
         Agent relative = new AgentImpl("Relative");

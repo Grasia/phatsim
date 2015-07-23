@@ -16,6 +16,7 @@ import phat.agents.Agent;
 import phat.body.BodiesAppState;
 import phat.body.commands.*;
 import phat.devices.commands.*;
+import phat.server.commands.*;
 import phat.config.*;
 import phat.world.MonitorEventQueue;
 import phat.world.MonitorEventQueueImp;
@@ -84,17 +85,22 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
         deviceConfig.runCommand(new SetDeviceOnPartOfBodyCommand("@@@v@@@humanId@@@/v@@@","@@@v@@@SPname@@@/v@@@", SetDeviceOnPartOfBodyCommand.PartOfBody.@@@v@@@partOfBody@@@/v@@@));@@@/repeat@@@
         @@@repeat id="setLocFurniture"@@@
         deviceConfig.runCommand(new SetDeviceOnFurnitureCommand("@@@v@@@SPname@@@/v@@@", "House1", "@@@v@@@furId@@@/v@@@"));@@@/repeat@@@@@@/repeat@@@
+        
+    }
+    
+    @Override
+    public void initServer(ServerConfigurator serverConfig) {
         @@@repeat id="emulator"@@@
-        deviceConfig.runCommand(new SetAndroidEmulatorCommand("@@@v@@@SPname@@@/v@@@", "@@@v@@@AvdName@@@/v@@@", "@@@v@@@AvdSerialNum@@@/v@@@"));
+        serverConfig.runCommand(new SetAndroidEmulatorCommand("@@@v@@@SPname@@@/v@@@", "@@@v@@@AvdName@@@/v@@@", "@@@v@@@AvdSerialNum@@@/v@@@"));
         @@@repeat id="installApp"@@@
-        deviceConfig.runCommand(new InstallApkCommand("@@@v@@@SPname@@@/v@@@", "@@@v@@@apkFile@@@/v@@@"));@@@/repeat@@@
+        serverConfig.runCommand(new InstallApkCommand("@@@v@@@SPname@@@/v@@@", "@@@v@@@apkFile@@@/v@@@"));@@@/repeat@@@
         @@@repeat id="AndroidApp"@@@
-        deviceConfig.runCommand(new StartActivityCommand("@@@v@@@SPname@@@/v@@@", "@@@v@@@packageName@@@/v@@@", "@@@v@@@activityName@@@/v@@@"));@@@/repeat@@@@@@/repeat@@@
+        serverConfig.runCommand(new StartActivityCommand("@@@v@@@SPname@@@/v@@@", "@@@v@@@packageName@@@/v@@@", "@@@v@@@activityName@@@/v@@@"));@@@/repeat@@@@@@/repeat@@@
         
         @@@repeat id="avdScreen"@@@
         {DisplayAVDScreenCommand displayCommand = new DisplayAVDScreenCommand("@@@v@@@SPname@@@/v@@@", "@@@v@@@AvdName@@@/v@@@");
         displayCommand.setFrecuency(0.5f);
-        deviceConfig.runCommand(displayCommand);}@@@/repeat@@@
+        serverConfig.runCommand(displayCommand);}@@@/repeat@@@
     }
     
     @Override
@@ -131,6 +137,7 @@ import phat.agents.Agent;
 import phat.body.BodiesAppState;
 import phat.body.commands.*;
 import phat.devices.commands.*;
+import phat.server.commands.*;
 import phat.config.*;
 import phat.world.MonitorEventQueue;
 import phat.world.MonitorEventQueueImp;
@@ -189,6 +196,10 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices implements PHATIn
     
     @Override
     public void initDevices(DeviceConfigurator deviceConfig) {
+    }
+    
+    @Override
+    public void initServer(ServerConfigurator serverConfig) {
     }
     
     @Override

@@ -238,8 +238,9 @@ public abstract class Agent implements PHATAgentTick {
             initAutomaton();
         }
 
-        eventListener.setSimTime(phatInterface.getSimTime().getTimeInMillis());
-
+        if(eventListener != null) {
+            eventListener.setSimTime(phatInterface.getSimTime().getTimeInMillis());
+        }
     }
 
     public Vector3f getLocation() {

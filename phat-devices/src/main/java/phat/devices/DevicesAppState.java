@@ -27,18 +27,13 @@ import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import phat.commands.PHATCommand;
-import phat.devices.commands.DisplayAVDScreenCommand;
 import phat.devices.commands.PHATDeviceCommand;
 import phat.devices.smartphone.SmartPhoneFactory;
-import phat.mobile.adm.AndroidVirtualDevice;
-import phat.server.PHATServerManager;
 import phat.structures.houses.HouseAppState;
 import phat.util.SpatialUtils;
 import phat.world.WorldAppState;
@@ -52,11 +47,9 @@ public class DevicesAppState extends AbstractAppState {
     SimpleApplication app;
     AssetManager assetManager;
     BulletAppState bulletAppState;
-    PHATServerManager serverManager;
     HouseAppState houseAppState;
     WorldAppState worldAppState;
     Map<String, Node> availableDevices = new HashMap<>();
-    Map<String, AndroidVirtualDevice> availableAVDs = new HashMap<>();
     ConcurrentLinkedQueue<PHATDeviceCommand> runningCommands = new ConcurrentLinkedQueue<>();
     ConcurrentLinkedQueue<PHATDeviceCommand> pendingCommands = new ConcurrentLinkedQueue<>();
 
@@ -70,8 +63,6 @@ public class DevicesAppState extends AbstractAppState {
         worldAppState = app.getStateManager().getState(WorldAppState.class);
         houseAppState = app.getStateManager().getState(HouseAppState.class);
         bulletAppState = app.getStateManager().getState(BulletAppState.class);
-
-        serverManager = new PHATServerManager();
 
         SmartPhoneFactory.init(bulletAppState, assetManager, app.getRenderManager(), app.getCamera(), app.getAudioRenderer());
     }
@@ -114,47 +105,16 @@ public class DevicesAppState extends AbstractAppState {
         availableDevices.put(smartphoneId, smartphone);
     }
 
-    public void addAVD(String smartphoneId, AndroidVirtualDevice avd) {
-        availableAVDs.put(smartphoneId, avd);
-    }
-
-    public PHATServerManager getServerManager() {
-        return serverManager;
-    }
-
     public Node getDevice(String deviceId) {
         return availableDevices.get(deviceId);
     }
-
-    public AndroidVirtualDevice getAVD(String deviceId) {
-        return availableAVDs.get(deviceId);
+    
+    public Set<String> getDeviceIds() {
+        return availableDevices.keySet();
     }
 
     @Override
     public void cleanup() {
         super.cleanup();
-        // close connections with emulators
-        Set<String> ids = availableAVDs.keySet();
-        if (ids != null) {
-            for (String id : ids) {
-                AndroidVirtualDevice avd = availableAVDs.get(id);
-                String avdId = avd.getAvdName();
-                new DisplayAVDScreenCommand(id, avdId, false)
-                .run(app);
-                // Try to exit from an application
-                // TODO Improve it
-                avd.pressBackPhysicalButton();
-                avd.pressBackPhysicalButton();
-            }
-            
-        }
-        if (ids != null && !ids.isEmpty()) {
-            AndroidVirtualDevice.shutdown();
-        }
-        
-        if (serverManager != null) {
-            System.out.println("ServerManager Stopped!!");
-            serverManager.stop();
-        }
     }
 }

@@ -42,15 +42,18 @@ import phat.app.PHATInitAppListener;
 import phat.audio.AudioAppState;
 import phat.body.BodiesAppState;
 import phat.config.DeviceConfigurator;
+import phat.config.ServerConfigurator;
 import phat.config.impl.AgentConfiguratorImpl;
 import phat.config.impl.AudioConfiguratorImpl;
 import phat.config.impl.BodyConfiguratorImpl;
 import phat.config.impl.DeviceConfiguratorImpl;
 import phat.config.impl.HouseConfiguratorImpl;
+import phat.config.impl.ServerConfiguratorImpl;
 import phat.config.impl.WorldConfiguratorImpl;
 import phat.devices.DevicesAppState;
 import phat.gui.GUIMainMenuAppState;
 import phat.gui.logging.LoggingViewerAppState;
+import phat.server.ServerAppState;
 import phat.structures.houses.HouseAppState;
 import phat.util.Debug;
 import phat.world.PHATCalendar;
@@ -71,6 +74,7 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
     HouseConfiguratorImpl houseConfig;
     BodyConfiguratorImpl bodyConfig;
     DeviceConfiguratorImpl deviceConfig;
+    ServerConfiguratorImpl serverConfig;
     AgentConfiguratorImpl agentConfig;
     boolean paused;
     long seed;
@@ -147,6 +151,9 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
         deviceConfig = new DeviceConfiguratorImpl(new DevicesAppState());
         app.getStateManager().attach(deviceConfig.getDevicesAppState());
         
+        serverConfig = new ServerConfiguratorImpl(new ServerAppState());
+        app.getStateManager().attach(serverConfig.getServerAppState());
+        
         agentConfig = new AgentConfiguratorImpl(new AgentsAppState(this));
         agentConfig.getAgentsAppState().setBodiesAppState(bodyConfig.getBodiesAppState());
         app.getStateManager().attach(agentConfig.getAgentsAppState());
@@ -158,6 +165,7 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
         initializer.initHouse(houseConfig);
         initializer.initBodies(bodyConfig);
         initializer.initDevices(deviceConfig);
+        initializer.initServer(serverConfig);
         initializer.initAgents(agentConfig);
 
         random = new Random(seed);
@@ -177,9 +185,12 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
     private void pausePHAT() {
         paused = true;
         
+        bulletAppState = app.getStateManager().getState(BulletAppState.class);
+                
         pauseAppState(BulletAppState.class);
         pauseAppState(AgentsAppState.class);
         pauseAppState(DevicesAppState.class);
+        pauseAppState(ServerAppState.class);
         pauseAppState(BodiesAppState.class);
         pauseAppState(HouseAppState.class);
         pauseAppState(WorldAppState.class);
@@ -196,6 +207,7 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
         paused = false;
         app.getStateManager().attach(bulletAppState);
         app.getStateManager().attach(agentConfig.getAgentsAppState());
+        app.getStateManager().attach(serverConfig.getServerAppState());
         app.getStateManager().attach(deviceConfig.getDevicesAppState());
         app.getStateManager().attach(bodyConfig.getBodiesAppState());
         app.getStateManager().attach(houseConfig.getHousedAppState());
@@ -237,5 +249,9 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
     
     public DeviceConfigurator getDevicesConfig() {
         return deviceConfig;
+    }
+    
+    public ServerConfigurator getServerConfig() {
+        return serverConfig;
     }
 }

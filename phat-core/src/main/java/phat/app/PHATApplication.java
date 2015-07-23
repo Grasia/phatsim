@@ -21,6 +21,7 @@ package phat.app;
 
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AppState;
+import com.jme3.bullet.BulletAppState;
 
 /**
  *
@@ -57,15 +58,21 @@ public class PHATApplication extends SimpleApplication {
     public void update() {
         super.update();
 
+        BulletAppState bullet = stateManager.getState(BulletAppState.class);
+        
         if (speed == 0) {
             timer.update();
-
+            
+            if(bullet != null) {
+                bullet.setEnabled(false);
+            }
+            
+            float tpf = timer.getTimePerFrame();
+            
             if (inputEnabled) {
-                inputManager.update(timer.getTimePerFrame());
+                inputManager.update(tpf);
             }
 
-            float tpf = timer.getTimePerFrame() * 1f;
-            
             guiNode.updateLogicalState(tpf);
             guiNode.updateGeometricState();
 
@@ -75,6 +82,8 @@ public class PHATApplication extends SimpleApplication {
             simpleRender(renderManager);
             stateManager.postRender();
 
+        } else if(bullet != null) {
+            bullet.setEnabled(true);
         }
     }
 

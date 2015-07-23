@@ -41,6 +41,7 @@ import phat.config.AgentConfigurator;
 import phat.config.BodyConfigurator;
 import phat.config.DeviceConfigurator;
 import phat.config.HouseConfigurator;
+import phat.config.ServerConfigurator;
 import phat.config.WorldConfigurator;
 import phat.structures.houses.HouseFactory;
 import phat.world.WorldAppState;
@@ -91,6 +92,10 @@ public class SymptomEvolutionTest implements PHATInitializer {
     public void initDevices(DeviceConfigurator deviceConfig) {
     }
 
+    @Override
+    public void initServer(ServerConfigurator deviceConfig) {
+    }
+    
     @Override
     public void initAgents(AgentConfigurator agentsConfig) {
         Agent patient = new AgentImpl("Patient") {
