@@ -21,7 +21,15 @@ package phat;
 
 import com.aurellem.capture.AurellemSystemDelegate;
 
+import java.rmi.AlreadyBoundException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.Enumeration;
 import java.util.Random;
+import java.util.Vector;
 
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
@@ -35,7 +43,6 @@ import com.jme3.system.AppSettings;
 import com.jme3.system.JmeSystem;
 
 import phat.agents.AgentsAppState;
-
 import phat.app.PHATApplication;
 import phat.app.PHATFinalizeAppListener;
 import phat.app.PHATInitAppListener;
@@ -53,6 +60,7 @@ import phat.gui.GUIMainMenuAppState;
 import phat.gui.logging.LoggingViewerAppState;
 import phat.structures.houses.HouseAppState;
 import phat.util.Debug;
+import phat.world.MonitorEventQueue;
 import phat.world.PHATCalendar;
 import phat.world.WorldAppState;
 import tonegod.gui.core.Screen;
@@ -63,179 +71,285 @@ import tonegod.gui.core.Screen;
  */
 public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListener {
 
-    PHATApplication app;
-    PHATInitializer initializer;
-    BulletAppState bulletAppState;
-    AudioConfiguratorImpl audioConfig;
-    WorldConfiguratorImpl worldConfig;
-    HouseConfiguratorImpl houseConfig;
-    BodyConfiguratorImpl bodyConfig;
-    DeviceConfiguratorImpl deviceConfig;
-    AgentConfiguratorImpl agentConfig;
-    boolean paused;
-    long seed;
-    String tittle = "PHAT";
-    Random random;
-    
+	public static final String SERVER_NAME = "PHATInterface";
+	PHATApplication app;
+	PHATInitializer initializer;
+	BulletAppState bulletAppState;
+	AudioConfiguratorImpl audioConfig;
+	WorldConfiguratorImpl worldConfig;
+	HouseConfiguratorImpl houseConfig;
+	BodyConfiguratorImpl bodyConfig;
+	DeviceConfiguratorImpl deviceConfig;
+	AgentConfiguratorImpl agentConfig;
+	boolean paused;
+	long seed;
+	String tittle = "PHAT";
+	Random random;
+	private Registry registry;
+	private GUIMainMenuAppState guimainMenu;
+	PHATCalendar initSimTime=null;
 
 
-    public PHATInterface(PHATInitializer initializer) {
-        this.initializer = initializer;
-    }
-    
-   
+	public PHATInterface(PHATInitializer initializer) {
+		this.initializer = initializer;
+	}
 
-    public void start() {
-        app = new PHATApplication(this);
-        
-        AppSettings s = new AppSettings(true);
-        s.setTitle(initializer.getTittle());
-        s.setWidth(480);
-        s.setHeight(800);
-        app.setDisplayStatView(false);
-        app.setSettings(s);
-         
-        /*AppSettings s = new AppSettings(true);
+
+
+
+	public void startServer(String name) throws RemoteException, AlreadyBoundException, NotBoundException{
+
+
+		
+		
+		final java.util.concurrent.ConcurrentLinkedQueue<String> commands=new java.util.concurrent.ConcurrentLinkedQueue<String>();
+		RemotePHATInterface rmi=new RemotePHATInterface(){
+
+			@Override
+			public void resumePHAT() throws RemoteException {
+				commands.add("resume");		
+				guimainMenu.resume(); // resume cannot be 
+				// executed in an appstate because appstate execution is frozen
+				// if a pause has been issued before
+			}
+
+			@Override
+			public void pausePHAT() throws RemoteException {
+				commands.add("pause");	
+				
+			}
+
+			@Override
+			public PHATCalendar getSimTime() throws RemoteException {
+				// TODO Auto-generated method stub
+				return PHATInterface.this.getSimTime();
+			}
+			
+			@Override
+			public long getElapsedSimTimeSeconds() throws RemoteException {
+				// TODO Auto-generated method stub
+				return PHATInterface.this.getElapsedSimTimeSeconds();
+			}
+
+		};
+		
+		AbstractAppState absApp=new AbstractAppState(){
+
+			@Override
+			public void update(float tpf) {
+				super.update(tpf);
+				if (!commands.isEmpty()){
+					String command=commands.poll();
+					
+					if (command.equalsIgnoreCase("pause"))
+						guimainMenu.pause();
+				}
+				
+			}
+			
+		};
+		
+		app.getStateManager().attach(absApp);
+
+	
+
+		int port=60200; 
+		System.setProperty("java.rmi.server.useCodebaseOnly","false");
+		if (System.getProperty("phat.monitorport")!=null){
+			port=Integer.parseInt(System.getProperty("phat.monitorport"));
+		}
+		if (registry==null){
+			try {
+
+				registry = LocateRegistry.getRegistry(port);
+				registry.list();// to force the connection and ensure there is something at the other side
+				// getRegistry is not failing when resolving the registry
+
+			} catch (Exception  e) {
+				registry = java.rmi.registry.LocateRegistry.createRegistry(port); // Creates and exports a Registry instance	
+
+			}		
+		}
+		try {
+			Thread.currentThread().sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		RemotePHATInterface stub = (RemotePHATInterface) UnicastRemoteObject.exportObject(rmi, 0); // Exports remote object		
+		registry.bind(name, stub); // Binds a remote reference
+		registry.lookup(name);
+
+	}
+	public void start() {
+		app = new PHATApplication(this);
+
+		AppSettings s = new AppSettings(true);
+		s.setTitle(initializer.getTittle());
+		s.setWidth(480);
+		s.setHeight(800);
+		app.setDisplayStatView(false);
+		app.setSettings(s);
+
+		/*AppSettings s = new AppSettings(true);
          s.setAudioRenderer(AurellemSystemDelegate.SEND);
          JmeSystem.setSystemDelegate(new AurellemSystemDelegate());
          app.setSettings(s);*/
 
-        /*AppSettings s = new AppSettings(true);
+		/*AppSettings s = new AppSettings(true);
         s.setAudioRenderer("LWJGL");
         JmeSystem.setSystemDelegate(new AurellemSystemDelegate());
         app.setSettings(s);*/
 
-        app.start();
-    }
-    
-    @Override
-    public void init(SimpleApplication app) {
+		app.start();
+		try {
+			startServer(PHATInterface.SERVER_NAME);
+		} catch (RemoteException | AlreadyBoundException | NotBoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.exit(-1);
+		}
+	}
 
-        app.getFlyByCamera().setMoveSpeed(10f);
-        app.getFlyByCamera().setDragToRotate(true);
-        
-        app.getCamera().setFrustumPerspective(45f, 
-                (float) app.getCamera().getWidth() / app.getCamera().getHeight(), 
-                0.1f, 1000f);
+	@Override
+	public void init(SimpleApplication app) {
 
-        app.getCamera().setLocation(new Vector3f(6.2354145f, 18.598438f, 4.6557f));
-        app.getCamera().setRotation(new Quaternion(0.5041053f, -0.49580166f, 0.5068195f, 0.4931456f));
+		app.getFlyByCamera().setMoveSpeed(10f);
+		app.getFlyByCamera().setDragToRotate(true);
 
-        //Debug.enableDebugGrid(20, app.getAssetManager(), app.getRootNode());
-        //bulletAppState = new BulletAppState();        
-        //app.getStateManager().attach(bulletAppState);
-        //bulletAppState.getPhysicsSpace().setAccuracy(1f/200f);
-        //bulletAppState.setDebugEnabled(true);
-        
-        Screen screen = new Screen(app, "tonegod/gui/style/def/style_map.gui.xml");
-        app.getGuiNode().addControl(screen);
-        app.getStateManager().attach(new GUIMainMenuAppState(screen));
+		app.getCamera().setFrustumPerspective(45f, 
+				(float) app.getCamera().getWidth() / app.getCamera().getHeight(), 
+				0.1f, 1000f);
 
-        audioConfig = new AudioConfiguratorImpl(new AudioAppState());
-        audioConfig.setMultiAudioRenderer(false, app);
-        app.getStateManager().attach(audioConfig.getAudioAppState());
+		app.getCamera().setLocation(new Vector3f(6.2354145f, 18.598438f, 4.6557f));
+		app.getCamera().setRotation(new Quaternion(0.5041053f, -0.49580166f, 0.5068195f, 0.4931456f));
 
-        worldConfig = new WorldConfiguratorImpl(new WorldAppState());
-        app.getStateManager().attach(worldConfig.getWorldAppState());
+		//Debug.enableDebugGrid(20, app.getAssetManager(), app.getRootNode());
+		//bulletAppState = new BulletAppState();        
+		//app.getStateManager().attach(bulletAppState);
+		//bulletAppState.getPhysicsSpace().setAccuracy(1f/200f);
+		//bulletAppState.setDebugEnabled(true);
 
-        houseConfig = new HouseConfiguratorImpl(new HouseAppState());
-        app.getStateManager().attach(houseConfig.getHousedAppState());
+		Screen screen = new Screen(app, "tonegod/gui/style/def/style_map.gui.xml");
+		app.getGuiNode().addControl(screen);
+		guimainMenu=new GUIMainMenuAppState(screen);
+		app.getStateManager().attach(guimainMenu);
 
-        bodyConfig = new BodyConfiguratorImpl(new BodiesAppState());
-        app.getStateManager().attach(bodyConfig.getBodiesAppState());
+		audioConfig = new AudioConfiguratorImpl(new AudioAppState());
+		audioConfig.setMultiAudioRenderer(false, app);
+		app.getStateManager().attach(audioConfig.getAudioAppState());
 
-        deviceConfig = new DeviceConfiguratorImpl(new DevicesAppState());
-        app.getStateManager().attach(deviceConfig.getDevicesAppState());
-        
-        agentConfig = new AgentConfiguratorImpl(new AgentsAppState(this));
-        agentConfig.getAgentsAppState().setBodiesAppState(bodyConfig.getBodiesAppState());
-        app.getStateManager().attach(agentConfig.getAgentsAppState());
+		worldConfig = new WorldConfiguratorImpl(new WorldAppState());
+		app.getStateManager().attach(worldConfig.getWorldAppState());
 
-        app.getStateManager().attach(new LoggingViewerAppState());
-        
-        //app.getStateManager().attach(initAppState);
-        initializer.initWorld(worldConfig);
-        initializer.initHouse(houseConfig);
-        initializer.initBodies(bodyConfig);
-        initializer.initDevices(deviceConfig);
-        initializer.initAgents(agentConfig);
+		houseConfig = new HouseConfiguratorImpl(new HouseAppState());
+		app.getStateManager().attach(houseConfig.getHousedAppState());
 
-        random = new Random(seed);
-    }
+		bodyConfig = new BodyConfiguratorImpl(new BodiesAppState());
+		app.getStateManager().attach(bodyConfig.getBodiesAppState());
 
-    public void setSimSpeed(float speed) {
-        if(speed > 0) {
-            app.setSimSpeed(speed);
-            if(paused) {
-                resumePHAT();
-            }
-        } else if(!paused) {
-            pausePHAT();
-        }
-    }
-    
-    private void pausePHAT() {
-        paused = true;
-        
-        pauseAppState(BulletAppState.class);
-        pauseAppState(AgentsAppState.class);
-        pauseAppState(DevicesAppState.class);
-        pauseAppState(BodiesAppState.class);
-        pauseAppState(HouseAppState.class);
-        pauseAppState(WorldAppState.class);
-    }
-    
-    private <T extends AppState> void pauseAppState(Class<T> appStateClass) {
-        T appState = app.getStateManager().getState(appStateClass);
-        if(appState != null) {
-            app.getStateManager().detach(appState);
-        }
-    }
-    
-    private void resumePHAT() {
-        paused = false;
-        app.getStateManager().attach(bulletAppState);
-        app.getStateManager().attach(agentConfig.getAgentsAppState());
-        app.getStateManager().attach(deviceConfig.getDevicesAppState());
-        app.getStateManager().attach(bodyConfig.getBodiesAppState());
-        app.getStateManager().attach(houseConfig.getHousedAppState());
-        app.getStateManager().attach(worldConfig.getWorldAppState());
-    }
-    
-    public float getSimSpeed() {
-        return app.getSimSpeed();
-    }
-    
-    @Override
-    public void finalize(SimpleApplication app) {
-        
-    }
-    
-    public Random getRandom() {
-        return random;
-    }
+		deviceConfig = new DeviceConfiguratorImpl(new DevicesAppState());
+		app.getStateManager().attach(deviceConfig.getDevicesAppState());
 
-    public PHATCalendar getSimTime() {
-        return worldConfig.getWorldAppState().getCalendar();
-    }
+		agentConfig = new AgentConfiguratorImpl(new AgentsAppState(this));
+		agentConfig.getAgentsAppState().setBodiesAppState(bodyConfig.getBodiesAppState());
+		app.getStateManager().attach(agentConfig.getAgentsAppState());
 
-    public long getSeed() {
-        return seed;
-    }
+		app.getStateManager().attach(new LoggingViewerAppState());
 
-    public void setSeed(long seed) {
-        this.seed = seed;
-    }
+		//app.getStateManager().attach(initAppState);
+		initializer.initWorld(worldConfig);
+		initializer.initHouse(houseConfig);
+		initializer.initBodies(bodyConfig);
+		initializer.initDevices(deviceConfig);
+		initializer.initAgents(agentConfig);
 
-    public String getTittle() {
-        return tittle;
-    }
+		random = new Random(seed);
+		
+		this.initSimTime=new PHATCalendar(getSimTime());
+	}
 
-    public void setTittle(String tittle) {
-        this.tittle = tittle;
-    }
-    
-    public DeviceConfigurator getDevicesConfig() {
-        return deviceConfig;
-    }
+	public void setSimSpeed(float speed) {
+		if(speed > 0) {
+			app.setSimSpeed(speed);
+			if(paused) {
+				resumePHAT();
+			}
+		} else if(!paused) {
+			pausePHAT();
+		}
+	}
+
+	public void pausePHAT(){
+		paused = true;
+		
+		pauseAppState(BulletAppState.class);
+		pauseAppState(AgentsAppState.class);
+		pauseAppState(DevicesAppState.class);
+		pauseAppState(BodiesAppState.class);
+		pauseAppState(HouseAppState.class);
+		pauseAppState(WorldAppState.class);
+	}
+
+	private <T extends AppState> void pauseAppState(Class<T> appStateClass) {
+		T appState = app.getStateManager().getState(appStateClass);
+		if(appState != null) {
+			app.getStateManager().detach(appState);
+		}
+	}
+
+	public void resumePHAT() {
+		paused = false;
+		
+		app.getStateManager().attach(bulletAppState);
+		app.getStateManager().attach(agentConfig.getAgentsAppState());
+		app.getStateManager().attach(deviceConfig.getDevicesAppState());
+		app.getStateManager().attach(bodyConfig.getBodiesAppState());
+		app.getStateManager().attach(houseConfig.getHousedAppState());
+		app.getStateManager().attach(worldConfig.getWorldAppState());
+	}
+
+	public float getSimSpeed() {
+		return app.getSimSpeed();
+	}
+
+	@Override
+	public void finalize(SimpleApplication app) {
+
+	}
+
+	public Random getRandom() {
+		return random;
+	}
+
+	public synchronized PHATCalendar getSimTime() {
+		return worldConfig.getWorldAppState().getCalendar();
+	}
+	
+	public synchronized long getElapsedSimTimeSeconds() {
+		if (initSimTime==null)
+			return 0;
+		return initSimTime.spentTimeTo(getSimTime());
+	}
+
+	public long getSeed() {
+		return seed;
+	}
+
+	public void setSeed(long seed) {
+		this.seed = seed;
+	}
+
+	public String getTittle() {
+		return tittle;
+	}
+
+	public void setTittle(String tittle) {
+		this.tittle = tittle;
+	}
+
+	public DeviceConfigurator getDevicesConfig() {
+		return deviceConfig;
+	}
 }
