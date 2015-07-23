@@ -20,6 +20,7 @@ public class AgentPHATEvent extends RemotePHATEvent implements Serializable{
 	private boolean failure=false;
 	private String scope="";
 	private String actionType="";
+	private long elapsedTime;
 
 	public String getActionType() {
 		return actionType;
@@ -105,6 +106,16 @@ public class AgentPHATEvent extends RemotePHATEvent implements Serializable{
 
 	public void setFailure(boolean b) {
 		failure=b;
+		
+	}
+
+	public void setElapsedTime(long elapsedTime) {
+		this.elapsedTime=elapsedTime;
+		
+	}
+
+	public long getElapsedTime() {
+		return this.elapsedTime;
 		
 	}
 
