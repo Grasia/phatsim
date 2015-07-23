@@ -81,6 +81,8 @@ public class PHATApplication extends SimpleApplication {
 
             // render states
             stateManager.render(renderManager);
+			// render is called in the render thread
+			// otherwise, an exception could be called
             this.enqueue(new Callable<Spatial>() {
             	// to avoid "java.lang.IllegalStateException: Scene graph is not properly updated for rendering."
                 public Spatial call() throws Exception {
