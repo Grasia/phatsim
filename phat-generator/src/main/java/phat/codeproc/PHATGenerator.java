@@ -100,7 +100,7 @@ ingenias.editor.extension.BasicCodeGeneratorImp {
 		this.addTemplate("templates/activities.xml");
 		this.addTemplate("templates/tasks.xml");
 		this.addTemplate("templates/disease_profile.xml");
-                this.addTemplate("templates/filters/symptom_evolution.xml");
+		this.addTemplate("templates/filters/symptom_evolution.xml");
 		this.addTemplate("templates/buildext.xml");
 		this.addTemplate("templates/norms.xml");
 	}
@@ -113,7 +113,7 @@ ingenias.editor.extension.BasicCodeGeneratorImp {
 		this.addTemplate("templates/activities.xml");
 		this.addTemplate("templates/tasks.xml");
 		this.addTemplate("templates/disease_profile.xml");
-                this.addTemplate("templates/filters/symptom_evolution.xml");
+		this.addTemplate("templates/filters/symptom_evolution.xml");
 		this.addTemplate("templates/buildext.xml");
 		this.addTemplate("templates/norms.xml");
 	}
@@ -159,9 +159,9 @@ ingenias.editor.extension.BasicCodeGeneratorImp {
 					HashSet<File> files=new HashSet<File>();
 					Vector<SplitHandler> handlers = generator.runWithoutWriting();					
 					for (SplitHandler sh:handlers){
-						 files.addAll(sh.filesToBeWritten());
-						 sh.writeFiles();
-						 
+						files.addAll(sh.filesToBeWritten());
+						sh.writeFiles();
+
 					}					
 					if (ingenias.editor.Log.getInstance().areThereErrors()) {
 						for (Frame f : Frame.getFrames()) {
@@ -223,13 +223,22 @@ ingenias.editor.extension.BasicCodeGeneratorImp {
 			new AgentsGenerator(browser).generateAgents(seq);
 			new TaskGenerator(getBrowser(), seq).generateAllSeqTasks();
 			new ActivityGenerator(getBrowser()).generateTimeIntervals(seq);
-                        new SymptomEvolutionGenerator(browser).generateFSMSymptomEvolutionClasses(seq);
+			new SymptomEvolutionGenerator(browser).generateFSMSymptomEvolutionClasses(seq);
 			new SimulationGenerator(browser).generateSimulations(seq);	
-         	GraphEntity[] entities = browser.getAllEntities();
+			GraphEntity[] entities = browser.getAllEntities();
 			Vector<String> errors=new Vector<String>();
 			for (GraphEntity norm:entities){
+				Repeat ruleRep=null;
 				if (norm.getType().equals("ConsecutiveActions")){
-					Repeat ruleRep=new Repeat("norms");
+					if ( norm.getAttributeByName("Deontic")!=null 
+							&& norm.getAttributeByName("Deontic").getSimpleValue().toLowerCase().contains("must not"))
+						ruleRep=new Repeat("normsmustnot");
+					else
+						if ( norm.getAttributeByName("Deontic")!=null 
+						&& norm.getAttributeByName("Deontic").getSimpleValue().toLowerCase().contains("must"))
+							ruleRep=new Repeat("normsmust");
+						else
+							ruleRep=new Repeat("normsmay");
 					seq.addRepeat(ruleRep);
 					ruleRep.add(new Var("normname",Utils.replaceBadChars(norm.getID())));
 					GraphEntity[] actionconditions = Utils.getRelatedElements(norm, "ActionHappeningAfterwards", "ActionHappeningAfterwardstarget");
@@ -240,7 +249,7 @@ ingenias.editor.extension.BasicCodeGeneratorImp {
 						errors.add("There should one instance of ActionsHappeningAfterwards connected to "+norm);
 					if (errors.isEmpty()){
 						GraphEntity[] roleCondition = Utils.getRelatedElements(actionconditions[0],"ActionResponsible", "ActionResponsibletarget");
-						
+
 						ruleRep.add(new Var("normtimewindow",Utils.replaceBadChars(actionconditions[0].getAttributeByName("WithinTheTimeWindow").getSimpleValue())));
 						;	
 						if (roleCondition.length==0)
@@ -254,13 +263,13 @@ ingenias.editor.extension.BasicCodeGeneratorImp {
 						if (actionCondition.length==0)
 							errors.add("There should one instance of Task connected to "+actionconditions[0]);
 						if (errors.isEmpty())
-						for (GraphEntity action:actionCondition){		
-							Repeat normactioncondition=new Repeat("normscondition");
-							ruleRep.add(normactioncondition);
-							normactioncondition.add(new Var("normactioncondition",Utils.replaceBadChars(action.getType())));
-						}
-						
-						
+							for (GraphEntity action:actionCondition){		
+								Repeat normactioncondition=new Repeat("normscondition");
+								ruleRep.add(normactioncondition);
+								normactioncondition.add(new Var("normactioncondition",Utils.replaceBadChars(action.getType())));
+							}
+
+
 						GraphEntity[] deonticAction = Utils.getRelatedElements(norm,"DeonticAssignement", "DeonticAssignementtarget");
 						if (deonticAction.length==0)
 							errors.add("There should one instance of Task connected to "+norm);
@@ -305,7 +314,7 @@ ingenias.editor.extension.BasicCodeGeneratorImp {
 	public static byte[] getCheckSum(String content) throws NoSuchAlgorithmException, UnsupportedEncodingException{
 		return  MessageDigest.getInstance("MD5").digest(content.getBytes("UTF-8"));
 	}
-	
+
 	public static void storeFiles(String prefix, HashSet<File> files) throws FileNotFoundException, IOException{
 		StringBuffer filesString=new StringBuffer();
 		for (File f:files){
@@ -317,7 +326,7 @@ ingenias.editor.extension.BasicCodeGeneratorImp {
 		File lastCheckSum=new File(System.getProperty("user.home")+"/.phat/"+prefix+"checkfiles");
 		new FileOutputStream(lastCheckSum).write(filesString.toString().getBytes());
 	}
-	
+
 	public static boolean checkFiles(String prefix) throws FileNotFoundException, IOException{
 		boolean existAll=true;
 		File homeidkfolder=new File(System.getProperty("user.home")+"/.phat");
@@ -335,10 +344,10 @@ ingenias.editor.extension.BasicCodeGeneratorImp {
 		} else
 			return false;
 		return existAll;			
-		
+
 	}
-	
-	
+
+
 
 	public static byte[] getLastCheckSum(String checksumprefix) throws FileNotFoundException, IOException {
 		File homeidkfolder=new File(System.getProperty("user.home")+"/.phat");

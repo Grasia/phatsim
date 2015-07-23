@@ -364,6 +364,7 @@ public class WorldAppState extends AbstractAppState {
         this.hour = hour;
         this.minute = minute;
         this.second = second;
+        this.createCalendar();
     }
 
     public void setYear(int year) {

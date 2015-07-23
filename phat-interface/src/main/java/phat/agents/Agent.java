@@ -129,6 +129,7 @@ public abstract class Agent implements PHATAgentTick {
 
                     }
                     currentEvent.setAided(aided);
+                    currentEvent.setElapsedTime(getElapsedTimeSeconds());
 					currentEvent.setActionType(nextAutomaton.getMetadata("SOCIAALML_ENTITY_TYPE"));
                     System.out.println("Registrandoooooo2 " + currentEvent);
                     if (lastEvent == null || (lastEvent != null && !lastEvent.similar(currentEvent))) {
@@ -253,6 +254,10 @@ public abstract class Agent implements PHATAgentTick {
 
     public PHATCalendar getTime() {
         return agentsAppState.getBodiesAppState().getTime();
+    }
+    
+    public long getElapsedTimeSeconds() {
+        return agentsAppState.getPHAInterface().getElapsedSimTimeSeconds();
     }
 
     public void setAgentsAppState(AgentsAppState agentsAppState) {

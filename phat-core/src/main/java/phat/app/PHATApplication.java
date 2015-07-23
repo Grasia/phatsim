@@ -19,9 +19,11 @@
  */
 package phat.app;
 
+import java.util.concurrent.Callable;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AppState;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.scene.Spatial;
 
 /**
  *
@@ -66,8 +68,8 @@ public class PHATApplication extends SimpleApplication {
             if(bullet != null) {
                 bullet.setEnabled(false);
             }
-            
-            float tpf = timer.getTimePerFrame();
+           
+            final float tpf = timer.getTimePerFrame();
             
             if (inputEnabled) {
                 inputManager.update(tpf);
@@ -78,14 +80,24 @@ public class PHATApplication extends SimpleApplication {
 
             // render states
             stateManager.render(renderManager);
-            renderManager.render(tpf, context.isRenderable());
-            simpleRender(renderManager);
-            stateManager.postRender();
-
+            
+			// render is called in the render thread
+			// otherwise, an exception could be called
+            this.enqueue(new Callable<Spatial>() {
+            	// to avoid "java.lang.IllegalStateException: Scene graph is not properly updated for rendering."
+                public Spatial call() throws Exception {
+                    renderManager.render(tpf, context.isRenderable());
+                    simpleRender(renderManager);
+                    stateManager.postRender();
+                    return null;
+                }
+            });
         } else if(bullet != null) {
             bullet.setEnabled(true);
         }
     }
+
+
 
     public boolean isInitialized() {
         return initialized;
