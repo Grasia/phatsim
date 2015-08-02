@@ -82,7 +82,7 @@ public class AgentPHATEvent extends RemotePHATEvent implements Serializable{
 		if (object instanceof AgentPHATEvent){
 			AgentPHATEvent other=(AgentPHATEvent)object;
 			return other!=null && other.bodyPosture.equals(bodyPosture) 
-					&& other.nextActionName.equals(nextActionName) && 
+					&& other.nextActionName.equals(nextActionName) &&
 					super.equals(object);
 		}
 		return false;
@@ -116,6 +116,11 @@ public class AgentPHATEvent extends RemotePHATEvent implements Serializable{
 
 	public long getElapsedTime() {
 		return this.elapsedTime;
+		
+	}
+
+	public void setSuccess(boolean b) {
+		this.success=b;
 		
 	}
 
