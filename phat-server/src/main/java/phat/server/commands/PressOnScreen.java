@@ -49,7 +49,7 @@ public class PressOnScreen extends PHATServerCommand {
     }
 
     public PressOnScreen(String smartphoneId, int x, int y, PHATCommandListener listener) {
-        this(smartphoneId, x, y, 0, null);
+        this(smartphoneId, x, y, 0, listener);
     }
 
     public PressOnScreen(String smartphoneId, int x, int y, int duration, PHATCommandListener listener) {
