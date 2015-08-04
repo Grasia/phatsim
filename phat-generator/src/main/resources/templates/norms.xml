@@ -103,33 +103,6 @@ import sociaal.ontology.*;
 import sociaal.*;
 import sociaal.norms.*;
 
-rule "init"
-when
-then
-	insert(new Partner("system",0));
-	NormPerformanceDisplay.getInstance().addPartner("system");
-end
-
-
-rule "Clean working memory. Remove events older than 2 seconds"
-when
-		$f2: AgentPHATEvent()
-		$f1: AgentPHATEvent(time-$f2.getTime()>1200000)
-then
-		retract( $f2 ) ;
-		System.out.println("cleaning too old fact"+$f2.toString);
-end
-
-
-rule "Clean working memory. Remove time events"
-when
-		$f2: CurrentTime()
-		$f1: CurrentTime(time-$f2.getTime()>120000)
-then
-		retract( $f2 ) ;
-		System.out.println("cleaning too old fact"+$f2.toString);
-end
-
 
 /*******************************************************/
 // Norm violation detection
@@ -182,61 +155,6 @@ then
 end
 
 @@@/repeat@@@
-
-
-rule "violation display"
-when 
-	$fn: PunishmentNorm()
-then
-	NormPerformanceDisplay.getInstance().addViolation($fn);
-end
-
-/*******************************************************/
-// Punishment norms
-/*******************************************************/
-
-rule "punishment: if a punishment norm holds after with the periodicity indicated by the norm"
-	when 
-		$fn: PunishmentNorm()
-		$te: PerformPunishment(prule==$fn) 
-	then
-		$fn.performPunishment();
-		NormPerformanceDisplay.getInstance().addPunishment($fn);
-end
-
-/*******************************************************/
-// transforming events into meaningful institutional facts
-/*******************************************************/
-rule "countas: Identify participating partners"
- salience 100
-	when
- 		$ae: AgentPHATEvent()
- 		not ($pa: (Partner(id.equals($ae.id))))
-	then
-		insert( new Partner($ae.getId(),$ae.getElapsedTime()) ) ;
-		NormPerformanceDisplay.getInstance().addPartner($ae.getId());
-end
-
-rule "countas: Identify participating agents"
- salience 100
-	when
- 		$c1 : ACLMessage()
- 		not ($pa: (AgentPartner(id.equals($c1.sender.getLocalName()))))		
-	then
-		insert( new AgentPartner($c1.sender.getLocalName(),NormativeSystem.getElapsedSimTimeSeconds()))  ;
-		NormPerformanceDisplay.getInstance().addPartner($c1.sender.getLocalName());
-end
-
-
-rule "countas: action performed by an individual"
- salience 100
-	when
- 		$ae: AgentPHATEvent()
-	then
-		insertLogical( new ActionPerformed($ae.getId(),$ae.getActionType(),$ae.getElapsedTime() )) ;
-end
-
-
 
 
 @@@/text@@@
