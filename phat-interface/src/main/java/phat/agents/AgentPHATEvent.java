@@ -21,6 +21,24 @@ public class AgentPHATEvent extends RemotePHATEvent implements Serializable{
 	private String scope="";
 	private String actionType="";
 	private long elapsedTime;
+	private boolean successAction=false;
+	private boolean failureAction=false;
+	
+	public void setSuccessAction(boolean value){
+		this.successAction=value;
+	}
+	
+	public void setFailureAction(boolean value){
+		this.failureAction=value;
+	}
+	
+	public boolean isSuccessAction(){
+		return successAction;
+	}
+	
+	public boolean isFailureAction(){
+		return failureAction;
+	}
 
 	public String getActionType() {
 		return actionType;
@@ -67,7 +85,12 @@ public class AgentPHATEvent extends RemotePHATEvent implements Serializable{
 		if (object!=null && object instanceof AgentPHATEvent){
 			AgentPHATEvent other=(AgentPHATEvent)object;
 			return other.bodyPosture.equals(bodyPosture) 
-					&& other.nextActionName.equals(nextActionName) && 
+					&& other.nextActionName.equals(nextActionName) &&
+					 success==other.success &&
+					 failure==other.failure &&
+					 successAction==other.successAction &&
+					 failureAction==other.failureAction &&
+					 scope.equals(other.scope)&&
 					super.similar(object);
 		} else 
 			return false;
@@ -75,7 +98,7 @@ public class AgentPHATEvent extends RemotePHATEvent implements Serializable{
 	}
 	
 	public String toString(){
-		return "AgentPHATEvent:"+getId()+","+getTime()+","+getLocation()+","+getBodyPosture()+","+getNextActionName();
+		return "AgentPHATEvent("+getId()+","+getElapsedTime()+","+getLocation()+","+getBodyPosture()+","+getNextActionName()+",successSeq:"+success+",failureSeq:"+failure+", successAct:"+successAction+", failureAct:"+failureAction+","+scope+")";
 	}
 
 	public boolean equals(Object object){
@@ -83,6 +106,7 @@ public class AgentPHATEvent extends RemotePHATEvent implements Serializable{
 			AgentPHATEvent other=(AgentPHATEvent)object;
 			return other!=null && other.bodyPosture.equals(bodyPosture) 
 					&& other.nextActionName.equals(nextActionName) &&
+					this.similar(other) &&
 					super.equals(object);
 		}
 		return false;
@@ -93,7 +117,7 @@ public class AgentPHATEvent extends RemotePHATEvent implements Serializable{
 	@Override
 	public int hashCode() {
 		// TODO Auto-generated method stub
-		return (super.getId()+":"+super.getTime()+":"+this.getBodyPosture()+":"+this.nextActionName).hashCode();
+		return (super.getId()+":"+super.getTime()+":"+this.getBodyPosture()+":"+this.nextActionName+":"+success+" "+failure+" "+successAction+" "+failureAction+" "+scope).hashCode();
 	}
 
 	public void setAided(String aided) {
