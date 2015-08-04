@@ -59,7 +59,9 @@ public class PressOnScreenXYAutomaton extends SimpleState implements PHATCommand
     @Override
     public void commandStateChanged(PHATCommand command) {
         if (command == pressOnScreenCommand
-                && command.getState().equals(PHATCommand.State.Success)) {
+                && (
+                		command.getState().equals(PHATCommand.State.Success) ||
+                		command.getState().equals(PHATCommand.State.Fail))) {
             done = true;
         }
     }
