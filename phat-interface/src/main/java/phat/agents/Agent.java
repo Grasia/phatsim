@@ -94,30 +94,24 @@ public abstract class Agent implements PHATAgentTick {
 
                 @Override
                 public void postInit(Automaton automaton) {
-                }
-
-                @Override
-                public void nextAutomaton(Automaton previousAutomaton,
-                        Automaton nextAutomaton) {
-
                     AgentPHATEvent currentEvent = null;
                     String aided = null;
-                    Automaton result = nextAutomaton.containsStateOfKind(MoveToBodyLocAutomaton.class);
+                    Automaton result = automaton.containsStateOfKind(MoveToBodyLocAutomaton.class);
                     
                     if (result != null) {
                         aided = ((MoveToBodyLocAutomaton) result).getDestinyBodyName();
                     }
                     
-                    Automaton thereIsSuccess = nextAutomaton.containsStateWithPrefix("success_");
-                    Automaton thereIsFailure = nextAutomaton.containsStateWithPrefix("failure_");
+                    Automaton thereIsSuccess = automaton.getRootParent().containsStateWithPrefix("success_");
+                    Automaton thereIsFailure = automaton.getRootParent().containsStateWithPrefix("failure_");
                     
                    
                     	
                     
                     String waitingForAssistance = null;
 
-                    if (nextAutomaton instanceof WaitForCloseToBodyAutomaton) {
-                        waitingForAssistance = ((WaitForCloseToBodyAutomaton) nextAutomaton).getDestinyBodyName();
+                    if (automaton instanceof WaitForCloseToBodyAutomaton) {
+                        waitingForAssistance = ((WaitForCloseToBodyAutomaton) automaton).getDestinyBodyName();
                     }
 
                     if (automaton.getLeafAutomaton() != null) {
@@ -137,11 +131,21 @@ public abstract class Agent implements PHATAgentTick {
                     }
                     currentEvent.setAided(aided);
                     currentEvent.setElapsedTime(getElapsedTimeSeconds());
-					currentEvent.setActionType(nextAutomaton.getMetadata("SOCIAALML_ENTITY_TYPE"));
+                    if (automaton.getMetadata("SOCIAALML_ENTITY_TYPE")!=null && !automaton.getMetadata("SOCIAALML_ENTITY_TYPE").equals(""))                    	
+                    	currentEvent.setActionType(automaton.getMetadata("SOCIAALML_ENTITY_TYPE"));
+                    else
+                    	currentEvent.setActionType(automaton.getName());
+                    
+					currentEvent.setScope(automaton.getName());
 					 if (thereIsSuccess!=null)
 						 currentEvent.setSuccess(true);
 					 if (thereIsFailure!=null)
 						 currentEvent.setFailure(true);
+					 
+					 if (automaton.getName().toLowerCase().startsWith("success_"))
+						 currentEvent.setSuccessAction(true);
+					 if (automaton.getName().toLowerCase().startsWith("failure_"))
+						 currentEvent.setFailureAction(true);
 					
                     System.out.println("Registrandoooooo2 " + currentEvent);
                     if (lastEvent == null || (lastEvent != null && !lastEvent.similar(currentEvent))) {
@@ -151,6 +155,13 @@ public abstract class Agent implements PHATAgentTick {
                             eventListener.notifyEvent(currentEvent);
                  
                     }
+                }
+
+                @Override
+                public void nextAutomaton(Automaton previousAutomaton,
+                        Automaton nextAutomaton) {
+
+
                     nextAutomaton.addListener(this);
 
 
