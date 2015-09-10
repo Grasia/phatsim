@@ -168,19 +168,17 @@ public abstract class Automaton {
 		return null;
 	}
 
+    void notifityPostInitToListeners() {
+        for (AutomatonListener al : listeners) {
+            al.postInit(this);
+        }
+    }
 
-
-	void notifityPostInitToListeners() {
-		for (AutomatonListener al : listeners) {
-			al.postInit(this);
-		}
-	}
-
-	public void notifyNextAutomaton(Automaton nextAutomaton) {
-		for (AutomatonListener al : listeners) {
-			al.nextAutomaton(this, nextAutomaton);
-		}
-	}
+    public void notifyNextAutomaton(Automaton nextAutomaton) {
+        for (AutomatonListener al : listeners) {
+            al.nextAutomaton(this, nextAutomaton);
+        }
+    }
 
 	void notifyInterruptedAutomaton(Automaton automaton) {
 		for (AutomatonListener al : listeners) {
@@ -819,7 +817,7 @@ public abstract class Automaton {
 	 public Automaton getParent() {
 		 return parent;
 	 }
-
+	
 	public Automaton getRootParent() {
 		Automaton parent=getParent();
 		while (parent!=null && parent.getParent()!=null){

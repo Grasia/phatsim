@@ -27,9 +27,13 @@ import ingenias.generator.browser.GraphEntity;
 import ingenias.generator.datatemplate.Repeat;
 import ingenias.generator.datatemplate.Sequences;
 import ingenias.generator.datatemplate.Var;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import phat.codeproc.pd.PDGenerator;
 
 public class TaskGenerator {
-
+    final static Logger logger = Logger.getLogger(TaskGenerator.class.getName());
+    
     final static String SEQ_TASK_DIAG = "SequentialTaskDiagram";
     final static String TYPE_GET_UP_FROM_BED_TASK = "BGetUpFromBed";
     final static String TYPE_GO_INTO_BED_TASK = "GoIntoBed";
@@ -148,6 +152,28 @@ public class TaskGenerator {
                     + ".setFinishCondition(new TimerFinishedCondition(0, 0, "
                     + duration + "))" + ".setCanBeInterrupted("
                     + canBeIterrupted + ")";
+        } else if (taskGE.getType().equals("OpenTask")) {
+            GraphAttribute objGA = taskGE
+                    .getAttributeByName("OpenCloseObjField");
+            if(objGA == null || objGA.getSimpleValue().equals("")) {
+                logger.log(Level.SEVERE, "Attribute OpenCloseObjField of {0} is empty!", 
+                    new Object[]{taskGE.getID()});
+                System.exit(0);
+            }
+            return "new OpenObjectAutomaton(agent, \""
+                    + Utils.replaceBadChars(objGA.getSimpleValue()) + "\")" + "\n"
+                    + ".setCanBeInterrupted(" + canBeIterrupted + ")";
+        } else if (taskGE.getType().equals("CloseTask")) {
+            GraphAttribute objGA = taskGE
+                    .getAttributeByName("OpenCloseObjField");
+            if(objGA == null || objGA.getSimpleValue().equals("")) {
+                logger.log(Level.SEVERE, "Attribute OpenCloseObjField of {0} is empty!", 
+                    new Object[]{taskGE.getID()});
+                System.exit(0);
+            }
+            return "new CloseObjectAutomaton(agent, \""
+                    + Utils.replaceBadChars(objGA.getSimpleValue()) + "\")" + "\n"
+                    + ".setCanBeInterrupted(" + canBeIterrupted + ")";
         } else if (taskGE.getType().equals(TYPE_GO_TO_TASK)) {
             GraphAttribute ga = taskGE.getAttributeByName("SpaceToGoField");
             if (ga.getSimpleValue() != null && !ga.getSimpleValue().equals("")) {

@@ -40,6 +40,8 @@ public class AutomatonIcon implements AutomatonListener {
         iconMapping.put("DoNothing", "Textures/SociaalmlImages/behaviour/tasks/Wait.png");
         iconMapping.put("SleepAutomaton", "Textures/SociaalmlImages/behaviour/tasks/FallSleepTask.png");
         iconMapping.put("FallAutomaton", "Textures/SociaalmlImages/behaviour/tasks/Fall.png");
+        iconMapping.put("OpenObjectAutomaton", "Textures/SociaalmlImages/behaviour/tasks/Open.png");
+        iconMapping.put("CloseObjectAutomaton", "Textures/SociaalmlImages/behaviour/tasks/Close.png");
         iconMapping.put("GoIntoBedAutomaton", "Textures/SociaalmlImages/behaviour/tasks/GoIntoBed.png");
         iconMapping.put("MoveToLazyLocation", "Textures/SociaalmlImages/behaviour/tasks/GoToTask.png");
         iconMapping.put("MoveToBodyLocAutomaton", "Textures/SociaalmlImages/behaviour/tasks/GoToBodyLoc.png");

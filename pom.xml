@@ -22,9 +22,9 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:git:git://git.code.sf.net/p/phatsim/code</connection>
-        <developerConnection>scm:git:ssh://pcampillo@git.code.sf.net/p/phatsim/code</developerConnection>
-        <url>https://sourceforge.net/p/phatsim/code/ci/master/tree/</url>		
+        <connection>scm:git:git://github.com/GRASIA/phatsim.git</connection>
+        <developerConnection>scm:git:git@github.com:GRASIA/phatsim.git</developerConnection>
+        <url>https://github.com/Grasia/phatsim</url>		
     </scm>
 
     <developers>
@@ -45,8 +45,8 @@
         <developername>Pablo Campillo-Sanchez</developername>
         <developeremail>pabcampi@ucm.es</developeremail>
         <jme.version>3.0.1</jme.version>
-        <jali.version>1.0.3-SNAPSHOT</jali.version>
-        <jdos.version>1.0.3-SNAPSHOT</jdos.version>
+        <jali.version>1.0.3</jali.version>
+        <jdos.version>1.0.3</jdos.version>
     </properties>
     
     <modules>
@@ -61,16 +61,26 @@
         <module>phat-generator</module>
     </modules>
     
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>javancss-maven-plugin</artifactId>
+                <version>2.1</version>
+            </plugin>
+        </plugins>
+    </reporting>
+        
     <build>
 
-
-<plugins>
-<plugin>
-<groupId>org.apache.maven.plugins</groupId>
-<artifactId>maven-dependency-plugin</artifactId>
-<version>2.2</version>
-</plugin>
-</plugins>
+        
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>2.2</version>
+            </plugin>
+        </plugins>
 
         <pluginManagement>
             <plugins>

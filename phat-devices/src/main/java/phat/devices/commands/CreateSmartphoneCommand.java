@@ -137,4 +137,32 @@ public class CreateSmartphoneCommand extends PHATDeviceCommand {
     public Vector3f getDimensions() {
         return dimensions;
     }
+
+    public boolean isCameraSensor() {
+        return cameraSensor;
+    }
+
+    public void setCameraSensor(boolean cameraSensor) {
+        this.cameraSensor = cameraSensor;
+    }
+
+    public boolean isAccelerometerSensor() {
+        return accelerometerSensor;
+    }
+
+    public void setAccelerometerSensor(boolean accelerometerSensor) {
+        this.accelerometerSensor = accelerometerSensor;
+    }
+
+    public boolean isMicrophoneSensor() {
+        return microphoneSensor;
+    }
+
+    public void setMicrophoneSensor(boolean microphoneSensor) {
+        this.microphoneSensor = microphoneSensor;
+    }
+
+    public String getSmartphoneId() {
+        return smartphoneId;
+    }
 }

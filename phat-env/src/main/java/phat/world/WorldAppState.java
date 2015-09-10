@@ -70,6 +70,7 @@ public class WorldAppState extends AbstractAppState {
     BulletAppState bulletAppState;
     Node rootNode;
     AppSettings settings;
+    Vector3f gravity = new Vector3f(0, -9.81f, 0);
     BitmapFont guiFont;
     PHATCalendar calendar;          // Calendar that register the simulated time.
     boolean visibleCalendar = true;
@@ -329,6 +330,7 @@ public class WorldAppState extends AbstractAppState {
             //bulletAppState.getPhysicsSpace().enableDebug(assetManager); // to show the collision wireframes
         }
 
+        bulletAppState.getPhysicsSpace().setGravity(gravity);
     }
 
     public int getSpeedFactor() {
@@ -464,5 +466,13 @@ public class WorldAppState extends AbstractAppState {
 
     public void setTerrainColor(ColorRGBA terrainColor) {
         this.terrainColor = terrainColor;
+    }
+
+    public Vector3f getGravity() {
+        return gravity;
+    }
+
+    public void setGravity(Vector3f gravity) {
+        this.gravity = gravity;
     }
 }

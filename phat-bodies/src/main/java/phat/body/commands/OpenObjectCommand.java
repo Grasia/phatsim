@@ -34,6 +34,7 @@ import phat.body.control.navigation.navmesh.NavMeshMovementControl;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
+import phat.controls.FridgeDoorControl;
 import phat.util.SpatialFactory;
 import phat.util.SpatialUtils;
 
@@ -64,35 +65,46 @@ public class OpenObjectCommand extends PHATCommand {
 
         Node body = bodiesAppState.getBody(bodyId);
 
-        if (body != null && body.getParent() != null) {
-            Spatial object = SpatialUtils.getSpatialById(
-                    SpatialFactory.getRootNode(), objectId);
-            String role = object.getUserData("ROLE");
-            if (role != null
-                    && object.getWorldTranslation().distance(body.getWorldTranslation()) < minDistanceToAction) {
-                if (role.equals("WC") || role.equals("Doorbell")) {
-                    Spatial s = ((Node) object).getChild("AudioNode");
-                    if (s != null && s instanceof AudioNode) {
-                        AudioNode an = (AudioNode) s;
-                        an.setLooping(false);
-                        an.play();
-                    }
-                } else {
-                    Spatial s = ((Node) object).getChild("AudioNode");
-                    if (s != null && s instanceof AudioNode) {
-                        AudioNode an = (AudioNode) s;
-                        an.setLooping(true);
-                        an.play();
+        Spatial object = SpatialUtils.getSpatialById(
+                SpatialFactory.getRootNode(), objectId);
+        String role = object.getUserData("ROLE");
+        if (role != null
+                && (body == null || object.getWorldTranslation().distance(body.getWorldTranslation()) < minDistanceToAction)) {
+            if (role.equals("WC") || role.equals("Doorbell")) {
+                Spatial s = ((Node) object).getChild("AudioNode");
+                if (s != null && s instanceof AudioNode) {
+                    AudioNode an = (AudioNode) s;
+                    an.setLooping(false);
+                    an.play();
+                }
+            } else {
+                Spatial s = ((Node) object).getChild("AudioNode");
+                if (s != null && s instanceof AudioNode) {
+                    AudioNode an = (AudioNode) s;
+                    an.setLooping(true);
+                    an.play();
+                }
+            }
+            ParticleEmitter emitter = (ParticleEmitter) ((Node) object).getChild("Emitter");
+            if (emitter != null) {
+                emitter.setEnabled(true);
+                emitter.setCullHint(Spatial.CullHint.Inherit);
+            }
+            if (role.equals("Fridge")) {
+                Node fridge = object.getParent();
+                if (fridge.getChild("Hinge") != null) {
+                    FridgeDoorControl control = fridge.getChild("Hinge").getControl(FridgeDoorControl.class);
+                    if (control != null) {
+                        control.setState(FridgeDoorControl.STATE.OPEN);
+                        setState(State.Success);
+                        return;
                     }
                 }
-                ParticleEmitter emitter = (ParticleEmitter) ((Node) object).getChild("Emitter");
-                if (emitter != null) {
-                    emitter.setEnabled(true);
-                    emitter.setCullHint(Spatial.CullHint.Inherit);
-                }
-                setState(State.Success);
+                setState(State.Fail);
                 return;
             }
+            setState(State.Success);
+            return;
         }
         setState(State.Fail);
     }

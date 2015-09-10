@@ -37,7 +37,7 @@ import java.util.logging.Logger;
 import phat.codeproc.pd.PDGenerator;
 
 public class ActivityGenerator {
-    final static Logger logger = Logger.getLogger(PDGenerator.class.getName());
+    final static Logger logger = Logger.getLogger(ActivityGenerator.class.getName());
     
     static final String ADL_SPEC_DIAGRAM = "ADLSpecDiagram";
     static final String ACTIVITY_DIAGRAM = "ActivityDiagram";

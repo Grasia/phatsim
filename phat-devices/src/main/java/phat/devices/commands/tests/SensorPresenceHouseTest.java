@@ -82,7 +82,7 @@ public class SensorPresenceHouseTest implements PHATInitAppListener, PHATCommand
         AppSettings settings = new AppSettings(true);
         settings.setTitle("PHAT");
         settings.setWidth(1280);
-        settings.setHeight(960);
+        settings.setHeight(720);
         phat.setSettings(settings);
         phat.start();
     }

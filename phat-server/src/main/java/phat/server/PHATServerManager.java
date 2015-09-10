@@ -36,11 +36,13 @@ import phat.mobile.servicemanager.services.Service;
 import phat.mobile.servicemanager.services.ServiceImpl;
 import phat.sensors.accelerometer.AccelerometerControl;
 import phat.sensors.camera.CameraSensor;
+import phat.sensors.door.PHATDoorSensor;
 import phat.server.microphone.TCPAudioMicroServer;
 import phat.sensors.microphone.MicrophoneControl;
 import phat.sensors.presence.PHATPresenceSensor;
 import phat.server.accelerometer.TCPAccelerometerServer;
 import phat.server.camera.TCPCameraSensorServer;
+import phat.server.doorSensor.TCPDoorSensorServer;
 import phat.server.presence.TCPPresenceServer;
 
 /**
@@ -124,6 +126,26 @@ public class PHATServerManager {
         }
 
         registerService(id, ams, Service.PRESENCE);
+
+        ams.start();
+
+        add(id, ams);
+
+        return ams;
+    }
+    
+    public TCPDoorSensorServer createAndStartDoorSensorServer(String id, PHATDoorSensor doorSensor) {
+        TCPDoorSensorServer ams = null;
+        int port = ServiceManagerServer.getInstance().getNextPort();
+        try {
+            System.out.println("IP:PORT -> " + inetAddress + ":" + port);
+            ams = new TCPDoorSensorServer(inetAddress, port, doorSensor);
+        } catch (IOException ex) {
+            Logger.getLogger(PHATServerManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+
+        registerService(id, ams, Service.DOOR);
 
         ams.start();
 

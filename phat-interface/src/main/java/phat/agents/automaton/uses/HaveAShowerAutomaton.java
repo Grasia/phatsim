@@ -119,7 +119,7 @@ public class HaveAShowerAutomaton extends SimpleState implements PHATCommandList
                 return targetSpatial.getWorldTranslation();
             }
         }, this);
-        goIntoShower.setMinDistance(0.05f);
+        goIntoShower.setMinDistance(0.1f);
         agent.runCommand(goIntoShower);
     }
 }

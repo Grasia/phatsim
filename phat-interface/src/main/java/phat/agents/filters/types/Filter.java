@@ -40,7 +40,7 @@ public abstract class Filter {
         if(checkCondition(agent, automaton)) {
             System.out.println("Condition ok!");
             result = apply(agent, automaton);
-            System.out.println("result = "+result.toString());
+            System.out.println("result = "+result);
             if(nextFilter != null) {
                 //System.out.println("nextFilter...");
                 return nextFilter.process(agent, result);

@@ -34,6 +34,7 @@ import phat.body.control.physics.PHATCharacterControl;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
+import phat.controls.FridgeDoorControl;
 import phat.util.SpatialFactory;
 import phat.util.SpatialUtils;
 
@@ -80,17 +81,30 @@ public class CloseObjectCommand extends PHATCommand {
                     AudioNode an = (AudioNode) s;
                     an.stop();
                 }
+                if (rol.equals("Fridge")) {
+                    Node fridge = object.getParent();
+                    if (fridge.getChild("Hinge") != null) {
+                        FridgeDoorControl control = fridge.getChild("Hinge").getControl(FridgeDoorControl.class);
+                        if (control != null) {
+                            control.setState(FridgeDoorControl.STATE.CLOSE);
+                            setState(State.Success);
+                            return;
+                        }
+                    }
+                    setState(State.Fail);
+                    return;
+                }
                 setState(State.Success);
                 return;
             }
         }
         setState(State.Fail);
     }
-    
+
     @Override
-	public void interruptCommand(Application app) {
-    	setState(State.Interrupted);
-	}
+    public void interruptCommand(Application app) {
+        setState(State.Interrupted);
+    }
 
     @Override
     public String toString() {

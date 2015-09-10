@@ -102,8 +102,8 @@ public class CameraSensorAppTest extends SimpleScenario {
     
     @Override
     public void createOtherObjects() {
-        createSmartphone("Smartphone1", new Vector3f(0f, 5f, 0f), ColorRGBA.Pink);
-        createSmartphone("Smartphone2", new Vector3f(0f, 5f, 2f), ColorRGBA.Cyan);
+        createSmartphone("PinkDevice", new Vector3f(0f, 5f, 0f), ColorRGBA.Pink);
+        createSmartphone("BlueDevice", new Vector3f(0f, 5f, 2f), ColorRGBA.Cyan);
     }
     
     private void createSmartphone(String smartphoneId, Vector3f loc, ColorRGBA color) {
@@ -112,6 +112,8 @@ public class CameraSensorAppTest extends SimpleScenario {
         Geometry geo = SpatialFactory.createCube(Vector3f.UNIT_XYZ.mult(0.1f), color);
         smartphone.attachChild(geo);
 
+        Debug.attachCoordinateAxes(Vector3f.ZERO, 0.5f, assetManager, smartphone);
+        
         RigidBodyControl rbc = new RigidBodyControl(1);
         smartphone.addControl(rbc);
         
@@ -148,6 +150,7 @@ public class CameraSensorAppTest extends SimpleScenario {
         cp.add(cameraFrame);
         
         JFrame frame = new JFrame();
+        frame.setTitle("Camera of "+smartphoneId);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(480, 800);
         frame.setVisible(true);

@@ -26,6 +26,8 @@ import phat.PHATInterface;
 import phat.agents.Agent;
 import phat.agents.automaton.Automaton;
 import phat.agents.automaton.AutomatonListener;
+import phat.agents.automaton.DoNothing;
+import phat.agents.automaton.conditions.TimerFinishedCondition;
 import phat.agents.filters.types.Filter;
 import phat.body.commands.SetStoopedBodyCommand;
 
@@ -83,10 +85,15 @@ public class DiseaseManager implements AutomatonListener {
     @Override
     public void nextAutomaton(Automaton previousAutomaton, Automaton nextAutomaton) {
         if (!Filter.hasBeenFiltered(nextAutomaton)) {
-            Automaton alternative = nextAutomaton;
+            Automaton alternative;
             for (Symptom symptom : symptomMap.values()) {
                 alternative = symptom.processFilters(agent, nextAutomaton);
-                if (!alternative.equals(nextAutomaton)) {
+                if(alternative == null) {
+                    Filter.markFiltered(nextAutomaton);
+                    nextAutomaton.getParent().replaceCurrentAutomaton(
+                            new DoNothing(agent, stage).setFinishCondition(new TimerFinishedCondition(0, 0, 1)));
+                    return;
+                } else if (!alternative.equals(nextAutomaton)) {
                     nextAutomaton.getParent().replaceCurrentAutomaton(alternative);
                     nextAutomaton = alternative;
                 }

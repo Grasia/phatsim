@@ -36,7 +36,9 @@ import phat.agents.automaton.UseObjectAutomaton;
 import phat.agents.automaton.conditions.TimerFinishedCondition;
 import phat.agents.automaton.uses.UseDoorbellAutomaton;
 import phat.body.BodiesAppState;
+import phat.body.commands.CreateBodyTypeCommand;
 import phat.body.commands.SetBodyHeightCommand;
+import phat.body.commands.SetBodyInHouseSpaceCommand;
 import phat.body.commands.SetPCListenerToBodyCommand;
 import phat.body.commands.SetStoopedBodyCommand;
 import phat.body.commands.TremblingHandCommand;
@@ -64,6 +66,7 @@ public class MainPHATSimulation implements PHATInitializer {
     public static void main(String[] args) {
         MainPHATSimulation sim = new MainPHATSimulation();
         PHATInterface phat = new PHATInterface(sim);
+        phat.setSeed(0);
         phat.start();
     }
 
@@ -83,7 +86,7 @@ public class MainPHATSimulation implements PHATInitializer {
     @Override
     public void initBodies(BodyConfigurator bodyConfig) {
         bodyConfig.createBody(BodiesAppState.BodyType.ElderLP, "Relative");        
-        bodyConfig.setInSpace("Relative", "House1", "BedRoom1");
+        bodyConfig.runCommand(new SetBodyInHouseSpaceCommand("Relative", "House1", "BedRoom1"));
         bodyConfig.runCommand(new TremblingHeadCommand("Relative", true));
         bodyConfig.runCommand(new SetStoopedBodyCommand("Relative", true));
         bodyConfig.runCommand(new TremblingHandCommand("Relative", true, true));

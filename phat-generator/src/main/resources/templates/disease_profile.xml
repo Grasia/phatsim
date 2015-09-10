@@ -33,7 +33,8 @@ public class @@@v@@@dpName@@@/v@@@_@@@v@@@actorname@@@/v@@@ extends DiseaseManag
 	        @@@v@@@symptomName@@@/v@@@.setCurrentLevel(@@@v@@@symptomLevel@@@/v@@@);
 	  @@@repeat id="createFiltersSeq"@@@{
 //begin createFiltersSeq
-		    @@@repeat id="FUnableFilter"@@@ @@@/repeat@@@
+		    @@@repeat id="FUnableFilter"@@@UnableFilter @@@v@@@filterName@@@/v@@@ = new UnableFilter();
+                    @@@v@@@filterName@@@/v@@@.setCondition(@@@v@@@filterCond@@@/v@@@);@@@/repeat@@@
 		    @@@repeat id="FChangeToolFilter"@@@ @@@/repeat@@@
 		    @@@repeat id="FChangeTargetObjFilter"@@@ @@@/repeat@@@
 		    @@@repeat id="FReplaceTaskFilter"@@@ReplaceTaskFilter @@@v@@@filterName@@@/v@@@ = new ReplaceTaskFilter().setTask(@@@v@@@taskSentenceClass@@@/v@@@);

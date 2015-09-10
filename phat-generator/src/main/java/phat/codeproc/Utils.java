@@ -60,7 +60,7 @@ public class Utils {
      */
     public static String replaceBadChars(String string) {
         return string.replace(' ', '_').replace(',', '_').replace('.', '_')
-                .replace('-', '_');
+                .replace('-', '_').trim().replace("\n", "");
     }
 
     public static GraphEntity getProfileTypeOf(String humanId, String profileType, Browser browser) {
