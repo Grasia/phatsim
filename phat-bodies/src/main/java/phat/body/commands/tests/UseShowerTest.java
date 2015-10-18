@@ -83,19 +83,20 @@ public class UseShowerTest implements PHATInitAppListener {
         seAPI = SpatialEnvironmentAPI.createSpatialEnvironmentAPI(app);
 
         seAPI.getWorldAppState().setCalendar(2013, 1, 1, 12, 0, 0);
-        seAPI.getWorldAppState().setLandType(WorldAppState.LandType.TwoHouses);
-        seAPI.getHouseAppState().runCommand(new CreateHouseCommand("House1", HouseFactory.HouseType.House3room2bath));
+        seAPI.getWorldAppState().setLandType(WorldAppState.LandType.Basic);
+        seAPI.getHouseAppState().runCommand(new CreateHouseCommand("House1", HouseFactory.HouseType.BrickHouse60m));
         
 
         bodiesAppState = new BodiesAppState();
         stateManager.attach(bodiesAppState);
 
         bodiesAppState.createBody(BodiesAppState.BodyType.Elder, "Patient");
-        bodiesAppState.setInSpace("Patient", "House1", "BedRoom1RightSide");
+        bodiesAppState.setInSpace("Patient", "House1", "Kitchen");
         //haveAShower();
         //sitDown("WC1");
-        //goToUse("Sink");
-        bodiesAppState.runCommand(new GoToSpaceCommand("Patient", "Hall"));
+        goToUse("WC1");
+        //bodiesAppState.runCommand(new GoToSpaceCommand("Patient", "Kitchen"));
+        //sitDown("Sofa3Seats");
         bodiesAppState.runCommand(new TremblingHeadCommand("Patient", true));
         bodiesAppState.runCommand(new TremblingHandCommand("Patient", true, true));
         bodiesAppState.runCommand(new TremblingHandCommand("Patient", true, false));
@@ -128,7 +129,7 @@ public class UseShowerTest implements PHATInitAppListener {
                 }
             }
         });
-        gtc.setMinDistance(0.05f);
+        gtc.setMinDistance(0.1f);
         bodiesAppState.runCommand(gtc);
     }
     private void finishUseWC() {

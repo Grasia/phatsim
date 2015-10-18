@@ -146,13 +146,20 @@ public class SimulationGenerator {
     public void generateWorldInitialization(String simId, Graph simDiags,
             Repeat rep) throws NullEntity, NotFound {
         GraphEntity ge = getEntity(simDiags, "WorldInitialization");
-        GraphAttribute world = ge.getAttributeByName("SimulationSeedField");
+        GraphAttribute seedworld = ge.getAttributeByName("SimulationSeedField");
         
         String seedValue = "0";
-        if(world != null && !world.getSimpleValue().equals("")) {
-            seedValue = world.getSimpleValue();            
+        if(seedworld != null && !seedworld.getSimpleValue().equals("")) {
+            seedValue = seedworld.getSimpleValue();            
         }
         rep.add(new Var("seedValue", seedValue));
+        
+        GraphAttribute houseType = ge.getAttributeByName("HouseTypeField");
+        String houseTypeString = "House3room2bath";
+        if(houseType != null && !houseType.getSimpleValue().equals("")) {
+            houseTypeString = houseType.getSimpleValue();            
+        }
+        rep.add(new Var("houseType", houseTypeString));
         
         GraphEntity iniDate = Utils.getTargetEntity(ge, "InitialDate");
         if (iniDate == null) {

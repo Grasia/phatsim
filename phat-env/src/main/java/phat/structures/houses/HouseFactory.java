@@ -30,7 +30,7 @@ public class HouseFactory {
      */
     public enum HouseType {
 
-        House3room2bath, Duplex
+        House3room2bath, Duplex, BrickHouse60m
     }
 
     public static House createHouse(String houseId, HouseType type) {
@@ -42,6 +42,9 @@ public class HouseFactory {
                 break;
             case Duplex:
                 house = new House(houseId, "Scenes/Structures/Houses/Duplex_A_20110505ifc/Duplex_A_20110505.ifc.j3o");
+                break;
+            case BrickHouse60m:
+                house = new House(houseId, "Scenes/Structures/Houses/WoodenHouse/BrickHouse60m.j3o");
                 break;
         }
         return house;

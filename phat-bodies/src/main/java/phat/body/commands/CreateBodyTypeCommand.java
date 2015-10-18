@@ -69,7 +69,7 @@ public class CreateBodyTypeCommand extends PHATCommand {
         
         PHATCharacterControl phatCharacterControl = body.getControl(PHATCharacterControl.class);
         if(phatCharacterControl == null) {
-            phatCharacterControl = new PHATCharacterControl(0.2f, 1.9f, 80f);
+            phatCharacterControl = new PHATCharacterControl(0.2f, 1.7f, 80f);
             body.addControl(phatCharacterControl);
         }
         

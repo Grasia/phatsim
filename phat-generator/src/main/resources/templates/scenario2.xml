@@ -50,7 +50,7 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
 
     @Override
     public void initHouse(HouseConfigurator houseConfig) {
-        houseConfig.addHouseType("House1", HouseFactory.HouseType.House3room2bath);
+        houseConfig.addHouseType("House1", HouseFactory.HouseType.@@@v@@@houseType@@@/v@@@);
     }
 
     @Override

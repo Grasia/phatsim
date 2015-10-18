@@ -43,12 +43,12 @@ import com.jme3.scene.control.Control;
 public class PHATCharacterControl extends BetterCharacterControl implements Control {
 
     public PHATCharacterControl() {
-        super(0.25f, 1.9f, 80f);
+        super(0.25f, 1.7f, 80f);
     }
 
     public PHATCharacterControl(float radius, float height, float mass) {
         super(radius, height, mass);
-        setJumpForce(new Vector3f(0f, mass / 20f, 0f));
+        //setJumpForce(new Vector3f(0f, mass / 20f, 0f));
     }
 
     private KinematicRagdollControl getKinematicRagdollControl() {
@@ -63,16 +63,16 @@ public class PHATCharacterControl extends BetterCharacterControl implements Cont
         if (isEnabled()) {
             getKinematicRagdollControl().setEnabled(false);
             if (location.distance(lastLocation) < 0.001f
-                    && walkDirection.length() > 0.1f) {
+                    && walkDirection.length() != 0f) {
                 //setGravity(new Vector3f(0f, 1f, 0f));
                 time += tpf;
                 if (time > 0.5f) {
                     //setGravity(new Vector3f(0f, -0.1f, 0f));
-                    jump = true;
+                    System.out.println("JUMP!!");
+                    jump();
+                    time = 0f;
                 }
             } else {
-                jump = false;
-                //setGravity(new Vector3f(0f, -9.8f, 0f));
                 time = 0f;
             }
             lastLocation.set(location);
