@@ -54,28 +54,12 @@ public class PHATCharacterControl extends BetterCharacterControl implements Cont
     private KinematicRagdollControl getKinematicRagdollControl() {
         return spatial.getControl(KinematicRagdollControl.class);
     }
-    Vector3f lastLocation = new Vector3f();
-    float time = 0f;
-
+    
     @Override
     public void update(float tpf) {
         super.update(tpf);
         if (isEnabled()) {
             getKinematicRagdollControl().setEnabled(false);
-            if (location.distance(lastLocation) < 0.001f
-                    && walkDirection.length() != 0f) {
-                //setGravity(new Vector3f(0f, 1f, 0f));
-                time += tpf;
-                if (time > 0.5f) {
-                    //setGravity(new Vector3f(0f, -0.1f, 0f));
-                    System.out.println("JUMP!!");
-                    jump();
-                    time = 0f;
-                }
-            } else {
-                time = 0f;
-            }
-            lastLocation.set(location);
         }
     }
 

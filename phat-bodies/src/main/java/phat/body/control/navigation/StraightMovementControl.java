@@ -109,11 +109,13 @@ public class StraightMovementControl extends AbstractControl implements Autonomo
             }
 
             move(tpf);
+            jumpIfNecessary(tpf);
         } else {
             hidePath();
             spatial.removeControl(this);
         }
     }
+    
     Vector3f currentDir = new Vector3f();
     Vector3f targetDir = new Vector3f();
     Vector3f diff = new Vector3f();
@@ -134,6 +136,26 @@ public class StraightMovementControl extends AbstractControl implements Autonomo
         characterControl.setViewDirection(effectDir);
         effectDir.mult(getSpeed(diff, distanceToTarget), aux);
         characterControl.setWalkDirection(aux);
+    }
+
+    Vector3f lastLocation = new Vector3f();
+    float timeToJump = 1f;
+    
+    private void jumpIfNecessary(float tpf) {
+        if (characterLocation.distance(lastLocation) < 0.001f
+                && effectDir.length() != 0.2f) {
+            //setGravity(new Vector3f(0f, 1f, 0f));
+            timeToJump -= tpf;
+            if (timeToJump <= 0f) {
+                //setGravity(new Vector3f(0f, -0.1f, 0f));
+                System.out.println("JUMP!!");
+                spatial.getControl(PHATCharacterControl.class).jump();
+                timeToJump = 1f;
+            }
+        } else {
+            timeToJump = 1f;
+        }
+        lastLocation.set(characterLocation);
     }
 
     private float getSpeed(Vector3f angleDiff, Vector3f distanceToTarget) {
