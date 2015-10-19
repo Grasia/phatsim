@@ -80,11 +80,28 @@ public class CreateSmartphoneTest implements PHATInitAppListener {
         devicesAppState = new DevicesAppState();
         stateManager.attach(devicesAppState);
 
-        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone1"));
-        devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone1", "House1", "Table1"));
+        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone11"));
+        devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone11", "House1", "Table1"));
+        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone12"));
+        devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone12", "House1", "Table1"));
+        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone13"));
+        devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone13", "House1", "Table1"));
+        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone14"));
+        devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone14", "House1", "Table1"));
+        
+        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone31"));
+        devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone31", "House1", "Table2"));
+        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone32"));
+        devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone32", "House1", "Table2"));
+        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone33"));
+        devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone33", "House1", "Table2"));
+        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone34"));
+        devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone34", "House1", "Table2"));
         
         devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone2"));
         devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone2", "House1", "Microwave"));
+        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone21"));
+        devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone21", "House1", "Microwave"));
         
         devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone3"));
         devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone3", "House1", "Sofa3Seats"));
@@ -103,5 +120,15 @@ public class CreateSmartphoneTest implements PHATInitAppListener {
         
         devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone8"));
         devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone8", "House1", "Sofa3Seats"));
+        
+        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone81"));
+        devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone81", "House1", "Basin1"));
+        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone82"));
+        devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone82", "House1", "Basin1"));
+        
+        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone83"));
+        devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone83", "House1", "WC1"));
+        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone84"));
+        devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone84", "House1", "WC1"));
     }
 }
