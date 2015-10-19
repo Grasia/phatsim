@@ -65,11 +65,12 @@ public class SetDeviceOnFurnitureCommand extends PHATDeviceCommand {
 
         if (device != null && device.getParent() == null) {
             List<Node> places = houseAppState.getHouse(houseId).getPlaceToPutThings(furnitureId);
+            System.out.println("Available places in "+furnitureId+" are "+places.size());
             if (!places.isEmpty()) {
                 device.setLocalTranslation(Vector3f.ZERO);
                 
                 device.getControl(RigidBodyControl.class).setPhysicsLocation(places.get(0).getWorldTranslation().addLocal(0f, 0.015f, 0f));                
-                device.getControl(RigidBodyControl.class).setPhysicsRotation(new Quaternion().fromAngles(FastMath.HALF_PI, 0f, 0f));
+                device.getControl(RigidBodyControl.class).setPhysicsRotation(new Quaternion().fromAngles(-FastMath.HALF_PI, 0f, 0f));
                 
                 PhysicsUtils.setHighPhysicsPrecision(device);
                 bulletAppState.getPhysicsSpace().addAll(device);

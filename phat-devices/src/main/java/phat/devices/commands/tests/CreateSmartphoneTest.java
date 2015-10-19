@@ -74,7 +74,7 @@ public class CreateSmartphoneTest implements PHATInitAppListener {
 
         seAPI.getWorldAppState().setCalendar(2013, 1, 1, 12, 0, 0);
         seAPI.getWorldAppState().setLandType(WorldAppState.LandType.Basic);
-        seAPI.getHouseAppState().runCommand(new CreateHouseCommand("House1", HouseFactory.HouseType.House3room2bath));
+        seAPI.getHouseAppState().runCommand(new CreateHouseCommand("House1", HouseFactory.HouseType.BrickHouse60m));
         
 
         devicesAppState = new DevicesAppState();
@@ -83,5 +83,25 @@ public class CreateSmartphoneTest implements PHATInitAppListener {
         devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone1"));
         devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone1", "House1", "Table1"));
         
+        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone2"));
+        devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone2", "House1", "Microwave"));
+        
+        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone3"));
+        devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone3", "House1", "Sofa3Seats"));
+        
+        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone4"));
+        devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone4", "House1", "Sofa3Seats"));  
+        
+        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone5"));
+        devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone5", "House1", "Sofa3Seats"));
+        
+        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone6"));
+        devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone6", "House1", "Sofa3Seats"));
+        
+        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone7"));
+        devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone7", "House1", "Sofa3Seats"));
+        
+        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone8"));
+        devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone8", "House1", "Sofa3Seats"));
     }
 }
