@@ -42,6 +42,7 @@ public class SetDeviceOnFurnitureCommand extends PHATDeviceCommand {
     private String deviceId;
     private String houseId;
     private String furnitureId;
+    private String placeId;
 
     public SetDeviceOnFurnitureCommand(String smartphoneId, String houseId, String furnitureId) {
         this(smartphoneId, houseId, furnitureId, null);
@@ -65,23 +66,53 @@ public class SetDeviceOnFurnitureCommand extends PHATDeviceCommand {
 
         if (device != null && device.getParent() == null) {
             List<Node> places = houseAppState.getHouse(houseId).getPlaceToPutThings(furnitureId);
-            System.out.println("Available places in "+furnitureId+" are "+places.size());
             if (!places.isEmpty()) {
+                Node place = null;
+                if (placeId != null) {
+                    place = getNodeWithName(places, placeId);
+                    if (place == null) {
+                        setState(State.Fail);
+                        return;
+                    }
+                }
+                
+                if(placeId == null) {
+                    place = places.get(0);
+                }
+                
                 device.setLocalTranslation(Vector3f.ZERO);
-                
-                device.getControl(RigidBodyControl.class).setPhysicsLocation(places.get(0).getWorldTranslation().addLocal(0f, 0.015f, 0f));                
+
+                device.getControl(RigidBodyControl.class).setPhysicsLocation(place.getWorldTranslation().addLocal(0f, 0.015f, 0f));
                 device.getControl(RigidBodyControl.class).setPhysicsRotation(new Quaternion().fromAngles(-FastMath.HALF_PI, 0f, 0f));
-                
+
                 PhysicsUtils.setHighPhysicsPrecision(device);
                 bulletAppState.getPhysicsSpace().addAll(device);
-                
-                places.get(0).attachChild(device);
+
+                place.attachChild(device);
                 //device.getControl(RigidBodyControl.class).setPhysicsLocation(places.get);
                 setState(State.Success);
                 return;
             }
         }
         setState(State.Fail);
+    }
+
+    private Node getNodeWithName(List<Node> places, String placeName) {
+        for (Node n : places) {
+            if (n.getName().equals(placeName)) {
+                return n;
+            }
+        }
+        return null;
+    }
+
+    public String getPlaceId() {
+        return placeId;
+    }
+
+    public SetDeviceOnFurnitureCommand setPlaceId(String placeId) {
+        this.placeId = placeId;
+        return this;
     }
 
     @Override
@@ -91,6 +122,6 @@ public class SetDeviceOnFurnitureCommand extends PHATDeviceCommand {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + deviceId + ", " + houseId + ", " + furnitureId + ")";
+        return getClass().getSimpleName() + "(" + deviceId + ", " + houseId + ", " + furnitureId + ", " + placeId + ")";
     }
 }
