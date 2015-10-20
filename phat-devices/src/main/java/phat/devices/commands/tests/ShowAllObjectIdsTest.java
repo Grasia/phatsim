@@ -62,17 +62,43 @@ public class ShowAllObjectIdsTest implements PHATInitAppListener {
     private static final Logger logger = Logger.getLogger(TestHouse.class.getName());
     DevicesAppState devicesAppState;
     SpatialEnvironmentAPI seAPI;
+    static HouseFactory.HouseType type = HouseFactory.HouseType.House3room2bath;
 
     public static void main(String[] args) {
-        ShowAllObjectIdsTest test = new ShowAllObjectIdsTest();
-        PHATApplication phat = new PHATApplication(test);
-        phat.setDisplayFps(true);
-        AppSettings settings = new AppSettings(true);
-        settings.setWidth(1280);
-        settings.setHeight(720);
-        phat.setSettings(settings);
-        phat.setDisplayStatView(false);
-        phat.start();
+        if (checkArgs(args)) {
+            ShowAllObjectIdsTest test = new ShowAllObjectIdsTest();
+            PHATApplication phat = new PHATApplication(test);
+            phat.setDisplayFps(true);
+            AppSettings settings = new AppSettings(true);
+            settings.setWidth(1280);
+            settings.setHeight(720);
+            phat.setSettings(settings);
+            phat.setDisplayStatView(false);
+            phat.start();
+        }
+    }
+
+    private static boolean checkArgs(String[] args) {
+        if (args.length == 1) {
+            type = HouseFactory.HouseType.valueOf(args[0]);
+            if(type != null) {
+                return true;
+            }
+        }
+        HouseFactory.HouseType [] validValues = HouseFactory.HouseType.values();
+        System.out.println("");
+        System.out.println("------------------------------------------------------");
+        System.out.print("Valid argument values: ");
+        for(HouseFactory.HouseType ht: validValues) {
+            System.out.print(ht.name());
+            if(ht != validValues[validValues.length-1]) {
+                System.out.print(", ");
+            }
+        }
+        System.out.println("");
+        System.out.println("------------------------------------------------------");
+        System.out.println("");
+        return false;
     }
 
     @Override
@@ -92,8 +118,7 @@ public class ShowAllObjectIdsTest implements PHATInitAppListener {
 
         seAPI.getWorldAppState().setCalendar(2013, 1, 1, 12, 0, 0);
         seAPI.getWorldAppState().setLandType(WorldAppState.LandType.Basic);
-        seAPI.getHouseAppState().runCommand(new CreateHouseCommand("House1", HouseFactory.HouseType.House3room2bath, new PHATCommandListener() {
-
+        seAPI.getHouseAppState().runCommand(new CreateHouseCommand("House1", type, new PHATCommandListener() {
             @Override
             public void commandStateChanged(PHATCommand command) {
                 showLabels();
@@ -104,7 +129,7 @@ public class ShowAllObjectIdsTest implements PHATInitAppListener {
 
         devicesAppState = new DevicesAppState();
         stateManager.attach(devicesAppState);
-        
+
     }
 
     private void showLabels() {
