@@ -211,6 +211,13 @@ public class SimulationGenerator {
                     Repeat setLocRep = new Repeat("setLocFurniture");
                     createSPRep.add(setLocRep);
                     setLocRep.add(new Var("furId", loc.getID()));
+                } else if (loc.getType().equals("InitialPreDefPos")) {
+                    Repeat setLocRep = new Repeat("setPreDefPos");
+                    createSPRep.add(setLocRep);
+                    String elementId = loc.getAttributeByName("ElementIdField").getSimpleValue();
+                    String preDefPos = loc.getAttributeByName("PreDefPosNameField").getSimpleValue();
+                    setLocRep.add(new Var("elementId", elementId));
+                    setLocRep.add(new Var("preDefPos", preDefPos));
                 }
             }
         }

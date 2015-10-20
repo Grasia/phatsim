@@ -84,7 +84,9 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
         @@@repeat id="setLocPartOfBody"@@@
         deviceConfig.runCommand(new SetDeviceOnPartOfBodyCommand("@@@v@@@humanId@@@/v@@@","@@@v@@@SPname@@@/v@@@", SetDeviceOnPartOfBodyCommand.PartOfBody.@@@v@@@partOfBody@@@/v@@@));@@@/repeat@@@
         @@@repeat id="setLocFurniture"@@@
-        deviceConfig.runCommand(new SetDeviceOnFurnitureCommand("@@@v@@@SPname@@@/v@@@", "House1", "@@@v@@@furId@@@/v@@@"));@@@/repeat@@@@@@/repeat@@@
+        deviceConfig.runCommand(new SetDeviceOnFurnitureCommand("@@@v@@@SPname@@@/v@@@", "House1", "@@@v@@@furId@@@/v@@@"));@@@/repeat@@@
+        @@@repeat id="setPreDefPos"@@@
+        deviceConfig.runCommand(new SetDeviceOnFurnitureCommand("@@@v@@@SPname@@@/v@@@", "House1", "@@@v@@@elementId@@@/v@@@").setPlaceId("@@@v@@@preDefPos@@@/v@@@"));@@@/repeat@@@@@@/repeat@@@
         
     }
     
