@@ -31,6 +31,10 @@ import java.util.logging.Logger;
 
 import phat.app.PHATApplication;
 import phat.app.PHATInitAppListener;
+import phat.body.commands.ShowLabelsOfVisibleObjectsCommand;
+import phat.commands.PHATCommand;
+import phat.commands.PHATCommandListener;
+import phat.commands.ShowLabelOfObjectById;
 import phat.devices.DevicesAppState;
 import phat.devices.commands.CreateSmartphoneCommand;
 import phat.devices.commands.SetDeviceOnFurnitureCommand;
@@ -80,7 +84,12 @@ public class CreateSmartphoneTest implements PHATInitAppListener {
         devicesAppState = new DevicesAppState();
         stateManager.attach(devicesAppState);
 
-        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone11"));
+        devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone11", new PHATCommandListener() {
+            @Override
+            public void commandStateChanged(PHATCommand command) {
+                seAPI.getHouseAppState().runCommand(new ShowLabelOfObjectById("Table1", true));
+            }
+        }));
         devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone11", "House1", "Table1"));
         devicesAppState.runCommand(new CreateSmartphoneCommand("Smartphone12"));
         devicesAppState.runCommand(new SetDeviceOnFurnitureCommand("Smartphone12", "House1", "Table1"));
