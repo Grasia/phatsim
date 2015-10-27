@@ -73,18 +73,18 @@ public class SetAndroidEmulatorCommand extends PHATServerCommand {
 
             CameraSensor cameraSensor = device.getControl(CameraSensor.class);
             if (cameraSensor != null) {
-                TCPCameraSensorServer cameraServer = serverAppState.getServerManager().createAndStartCameraServer(avdId, cameraSensor);
+                TCPCameraSensorServer cameraServer = serverAppState.getServerManager().createAndStartCameraServer(smartphoneId, cameraSensor);
                 cameraServer.setRate(1f);
                 }
 
             MicrophoneControl micSensor = device.getControl(MicrophoneControl.class);
             if(micSensor != null) {
-                TCPAudioMicroServer audioServer = serverManager.createAndStartAudioMicroServer(avdId, micSensor);
+                TCPAudioMicroServer audioServer = serverManager.createAndStartAudioMicroServer(smartphoneId, micSensor);
             }
 
             AccelerometerControl accSensor = device.getControl(AccelerometerControl.class);
             if(accSensor != null) {
-                TCPAccelerometerServer accServer = serverManager.createAndStartAccelerometerServer(avdId, accSensor);
+                TCPAccelerometerServer accServer = serverManager.createAndStartAccelerometerServer(smartphoneId, accSensor);
             }
 
             serverAppState.addAVD(smartphoneId, avd);
