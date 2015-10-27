@@ -43,6 +43,7 @@ public class SetAndroidEmulatorCommand extends PHATServerCommand {
     private String smartphoneId;
     private String avdId;
     private String serialEmulator;
+    private String emuOptions;
 
     public SetAndroidEmulatorCommand(String smartphoneId, String avdId, String serialEmulator) {
         this(smartphoneId, avdId, serialEmulator, null);
@@ -64,6 +65,9 @@ public class SetAndroidEmulatorCommand extends PHATServerCommand {
         Node device = devicesAppState.getDevice(smartphoneId);
         if (device != null) {
             AndroidVirtualDevice avd = new AndroidVirtualDevice(avdId, serialEmulator, smartphoneId);
+            if(emuOptions != null) {
+                avd.setEmuOptions(emuOptions);
+            }
             PHATServerManager serverManager = serverAppState.getServerManager();
             avd.sendConfigFileForService(serverManager.getIP(), serverManager.getPort());
 
@@ -89,6 +93,27 @@ public class SetAndroidEmulatorCommand extends PHATServerCommand {
             return;
         }
         setState(State.Fail);
+    }
+
+    public String getEmuOptions() {
+        return emuOptions;
+    }
+
+    public SetAndroidEmulatorCommand setEmuOptions(String emuOptions) {
+        this.emuOptions = emuOptions;
+        return this;
+    }
+
+    public String getSmartphoneId() {
+        return smartphoneId;
+    }
+
+    public String getAvdId() {
+        return avdId;
+    }
+
+    public String getSerialEmulator() {
+        return serialEmulator;
     }
 
     @Override

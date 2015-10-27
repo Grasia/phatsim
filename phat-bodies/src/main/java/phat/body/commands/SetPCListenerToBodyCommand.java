@@ -19,6 +19,7 @@
  */
 package phat.body.commands;
 
+import com.jme3.animation.SkeletonControl;
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.bullet.BulletAppState;
@@ -26,6 +27,7 @@ import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
+import com.jme3.scene.Spatial;
 import com.jme3.scene.control.CameraControl.ControlDirection;
 import java.util.logging.Level;
 import phat.audio.AudioAppState;
@@ -35,6 +37,7 @@ import phat.body.control.physics.PHATCharacterControl;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
 import phat.structures.houses.HouseAppState;
+import phat.util.SpatialUtils;
 
 /**
  *
@@ -61,8 +64,10 @@ public class SetPCListenerToBodyCommand extends PHATCommand {
 
         if (audioAppState != null) {
             Node body = bodiesAppState.getBody(bodyId);
-            if (body != null && body.getParent() != null) {
-                audioAppState.setPCSpeakerTo(body);
+            SkeletonControl skeletonControl = body.getControl(SkeletonControl.class);
+            Node head = skeletonControl.getAttachmentsNode("Head");
+            if (head != null && body.getParent() != null) {
+                audioAppState.setPCSpeakerTo(head);
             }
         } else {
             setState(State.Fail);

@@ -37,6 +37,7 @@ import phat.audio.PHATAudioSource;
  */
 public class FootStepsControl extends AbstractControl {
 
+    private static String footSteps1 = "Sound/HumanEffects/FootSteps/footsteps1.ogg";
     private int step = -1;
 
     @Override
@@ -46,29 +47,31 @@ public class FootStepsControl extends AbstractControl {
             if(audioSource != null) {
                 audioSource.stop();
             }
+        } else if (spatial instanceof Node) {
+                ((Node) spatial).attachChild(createAudioFootSteps());
         }
         super.setSpatial(spatial);
     }
 
-    /*private AudioSource createAudioFootSteps() {
-        AudioSource as = AudioFactory.getInstance().makeAudioSource("FootSteps", footSteps1, Vector3f.ZERO);
+    private PHATAudioSource createAudioFootSteps() {
+        PHATAudioSource as = AudioFactory.getInstance().makeAudioSource("FeetAudioNode", footSteps1, Vector3f.ZERO);
         as.setLooping(false);
         as.setPositional(true);
         as.setDirectional(false);
-        as.setVolume(0.2f);
+        as.setVolume(1f);
         as.setMaxDistance(Float.MAX_VALUE);   
         as.setRefDistance(0.5f);
 
         //as.setShowRange(true);
         
         return as;
-    }*/
+    }
 
-    private AudioNode getAudioSource() {
+    private PHATAudioSource getAudioSource() {
         Spatial s = ((Node)spatial).getChild("FeetAudioNode");
-        AudioNode audioSource = null;
+        PHATAudioSource audioSource = null;
         if(s != null && s instanceof AudioNode) {
-            audioSource = (AudioNode)s;
+            audioSource = (PHATAudioSource)s;
         }
         return audioSource;
     }
@@ -87,7 +90,7 @@ public class FootStepsControl extends AbstractControl {
             }
             switch (step) {
                 case 1:
-                    if (basicAnimControl.getAnimTime() < 1.12f && basicAnimControl.getAnimTime() > 0.25f) {                        
+                    if (basicAnimControl.getAnimTime() < 1.12f && basicAnimControl.getAnimTime() > 0.25f) {
                         audioSource.playInstance();
                         step = 2;
                     }

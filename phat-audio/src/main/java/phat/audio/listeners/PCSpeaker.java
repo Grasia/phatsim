@@ -106,8 +106,9 @@ public class PCSpeaker implements SensorListener {
                     Line line = m.getLine(dataLineInfo);
                     if (line instanceof SourceDataLine) {
                         Logger.getLogger(
-                                PCSpeaker.class.getName()).log(Level.SEVERE, null, "Mixer=" + m.getMixerInfo().getName());
+                                PCSpeaker.class.getName()).log(Level.INFO, "Mixer={0}", m.getMixerInfo().getName());
                         sdl = (SourceDataLine) line;
+                        break;
                     }
                 } catch (LineUnavailableException ex) {
                     Logger.getLogger(PCSpeaker.class.getName()).log(Level.SEVERE, null, ex);

@@ -36,10 +36,8 @@ import phat.agents.automaton.UseObjectAutomaton;
 import phat.agents.automaton.conditions.TimerFinishedCondition;
 import phat.agents.automaton.uses.UseDoorbellAutomaton;
 import phat.body.BodiesAppState;
-import phat.body.commands.CreateBodyTypeCommand;
 import phat.body.commands.SetBodyHeightCommand;
 import phat.body.commands.SetBodyInHouseSpaceCommand;
-import phat.body.commands.SetPCListenerToBodyCommand;
 import phat.body.commands.SetStoopedBodyCommand;
 import phat.body.commands.TremblingHandCommand;
 import phat.body.commands.TremblingHeadCommand;
@@ -51,9 +49,6 @@ import phat.config.ServerConfigurator;
 import phat.config.WorldConfigurator;
 import phat.devices.commands.CreateSmartphoneCommand;
 import phat.devices.commands.SetDeviceOnPartOfBodyCommand;
-import phat.server.commands.DisplayAVDScreenCommand;
-import phat.server.commands.SetAndroidEmulatorCommand;
-import phat.server.commands.StartActivityCommand;
 import phat.structures.houses.HouseFactory;
 import phat.world.WorldAppState;
 
@@ -66,6 +61,7 @@ public class MainPHATSimulation implements PHATInitializer {
     public static void main(String[] args) {
         MainPHATSimulation sim = new MainPHATSimulation();
         PHATInterface phat = new PHATInterface(sim);
+        phat.setMultiListener(true);
         phat.setSeed(0);
         phat.start();
     }
@@ -96,7 +92,7 @@ public class MainPHATSimulation implements PHATInitializer {
         setCameraToBodyCommand.setDistance(3f);
         setCameraToBodyCommand.setHeight(15f);
         bodyConfig.runCommand(setCameraToBodyCommand);*/
-        bodyConfig.runCommand(new SetPCListenerToBodyCommand("Relative"));
+        //bodyConfig.runCommand(new SetPCListenerToBodyCommand("Relative"));
         bodyConfig.runCommand(new SetBodyHeightCommand("Relative", 1.7f));
     }
     
@@ -108,13 +104,13 @@ public class MainPHATSimulation implements PHATInitializer {
 
     @Override
     public void initServer(ServerConfigurator deviceConfig) {
-        deviceConfig.runCommand(new SetAndroidEmulatorCommand("Smartphone1", "Smartphone1", "emulator-5554"));
+        /*deviceConfig.runCommand(new SetAndroidEmulatorCommand("Smartphone1", "Smartphone1", "emulator-5554"));
         //deviceConfig.runCommand(new StartActivityCommand("Smartphone1", "phat.android.apps", "CameraCaptureActivity"));
         deviceConfig.runCommand(new StartActivityCommand("Smartphone1", "phat.android.apps", "BodyPositionMonitoring"));
         
         DisplayAVDScreenCommand displayCommand = new DisplayAVDScreenCommand("Smartphone1", "Smartphone1");
         displayCommand.setFrecuency(0.5f);
-        deviceConfig.runCommand(displayCommand);
+        deviceConfig.runCommand(displayCommand);*/
     }
     
     @Override

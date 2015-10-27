@@ -20,6 +20,8 @@
 package phat;
 
 import com.aurellem.capture.AurellemSystemDelegate;
+import com.aurellem.capture.Capture;
+import com.aurellem.capture.IsoTimer;
 
 import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
@@ -39,8 +41,13 @@ import com.jme3.app.state.AppStateManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.CameraNode;
+import com.jme3.scene.Node;
+import com.jme3.scene.control.CameraControl;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeSystem;
+import java.io.File;
+import java.io.IOException;
 
 import phat.agents.AgentsAppState;
 import phat.app.PHATApplication;
@@ -63,6 +70,7 @@ import phat.gui.logging.LoggingViewerAppState;
 import phat.server.ServerAppState;
 import phat.structures.houses.HouseAppState;
 import phat.util.Debug;
+import phat.util.PHATUtils;
 import phat.world.MonitorEventQueue;
 import phat.world.PHATCalendar;
 import phat.world.WorldAppState;
@@ -92,6 +100,7 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
     private Registry registry;
     private GUIMainMenuAppState guimainMenu;
     PHATCalendar initSimTime = null;
+    boolean multiListener = true;
 
     public PHATInterface(PHATInitializer initializer) {
         this.initializer = initializer;
@@ -177,12 +186,23 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
     }
 
     public void start() {
+        PHATUtils.removeNativeFiles();
+        
         app = new PHATApplication(this);
 
         AppSettings s = new AppSettings(true);
         s.setTitle(initializer.getTittle());
         s.setWidth(480);
         s.setHeight(800);
+        if(multiListener) {
+            s.setAudioRenderer(AurellemSystemDelegate.SEND);
+            JmeSystem.setSystemDelegate(new AurellemSystemDelegate());
+            app.setTimer(new IsoTimer(60f));
+            org.lwjgl.input.Mouse.setGrabbed(false);
+        } else {
+            s.setAudioRenderer("LWJGL");
+            JmeSystem.setSystemDelegate(new AurellemSystemDelegate());
+        }
         app.setDisplayStatView(false);
         app.setSettings(s);
 
@@ -231,9 +251,15 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
         app.getStateManager().attach(guimainMenu);
 
         audioConfig = new AudioConfiguratorImpl(new AudioAppState());
-        audioConfig.setMultiAudioRenderer(false, app);
+        //audioConfig.setMultiAudioRenderer(false, app);
+        Node camFollower = new Node("CamNode");
+        // means that the Camera's transform is "copied" to the Transform of the Spatial.
+        CameraControl cc = new CameraControl(app.getCamera(), CameraControl.ControlDirection.CameraToSpatial);
+        camFollower.addControl(cc);
+        app.getRootNode().attachChild(camFollower);
+        audioConfig.getAudioAppState().setPCSpeakerTo(camFollower);
         app.getStateManager().attach(audioConfig.getAudioAppState());
-
+        
         worldConfig = new WorldConfiguratorImpl(new WorldAppState());
         app.getStateManager().attach(worldConfig.getWorldAppState());
 
@@ -356,5 +382,13 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
 
     public ServerConfigurator getServerConfig() {
         return serverConfig;
+    }
+
+    public boolean isMultiListener() {
+        return multiListener;
+    }
+
+    public void setMultiListener(boolean multiListener) {
+        this.multiListener = multiListener;
     }
 }

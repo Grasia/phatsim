@@ -35,6 +35,7 @@ import phat.body.control.physics.PHATCharacterControl;
 import phat.bullet.control.ragdoll.BVHRagdollPreset;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommand.State;
+import phat.body.control.animation.FootStepsControl;
 
 /**
  *
@@ -92,6 +93,7 @@ public class CreateBodyTypeCommand extends PHATCommand {
         body.addControl(krc);
         krc.setEnabled(false);
         
+        body.addControl(new FootStepsControl());
         //body.addControl(new RandomWalkControl());
         body.addControl(new PersuitAndAvoidControl());
         //body.addControl(new LookAtControl());

@@ -20,6 +20,7 @@
 package phat.audio;
 
 import com.aurellem.capture.IsoTimer;
+import com.aurellem.capture.audio.MultiListener;
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
@@ -31,6 +32,7 @@ import com.jme3.scene.Node;
 import java.io.File;
 
 import phat.audio.listeners.PCSpeaker;
+import phat.audio.listeners.XYRMSAudioChart;
 import phat.sensors.microphone.MicrophoneControl;
 
 /**
@@ -45,7 +47,10 @@ public class AudioAppState extends AbstractAppState {
     Node rootNode;
     PCSpeaker pcSpeaker;
     MicrophoneControl currentMicControl;
-    boolean artificialMic = false;
+    Node artificialMic = null;
+    boolean newArtificialMic = false;
+    XYRMSAudioChart chart;
+    boolean showChart = false;
 
     @Override
     public void initialize(AppStateManager stateManager, Application application) {
@@ -54,57 +59,84 @@ public class AudioAppState extends AbstractAppState {
         this.app = (SimpleApplication) application;
         this.assetManager = application.getAssetManager();
         this.rootNode = app.getRootNode();
-        
+
         checkAndCreatePath("./assets/Sounds/");
         assetManager.registerLocator("assets", FileLocator.class);
         AudioFactory.init(app.getAudioRenderer(), assetManager, rootNode);
+
+        if (artificialMic != null) {
+            createArtificialMic();
+        }
     }
-    
+
+    private void createArtificialMic() {
+        System.out.println("createArtificialMic..." + (app.getAudioRenderer() instanceof MultiListener));
+        removePCSpeakerListener();
+        currentMicControl = artificialMic.getControl(MicrophoneControl.class);
+
+        Node camFollower = new Node("CamNode");
+        // means that the Camera's transform is "copied" to the Transform of the Spatial.
+                
+        if (currentMicControl == null) {
+            currentMicControl = new MicrophoneControl("MicroListening", 10000, app.getAudioRenderer());
+        }
+        if (pcSpeaker == null) {
+            pcSpeaker = new PCSpeaker();
+        }
+        currentMicControl.add(pcSpeaker);
+
+        if (showChart) {
+            chart = new XYRMSAudioChart("Prueba");
+            chart.showWindow();
+            currentMicControl.add(chart);
+        }
+
+        artificialMic.addControl(currentMicControl);
+        System.out.println("...createArtificialMic");
+        newArtificialMic = false;
+    }
+
     private void checkAndCreatePath(String path) {
         File folder = new File(path);
-        if(!folder.exists()) {
+        if (!folder.exists()) {
             folder.mkdirs();
         }
     }
 
     private void removePCSpeakerListener() {
-        if (currentMicControl != null && pcSpeaker != null
-                && currentMicControl.hasListener(pcSpeaker)) {
+        if (currentMicControl != null) {
             currentMicControl.remove(pcSpeaker);
-            if (artificialMic) {
-                currentMicControl.getSpatial().removeControl(currentMicControl);
-                artificialMic = false;
+            if (chart != null) {
+                chart.dispose();
+                currentMicControl.remove(chart);
             }
+            currentMicControl.getSpatial().removeControl(currentMicControl);
         }
     }
 
-    public void setPCSpeakerTo(Node node) {
-        System.out.println("setPCSpeakerTo");
-        removePCSpeakerListener();
-        MicrophoneControl micControl = node.getControl(MicrophoneControl.class);
+    public void setPCSpeakerTo(Node artificialMic) {
+        System.out.println("setPCSpeakerTo... " + artificialMic);
+        this.artificialMic = artificialMic;
+        newArtificialMic = true;
+    }
 
-        if (micControl == null) {
-            artificialMic = true;
-            System.out.println("New microphone!");
-            micControl = new MicrophoneControl("MicroListening", 10000, app.getAudioRenderer());
-        }
-        if (pcSpeaker == null) {
-            System.out.println("New microphone!");
-            pcSpeaker = new PCSpeaker();
-        }
-        micControl.add(pcSpeaker);
-        node.addControl(micControl);
+    public void setShowChart(boolean showChart) {
+        this.showChart = showChart;
     }
 
     @Override
     public void update(float tpf) {
         super.update(tpf);
+
+        if (newArtificialMic) {
+            createArtificialMic();
+        }
     }
 
     @Override
     public void cleanup() {
         removePCSpeakerListener();
-        
+
         super.cleanup();
     }
 }
