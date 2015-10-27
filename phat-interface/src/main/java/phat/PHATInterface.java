@@ -92,9 +92,17 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
     private GUIMainMenuAppState guimainMenu;
     PHATCalendar initSimTime = null;
     boolean multiListener = false;
+    private boolean displayFps = false;
+    private boolean statView = false;
 
     public PHATInterface(PHATInitializer initializer) {
         this.initializer = initializer;
+    }
+    
+    public PHATInterface(PHATInitializer initializer, ArgumentProcessor ap) {
+        this(initializer);
+        
+        ap.initialize(this);
     }
 
     public void startServer(String name) throws RemoteException, AlreadyBoundException, NotBoundException {
@@ -194,7 +202,6 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
             s.setAudioRenderer("LWJGL");
             JmeSystem.setSystemDelegate(new AurellemSystemDelegate());
         }
-        app.setDisplayStatView(false);
         app.setSettings(s);
 
         /*AppSettings s = new AppSettings(true);
@@ -239,6 +246,8 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
         Screen screen = new Screen(app, "tonegod/gui/style/def/style_map.gui.xml");
         app.getGuiNode().addControl(screen);
         guimainMenu = new GUIMainMenuAppState(screen);
+        guimainMenu.setDisplayFps(displayFps);
+        guimainMenu.setStatView(statView);
         app.getStateManager().attach(guimainMenu);
 
         if(multiListener) {
@@ -246,6 +255,7 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
         } else {
             audioConfig = new AudioConfiguratorImpl(new SingleAudioAppState());
         }
+        
         //audioConfig.setMultiAudioRenderer(false, app);
         Node camFollower = new Node("CamNode");
         // means that the Camera's transform is "copied" to the Transform of the Spatial.
@@ -385,5 +395,17 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
 
     public void setMultiListener(boolean multiListener) {
         this.multiListener = multiListener;
+    }
+    
+    public void setDisplayFPS(boolean show) {
+        this.displayFps = show;
+    }
+
+    public boolean isStatView() {
+        return statView;
+    }
+
+    public void setStatView(boolean statView) {
+        this.statView = statView;
     }
 }

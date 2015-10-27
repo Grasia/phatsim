@@ -62,14 +62,7 @@ public class MainPHATSimulation implements PHATInitializer {
 
     public static void main(String[] args) {
         MainPHATSimulation sim = new MainPHATSimulation();
-        PHATInterface phat = new PHATInterface(sim);
-        if(PHATUtils.isMultiListener(args)) {
-            phat.setMultiListener(true);
-            System.out.println("MultiMicrophone supported!");
-        } else {
-            phat.setMultiListener(false);
-            System.out.println("SingleMicrophone supported!");
-        }
+        PHATInterface phat = new PHATInterface(sim, new ArgumentProcessor(args));
         phat.setSeed(0);
         phat.start();
     }

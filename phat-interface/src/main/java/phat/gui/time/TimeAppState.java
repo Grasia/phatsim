@@ -56,9 +56,6 @@ public class TimeAppState extends AbstractAppState {
 
         this.app = (SimpleApplication) app;
 
-        this.app.setDisplayFps(false);
-        this.app.setDisplayStatView(false);
-
         worldAppState = this.app.getStateManager().getState(WorldAppState.class);
 
         screen.parseLayout("Interface/TimeDate.gui.xml", 

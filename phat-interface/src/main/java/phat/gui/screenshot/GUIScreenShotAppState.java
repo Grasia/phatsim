@@ -69,9 +69,6 @@ public class GUIScreenShotAppState extends AbstractAppState {
 
         this.app = (SimpleApplication) app;
 
-        this.app.setDisplayFps(false);
-        this.app.setDisplayStatView(false);
-
         phatScreenshotAppState = this.app.getStateManager().getState(PHATScreenshotAppState.class);
         if (phatScreenshotAppState == null) {
             phatScreenshotAppState = new PHATScreenshotAppState();

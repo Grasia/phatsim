@@ -27,6 +27,7 @@ import phat.PHATInitializer;
 import phat.PHATInterface;
 import phat.agents.impl.*;
 import phat.util.PHATUtils;
+import phat.ArgumentProcessor;
 
 /**
  *
@@ -37,14 +38,7 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
     public static void main(String[] args) throws RemoteException, AlreadyBoundException, NotBoundException {
     	meq.startServer(MonitorEventQueue.DefaultName);
         Main@@@v@@@simName@@@/v@@@PHATSimulation sim = new Main@@@v@@@simName@@@/v@@@PHATSimulation();
-        PHATInterface phat = new PHATInterface(sim);
-        if(PHATUtils.isMultiListener(args)) {
-            phat.setMultiListener(true);
-            System.out.println("MultiMicrophone supported!");
-        } else {
-            phat.setMultiListener(false);
-            System.out.println("SingleMicrophone supported!");
-        }
+        PHATInterface phat = new PHATInterface(sim, new ArgumentProcessor(args));
         phat.setSeed(@@@v@@@seedValue@@@/v@@@L);
         phat.start();
     }
@@ -158,6 +152,7 @@ import phat.PHATInitializer;
 import phat.PHATInterface;
 import phat.agents.impl.*;
 import phat.util.PHATUtils;
+import phat.ArgumentProcessor;
 
 /**
  *
@@ -168,14 +163,7 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices implements PHATIn
     public static void main(String[] args) throws RemoteException, AlreadyBoundException, NotBoundException {
     	meq.startServer(MonitorEventQueue.DefaultName);
         Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices sim = new Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices();
-        PHATInterface phat = new PHATInterface(sim);
-        if(PHATUtils.isMultiListener(args)) {
-            phat.setMultiListener(true);
-            System.out.println("MultiMicrophone supported!");
-        } else {
-            phat.setMultiListener(false);
-            System.out.println("SingleMicrophone supported!");
-        }
+        PHATInterface phat = new PHATInterface(sim, new ArgumentProcessor(args));
         phat.setSeed(@@@v@@@seedValue@@@/v@@@L);
         phat.start();
     }

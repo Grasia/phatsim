@@ -83,4 +83,13 @@ public class PHATUtils {
         }
         return false;
     }
+    
+    public static boolean contains(String[] args, String arg) {
+        for(String a: args) {
+            if(a.equals(arg)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

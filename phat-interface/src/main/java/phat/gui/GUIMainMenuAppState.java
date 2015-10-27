@@ -55,6 +55,8 @@ public class GUIMainMenuAppState extends AbstractAppState {
     Button speedUpButton;
     PHATApplication app;
     String path = "/home/pablo/Models/";
+    boolean displayFps = false;
+    boolean statView = false;
     
     public GUIMainMenuAppState(Screen screen) {
         // Store a pointer to the screen
@@ -82,8 +84,8 @@ public class GUIMainMenuAppState extends AbstractAppState {
         this.app = (PHATApplication) app;
         this.app.setSimSpeed(1f);
 
-        this.app.setDisplayFps(false);
-        this.app.setDisplayStatView(false);
+        this.app.setDisplayFps(displayFps);
+        this.app.setDisplayStatView(statView);
     }
 
     @Override
@@ -200,6 +202,7 @@ public class GUIMainMenuAppState extends AbstractAppState {
         System.out.println(index + ":" + value + ":" + isToggled);
         switch (index) {
             case 0:
+                displayFps = isToggled;
                 app.setDisplayFps(isToggled);
                 break;
             case 1:
@@ -269,5 +272,21 @@ public class GUIMainMenuAppState extends AbstractAppState {
 
     private void quit() {
         this.app.stop();
+    }
+
+    public boolean isDisplayFps() {
+        return displayFps;
+    }
+
+    public void setDisplayFps(boolean displayFps) {
+        this.displayFps = displayFps;
+    }
+
+    public boolean isStatView() {
+        return statView;
+    }
+
+    public void setStatView(boolean statView) {
+        this.statView = statView;
     }
 }
