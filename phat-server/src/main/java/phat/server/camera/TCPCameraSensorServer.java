@@ -209,20 +209,6 @@ public class TCPCameraSensorServer implements SensorListener, TCPSensorServer {
             synchronized (mutex0) {
                 imgSending--;
             }
-            /*if (socket != null && socket.isConnected() && oos != null) {
-             try {
-             oos.writeObject(cic);
-             oos.flush();
-             oos.reset();
-             } catch (IOException e1) {
-             Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, null, e1);
-             socket = null;
-             oos = null;
-             }
-             }*/
-            /*} catch (IOException ex) {
-             Logger.getLogger(TCPCameraSensorServer.class.getName()).log(Level.SEVERE, null, ex);
-             }*/
         }
     }
 

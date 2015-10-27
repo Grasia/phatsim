@@ -28,7 +28,12 @@ import com.jme3.texture.FrameBuffer;
 import com.jme3.util.BufferUtils;
 import com.jme3.util.Screenshots;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.imageio.ImageIO;
 import phat.sensors.Sensor;
 import phat.util.ConvertBgraToAbgr;
 import phat.util.PHATImageUtils;
@@ -45,7 +50,11 @@ public class CameraSensor extends Sensor implements SceneProcessor {
     ByteBuffer outBuf;
     int width;
     int height;
-    BufferedImage rawFrame;
+    static final int BUF_SIZE = 10;
+    float rate = 0.1f;
+    float time = 0f;
+    BufferedImage[] rawFrame = new BufferedImage[BUF_SIZE];
+    int currentIndex = 0;
 
     public CameraSensor(String id) {
         super(id);
@@ -62,20 +71,22 @@ public class CameraSensor extends Sensor implements SceneProcessor {
     @Override
     public void reshape(ViewPort vp, int w, int h) {
         outBuf = BufferUtils.createByteBuffer(w * h * 4);
-        rawFrame = new BufferedImage(w, h, BufferedImage.TYPE_4BYTE_ABGR);
+        for (int i = 0; i < BUF_SIZE; i++) {
+            rawFrame[i] = new BufferedImage(w, h, BufferedImage.TYPE_4BYTE_ABGR);
+        }
         width = w;
         height = h;
     }
-    
+
     @Override
     public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
-        if(enabled) {
-            if(viewPort != null) {
+        if (enabled) {
+            if (viewPort != null) {
                 viewPort.addProcessor(this);
             }
         } else {
-            if(viewPort != null) {
+            if (viewPort != null) {
                 viewPort.removeProcessor(this);
             }
         }
@@ -137,24 +148,30 @@ public class CameraSensor extends Sensor implements SceneProcessor {
         renderManager.getRenderer().setViewPort(0, 0, width, height);
     }
 
-    public void easy(FrameBuffer fb) {
+    public BufferedImage easy(FrameBuffer fb) {
         renderManager.getRenderer().readFrameBuffer(fb, outBuf);
         //Screenshots.convertScreenShot(outBuf, rawFrame);
-        ConvertBgraToAbgr.convert(outBuf, rawFrame);
+        ConvertBgraToAbgr.convert(outBuf, rawFrame[currentIndex]);
         //PHATImageUtils.getScreenShotBGRA(outBuf, rawFrame);
+        return rawFrame[currentIndex];
     }
+    int i = 0;
 
     @Override
     public void postFrame(FrameBuffer fb) {
         if (enabled) {
-            easy(fb);
+            this.time += this.cfps;
+            if (time > rate) {
+                BufferedImage result = easy(fb);
+                currentIndex = (currentIndex + 1) % BUF_SIZE;
+                //process2(fb);
 
-            //process2(fb);
+                //Screenshots.convertScreenShot(outBuf, rawFrame);
 
-            //Screenshots.convertScreenShot(outBuf, rawFrame);
-
-            CameraSensorData csd = new CameraSensorData(cfps, rawFrame, width, height, 0);
-            notifyListeners(csd);
+                CameraSensorData csd = new CameraSensorData(cfps, result, width, height, 0);
+                notifyListeners(csd);
+                time = 0f;
+            }
         }
     }
 
