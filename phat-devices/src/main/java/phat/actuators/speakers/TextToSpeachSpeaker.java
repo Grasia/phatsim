@@ -28,7 +28,7 @@ import com.jme3.scene.Spatial;
 
 import java.util.logging.Level;
 
-import phat.audio.AudioAppState;
+import phat.audio.MultiAudioAppState;
 import phat.audio.AudioFactory;
 import phat.audio.AudioSpeakerSource;
 import phat.audio.controls.AudioSourceStatusListener;
@@ -63,7 +63,7 @@ public class TextToSpeachSpeaker extends PHATCommand implements AudioSourceStatu
 
     @Override
     public void runCommand(Application app) {
-        if (app.getStateManager().getState(AudioAppState.class) != null) {
+        if (app.getStateManager().getState(MultiAudioAppState.class) != null) {
 
             BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
             Node body = bodiesAppState.getBody(bodyId);

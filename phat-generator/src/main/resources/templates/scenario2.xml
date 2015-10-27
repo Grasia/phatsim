@@ -26,6 +26,7 @@ import phat.structures.houses.commands.*;
 import phat.PHATInitializer;
 import phat.PHATInterface;
 import phat.agents.impl.*;
+import phat.util.PHATUtils;
 
 /**
  *
@@ -37,6 +38,13 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
     	meq.startServer(MonitorEventQueue.DefaultName);
         Main@@@v@@@simName@@@/v@@@PHATSimulation sim = new Main@@@v@@@simName@@@/v@@@PHATSimulation();
         PHATInterface phat = new PHATInterface(sim);
+        if(PHATUtils.isMultiListener(args)) {
+            phat.setMultiListener(true);
+            System.out.println("MultiMicrophone supported!");
+        } else {
+            phat.setMultiListener(false);
+            System.out.println("SingleMicrophone supported!");
+        }
         phat.setSeed(@@@v@@@seedValue@@@/v@@@L);
         phat.start();
     }
@@ -149,6 +157,7 @@ import phat.structures.houses.commands.*;
 import phat.PHATInitializer;
 import phat.PHATInterface;
 import phat.agents.impl.*;
+import phat.util.PHATUtils;
 
 /**
  *
@@ -160,6 +169,13 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices implements PHATIn
     	meq.startServer(MonitorEventQueue.DefaultName);
         Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices sim = new Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices();
         PHATInterface phat = new PHATInterface(sim);
+        if(PHATUtils.isMultiListener(args)) {
+            phat.setMultiListener(true);
+            System.out.println("MultiMicrophone supported!");
+        } else {
+            phat.setMultiListener(false);
+            System.out.println("SingleMicrophone supported!");
+        }
         phat.setSeed(@@@v@@@seedValue@@@/v@@@L);
         phat.start();
     }

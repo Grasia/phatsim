@@ -38,6 +38,7 @@ import phat.agents.automaton.uses.UseDoorbellAutomaton;
 import phat.body.BodiesAppState;
 import phat.body.commands.SetBodyHeightCommand;
 import phat.body.commands.SetBodyInHouseSpaceCommand;
+import phat.body.commands.SetPCListenerToBodyCommand;
 import phat.body.commands.SetStoopedBodyCommand;
 import phat.body.commands.TremblingHandCommand;
 import phat.body.commands.TremblingHeadCommand;
@@ -50,6 +51,7 @@ import phat.config.WorldConfigurator;
 import phat.devices.commands.CreateSmartphoneCommand;
 import phat.devices.commands.SetDeviceOnPartOfBodyCommand;
 import phat.structures.houses.HouseFactory;
+import phat.util.PHATUtils;
 import phat.world.WorldAppState;
 
 /**
@@ -61,7 +63,13 @@ public class MainPHATSimulation implements PHATInitializer {
     public static void main(String[] args) {
         MainPHATSimulation sim = new MainPHATSimulation();
         PHATInterface phat = new PHATInterface(sim);
-        phat.setMultiListener(true);
+        if(PHATUtils.isMultiListener(args)) {
+            phat.setMultiListener(true);
+            System.out.println("MultiMicrophone supported!");
+        } else {
+            phat.setMultiListener(false);
+            System.out.println("SingleMicrophone supported!");
+        }
         phat.setSeed(0);
         phat.start();
     }

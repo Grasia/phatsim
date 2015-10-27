@@ -20,7 +20,6 @@
 package phat;
 
 import com.aurellem.capture.AurellemSystemDelegate;
-import com.aurellem.capture.Capture;
 import com.aurellem.capture.IsoTimer;
 
 import java.rmi.AlreadyBoundException;
@@ -29,31 +28,25 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.Enumeration;
 import java.util.Random;
-import java.util.Vector;
 
-import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppState;
-import com.jme3.app.state.AppStateManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
 import com.jme3.scene.control.CameraControl;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeSystem;
-import java.io.File;
-import java.io.IOException;
 
 import phat.agents.AgentsAppState;
 import phat.app.PHATApplication;
 import phat.app.PHATFinalizeAppListener;
 import phat.app.PHATInitAppListener;
-import phat.audio.AudioAppState;
+import phat.audio.MultiAudioAppState;
+import phat.audio.SingleAudioAppState;
 import phat.body.BodiesAppState;
 import phat.config.DeviceConfigurator;
 import phat.config.ServerConfigurator;
@@ -69,9 +62,7 @@ import phat.gui.GUIMainMenuAppState;
 import phat.gui.logging.LoggingViewerAppState;
 import phat.server.ServerAppState;
 import phat.structures.houses.HouseAppState;
-import phat.util.Debug;
 import phat.util.PHATUtils;
-import phat.world.MonitorEventQueue;
 import phat.world.PHATCalendar;
 import phat.world.WorldAppState;
 import tonegod.gui.core.Screen;
@@ -100,7 +91,7 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
     private Registry registry;
     private GUIMainMenuAppState guimainMenu;
     PHATCalendar initSimTime = null;
-    boolean multiListener = true;
+    boolean multiListener = false;
 
     public PHATInterface(PHATInitializer initializer) {
         this.initializer = initializer;
@@ -250,7 +241,11 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
         guimainMenu = new GUIMainMenuAppState(screen);
         app.getStateManager().attach(guimainMenu);
 
-        audioConfig = new AudioConfiguratorImpl(new AudioAppState());
+        if(multiListener) {
+            audioConfig = new AudioConfiguratorImpl(new MultiAudioAppState());
+        } else {
+            audioConfig = new AudioConfiguratorImpl(new SingleAudioAppState());
+        }
         //audioConfig.setMultiAudioRenderer(false, app);
         Node camFollower = new Node("CamNode");
         // means that the Camera's transform is "copied" to the Transform of the Spatial.

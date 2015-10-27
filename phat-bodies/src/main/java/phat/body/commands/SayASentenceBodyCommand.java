@@ -28,13 +28,12 @@ import com.jme3.scene.Spatial;
 
 import java.util.logging.Level;
 
-import phat.audio.AudioAppState;
 import phat.audio.AudioFactory;
 import phat.audio.AudioSpeakerSource;
+import phat.audio.PHATAudioAppState;
 import phat.audio.controls.AudioSourceStatusListener;
 import phat.audio.controls.AudioStatusNotifierControl;
 import phat.body.BodiesAppState;
-import phat.body.control.physics.PHATCharacterControl;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
@@ -63,7 +62,7 @@ public class SayASentenceBodyCommand extends PHATCommand implements AudioSourceS
 
     @Override
     public void runCommand(Application app) {
-        if (app.getStateManager().getState(AudioAppState.class) != null) {
+        if (app.getStateManager().getState(PHATAudioAppState.class) != null) {
 
             BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
             Node body = bodiesAppState.getBody(bodyId);

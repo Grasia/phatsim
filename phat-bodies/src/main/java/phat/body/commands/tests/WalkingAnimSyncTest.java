@@ -38,7 +38,7 @@ import java.util.logging.Logger;
 
 import phat.app.PHATApplication;
 import phat.app.PHATInitAppListener;
-import phat.audio.AudioAppState;
+import phat.audio.MultiAudioAppState;
 import phat.audio.AudioFactory;
 import phat.body.BodiesAppState;
 import phat.body.commands.AlignWithCommand;
@@ -103,7 +103,7 @@ public class WalkingAnimSyncTest implements PHATInitAppListener {
         //bulletAppState.setDebugEnabled(true);
         //bulletAppState.getPhysicsSpace().setAccuracy(1f/200f);
 
-        AudioAppState audio = new AudioAppState();
+        MultiAudioAppState audio = new MultiAudioAppState();
         stateManager.attach(audio);
         
         seAPI = SpatialEnvironmentAPI.createSpatialEnvironmentAPI(app);

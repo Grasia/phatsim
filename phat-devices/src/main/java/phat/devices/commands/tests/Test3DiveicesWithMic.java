@@ -53,7 +53,7 @@ import java.io.FileNotFoundException;
 import java.lang.reflect.Field;
 import phat.app.PHATApplication;
 import phat.app.PHATInitAppListener;
-import phat.audio.AudioAppState;
+import phat.audio.MultiAudioAppState;
 import phat.audio.AudioFactory;
 import phat.audio.AudioSpeakerSource;
 import phat.audio.listeners.AudioSourceWaveFileWriter;
@@ -279,7 +279,7 @@ public class Test3DiveicesWithMic implements PHATInitAppListener, PHATCommandLis
         this.assetManager = app.getAssetManager();
         this.rootNode = app.getRootNode();
     
-        AudioAppState audioAppState = new AudioAppState();
+        MultiAudioAppState audioAppState = new MultiAudioAppState();
         stateManager.attach(audioAppState);
         
         WorldAppState worldAppState = new WorldAppState();

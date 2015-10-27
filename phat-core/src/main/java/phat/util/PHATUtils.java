@@ -62,4 +62,25 @@ public class PHATUtils {
         String so = System.getProperty("os.name");
         return so.contains("Windows");
     }
+    
+    public static void checkAndCreatePath(String path) {
+        File folder = new File(path);
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+    }
+    
+    /**
+     * Checks if arguments contains multilisterner option "-lm"
+     * @param args
+     * @return 
+     */
+    public static boolean isMultiListener(String[] args) {
+        for(int i = 0; i < args.length; i++) {
+            if(args[i].equals("-ml")) {
+                return true;
+            }
+        }
+        return false;
+    }
 }

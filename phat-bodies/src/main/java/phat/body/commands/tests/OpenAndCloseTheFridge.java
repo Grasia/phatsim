@@ -31,7 +31,7 @@ import java.util.logging.Logger;
 
 import phat.app.PHATApplication;
 import phat.app.PHATInitAppListener;
-import phat.audio.AudioAppState;
+import phat.audio.MultiAudioAppState;
 import phat.body.BodiesAppState;
 import phat.body.commands.AlignWithCommand;
 import phat.body.commands.CloseObjectCommand;
@@ -89,7 +89,7 @@ public class OpenAndCloseTheFridge implements PHATInitAppListener {
         seAPI.getWorldAppState().setLandType(WorldAppState.LandType.Basic);
         seAPI.getHouseAppState().runCommand(new CreateHouseCommand("House1", HouseFactory.HouseType.House3room2bath));
         
-        AudioAppState audioAppState = new AudioAppState();
+        MultiAudioAppState audioAppState = new MultiAudioAppState();
         stateManager.attach(audioAppState);
 
         bodiesAppState = new BodiesAppState();

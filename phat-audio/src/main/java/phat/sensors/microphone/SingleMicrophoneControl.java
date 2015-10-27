@@ -17,21 +17,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package phat.config.impl;
+package phat.sensors.microphone;
 
-import phat.audio.PHATAudioAppState;
-import phat.config.AudioConfigurator;
+import com.jme3.audio.Listener;
+import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.ViewPort;
+import com.jme3.scene.control.AbstractControl;
 
-public class AudioConfiguratorImpl implements AudioConfigurator {
-
-    boolean multiAudioRenderer;
-    PHATAudioAppState audioAppState;
-
-    public AudioConfiguratorImpl(PHATAudioAppState audioAppState) {
-        this.audioAppState = audioAppState;
+/**
+ * Microphone for simple AudioRenderer (No multilistener)
+ * 
+ * @author Pablo
+ */
+public class SingleMicrophoneControl extends AbstractControl {
+    Listener listener;
+    
+    public SingleMicrophoneControl(Listener listener) {
+        super();
+        this.listener = listener;
     }
 
-    public PHATAudioAppState getAudioAppState() {
-        return audioAppState;
+
+    @Override
+    protected void controlUpdate(float tpf) {
+        if (listener != null) {
+            listener.setLocation(spatial.getWorldTranslation());
+            listener.setRotation(spatial.getWorldRotation());
+        }
+    }
+
+    @Override
+    protected void controlRender(RenderManager rm, ViewPort vp) {
     }
 }
