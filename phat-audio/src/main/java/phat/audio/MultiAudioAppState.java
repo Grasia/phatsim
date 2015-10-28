@@ -20,10 +20,13 @@
 package phat.audio;
 
 import com.aurellem.capture.audio.MultiListener;
+import com.jme3.app.Application;
+import com.jme3.app.state.AppStateManager;
 
 import phat.audio.listeners.PCSpeaker;
 import phat.audio.listeners.XYRMSAudioChart;
 import phat.sensors.microphone.MicrophoneControl;
+import phat.util.PHATUtils;
 
 /**
  *
@@ -35,7 +38,7 @@ public class MultiAudioAppState extends PHATAudioAppState {
     MicrophoneControl currentMicControl;
     private boolean showChart;
     private XYRMSAudioChart chart;
-
+    
     @Override
     protected void createMic() {
         System.out.println("createArtificialMic..." + (audioRenderer instanceof MultiListener));

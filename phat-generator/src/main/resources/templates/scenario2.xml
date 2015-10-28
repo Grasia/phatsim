@@ -72,6 +72,7 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
         setCameraToBodyCommand.setDistance(@@@v@@@distance@@@/v@@@f);
         setCameraToBodyCommand.setHeight(@@@v@@@elevation@@@/v@@@f);
         bodyConfig.runCommand(setCameraToBodyCommand);
+        bodyConfig.runCommand(new SetPCListenerToBodyCommand("@@@v@@@actorname@@@/v@@@"));
         bodyConfig.runCommand(new SetTransparentLevelOfWallsCommand("House1", 0.5f));@@@/repeat@@@
     }
     
@@ -197,6 +198,7 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices implements PHATIn
         setCameraToBodyCommand.setDistance(@@@v@@@distance@@@/v@@@f);
         setCameraToBodyCommand.setHeight(@@@v@@@elevation@@@/v@@@f);
         bodyConfig.runCommand(setCameraToBodyCommand);
+        bodyConfig.runCommand(new SetPCListenerToBodyCommand("@@@v@@@actorname@@@/v@@@"));
         bodyConfig.runCommand(new SetTransparentLevelOfWallsCommand("House1", 0.5f));@@@/repeat@@@
     }
     

@@ -38,6 +38,7 @@ import phat.agents.automaton.uses.UseDoorbellAutomaton;
 import phat.body.BodiesAppState;
 import phat.body.commands.SetBodyHeightCommand;
 import phat.body.commands.SetBodyInHouseSpaceCommand;
+import phat.body.commands.SetCameraToBodyCommand;
 import phat.body.commands.SetPCListenerToBodyCommand;
 import phat.body.commands.SetStoopedBodyCommand;
 import phat.body.commands.TremblingHandCommand;
@@ -61,8 +62,9 @@ import phat.world.WorldAppState;
 public class MainPHATSimulation implements PHATInitializer {
 
     public static void main(String[] args) {
+        String[] a = {"-ml"};
         MainPHATSimulation sim = new MainPHATSimulation();
-        PHATInterface phat = new PHATInterface(sim, new ArgumentProcessor(args));
+        PHATInterface phat = new PHATInterface(sim, new ArgumentProcessor(a));
         phat.setSeed(0);
         phat.start();
     }
@@ -88,12 +90,12 @@ public class MainPHATSimulation implements PHATInitializer {
         bodyConfig.runCommand(new SetStoopedBodyCommand("Relative", true));
         bodyConfig.runCommand(new TremblingHandCommand("Relative", true, true));
         //bodyConfig.runCommand(new BodyLabelCommand("Relative", true));
-        /*SetCameraToBodyCommand setCameraToBodyCommand = new SetCameraToBodyCommand("Relative");
+        SetCameraToBodyCommand setCameraToBodyCommand = new SetCameraToBodyCommand("Relative");
         setCameraToBodyCommand.setFront(true);
         setCameraToBodyCommand.setDistance(3f);
         setCameraToBodyCommand.setHeight(15f);
-        bodyConfig.runCommand(setCameraToBodyCommand);*/
-        //bodyConfig.runCommand(new SetPCListenerToBodyCommand("Relative"));
+        bodyConfig.runCommand(setCameraToBodyCommand);
+        bodyConfig.runCommand(new SetPCListenerToBodyCommand("Relative"));
         bodyConfig.runCommand(new SetBodyHeightCommand("Relative", 1.7f));
     }
     
@@ -163,7 +165,7 @@ public class MainPHATSimulation implements PHATInitializer {
         StandUpAutomaton standUp3 = new StandUpAutomaton(relative, "StandUp");
                 
         FSM fsm = new FSM(relative);
-        fsm.registerStartState(goIntoBed);
+        fsm.registerStartState(sleep);
         fsm.registerTransition(goIntoBed, sleep);
         fsm.registerTransition(sleep, standUp1);
         fsm.registerTransition(standUp1, goodMorning);

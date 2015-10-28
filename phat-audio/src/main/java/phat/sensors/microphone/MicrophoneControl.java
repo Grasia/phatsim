@@ -45,16 +45,14 @@ import phat.sensors.SensorListener;
 public class MicrophoneControl extends Sensor implements SoundProcessor {
 
     Control c;
-    private byte[] buffer;
-    private int numBuffers = 100;
-    private int bufferSize = 1470;
-    private int indexBuffer = 0;
-    private boolean initialized = false;
+    
     //private List<AudioBuffer> bufferList;
     private int readIndex = 0;
     private int writeIndex = 0;
-    private int numSamples;
-    private int BYTE_ARRAY_OUTPUT_STREAM_SIZE;
+    private final int BUFFER_SIZE= 1470;
+    private final int NUM_BUFFERS = 2;
+    private int buf_i = 0;
+    private byte[][] buffer = new byte[NUM_BUFFERS][BUFFER_SIZE];
     private AudioRenderer audioRenderer;
     private Listener listener = new Listener();
     private List<NotifyTask<Void>> callables = new ArrayList<NotifyTask<Void>>();
@@ -71,7 +69,6 @@ public class MicrophoneControl extends Sensor implements SoundProcessor {
         super(name);
         System.out.println("MicrophoneControl created!!");
         this.audioRenderer = audioRenderer;
-        BYTE_ARRAY_OUTPUT_STREAM_SIZE = bufferSize;
         //buffer = new byte[bufferSize];
     }
 
@@ -127,10 +124,10 @@ public class MicrophoneControl extends Sensor implements SoundProcessor {
         
         if (enabled) {
             audioSamples.clear();
-            byte[] data = new byte[numSamples];
-            audioSamples.get(data);
-
-            MicrophoneData md = new MicrophoneData(data, format);
+            int numBytes = (numSamples > BUFFER_SIZE) ? BUFFER_SIZE : numSamples;
+            audioSamples.get(buffer[buf_i], 0, numBytes);
+            
+            MicrophoneData md = new MicrophoneData(buffer[buf_i], format);
             //concurrentNotification(md);
             serialNotification(MicrophoneControl.this, md);
 
@@ -142,6 +139,7 @@ public class MicrophoneControl extends Sensor implements SoundProcessor {
              sl.update(MicrophoneControl.this, md);
              }
              }.start();*/
+            buf_i = (buf_i+1) % NUM_BUFFERS;
         }
     }
 

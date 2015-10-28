@@ -28,10 +28,12 @@ import java.util.logging.Logger;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
+import javax.sound.sampled.FloatControl;
 import javax.sound.sampled.Line;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.Mixer;
 import javax.sound.sampled.SourceDataLine;
+import phat.sensors.microphone.MicrophoneControl;
 
 /**
  * A listener class of MicrophoneSensor that sends the audio to the speakers.
@@ -45,6 +47,8 @@ public class PCSpeaker implements SensorListener {
 
     private boolean initialized = false;
     private SourceDataLine sourceDataLine;
+    private float volume = 100.0f;
+    private float gain = 6.0206f;
 
     public void init(AudioFormat format) {
         DataLine.Info dataLineInfo =
@@ -71,21 +75,25 @@ public class PCSpeaker implements SensorListener {
             sourceDataLine.open(format);
             System.out.println("Start sourceDataLine = " + sourceDataLine.getLineInfo());
             sourceDataLine.start();
+            setMaxGain();
+            setMaxVolume();
         } catch (LineUnavailableException ex) {
             Logger.getLogger(PCSpeaker.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     @Override
-    public synchronized void update(Sensor source, SensorData sd) {
+    public void update(Sensor source, SensorData sd) {
         if (sd instanceof MicrophoneData) {
             MicrophoneData md = (MicrophoneData) sd;
             if (!initialized) {
                 init(md.getAudioFormat());
                 initialized = true;
             }
-            sourceDataLine.flush();
-            sourceDataLine.write(md.getData(), 0, md.getData().length);            
+            //sourceDataLine.stop();
+            //sourceDataLine.flush();
+            sourceDataLine.write(md.getData(), 0, md.getData().length);
+            //sourceDataLine.start();
             /*
              int available = sourceDataLine.available();
              int length = md.getData().length;
@@ -124,6 +132,74 @@ public class PCSpeaker implements SensorListener {
             sourceDataLine.drain();
             sourceDataLine.stop();
             sourceDataLine.close();
+        }
+    }
+
+    public void setMaxGain() {
+        if (isGainSupported()) {
+            FloatControl gainControl = (FloatControl) sourceDataLine.getControl(FloatControl.Type.MASTER_GAIN);
+            this.gain = gainControl.getMaximum();
+            gainControl.setValue(gain);
+        }
+    }
+    
+    public void setMinGain() {
+        if (isGainSupported()) {
+            FloatControl gainControl = (FloatControl) sourceDataLine.getControl(FloatControl.Type.MASTER_GAIN);
+            this.gain = gainControl.getMinimum();
+            gainControl.setValue(gain);
+        }
+    }
+    
+    public boolean isGainSupported() {
+        return sourceDataLine.isControlSupported(FloatControl.Type.MASTER_GAIN);
+    }
+    
+    public void setGain(float gain) {
+        this.gain = gain;
+        if (isGainSupported()) {
+            FloatControl gainControl = (FloatControl) sourceDataLine.getControl(FloatControl.Type.MASTER_GAIN);
+            System.out.println(gainControl);
+            gainControl.setValue(gain);
+        }
+    }
+
+    public void setMute(boolean mute) {
+        if (sourceDataLine.isControlSupported(FloatControl.Type.VOLUME)) {
+            FloatControl volumeControl = (FloatControl) sourceDataLine.getControl(FloatControl.Type.VOLUME);
+            if (mute) {
+                volumeControl.setValue(0f);
+            } else {
+                volumeControl.setValue(volume);
+            }
+        }
+    }
+    
+    public boolean isVolumeSupported() {
+        return sourceDataLine.isControlSupported(FloatControl.Type.VOLUME);
+    }
+    
+    public void setMaxVolume() {        
+        if (isVolumeSupported()) {
+            FloatControl volumeControl = (FloatControl) sourceDataLine.getControl(FloatControl.Type.VOLUME);
+            this.volume = volumeControl.getMaximum();
+            volumeControl.setValue(volume);
+        }
+    }
+    
+    public void setMinVolume() {
+        if (isVolumeSupported()) {
+            FloatControl volumeControl = (FloatControl) sourceDataLine.getControl(FloatControl.Type.VOLUME);
+            this.volume = volumeControl.getMinimum();
+            volumeControl.setValue(volume);
+        }
+    }
+    
+    public void setVolume(float volume) {
+        this.volume = volume;
+        if (isVolumeSupported()) {
+            FloatControl volumeControl = (FloatControl) sourceDataLine.getControl(FloatControl.Type.VOLUME);
+            volumeControl.setValue(volume);
         }
     }
 }
