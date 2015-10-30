@@ -46,6 +46,7 @@ import phat.app.PHATApplication;
 import phat.app.PHATFinalizeAppListener;
 import phat.app.PHATInitAppListener;
 import phat.audio.MultiAudioAppState;
+import phat.audio.PHATSystemDelegate;
 import phat.audio.SingleAudioAppState;
 import phat.body.BodiesAppState;
 import phat.config.DeviceConfigurator;
@@ -195,12 +196,12 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
         s.setHeight(800);
         if(multiListener) {
             s.setAudioRenderer(AurellemSystemDelegate.SEND);
-            JmeSystem.setSystemDelegate(new AurellemSystemDelegate());
+            JmeSystem.setSystemDelegate(new PHATSystemDelegate());
             app.setTimer(new IsoTimer(60f));
             org.lwjgl.input.Mouse.setGrabbed(false);
         } else {
             s.setAudioRenderer("LWJGL");
-            JmeSystem.setSystemDelegate(new AurellemSystemDelegate());
+            JmeSystem.setSystemDelegate(new PHATSystemDelegate());
         }
         app.setSettings(s);
 

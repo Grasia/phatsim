@@ -90,12 +90,12 @@ public class MainPHATSimulation implements PHATInitializer {
         bodyConfig.runCommand(new SetStoopedBodyCommand("Relative", true));
         bodyConfig.runCommand(new TremblingHandCommand("Relative", true, true));
         //bodyConfig.runCommand(new BodyLabelCommand("Relative", true));
-        SetCameraToBodyCommand setCameraToBodyCommand = new SetCameraToBodyCommand("Relative");
+        /*SetCameraToBodyCommand setCameraToBodyCommand = new SetCameraToBodyCommand("Relative");
         setCameraToBodyCommand.setFront(true);
         setCameraToBodyCommand.setDistance(3f);
         setCameraToBodyCommand.setHeight(15f);
         bodyConfig.runCommand(setCameraToBodyCommand);
-        bodyConfig.runCommand(new SetPCListenerToBodyCommand("Relative"));
+        bodyConfig.runCommand(new SetPCListenerToBodyCommand("Relative"));*/
         bodyConfig.runCommand(new SetBodyHeightCommand("Relative", 1.7f));
     }
     
