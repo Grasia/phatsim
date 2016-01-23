@@ -80,6 +80,24 @@ public class Utils {
         }
         return result;
     }
+
+  public static Vector<GraphEntity> getProfilesTypeOf(String humanId, String profileType, Browser browser) {
+        Vector<GraphEntity> result = new Vector<GraphEntity>();
+        try {
+            GraphEntity[] entities = browser.getAllEntities();
+            for (GraphEntity adl : entities) {
+                if (adl.getType().equalsIgnoreCase(profileType)) {
+                    GraphEntity human = Utils.getTargetEntity(adl, "ProfileOf");                    
+                    if (human!=null && human.getID().equals(humanId)) {
+                        result.add(adl);
+                    }
+                }
+            }
+        } catch (Throwable ex) {
+            ex.printStackTrace();
+        }
+        return result;
+    }
     
     public static HashSet<GraphEntity> getPlayedRoles(GraphEntity agent)
             throws NullEntity {
