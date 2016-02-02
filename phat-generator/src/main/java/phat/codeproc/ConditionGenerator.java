@@ -19,7 +19,7 @@
  */
 package phat.codeproc;
 
-import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
+
 import ingenias.exception.NotFound;
 import ingenias.exception.NullEntity;
 import ingenias.generator.browser.GraphAttribute;

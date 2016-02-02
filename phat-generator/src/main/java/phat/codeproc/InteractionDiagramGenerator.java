@@ -27,6 +27,7 @@ import ingenias.generator.browser.GraphAttribute;
 import ingenias.generator.browser.GraphEntity;
 import ingenias.generator.datatemplate.Repeat;
 import ingenias.generator.datatemplate.Var;
+import java.util.Vector;
 
 import java.util.Collection;
 
@@ -44,26 +45,26 @@ public class InteractionDiagramGenerator {
 	public void generateEventProcessor(String humanId, Repeat repFather) throws NotFound,
 			NullEntity {
 
-		GraphEntity ip = Utils.getProfileTypeOf(humanId, INTERACTION_PROFILE_SPEC_DIAGRAM, browser);
-		if(ip == null)
-			return;
-		GraphAttribute ga = ip.getAttributeByName("InteractionSpecDiagField");
-		if (ga == null || ga.getSimpleValue().equals("")) {
-			return;
-		}
+		Vector<GraphEntity> ips = Utils.getProfilesTypeOf(humanId, INTERACTION_PROFILE_SPEC_DIAGRAM, browser);
+		for (GraphEntity ip:ips){
+			GraphAttribute ga = ip.getAttributeByName("InteractionSpecDiagField");
+			if (ga == null || ga.getSimpleValue().equals("")) {
+				return;
+			}
 
-		String interactionDiagName = ga.getSimpleValue();
-		Graph interactionSpec = browser.getGraph(interactionDiagName);
-		if (interactionSpec != null && interactionSpec.getEntities().length > 0) {
-			for(GraphEntity ge: Utils.getEntities(interactionSpec, "EventProcessor")) {
-				GraphEntity event = Utils.getTargetEntity(ge, "RelatedEvent");
-				GraphEntity activity = Utils.getTargetEntity(ge, "ActivityAttached");
-				Collection<GraphEntity> conds = Utils.getTargetsEntity(ge, "ConditionNeeded");
-				Repeat repEP = new Repeat("eventProcessor");
-				repFather.add(repEP);
-				repEP.add(new Var("eventId", Utils.replaceBadChars(event.getID())));
-				repEP.add(new Var("eventCondition", ConditionGenerator.generateAndCondition(conds)));
-				repEP.add(new Var("acticity", Utils.replaceBadChars(activity.getID())));
+			String interactionDiagName = ga.getSimpleValue();
+			Graph interactionSpec = browser.getGraph(interactionDiagName);
+			if (interactionSpec != null && interactionSpec.getEntities().length > 0) {
+				for(GraphEntity ge: Utils.getEntities(interactionSpec, "EventProcessor")) {
+					GraphEntity event = Utils.getTargetEntity(ge, "RelatedEvent");
+					GraphEntity activity = Utils.getTargetEntity(ge, "ActivityAttached");
+					Collection<GraphEntity> conds = Utils.getTargetsEntity(ge, "ConditionNeeded");
+					Repeat repEP = new Repeat("eventProcessor");
+					repFather.add(repEP);
+					repEP.add(new Var("eventId", Utils.replaceBadChars(event.getID())));
+					repEP.add(new Var("eventCondition", ConditionGenerator.generateAndCondition(conds)));
+					repEP.add(new Var("acticity", Utils.replaceBadChars(activity.getID())));
+				}
 			}
 		}
 	}
