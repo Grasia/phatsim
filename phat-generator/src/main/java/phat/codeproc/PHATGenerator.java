@@ -96,6 +96,7 @@ ingenias.editor.extension.BasicCodeGeneratorImp {
 		super(file);
 		this.addTemplate("templates/agents2.xml");
 		this.addTemplate("templates/scenario2.xml");
+                this.addTemplate("templates/adl.xml");
 		this.addTemplate("templates/timeinterval.xml");
 		this.addTemplate("templates/activities.xml");
 		this.addTemplate("templates/tasks.xml");
@@ -109,6 +110,7 @@ ingenias.editor.extension.BasicCodeGeneratorImp {
 		super(browser);
 		this.addTemplate("templates/agents2.xml");
 		this.addTemplate("templates/scenario2.xml");
+                this.addTemplate("templates/adl.xml");
 		this.addTemplate("templates/timeinterval.xml");
 		this.addTemplate("templates/activities.xml");
 		this.addTemplate("templates/tasks.xml");

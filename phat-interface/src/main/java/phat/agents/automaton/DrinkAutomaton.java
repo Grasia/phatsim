@@ -37,9 +37,15 @@ public class DrinkAutomaton extends SimpleState implements PHATCommandListener {
     PlayBodyAnimationCommand playAnimCommand;
     PHATCalendar lastDrink = null;
     float drinkRate = 10f;
+    String beverage;
     
-    public DrinkAutomaton(Agent agent) {
+     public DrinkAutomaton(Agent agent) {
         super(agent, 0, "DrinkAutomaton");
+    }
+     
+    public DrinkAutomaton(Agent agent, String name, String beverage) {
+        super(agent, 0, name);
+        this.beverage = beverage;
     }
 
     @Override

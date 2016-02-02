@@ -23,29 +23,88 @@ import java.lang.reflect.InvocationTargetException;
 
 import phat.agents.Agent;
 import phat.agents.automaton.Automaton;
+import phat.agents.automaton.SeqTaskAutomaton;
 
 /**
  *
  * @author pablo
  */
 public class ReplaceTaskFilter extends Filter {
-	Class<? extends Automaton> task;
-    
+
+    Class<? extends Automaton> task;
+
+    public enum TYPE {
+
+        REPLACE, BEFORE, AFTER
+    }
+    TYPE type = TYPE.REPLACE;
+
     @Override
     public Automaton apply(Agent agent, Automaton automaton) {
-    	Automaton filterTask=null;
-		try {
-			filterTask = task.getConstructor(Agent.class).newInstance(agent);
-		} catch (InstantiationException | IllegalAccessException
-				| IllegalArgumentException | InvocationTargetException
-				| NoSuchMethodException | SecurityException e) {
-			e.printStackTrace();
-		}
+        Automaton filterTask = null;
+        try {
+            filterTask = task.getConstructor(Agent.class, String.class).newInstance(agent, task.getClass().getSimpleName());
+            setMetadata(filterTask);
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+            e.printStackTrace();
+        }
+        switch (type) {
+            case REPLACE:
+                return filterTask;
+            case BEFORE:
+                return createBeforeParent(agent, filterTask, automaton);
+            case AFTER:
+                return createAfterParent(agent, filterTask, automaton);
+        }
         return filterTask;
     }
 
+    private Automaton createBeforeParent(Agent agent, final Automaton filteredTask, final Automaton newTask) {
+        SeqTaskAutomaton sta = new SeqTaskAutomaton(agent, "ReplaceTaskFilter-"+type.name()) {
+            @Override
+            public void initTasks() {
+                addTransition(newTask, false);
+                addTransition(filteredTask, false);
+        
+                setMetadata("SOCIAALML_ENTITY_ID", "ReplaceTaskFilter-"+type.name());
+                setMetadata("SOCIAALML_ENTITY_TYPE", "SequentialTaskDiagram");
+            }
+        };
+                
+        return sta;
+    }
+    
+    private Automaton createAfterParent(Agent agent, final Automaton filteredTask, final Automaton newTask) {
+        SeqTaskAutomaton sta = new SeqTaskAutomaton(agent, "ReplaceTaskFilter-"+type.name()) {
+            @Override
+             public void initTasks() {
+                addTransition(filteredTask, false);
+                addTransition(newTask, false);
+                
+                setMetadata("SOCIAALML_ENTITY_ID", "ReplaceTaskFilter-"+type.name());
+                setMetadata("SOCIAALML_ENTITY_TYPE", "SequentialTaskDiagram");
+            }
+        };
+        
+        return sta;
+    }
+    
+    private void setMetadata(Automaton a) {
+        a.setMetadata("SOCIAALML_ENTITY_ID", "ReplaceTaskFilter-"+type.name());
+        a.setMetadata("SOCIAALML_ENTITY_TYPE", "SequentialTaskDiagram");
+    }
+    
     public ReplaceTaskFilter setTask(Class<? extends Automaton> task) {
         this.task = task;
+        return this;
+    }
+
+    public TYPE getType() {
+        return type;
+    }
+
+    public ReplaceTaskFilter setType(TYPE type) {
+        this.type = type;
         return this;
     }
 }

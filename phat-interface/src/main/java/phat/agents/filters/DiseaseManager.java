@@ -84,23 +84,33 @@ public class DiseaseManager implements AutomatonListener {
 
     @Override
     public void nextAutomaton(Automaton previousAutomaton, Automaton nextAutomaton) {
+        System.out.println("\n\n\n**********************************Applying filters!!"
+                + "**********************************\n\n");
+        
         if (!Filter.hasBeenFiltered(nextAutomaton)) {
-            Automaton alternative;
+            Filter.markFiltered(nextAutomaton);
+            Automaton alternative = nextAutomaton;
             for (Symptom symptom : symptomMap.values()) {
-                alternative = symptom.processFilters(agent, nextAutomaton);
-                if(alternative == null) {
-                    Filter.markFiltered(nextAutomaton);
-                    nextAutomaton.getParent().replaceCurrentAutomaton(
-                            new DoNothing(agent, stage).setFinishCondition(new TimerFinishedCondition(0, 0, 1)));
-                    return;
-                } else if (!alternative.equals(nextAutomaton)) {
-                    nextAutomaton.getParent().replaceCurrentAutomaton(alternative);
-                    nextAutomaton = alternative;
+                alternative = symptom.processFilters(agent, alternative);
+                System.out.println("Result for symptom (" + symptom.getSymptomType() + ") = " + alternative);
+                if (alternative == null) {
+                    alternative = new DoNothing(agent, stage).setFinishCondition(new TimerFinishedCondition(0, 0, 1));
+                    break;
                 }
             }
-            Filter.markFiltered(nextAutomaton);
+            System.out.println("nextAutomaton = "+nextAutomaton);
+            System.out.println("alternative = "+alternative);
+            if (!alternative.equals(nextAutomaton)) {
+                System.out.println("Replace!!");
+                nextAutomaton.getParent().replaceCurrentAutomaton(alternative);
+                alternative.addListener(this);
+            } else {
+                nextAutomaton.addListener(this);
+            }
+        } else {
+            nextAutomaton.addListener(this);
         }
-        nextAutomaton.addListener(this);
+        
     }
 
     @Override

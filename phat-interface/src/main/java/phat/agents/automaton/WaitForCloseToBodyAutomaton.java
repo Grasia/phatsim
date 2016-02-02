@@ -21,10 +21,6 @@ package phat.agents.automaton;
 
 import phat.PHATInterface;
 import phat.agents.Agent;
-import phat.body.commands.GoCloseToBodyCommand;
-import phat.body.commands.GoToSpaceCommand;
-import phat.body.commands.SetBodyInHouseSpaceCommand;
-import phat.body.commands.SetSpeedDisplacemenetCommand;
 import phat.body.commands.WaitForCloseToBodyCommand;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;

@@ -22,7 +22,6 @@ package phat.agents.automaton;
 import java.util.ArrayList;
 import phat.PHATInterface;
 import phat.agents.Agent;
-import static phat.agents.automaton.Automaton.ECHO;
 
 /**
  *

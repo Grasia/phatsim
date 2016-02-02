@@ -40,7 +40,7 @@ public class MoveToSpace extends SimpleState implements PHATCommandListener {
     float lastSpeed = -1f;
 
     public MoveToSpace(Agent agent, String name, String destinyName) {
-        this(agent, name, destinyName, 1f);
+        this(agent, name, destinyName, 0.5f);
     }
 
     @Override

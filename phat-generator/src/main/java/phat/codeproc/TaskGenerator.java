@@ -27,19 +27,23 @@ import ingenias.generator.browser.GraphEntity;
 import ingenias.generator.datatemplate.Repeat;
 import ingenias.generator.datatemplate.Sequences;
 import ingenias.generator.datatemplate.Var;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import phat.codeproc.pd.PDGenerator;
 
 public class TaskGenerator {
+
     final static Logger logger = Logger.getLogger(TaskGenerator.class.getName());
-    
-    final static String SEQ_TASK_DIAG = "SequentialTaskDiagram";
-    final static String TYPE_GET_UP_FROM_BED_TASK = "BGetUpFromBed";
-    final static String TYPE_GO_INTO_BED_TASK = "GoIntoBed";
-    final static String TYPE_GO_TO_TASK = "BGoToTask";
-    final static String TYPE_USE_TASK = "BUseTask";
-    final static String TYPE_STAND_UP_TASK = "StandUp";
+
+    enum EntityType {
+
+        SequentialTaskDiagram
+    };
+    static Map<String, String> entityToAutomatonMap = new HashMap();
     private Browser browser;
     private Sequences sequence;
 
@@ -47,15 +51,38 @@ public class TaskGenerator {
         super();
         this.browser = browser;
         this.sequence = sequence;
+        entityToAutomatonMap.put("BGetUpFromBed", "StandUpAutomaton");
+        entityToAutomatonMap.put("GoIntoBed", "GoIntoBedAutomaton");
+        entityToAutomatonMap.put("OpenTask", "OpenObjectAutomaton");
+        entityToAutomatonMap.put("CloseTask", "CloseObjectAutomaton");
+        entityToAutomatonMap.put("BGoToTask", "MoveToSpace");
+        entityToAutomatonMap.put("GoToBodyLoc", "MoveToBodyLocAutomaton");
+        entityToAutomatonMap.put("WaitForBodyClose", "WaitForCloseToBodyAutomaton");
+        entityToAutomatonMap.put("BUseTask", "UseObjectAutomaton");
+        entityToAutomatonMap.put("BSequentialTask", "");
+        entityToAutomatonMap.put("TakeOffTask", "TakeOffClothingAutomaton");
+        entityToAutomatonMap.put("PutOnTask", "PutOnClothingAutomaton");
+        entityToAutomatonMap.put("SitDown", "SitDownAutomaton");
+        entityToAutomatonMap.put("BPickUpTask", "PickUpSomething");
+        entityToAutomatonMap.put("BLeaveTask", "LeaveSomethingIn");
+        entityToAutomatonMap.put("Drink", "DrinkAutomaton");
+        entityToAutomatonMap.put("Eat", "EatAutomaton");
+        entityToAutomatonMap.put("StandUp", "StandUpAutomaton");
+        entityToAutomatonMap.put("FallSleep", "SleepAutomaton");
+        entityToAutomatonMap.put("WaitTask", "DoNothing");
+        entityToAutomatonMap.put("SayTask", "SayAutomaton");
+        entityToAutomatonMap.put("FallTask", "FallAutomaton");
+        entityToAutomatonMap.put("TapXYTask", "PressOnScreenXYAutomaton");
+
     }
 
     public void generateAllSeqTasks() throws NotFound {
         System.out.println("generateAllSeqTasks.............................");
-        for (Graph std : Utils.getGraphsByType(SEQ_TASK_DIAG, browser)) {
+        for (Graph std : Utils.getGraphsByType("SequentialTaskDiagram", browser)) {
             System.out.println(">" + std.getType() + ":" + Utils.replaceBadChars(std.getID()));
             Repeat rep = new Repeat("tasks");
-            rep.add(new Var("taskName", Utils.replaceBadChars(std.getID())));
-            rep.add(new Var("taskType", Utils.replaceBadChars(std.getType())));
+            rep.add(new Var("stID", Utils.replaceBadChars(std.getID())));
+            rep.add(new Var("stType", Utils.replaceBadChars(std.getType())));
             sequence.addRepeat(rep);
 
             generateSeqTaskDiagram(std, rep);
@@ -67,32 +94,55 @@ public class TaskGenerator {
             throws NotFound {
         GraphEntity task = Utils.getFirstEntity(std);
         while (task != null) {
-            String sentence = getNewTaskInstanceSentence(task);
-            sentence += ".setMetadata(\"SOCIAALML_ENTITY_ID\",\""
-                    + Utils.replaceBadChars(task.getID()) + "\")\n"
-                    + ".setMetadata(\"SOCIAALML_ENTITY_TYPE\",\""
-                    + task.getType() + "\")";
-            
-            String description = Utils.getAttributeByName(task, "Description");
-            if(description != null && !description.equals("")) {
-                sentence +=  "\n.setMetadata(\"SOCIAALML_DESCRIPTION\",\""
-                        + description + "\");";
-            } else {
-                sentence +=  ";";
-            }
-            System.out.println(">>" + sentence);
-            if (sentence != null) {
-                Repeat rep = new Repeat("subTasks");
-                rep.add(new Var("subTaskInst", sentence));
-                repFather.add(rep);
+            List<String> params = fillConstructorParams(task);
 
-                GraphEntity event = Utils
-                        .getTargetEntity(task, "ProducesEvent");
-                if (event != null) {
-                    Repeat eRep = new Repeat("events");
-                    eRep.add(new Var("eventName", Utils.replaceBadChars(event.getID())));
-                    rep.add(eRep);
+            Repeat rep = new Repeat("subTasks");
+            repFather.add(rep);
+            rep.add(new Var("className", Utils.replaceBadChars(params.get(0))));
+            rep.add(new Var("interrup", isCanBeInterrupted(task)));
+            rep.add(new Var("desc", getFieldValue(task, "Description", "", false)));
+            rep.add(new Var("eID", Utils.replaceBadChars(task.getID())));
+            rep.add(new Var("eType", Utils.replaceBadChars(task.getType())));
+
+            if (params.size() > 1) {
+                Repeat r3params = new Repeat("3params");
+                r3params.add(new Var("v3", params.get(1)));
+                rep.add(r3params);
+                if (params.size() > 2) {
+                    Repeat r4params = new Repeat("4params");
+                    r4params.add(new Var("v4", params.get(2)));
+                    r3params.add(r4params);
                 }
+            }
+
+            if (hasField(task, "BTaskDuration")) {
+                String duration = getFieldValue(task, "BTaskDuration", "0", false);
+                if (!duration.equals("") && Integer.parseInt(duration) > 0) {
+                    Repeat durRep = new Repeat("durRep");
+                    durRep.add(new Var("duration", duration));
+                    rep.add(durRep);
+                }
+            }
+
+            if (hasField(task, "SpeedField")) {
+                Repeat speedRep = new Repeat("speedRep");
+                speedRep.add(new Var("speed", getFieldValue(task, "SpeedField", "null", false)));
+                rep.add(speedRep);
+            }
+
+            if (hasField(task, "XPosOnScreen")) {
+                Repeat xyParams = new Repeat("setXY");
+                xyParams.add(new Var("x", getFieldValue(task, "XPosOnScreen", "null", true)));
+                xyParams.add(new Var("y", getFieldValue(task, "YPosOnScreen", "null", true)));
+                rep.add(xyParams);
+            }
+
+            GraphEntity event = Utils
+                    .getTargetEntity(task, "ProducesEvent");
+            if (event != null) {
+                Repeat eRep = new Repeat("events");
+                eRep.add(new Var("eventName", Utils.replaceBadChars(event.getID())));
+                rep.add(eRep);
             }
             task = nextTask(task, std);
         }
@@ -118,256 +168,77 @@ public class TaskGenerator {
         return "true";
     }
 
-    public static String getNewTaskInstanceSentence(GraphEntity taskGE)
-            throws NotFound {
-        String canBeIterrupted = isCanBeInterrupted(taskGE);
-        if (taskGE.getType().equals(TYPE_GET_UP_FROM_BED_TASK)) {
-            System.out
-                    .println("Task: " + Utils.replaceBadChars(taskGE.getID()));
-            GraphAttribute durationGA = taskGE
-                    .getAttributeByName("BTaskDuration");
-            int duration = 1;
-            try {
-                duration = Integer.parseInt(durationGA.getSimpleValue());
-            } catch (NumberFormatException nfe) {
-            }
-            ;
-            return "new StandUpAutomaton( agent, " + "\""
-                    + Utils.replaceBadChars(taskGE.getID()) + "\"" + "\n"
-                    + ").setFinishCondition(new TimerFinishedCondition(0, 0, "
-                    + duration + "))" + ".setCanBeInterrupted("
-                    + canBeIterrupted + ")";
-        } else if (taskGE.getType().equals(TYPE_GO_INTO_BED_TASK)) {
-            System.out
-                    .println("Task: " + Utils.replaceBadChars(taskGE.getID()));
-            GraphAttribute durationGA = taskGE
-                    .getAttributeByName("BTaskDuration");
-            int duration = 1;
-            try {
-                duration = Integer.parseInt(durationGA.getSimpleValue());
-            } catch (NumberFormatException nfe) {
-            }
-            ;
-            return "new GoIntoBedAutomaton( agent, null)" + "\n"
-                    + ".setFinishCondition(new TimerFinishedCondition(0, 0, "
-                    + duration + "))" + ".setCanBeInterrupted("
-                    + canBeIterrupted + ")";
-        } else if (taskGE.getType().equals("OpenTask")) {
-            GraphAttribute objGA = taskGE
-                    .getAttributeByName("OpenCloseObjField");
-            if(objGA == null || objGA.getSimpleValue().equals("")) {
-                logger.log(Level.SEVERE, "Attribute OpenCloseObjField of {0} is empty!", 
-                    new Object[]{taskGE.getID()});
-                System.exit(0);
-            }
-            return "new OpenObjectAutomaton(agent, \""
-                    + Utils.replaceBadChars(objGA.getSimpleValue()) + "\")" + "\n"
-                    + ".setCanBeInterrupted(" + canBeIterrupted + ")";
-        } else if (taskGE.getType().equals("CloseTask")) {
-            GraphAttribute objGA = taskGE
-                    .getAttributeByName("OpenCloseObjField");
-            if(objGA == null || objGA.getSimpleValue().equals("")) {
-                logger.log(Level.SEVERE, "Attribute OpenCloseObjField of {0} is empty!", 
-                    new Object[]{taskGE.getID()});
-                System.exit(0);
-            }
-            return "new CloseObjectAutomaton(agent, \""
-                    + Utils.replaceBadChars(objGA.getSimpleValue()) + "\")" + "\n"
-                    + ".setCanBeInterrupted(" + canBeIterrupted + ")";
-        } else if (taskGE.getType().equals(TYPE_GO_TO_TASK)) {
-            GraphAttribute ga = taskGE.getAttributeByName("SpaceToGoField");
-            if (ga.getSimpleValue() != null && !ga.getSimpleValue().equals("")) {
-                String automaton = "new MoveToSpace(agent, \""
-                        + Utils.replaceBadChars(taskGE.getID()) + "\", \""
-                        + ga.getSimpleValue() + "\")" + "\n";
-                GraphAttribute speedGA = taskGE
-                        .getAttributeByName("SpeedField");
-                if (speedGA.getSimpleValue() != null
-                        && !speedGA.getSimpleValue().equals("")) {
-                    automaton += ".setSpeed(" + speedGA.getSimpleValue() + "f)";
-                }
-                automaton += ".setCanBeInterrupted(" + canBeIterrupted + ")";
-                return automaton;
-            }
-        } else if (taskGE.getType().equals("GoToBodyLoc")) {
-            GraphAttribute humanGA = taskGE.getAttributeByName("HumanTarget");
-            if (humanGA.getSimpleValue() != null
-                    && !humanGA.getSimpleValue().equals("")) {
-                String automaton = "new MoveToBodyLocAutomaton(agent, \""
-                        + Utils.replaceBadChars(taskGE.getID()) + "\", \""
-                        + humanGA.getSimpleValue() + "\")" + "\n";
-                GraphAttribute speedGA = taskGE
-                        .getAttributeByName("SpeedField");
-                if (speedGA.getSimpleValue() != null
-                        && !speedGA.getSimpleValue().equals("")) {
-                    automaton += ".setSpeed(" + speedGA.getSimpleValue() + "f)";
-                }
-                automaton += ".setCanBeInterrupted(" + canBeIterrupted + ")";
-                return automaton;
-            }
-        } else if (taskGE.getType().equals("WaitForBodyClose")) {
-			GraphAttribute humanGA = taskGE.getAttributeByName("HumanTarget");
-			if (humanGA.getSimpleValue() != null
-					&& !humanGA.getSimpleValue().equals("")) {
-				String automaton = "new WaitForCloseToBodyAutomaton(agent, \""
-						+ Utils.replaceBadChars(taskGE.getID()) + "\", \""
-						+ humanGA.getSimpleValue() + "\")" + "\n";
-				
-				automaton += ".setCanBeInterrupted(" + canBeIterrupted + ")";
-				return automaton;
-			}
+    private static boolean hasField(GraphEntity task, String fieldName) {
+        GraphAttribute d;
+        try {
+            d = task.getAttributeByName(fieldName);
+        } catch (NotFound ex) {
+            return false;
         }
-		 else if (taskGE.getType().equals(TYPE_USE_TASK)) {
-            GraphAttribute durationGA = taskGE
-                    .getAttributeByName("BTaskDuration");
-            int duration = 1;
-            try {
-                duration = Integer.parseInt(durationGA.getSimpleValue());
-            } catch (NumberFormatException nfe) {
-            }
-            ;
-            GraphAttribute objGA = taskGE.getAttributeByName("BUseObjectField");
-            return "UseObjectAutomatonFactory.getAutomaton( agent, " + "\""
-                    + objGA.getSimpleValue() + "\"" + "\n"
-                    + ").setFinishCondition(new TimerFinishedCondition(0, 0, "
-                    + duration + "))" + "\n" + ".setCanBeInterrupted("
-                    + canBeIterrupted + ")";
-        } else if (taskGE.getType().equals("BSequentialTask")) {
-            GraphAttribute diagRef = taskGE
-                    .getAttributeByName("SeqTaskDiagramField");
-            if (!diagRef.getSimpleValue().equals("")) {
-                return "new " + Utils.replaceBadChars(diagRef.getSimpleValue()) +
-                        "Task(agent)" + "\n"
-                        + ".setCanBeInterrupted(" + canBeIterrupted + ")";
+        return d != null && !d.getSimpleValue().equals("");
+    }
+
+    private static String getFieldValue(GraphEntity task, String fieldName, String def, boolean mandatory) {
+        GraphAttribute at = null;
+        try {
+            at = task.getAttributeByName(fieldName);
+        } catch (NotFound ex) {
+        }
+        if (at == null || at.getSimpleValue().equals("")) {
+            if (mandatory) {
+                logger.log(Level.SEVERE, "Attribute {0} of {1} is empty!",
+                        new Object[]{fieldName, task.getID()});
+                System.exit(0);
             } else {
-                return "null";
+                logger.log(Level.WARNING, "Attribute {0} of {1} is empty!",
+                        new Object[]{fieldName, task.getID()});
+                return def;
             }
-        } else if (taskGE.getType().equals("TakeOffTask")) {
-            GraphAttribute durationGA = taskGE
-                    .getAttributeByName("BTaskDuration");
-            int duration = 1;
-            try {
-                duration = Integer.parseInt(durationGA.getSimpleValue());
-            } catch (NumberFormatException nfe) {
-            }
-            ;
-            return "new TakeOffClothingAutomaton(agent, \""
-                    + Utils.replaceBadChars(taskGE.getID()) + "\")" + "\n"
-                    + ".setFinishCondition(new TimerFinishedCondition(0, 0, "
-                    + duration + "))" + "\n" + ".setCanBeInterrupted("
-                    + canBeIterrupted + ")";
-        } else if (taskGE.getType().equals("PutOnTask")) {
-            GraphAttribute durationGA = taskGE
-                    .getAttributeByName("BTaskDuration");
-            int duration = Integer.parseInt(durationGA.getSimpleValue());
-            return "new PutOnClothingAutomaton(agent, \""
-                    + Utils.replaceBadChars(taskGE.getID()) + "\")" + "\n"
-                    + ".setFinishCondition(new TimerFinishedCondition(0, 0, "
-                    + duration + "))" + "\n" + ".setCanBeInterrupted("
-                    + canBeIterrupted + ")";
-        } else if (taskGE.getType().equals("SitDown")) {
-            GraphAttribute ga = taskGE.getAttributeByName("SeatField");
-            if (ga.getSimpleValue() != null && !ga.getSimpleValue().equals("")) {
-                return "new SitDownAutomaton(agent, \"" + ga.getSimpleValue()
-                        + "\")" + "\n" + ".setCanBeInterrupted("
-                        + canBeIterrupted + ")";
-
-            }
-        } else if (taskGE.getType().equals("BPickUpTask")) {
-            GraphAttribute ga = taskGE.getAttributeByName("PysicalMobObjField");
-            if (ga.getSimpleValue() != null && !ga.getSimpleValue().equals("")) {
-                return "new PickUpSomething(agent, \"" + ga.getSimpleValue()
-                        + "\")" + "\n" + ".setCanBeInterrupted("
-                        + canBeIterrupted + ")";
-
-            }
-        } else if (taskGE.getType().equals("Drink")) {
-            GraphAttribute durationGA = taskGE
-                    .getAttributeByName("BTaskDuration");
-            int duration = 1;
-            try {
-                duration = Integer.parseInt(durationGA.getSimpleValue());
-            } catch (NumberFormatException nfe) {
-            }
-            ;
-            return "new DrinkAutomaton(agent)" + "\n"
-                    + ".setFinishCondition(new TimerFinishedCondition(0, 0, "
-                    + duration + "))" + "\n" + ".setCanBeInterrupted("
-                    + canBeIterrupted + ")";
-        } else if (taskGE.getType().equals("Eat")) {
-            GraphAttribute durationGA = taskGE
-                    .getAttributeByName("BTaskDuration");
-            int duration = 1;
-            try {
-                duration = Integer.parseInt(durationGA.getSimpleValue());
-            } catch (NumberFormatException nfe) {
-            }
-            ;
-            return "new EatAutomaton(agent)" + "\n"
-                    + ".setFinishCondition(new TimerFinishedCondition(0, 0, "
-                    + duration + "))" + "\n" + ".setCanBeInterrupted("
-                    + canBeIterrupted + ")";
-        } else if (taskGE.getType().equals(TYPE_STAND_UP_TASK)) {
-            GraphAttribute durationGA = taskGE
-                    .getAttributeByName("BTaskDuration");
-            int duration = 1;
-            try {
-                duration = Integer.parseInt(durationGA.getSimpleValue());
-            } catch (NumberFormatException nfe) {
-            }
-            ;
-            return "new StandUpAutomaton( agent, " + "\""
-                    + Utils.replaceBadChars(taskGE.getID()) + "\"" + ")" + "\n"
-                    + ".setFinishCondition(new TimerFinishedCondition(0, 0, "
-                    + duration + "))" + "\n" + ".setCanBeInterrupted("
-                    + canBeIterrupted + ")";
-        } else if (taskGE.getType().equals("FallSleep")) {
-            GraphAttribute durationGA = taskGE
-                    .getAttributeByName("BTaskDuration");
-            int duration = 1;
-            try {
-                duration = Integer.parseInt(durationGA.getSimpleValue());
-            } catch (NumberFormatException nfe) {
-            }
-            ;
-            return "new SleepAutomaton(agent,\""
-                    + Utils.replaceBadChars(taskGE.getID()) + "\")" + "\n"
-                    + ".setFinishCondition(new TimerFinishedCondition(0, 0, "
-                    + duration + "))" + ".setCanBeInterrupted("
-                    + canBeIterrupted + ")";
-        } else if (taskGE.getType().equals("WaitTask")) {
-            GraphAttribute durationGA = taskGE
-                    .getAttributeByName("BTaskDuration");
-            int duration = 1;
-            try {
-                duration = Integer.parseInt(durationGA.getSimpleValue());
-            } catch (NumberFormatException nfe) {
-            }
-            ;
-            return "new DoNothing(agent,\""
-                    + Utils.replaceBadChars(taskGE.getID()) + "\")" + "\n"
-                    + ".setFinishCondition(new TimerFinishedCondition(0, 0, "
-                    + duration + "))" + ".setCanBeInterrupted("
-                    + canBeIterrupted + ")";
-        } else if (taskGE.getType().equals("SayTask")) {
-            GraphAttribute message = taskGE.getAttributeByName("MessageField");
-            return "new SayAutomaton(agent, \""
-                    + Utils.replaceBadChars(taskGE.getID()) + "\", \""
-                    + message.getSimpleValue() + "\", 0.5f)";
-        } else if (taskGE.getType().equals("FallTask")) {
-            return "new FallAutomaton(agent, \""
-                    + Utils.replaceBadChars(taskGE.getID()) + "\")";
-        } else if (taskGE.getType().equals("TapXYTask")) {
-            GraphAttribute xGA = taskGE.getAttributeByName("XPosOnScreen");
-            int x = Integer.parseInt(xGA.getSimpleValue());
-            GraphAttribute yGA = taskGE.getAttributeByName("YPosOnScreen");
-            int y = Integer.parseInt(yGA.getSimpleValue());
-            GraphAttribute tsGA = taskGE.getAttributeByName("TargetSmartphone");
-            String deviceId = tsGA.getSimpleValue();
-            return "new PressOnScreenXYAutomaton( agent, " + "\""
-                    + Utils.replaceBadChars(taskGE.getID()) + "\"" + ", \""
-                    + deviceId + "\", " + x + ", " + y + ")";
         }
-        return null;
+        return at.getSimpleValue();
+    }
+
+    public static List<String> fillConstructorParams(GraphEntity taskGE)
+            throws NotFound {
+
+        List params = new ArrayList<>();
+        String className = "";
+        if (taskGE.getType().equals("BSequentialTask")) {
+            className = Utils.replaceBadChars(getFieldValue(taskGE, "SeqTaskDiagramField", "null", true)) + "Task";
+        } else {
+            className = entityToAutomatonMap.get(taskGE.getType());
+        }
+        params.add(className);
+
+        if (taskGE.getType().equals("GoIntoBed")) {
+        } else if (taskGE.getType().equals("OpenTask") || taskGE.getType().equals("CloseTask")) {
+            params.add(getFieldValue(taskGE, "OpenCloseObjField", "null", true));
+        } else if (taskGE.getType().equals("BGoToTask")) {
+            params.add(getFieldValue(taskGE, "SpaceToGoField", "null", true));
+        } else if (taskGE.getType().equals("GoToBodyLoc")) {
+            params.add(getFieldValue(taskGE, "HumanTarget", "null", true));
+        } else if (taskGE.getType().equals("WaitForBodyClose")) {
+            params.add(getFieldValue(taskGE, "HumanTarget", "null", false));
+        } else if (taskGE.getType().equals("BUseTask")) {
+            params.add(getFieldValue(taskGE, "BUseObjectField", "null", true));
+        } else if (taskGE.getType().equals("TakeOffTask") || taskGE.getType().equals("PutOnTask")) {
+            params.add(getFieldValue(taskGE, "WearableObjField", "null", false));
+        } else if (taskGE.getType().equals("SitDown")) {
+            params.add(getFieldValue(taskGE, "SeatField", "null", false));
+        } else if (taskGE.getType().equals("BPickUpTask")) {
+            params.add(getFieldValue(taskGE, "PysicalMobObjField", "null", true));
+        } else if (taskGE.getType().equals("BLeaveTask")) {
+            params.add(getFieldValue(taskGE, "PysicalMobObjField", "null", true));
+            params.add(getFieldValue(taskGE, "DestinyField", "null", true));
+        } else if (taskGE.getType().equals("Drink")) {
+            params.add(getFieldValue(taskGE, "DrinkItemField", "null", false));
+        } else if (taskGE.getType().equals("Eat")) {
+            params.add(getFieldValue(taskGE, "EatableItemField", "null", false));
+        } else if (taskGE.getType().equals("SayTask")) {
+            params.add(getFieldValue(taskGE, "MessageField", "null", true));
+        } else if (taskGE.getType().equals("TapXYTask")) {
+            params.add(getFieldValue(taskGE, "TargetSmartphone", "null", true));
+        }
+        return params;
     }
 }

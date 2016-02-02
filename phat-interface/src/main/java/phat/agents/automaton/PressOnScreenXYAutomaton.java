@@ -39,11 +39,36 @@ public class PressOnScreenXYAutomaton extends SimpleState implements PHATCommand
     PressOnScreen pressOnScreenCommand;
     boolean done = false;
     
+    public PressOnScreenXYAutomaton(Agent agent, String name, String smartphoneId) {
+        super(agent, 0, name);
+        this.smartphoneId = smartphoneId;
+    }
+    
     public PressOnScreenXYAutomaton(Agent agent, String name, String smartphoneId, int x, int y) {
         super(agent, 0, name);
         this.smartphoneId = smartphoneId;
         this.x = x;
         this.y = y;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public String getSmartphoneId() {
+        return smartphoneId;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
     }
 
     @Override

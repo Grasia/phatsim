@@ -111,9 +111,9 @@ public class House {
 
         physicsSpace.addAll(physicalEntities);
         physicsSpace.addAll(physicsStructure);
-        
+
         rootNode.attachChild(house);
-        
+
         PhysicsUtils.updateLocationAndRotation(house);
     }
 
@@ -131,7 +131,7 @@ public class House {
         for (String roomName : getRoomNames()) {
             Node clights = getNode(roomName, "Lights");
             if (clights != null) {
-                System.out.println(roomName+" -> new PointLight()");
+                System.out.println(roomName + " -> new PointLight()");
                 PointLight pl = new PointLight();
                 pl.setColor(ColorRGBA.Yellow);
                 pl.setPosition(clights.getWorldTranslation());
@@ -157,10 +157,10 @@ public class House {
         for (Light l : lights.get(room)) {
             if (on) {
                 l.setColor(ColorRGBA.White);
-                if(l instanceof PointLight) {
-                    ((PointLight)l).setRadius(4f);
-                    System.out.println("Position = "+((PointLight)l).getPosition());
-                    System.out.println("PointLight radius = "+((PointLight)l).getRadius());
+                if (l instanceof PointLight) {
+                    ((PointLight) l).setRadius(4f);
+                    System.out.println("Position = " + ((PointLight) l).getPosition());
+                    System.out.println("PointLight radius = " + ((PointLight) l).getRadius());
                 }
             } else {
                 l.setColor(l.getColor().mult(0f));
@@ -366,13 +366,35 @@ public class House {
         if (furniture != null && furniture instanceof Node) {
             Node furNode = (Node) furniture;
             if (furNode.getChild("Places") != null) {
-                for(Spatial place: ((Node)furNode.getChild("Places")).getChildren()) {
-                    if(((Node)place).getChildren().size() <= 0) {
-                        result.add((Node)place);
+                for (Spatial place : ((Node) furNode.getChild("Places")).getChildren()) {
+                    if (((Node) place).getChildren().size() <= 0) {
+                        result.add((Node) place);
                     }
                 }
             }
         }
         return result;
     }
+    
+    public String getClosestPlaceToPutThings(Vector3f ori, String Furniture) {
+        System.out.println("\n\n\ngetClosestPlaceToPutThings... "+Furniture+" -> "+ori);
+        List<Node> places = getPlaceToPutThings(Furniture);
+        System.out.println("places = "+places.size());
+        if(!places.isEmpty()) {
+            Node closest = null;
+            float minDistance = Float.MAX_VALUE;
+            for(Node n: places) {                
+                float d = n.getWorldTranslation().distance(ori);
+                System.out.println(n+": "+d);
+                if(d < minDistance) {
+                    minDistance = d;
+                    closest = n;
+                }
             }
+            if(closest != null) {
+                return closest.getName();
+            }
+        }
+        return null;
+    }
+}

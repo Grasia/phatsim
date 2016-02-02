@@ -96,7 +96,7 @@ public class XYRMSAudioChart extends ApplicationFrame implements SensorListener 
         if (sd instanceof MicrophoneData) {
             MicrophoneData md = (MicrophoneData) sd;
             byte[] data = md.getData();
-            acumulativeTime += (1.0f / md.getAudioFormat().getSampleRate()) * (data.length / 2);
+            acumulativeTime += (1.0f / md.getAudioFormat().getSampleRate()) * (data.length / 2f);
             //values.add(acumulativeTime, volumeRMS(data, 0, data.length));
             values.add(acumulativeTime, getMax(md));
             /*int sample = 0;

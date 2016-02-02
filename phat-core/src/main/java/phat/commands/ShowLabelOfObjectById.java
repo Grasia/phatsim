@@ -28,7 +28,6 @@ import com.jme3.scene.Spatial;
 
 import java.util.logging.Level;
 
-import phat.commands.PHATCommand.State;
 import phat.scene.control.PHATKeepObjectAtOffset;
 import phat.util.SpatialFactory;
 import phat.util.SpatialUtils;

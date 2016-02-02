@@ -35,9 +35,13 @@ public class GoIntoBedAutomaton extends SimpleState implements PHATCommandListen
     boolean finished;
     String bedId;
 
-    public GoIntoBedAutomaton(Agent agent, String bedId) {
-        super(agent, 0, "GoIntoBedAutomaton");
+    public GoIntoBedAutomaton(Agent agent, String name, String bedId) {
+        super(agent, 0, name);
         this.bedId = bedId;
+    }
+    
+    public GoIntoBedAutomaton(Agent agent, String bedId) {
+        this(agent, "GoIntoBedAutomaton", bedId);
     }
 
     @Override

@@ -34,9 +34,13 @@ public class SitDownAutomaton extends SimpleState implements PHATCommandListener
     String placeId;
     boolean seated = false;
     
-    public SitDownAutomaton( Agent agent, String placeId) {
-        super(agent, 0, "SitDownAutomaton");
+    public SitDownAutomaton( Agent agent, String name, String placeId) {
+        super(agent, 0, name);
         this.placeId = placeId;
+    }
+    
+    public SitDownAutomaton( Agent agent, String placeId) {
+        this(agent, "SitDownAutomaton", placeId);
     }
 
     @Override

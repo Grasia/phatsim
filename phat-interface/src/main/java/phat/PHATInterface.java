@@ -187,7 +187,6 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
 
     public void start() {
         PHATUtils.removeNativeFiles();
-        
         app = new PHATApplication(this);
 
         AppSettings s = new AppSettings(true);

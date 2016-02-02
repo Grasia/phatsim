@@ -43,9 +43,13 @@ public class CloseObjectAutomaton extends SimpleState implements PHATCommandList
     AlignWithCommand alignWithCommand;
     CloseObjectCommand closeObj;
 
-    public CloseObjectAutomaton(Agent agent, String obj) {
-        super(agent, 0, "UseWCAutomaton-" + obj);
+    public CloseObjectAutomaton(Agent agent, String name, String obj) {
+        super(agent, 0, name);
         this.obj = obj;
+    }
+    
+    public CloseObjectAutomaton(Agent agent, String obj) {
+        this(agent, "CloseObjectAutomaton-" + obj, obj);
     }
 
     @Override

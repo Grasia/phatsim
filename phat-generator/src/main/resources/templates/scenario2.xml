@@ -39,7 +39,7 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
     	meq.startServer(MonitorEventQueue.DefaultName);
         Main@@@v@@@simName@@@/v@@@PHATSimulation sim = new Main@@@v@@@simName@@@/v@@@PHATSimulation();
         PHATInterface phat = new PHATInterface(sim, new ArgumentProcessor(args));
-        phat.setSeed(@@@v@@@seedValue@@@/v@@@L);
+        @@@repeat id="setSeed"@@@phat.setSeed(@@@v@@@seedValue@@@/v@@@L);@@@/repeat@@@
         phat.start();
     }
 
@@ -165,7 +165,7 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices implements PHATIn
     	meq.startServer(MonitorEventQueue.DefaultName);
         Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices sim = new Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices();
         PHATInterface phat = new PHATInterface(sim, new ArgumentProcessor(args));
-        phat.setSeed(@@@v@@@seedValue@@@/v@@@L);
+        @@@repeat id="setSeed"@@@phat.setSeed(@@@v@@@seedValue@@@/v@@@L);@@@/repeat@@@
         phat.start();
     }
 

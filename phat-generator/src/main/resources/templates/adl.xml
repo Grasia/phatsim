@@ -1,0 +1,40 @@
+@@@program xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"@@@
+ @@@repeat id="adls"@@@
+	@@@saveto@@@
+		@@@file overwrite="yes"@@@
+			@@@v@@@output@@@/v@@@/phat/agents/automaton/adl/@@@v@@@adlID@@@/v@@@ADL.java@@@/file@@@
+@@@text@@@
+package phat.agents.automaton.adl;
+
+import phat.agents.automaton.*;
+import phat.agents.automaton.conditions.*;
+import phat.agents.automaton.timeIntervals.*;
+import phat.agents.automaton.tasks.seq.*;
+import phat.agents.Agent;
+
+public class @@@v@@@adlID@@@/v@@@ADL extends TimeIntervalManager {
+
+    public @@@v@@@adlID@@@/v@@@ADL(Agent agent, String name) {
+        super(agent, name);
+        setMetadata("SOCIAALML_ENTITY_ID", "@@@v@@@adlID@@@/v@@@");
+        setMetadata("SOCIAALML_ENTITY_TYPE", "@@@v@@@adlType@@@/v@@@");
+        setMetadata("SOCIAALML_DESCRIPTION", "@@@v@@@adlDesc@@@/v@@@");
+    }
+	
+	@Override
+	public void initTIs() {
+            @@@repeat id="tiInst"@@@Transition @@@v@@@tiID@@@/v@@@Transition = new Transition(new @@@v@@@tiID@@@/v@@@TIA(agent, "@@@v@@@tiID@@@/v@@@"));
+                @@@repeat id="tiTime"@@@@@@v@@@tiID@@@/v@@@Transition.setCondition(new PastTimeCondition(@@@v@@@h@@@/v@@@, @@@v@@@m@@@/v@@@,@@@v@@@s@@@/v@@@)); 
+            @@@/repeat@@@@@@/repeat@@@
+	    @@@repeat id="tiFirst"@@@registerStartState(@@@v@@@tiID@@@/v@@@Transition.getTarget());
+	    @@@/repeat@@@
+	    @@@repeat id="tiTrans"@@@registerTransition(@@@v@@@tiIDS@@@/v@@@Transition.getTarget(), @@@v@@@tiIDT@@@/v@@@Transition);
+	    @@@/repeat@@@
+	    @@@repeat id="tiLast"@@@registerFinalState(@@@v@@@tiID@@@/v@@@Transition.getTarget());
+            @@@/repeat@@@
+	}
+}
+@@@/text@@@
+	@@@/saveto@@@
+	   @@@/repeat@@@
+@@@/program@@@

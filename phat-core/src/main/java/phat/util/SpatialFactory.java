@@ -20,7 +20,6 @@
 package phat.util;
 
 import com.jme3.asset.AssetManager;
-import com.jme3.bounding.BoundingVolume;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.material.Material;

@@ -2,7 +2,7 @@
  @@@repeat id="tasks"@@@
 	@@@saveto@@@
 		@@@file overwrite="yes"@@@
-			@@@v@@@output@@@/v@@@/phat/agents/automaton/tasks/seq/@@@v@@@taskName@@@/v@@@Task.java@@@/file@@@
+			@@@v@@@output@@@/v@@@/phat/agents/automaton/tasks/seq/@@@v@@@stID@@@/v@@@Task.java@@@/file@@@
 @@@text@@@
 package phat.agents.automaton.tasks.seq;
 
@@ -12,26 +12,44 @@ import phat.agents.automaton.uses.*;
 import phat.agents.events.*;
 import phat.agents.Agent;
 
-public class @@@v@@@taskName@@@/v@@@Task extends SeqTaskAutomaton {
+public class @@@v@@@stID@@@/v@@@Task extends SeqTaskAutomaton {
 
-	public @@@v@@@taskName@@@/v@@@Task(Agent agent) {
-        super(agent, "@@@v@@@taskName@@@/v@@@");
-        setMetadata("SOCIAALML_ENTITY_ID", "@@@v@@@taskName@@@/v@@@");
-        setMetadata("SOCIAALML_ENTITY_TYPE", "@@@v@@@taskType@@@/v@@@");
-    }
+	public @@@v@@@stID@@@/v@@@Task(Agent agent, String name) {
+            super(agent, name);
+            setMetadata("SOCIAALML_ENTITY_ID", "@@@v@@@stID@@@/v@@@");
+            setMetadata("SOCIAALML_ENTITY_TYPE", "@@@v@@@stType@@@/v@@@");
+            setMetadata("SOCIAALML_DESCRIPTION", "@@@v@@@stDesc@@@/v@@@");
+        }
 	
 	@Override
 	public void initTasks() {
 		@@@repeat id="subTasks"@@@
-		{ 
-		Automaton automaton = @@@v@@@subTaskInst@@@/v@@@;
+		{
+                Automaton automaton = new @@@v@@@className@@@/v@@@(
+                        agent, 
+                        "@@@v@@@className@@@/v@@@"
+                        @@@repeat id="3params"@@@, "@@@v@@@v3@@@/v@@@"
+                        @@@repeat id="4params"@@@, "@@@v@@@v4@@@/v@@@"@@@/repeat@@@@@@/repeat@@@
+                ).setCanBeInterrupted(@@@v@@@interrup@@@/v@@@)
+                 .setMetadata("SOCIAALML_DESCRIPTION", "@@@v@@@desc@@@/v@@@")
+                 .setMetadata("SOCIAALML_ENTITY_ID", "@@@v@@@eID@@@/v@@@")
+                 .setMetadata("SOCIAALML_ENTITY_TYPE", "@@@v@@@eType@@@/v@@@");
+                
+                @@@repeat id="durRep"@@@
+                automaton.setFinishCondition(new TimerFinishedCondition(0, 0, @@@v@@@duration@@@/v@@@));@@@/repeat@@@
+                @@@repeat id="speedRep"@@@
+                ((@@@v@@@className@@@/v@@@)automaton).setSpeed(@@@v@@@speed@@@/v@@@f);@@@/repeat@@@
+                @@@repeat id="setXY"@@@
+                ((@@@v@@@className@@@/v@@@)automaton).setX(@@@v@@@x@@@/v@@@);
+                ((@@@v@@@className@@@/v@@@)automaton).setY(@@@v@@@y@@@/v@@@);@@@/repeat@@@
+                
 		@@@repeat id="events"@@@
-    	PHATAudioEventAutomatonFinishedListener audioEvent = 
+                PHATAudioEventAutomatonFinishedListener audioEvent = 
     			new PHATAudioEventAutomatonFinishedListener(agent,"@@@v@@@eventName@@@/v@@@", new AgentEventSource(agent));
-    	automaton.addListener(audioEvent);@@@/repeat@@@
-    	addTransition(automaton, false);
-    	} 
-    	@@@/repeat@@@
+                    automaton.addListener(audioEvent);@@@/repeat@@@
+                    addTransition(automaton, false);
+                } 
+                @@@/repeat@@@
 	}
 }
 @@@/text@@@

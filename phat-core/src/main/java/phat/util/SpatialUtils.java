@@ -29,9 +29,7 @@ import com.jme3.scene.SceneGraphVisitor;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.AbstractControl;
 import com.jme3.scene.control.Control;
-import de.jarnbjo.vorbis.Util;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -247,7 +245,7 @@ public class SpatialUtils {
     
     private static void printChindrens(Spatial spatial, int depth) {
         for(int i = 0; i < depth; i++) {
-            System.out.print("\t");
+            System.out.print('\t');
         }
         System.out.println("->"+spatial.getName());
         if(spatial instanceof Node) {

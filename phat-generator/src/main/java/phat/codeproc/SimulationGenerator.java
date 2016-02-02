@@ -94,7 +94,7 @@ public class SimulationGenerator {
                         initLocRep.add(new Var("iniLoc", initialLoc));
                     }
 
-                    if (TimeIntervalsGenerator.getADL(humanId, browser) != null) {
+                    if (ADLsGenerator.getADL(humanId, browser) != null) {
                         Repeat bodyRep1 = new Repeat("agent");
                         simInitRep.add(bodyRep1);
                         bodyRep1.add(new Var("agentname", humanId));
@@ -148,11 +148,12 @@ public class SimulationGenerator {
         GraphEntity ge = getEntity(simDiags, "WorldInitialization");
         GraphAttribute seedworld = ge.getAttributeByName("SimulationSeedField");
         
-        String seedValue = "0";
         if(seedworld != null && !seedworld.getSimpleValue().equals("")) {
-            seedValue = seedworld.getSimpleValue();            
+            System.out.println("\n\n\nSEED = "+seedworld.getSimpleValue()+"\n\n\n");
+            Repeat setSeed = new Repeat("setSeed");
+            rep.add(setSeed);
+            setSeed.add(new Var("seedValue", seedworld.getSimpleValue()));
         }
-        rep.add(new Var("seedValue", seedValue));
         
         GraphAttribute houseType = ge.getAttributeByName("HouseTypeField");
         String houseTypeString = "House3room2bath";

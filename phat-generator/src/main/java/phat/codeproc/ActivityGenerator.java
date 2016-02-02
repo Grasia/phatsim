@@ -37,8 +37,8 @@ import java.util.logging.Logger;
 import phat.codeproc.pd.PDGenerator;
 
 public class ActivityGenerator {
+
     final static Logger logger = Logger.getLogger(ActivityGenerator.class.getName());
-    
     static final String ADL_SPEC_DIAGRAM = "ADLSpecDiagram";
     static final String ACTIVITY_DIAGRAM = "ActivityDiagram";
     static final String ACTIVITY_SPEC_FIELD = "ActivitySpecField";
@@ -67,22 +67,24 @@ public class ActivityGenerator {
             NotFound {
         for (GraphEntity ge : browser.getAllEntities()) {
             if (ge.getType().equals(ACTIVITY_TYPE)) {
-                Repeat rep = new Repeat("activities");
-                rep.add(new Var("actName", Utils.replaceBadChars(ge.getID())));
-                rep.add(new Var("actType", Utils.replaceBadChars(ge.getType())));
-                rep.add(new Var("actDescription", Utils.getAttributeByName(ge, "Description")));
-                seq.addRepeat(rep);
-
                 GraphAttribute ga = ge
                         .getAttributeByName(SEQ_TASK_DIAGRAM_FIELD);
                 if (ga != null) {
                     String actDiagId = Utils.replaceBadChars(ga.getSimpleValue());
                     if (actDiagId != null && !actDiagId.equals("")) {
-                        Repeat repSeq = new Repeat("seqTaskSpec");
-                        repSeq.add(new Var("seqTaskName", Utils.replaceBadChars(actDiagId)));
-                        rep.add(repSeq);
+                        Repeat rep = new Repeat("activities");
+                        seq.addRepeat(rep);
+                        rep.add(new Var("aID", Utils.replaceBadChars(ge.getID())));
+                        rep.add(new Var("aType", Utils.replaceBadChars(ge.getType())));
+                        rep.add(new Var("aDesc", Utils.getAttributeByName(ge, "Description")));
+
+                        rep.add(new Var("stID", Utils.replaceBadChars(actDiagId)));
+                        continue;
                     }
                 }
+                logger.log(Level.SEVERE, "The {0} activity doesn't have sequential task diagram!",
+                        new Object[]{ge.getID()});
+                System.exit(0);
             }
         }
     }
@@ -125,13 +127,13 @@ public class ActivityGenerator {
             throws NotFound, NullEntity {
 
         GraphEntity ge = Utils.getFirstEntity(adlSpec);
-        if(ge == null) {
+        if (ge == null) {
             logger.log(Level.SEVERE, "The diagram {0} is empty or doesn't know "
-                    + "which entity is the first one!", 
+                    + "which entity is the first one!",
                     new Object[]{adlSpec.getID()});
             System.exit(0);
         }
-        
+
         Repeat repFirst = new Repeat("firstActivity");
         repFather.add(repFirst);
         repFirst.add(new Var("actName", Utils.replaceBadChars(ge.getID())));

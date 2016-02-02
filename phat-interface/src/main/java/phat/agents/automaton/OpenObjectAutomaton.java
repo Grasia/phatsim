@@ -44,9 +44,13 @@ public class OpenObjectAutomaton  extends SimpleState implements PHATCommandList
     AlignWithCommand alignWithCommand;
     OpenObjectCommand openObj;
     
-    public OpenObjectAutomaton(Agent agent, String obj) {
-        super(agent, 0, "UseWCAutomaton-" + obj);
+    public OpenObjectAutomaton(Agent agent, String name, String obj) {
+        super(agent, 0, name);
         this.obj = obj;
+    }
+    
+    public OpenObjectAutomaton(Agent agent, String obj) {
+        this(agent, "OpenObjectAutomaton-" + obj, obj);
     }
 
     @Override

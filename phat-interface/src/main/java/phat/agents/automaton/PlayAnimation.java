@@ -34,6 +34,10 @@ public class PlayAnimation extends SimpleState implements PHATCommandListener {
     PlayBodyAnimationCommand playBodyAnimationCommand;
     boolean animFinished = false;
 
+    public PlayAnimation(Agent agent, String name, String animationName) {
+        this(agent, 0, name, animationName);
+    }
+    
     public PlayAnimation(Agent agent, int priority, String name, String animationName) {
         super(agent, priority, name);
 

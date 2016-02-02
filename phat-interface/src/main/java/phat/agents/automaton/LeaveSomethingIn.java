@@ -25,33 +25,36 @@ import phat.body.commands.GoCloseToObjectCommand;
 import phat.body.commands.PickUpCommand;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
+import phat.devices.commands.SetDeviceOnFurnitureCommand;
+import phat.structures.houses.HouseAppState;
 
 /**
  *
  * @author pablo
  */
-public class PickUpSomething extends SimpleState implements PHATCommandListener {
+public class LeaveSomethingIn extends SimpleState implements PHATCommandListener {
 
-    PickUpCommand pickUpCommand;
+    SetDeviceOnFurnitureCommand setObjectOnCommand;
     GoCloseToObjectCommand goCloseToObjectCommand;
     String objectId;
-    boolean picked = false;
-    boolean useRightHand = true;
+    String furniture;
+    boolean left = false;
 
-    public PickUpSomething(Agent agent, String name, String objectId) {
-        super(agent, 0, "PickUpSomething");
+    public LeaveSomethingIn(Agent agent, String name, String objectId, String furniture) {
+        super(agent, 0, name);
         this.objectId = objectId;
+        this.furniture = furniture;
     }
     
-    public PickUpSomething(Agent agent, String objectId) {
-        this(agent, "PickUpSomething", objectId);
+    public LeaveSomethingIn(Agent agent, String objectId, String furniture) {
+        this(agent, "LeaveSomethingIn", objectId, furniture);
     }
-    
+
     @Override
     public void interrupt() {
-        if (pickUpCommand != null && pickUpCommand.getState().equals(PHATCommand.State.Running)) {
-            pickUpCommand.setFunction(PHATCommand.Function.Interrupt);
-            agent.runCommand(pickUpCommand);
+        if (setObjectOnCommand != null && setObjectOnCommand.getState().equals(PHATCommand.State.Running)) {
+            setObjectOnCommand.setFunction(PHATCommand.Function.Interrupt);
+            agent.runCommand(setObjectOnCommand);
         }
 
         super.interrupt();
@@ -59,21 +62,23 @@ public class PickUpSomething extends SimpleState implements PHATCommandListener 
 
     @Override
     public boolean isFinished(PHATInterface phatInterface) {
-        return super.isFinished(phatInterface) || picked;
+        return super.isFinished(phatInterface) || left;
     }
 
     @Override
     public void commandStateChanged(PHATCommand command) {
         if (command.getState().equals(PHATCommand.State.Success)) {
             if (command == goCloseToObjectCommand) {
-                PickUpCommand.Hand hand = PickUpCommand.Hand.Right;
-                if (!useRightHand) {
-                    hand = PickUpCommand.Hand.Left;
+                String loc = agent.getAgentsAppState().getHouseAppState().getHouse("House1").getClosestPlaceToPutThings(agent.getLocation(), furniture);
+                if(loc != null) {
+                    setObjectOnCommand = new SetDeviceOnFurnitureCommand(objectId, "House1", furniture);
+                    setObjectOnCommand.setPlaceId(loc);
+                    agent.runCommand(setObjectOnCommand);
+                } else {
+                    left = true;
                 }
-                pickUpCommand = new PickUpCommand(agent.getId(), objectId, hand, this);
-                agent.runCommand(pickUpCommand);
-            } else if (command == pickUpCommand) {
-                picked = true;
+            } else if (command == setObjectOnCommand) {
+                left = true;
             }
         }
     }
@@ -84,8 +89,8 @@ public class PickUpSomething extends SimpleState implements PHATCommandListener 
 
     @Override
     public void initState(PHATInterface phatInterface) {
-        picked = false;
-        goCloseToObjectCommand = new GoCloseToObjectCommand(agent.getId(), objectId, this);
-        agent.runCommand(goCloseToObjectCommand);
+        left = false;
+        goCloseToObjectCommand = new GoCloseToObjectCommand(agent.getId(), furniture, this);
+        agent.runCommand(goCloseToObjectCommand);        
     }
 }

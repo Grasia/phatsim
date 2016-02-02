@@ -74,7 +74,8 @@ public class AgentsAppState extends AbstractAppState {
         this.rootNode = app.getRootNode();
 
         bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
-
+        houseAppState = app.getStateManager().getState(HouseAppState.class);
+        
         for (Agent a : availableAgents.values()) {
             a.setAgentsAppState(this);
         }

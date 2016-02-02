@@ -35,10 +35,26 @@ public class SayAutomaton extends SimpleState implements PHATCommandListener {
     String text;
     float volume;
     
+    public SayAutomaton(Agent agent, String name, String text) {
+        super(agent, 0, name);
+        this.text = text;
+        this.volume = 1;
+    }
+    
     public SayAutomaton(Agent agent, String name, String text, float volume) {
         super(agent, 0, name);
         this.text = text;
         this.volume = volume;
+    }
+    
+    public SayAutomaton setVolume(float volume) {
+        this.volume = volume;
+        return this;
+    }
+    
+    public SayAutomaton setText(String text) {
+        this.text = text;
+        return this;
     }
     
     @Override

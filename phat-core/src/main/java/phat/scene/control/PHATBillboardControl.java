@@ -22,8 +22,6 @@ package phat.scene.control;
 
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jme3.renderer.RenderManager;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.BillboardControl;
 import phat.util.SpatialUtils;
@@ -40,19 +38,10 @@ public class PHATBillboardControl extends BillboardControl {
     Quaternion rotation = new Quaternion();
     
     boolean updatedLoc = false;
-    
-    @Override
-    public void setSpatial(Spatial spatial) {
-        super.setSpatial(spatial);
-    }
-    
+        
     public void update(float fps) {
         super.update(fps);
         updateLocation(spatial);
-    }
-    @Override
-    protected void controlRender(RenderManager rm, ViewPort vp) {
-        super.controlRender(rm, vp);
     }
 
     float [] angles = new float[3];

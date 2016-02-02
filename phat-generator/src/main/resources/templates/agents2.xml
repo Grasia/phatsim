@@ -2,22 +2,23 @@
  @@@repeat id="actors"@@@
 	@@@saveto@@@
 		@@@file overwrite="yes"@@@
-			@@@v@@@output@@@/v@@@/phat/agents/impl/@@@v@@@actorname@@@/v@@@Agent.java@@@/file@@@
+			@@@v@@@output@@@/v@@@/phat/agents/impl/@@@v@@@aName@@@/v@@@Agent.java@@@/file@@@
 @@@text@@@
 package phat.agents.impl;
 
 import phat.agents.Agent;
 import phat.agents.automaton.*;
+import phat.agents.automaton.adl.*;
 import phat.agents.automaton.activities.*;
 import phat.agents.automaton.conditions.*;
 import phat.agents.automaton.timeIntervals.*;
 import phat.agents.events.*;
 import phat.agents.filters.*;
 
-public class @@@v@@@actorname@@@/v@@@Agent extends Agent {
+public class @@@v@@@aName@@@/v@@@Agent extends Agent {
     private String simulation="";
     
-    public @@@v@@@actorname@@@/v@@@Agent(String bodyId, String simName) {
+    public @@@v@@@aName@@@/v@@@Agent(String bodyId, String simName) {
         super(bodyId);
         this.simulation=simName;
     }
@@ -25,32 +26,20 @@ public class @@@v@@@actorname@@@/v@@@Agent extends Agent {
 
     @Override
     protected void initAutomaton() {
-   	    	FSM fsm = new TimeIntervalManager(this, 1,"FSM-@@@v@@@actorname@@@/v@@@");
-	    	@@@repeat id="timeInstance"@@@Transition @@@v@@@tiname@@@/v@@@Transition = new Transition(new @@@v@@@tiname@@@/v@@@TIA(this));
-                    @@@repeat id="timeTransition"@@@@@@v@@@tiname@@@/v@@@Transition.setCondition(new PastTimeCondition(@@@v@@@hours@@@/v@@@, @@@v@@@minutes@@@/v@@@,@@@v@@@seconds@@@/v@@@)); 
-                    @@@/repeat@@@ 
-	    	@@@/repeat@@@
-	    	
-	    	@@@repeat id="firstTimeInterval"@@@fsm.registerStartState(@@@v@@@tiname@@@/v@@@Transition.getTarget());
-	    	@@@/repeat@@@
-	    	@@@repeat id="regTrans"@@@fsm.registerTransition(@@@v@@@tinameS@@@/v@@@Transition.getTarget(), @@@v@@@tinameT@@@/v@@@Transition);
-	    	@@@/repeat@@@
-	    	@@@repeat id="regLastActivityRep"@@@
-                fsm.registerFinalState(@@@v@@@finalActivity@@@/v@@@Transition.getTarget());@@@/repeat@@@
-                
-	    	MainAutomaton mainAutomaton = new MainAutomaton(this);
-	    	mainAutomaton.addTransition(fsm, false);
-	    	
-	        mainAutomaton.addListener(new AutomatonIcon());
-	        
-	        setAutomaton(mainAutomaton);	   	
-		@@@repeat id="filterManager"@@@
-                setDiseaseManager(new @@@v@@@fmName@@@/v@@@_@@@v@@@actorname@@@/v@@@(this, simulation));@@@/repeat@@@
-		    
-	    	// Init EventManager
-	    	@@@repeat id="eventProcessor"@@@
-	    	getEventManager().addMap("@@@v@@@eventId@@@/v@@@", 
-	    		new EventProcessor("@@@v@@@eventId@@@/v@@@", 
+        @@@repeat id="ADL"@@@
+            FSM adl = new @@@v@@@adlName@@@/v@@@ADL(this, "ADL-@@@v@@@adlName@@@/v@@@");
+            MainAutomaton mainAutomaton = new MainAutomaton(this);
+	    mainAutomaton.addTransition(adl, false);
+            mainAutomaton.addListener(new AutomatonIcon());
+            setAutomaton(mainAutomaton);
+        @@@/repeat@@@
+	
+        @@@repeat id="filterManager"@@@
+            setDiseaseManager(new @@@v@@@fmName@@@/v@@@_@@@v@@@aName@@@/v@@@(this, simulation));@@@/repeat@@@
+	
+        @@@repeat id="eventProcessor"@@@
+            getEventManager().addMap("@@@v@@@eventId@@@/v@@@", 
+                new EventProcessor("@@@v@@@eventId@@@/v@@@", 
 	    				@@@v@@@eventCondition@@@/v@@@, 
 	    				@@@v@@@acticity@@@/v@@@Activity.class));
 	    	@@@/repeat@@@

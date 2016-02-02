@@ -31,9 +31,13 @@ public class UseObjectAutomaton extends SimpleState {
     String objToBeUsedId;
     Automaton indirectAutomaton;
     
-    public UseObjectAutomaton(Agent agent, String objToBeUsedId) {
-        super(agent, 0, "UseObjectAutomaton-"+objToBeUsedId);
+    public UseObjectAutomaton(Agent agent, String name, String objToBeUsedId) {
+        super(agent, 0, name);
         this.objToBeUsedId = objToBeUsedId;
+    }
+    
+    public UseObjectAutomaton(Agent agent, String objToBeUsedId) {
+        this(agent, "UseObjectAutomaton-"+objToBeUsedId, objToBeUsedId);
     }
     
     

@@ -16,16 +16,17 @@ import phat.agents.Agent;
 
 public class @@@v@@@tisName@@@/v@@@TIA extends TimeIntervalAutomaton {
 
-	public @@@v@@@tisName@@@/v@@@TIA(Agent agent) {
-        super(agent, "@@@v@@@tisName@@@/v@@@TIA");
+    public @@@v@@@tisName@@@/v@@@TIA(Agent agent, String name) {
+        super(agent, name);
         setMetadata("SOCIAALML_ENTITY_ID", "@@@v@@@tisName@@@/v@@@");
         setMetadata("SOCIAALML_ENTITY_TYPE", "@@@v@@@tisType@@@/v@@@");
+        //setMetadata("SOCIAALML_ENTITY_TYPE", "@@@v@@@tisDesc@@@/v@@@");
     }
 	
 	@Override
 	public void initSubAutomaton() {
 		FSM fsm = new FSM(agent, 1,"FSM-@@@v@@@tisName@@@/v@@@TIA");
-		@@@repeat id="activities"@@@ActivityAutomaton @@@v@@@actName@@@/v@@@Activity = new @@@v@@@actName@@@/v@@@Activity(agent);
+		@@@repeat id="activities"@@@ActivityAutomaton @@@v@@@actName@@@/v@@@Activity = new @@@v@@@actName@@@/v@@@Activity(agent, "@@@v@@@actName@@@/v@@@");
 		@@@/repeat@@@    	
     	@@@repeat id="firstActivity"@@@fsm.registerStartState(@@@v@@@actName@@@/v@@@Activity);
     	@@@/repeat@@@

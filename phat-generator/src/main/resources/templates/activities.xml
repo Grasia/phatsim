@@ -2,7 +2,7 @@
  @@@repeat id="activities"@@@
 	@@@saveto@@@
 		@@@file overwrite="yes"@@@
-			@@@v@@@output@@@/v@@@/phat/agents/automaton/activities/@@@v@@@actName@@@/v@@@Activity.java@@@/file@@@
+			@@@v@@@output@@@/v@@@/phat/agents/automaton/activities/@@@v@@@aID@@@/v@@@Activity.java@@@/file@@@
 @@@text@@@
 package phat.agents.automaton.activities;
 
@@ -10,19 +10,18 @@ import phat.agents.automaton.*;
 import phat.agents.automaton.tasks.seq.*;
 import phat.agents.Agent;
 
-public class @@@v@@@actName@@@/v@@@Activity extends ActivityAutomaton {
+public class @@@v@@@aID@@@/v@@@Activity extends ActivityAutomaton {
 
-	public @@@v@@@actName@@@/v@@@Activity(Agent agent) {
-        super(agent, "@@@v@@@actName@@@/v@@@Activity");
-        setMetadata("SOCIAALML_ENTITY_ID", "@@@v@@@actName@@@/v@@@");
-        setMetadata("SOCIAALML_ENTITY_TYPE", "@@@v@@@actType@@@/v@@@");
-        setMetadata("SOCIAALML_DESCRIPTION", "@@@v@@@actDescription@@@/v@@@");
+	public @@@v@@@aID@@@/v@@@Activity(Agent agent, String name) {
+        super(agent, name);
+        setMetadata("SOCIAALML_ENTITY_ID", "@@@v@@@aID@@@/v@@@");
+        setMetadata("SOCIAALML_ENTITY_TYPE", "@@@v@@@aType@@@/v@@@");
+        setMetadata("SOCIAALML_DESCRIPTION", "@@@v@@@aDesc@@@/v@@@");
     }
 	
 	@Override
 	public void initTasks() {
-		@@@repeat id="seqTaskSpec"@@@addTransition(new @@@v@@@seqTaskName@@@/v@@@Task(agent), false);
-		@@@/repeat@@@		
+            addTransition(new @@@v@@@stID@@@/v@@@Task(agent, "@@@v@@@stID@@@/v@@@"), false);	
 	}
 }
 @@@/text@@@

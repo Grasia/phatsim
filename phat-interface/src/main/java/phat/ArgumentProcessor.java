@@ -27,29 +27,35 @@ import phat.util.PHATUtils;
  * @author pablo
  */
 public class ArgumentProcessor {
+
     String[] args;
 
     public ArgumentProcessor(String[] args) {
         this.args = args;
-        
+
         System.out.println("\n\n\n\n\n----------------");
         System.out.println("Arguments:");
         System.out.println("----------------");
-        for(String s: args) {
-            System.out.println(s);
+        for (String s : args) {
+            System.out.println("->"+s);
         }
         System.out.println("----------------\n\n\n\n\n");
     }
-    
+
     public void initialize(PHATInterface inter) {
-        if(PHATUtils.contains(args, "-ml")) {
+        if (PHATUtils.contains(args, "-ml")) {
             inter.setMultiListener(true);
         }
-        if(PHATUtils.contains(args, "-fps")) {
+        if (PHATUtils.contains(args, "-fps")) {
             inter.setDisplayFPS(true);
         }
-        if(PHATUtils.contains(args, "-sv")) {
+        if (PHATUtils.contains(args, "-sv")) {
             inter.setStatView(true);
+        }
+        for (String s: args) {
+            if (s.contains("-seed")) {
+                //inter.setSeed(Long.parseLong(args[i + 1]));
+            }
         }
     }
 }

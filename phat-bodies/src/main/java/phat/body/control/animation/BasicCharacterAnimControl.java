@@ -197,6 +197,7 @@ public class BasicCharacterAnimControl extends AbstractControl implements
             BasicCharacterAnimControl.AnimName manualAnimation,
             AnimFinishedListener listener) {
         listeners.put(manualAnimation, listener);
+        System.out.println("SetManualAnimationName = "+manualAnimation);
         this.manualAnimation = manualAnimation;
     }
 

@@ -27,16 +27,11 @@ import phat.agents.Agent;
  * @author pablo
  */
 public class PutOnClothingAutomaton  extends SimpleState {
-    /**
-     * Esta clase es un estado de comportamiento. Como no tiene autómata subordinado se extiende SimpleState.
-     * Se le puede pasar prioridad, duración  y nombre. El nombre sirve para implementar varios estados con una misma clase.
-
-     * @param personImplementingAutomaton
-     * @param name
-     */
-    public PutOnClothingAutomaton(Agent agent, String name){
+    String clothes;
+    
+    public PutOnClothingAutomaton(Agent agent, String name, String clothes){
         super(agent,0,name);
-
+        this.clothes = clothes;
     }
 
     @Override

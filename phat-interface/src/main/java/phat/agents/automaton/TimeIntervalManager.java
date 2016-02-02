@@ -28,10 +28,15 @@ import phat.agents.automaton.conditions.PastTimeCondition;
  *
  * @author pablo
  */
-public class TimeIntervalManager extends FSM {
+public abstract class TimeIntervalManager extends FSM {
 
+    public TimeIntervalManager(Agent agent, String name) {
+        this(agent, 0, name);
+    }
+    
     public TimeIntervalManager(Agent agent, int priority, String name) {
         super(agent, priority, name);
+        initTIs();
     }
 
     @Override
@@ -63,4 +68,6 @@ public class TimeIntervalManager extends FSM {
         }
         return false;
     }
+    
+    protected abstract void initTIs();
 }

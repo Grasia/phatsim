@@ -30,31 +30,38 @@ import ingenias.generator.datatemplate.Var;
 import phat.codeproc.pd.PDGenerator;
 
 public class AgentsGenerator {
-	static final String HUMAN_PROFILE_SPEC_DIAGRAM = "HumanProfileSpecDiagram";
-	static final String ADLProfile_SPEC_DIAGRAM = "ADLProfile";
-	static final String SIMULATION_DIAGRAM = "SimulationDiagram";
 
-	Browser browser;
+    static final String HUMAN_PROFILE_SPEC_DIAGRAM = "HumanProfileSpecDiagram";
+    static final String ADLProfile_SPEC_DIAGRAM = "ADLProfile";
+    static final String SIMULATION_DIAGRAM = "SimulationDiagram";
+    Browser browser;
 
-	public AgentsGenerator(Browser browser) {
-		this.browser = browser;
-	}
+    public AgentsGenerator(Browser browser) {
+        this.browser = browser;
+    }
 
-	public void generateAgents(Sequences seq) throws NullEntity, NotFound {
-		for (Graph diagram : Utils.getGraphsByType(HUMAN_PROFILE_SPEC_DIAGRAM,
-				browser)) {
-			for (GraphEntity actor : Utils.getEntities(diagram, "Human")) {
-				Repeat rep = new Repeat("actors");
-				seq.addRepeat(rep);
-									
-				rep.add(new Var("actorname", Utils.replaceBadChars(actor.getID())));
-				String humanId = actor.getID();
-				new TimeIntervalsGenerator(browser).generateADL(humanId, rep);
-				new InteractionDiagramGenerator(browser).generateEventProcessor(humanId, rep);
-                                PDGenerator.linkPDManager(humanId, rep, browser);                                
+    public void generateAgents(Sequences seq) throws NullEntity, NotFound {
+        new ADLsGenerator(browser).generateADLClasses(seq);
+        for (Graph diagram : Utils.getGraphsByType(HUMAN_PROFILE_SPEC_DIAGRAM,
+                browser)) {
+            for (GraphEntity actor : Utils.getEntities(diagram, "Human")) {
+                Repeat rep = new Repeat("actors");
+                seq.addRepeat(rep);
+
+                rep.add(new Var("aName", Utils.replaceBadChars(actor.getID())));
+                String humanId = actor.getID();
+
+                String adlName = ADLsGenerator.getADLName(humanId, browser);
+                if (adlName != null) {
+                    Repeat adlRep = new Repeat("ADL");
+                    rep.add(adlRep);
+                    adlRep.add(new Var("adlName", adlName));
+                }
+                new InteractionDiagramGenerator(browser).generateEventProcessor(humanId, rep);
+                PDGenerator.linkPDManager(humanId, rep, browser);
                 new PDGenerator(browser).generatePD(seq, actor);
-                
-			}
-		}
-	}
+
+            }
+        }
+    }
 }

@@ -64,7 +64,11 @@ public class SetDeviceOnFurnitureCommand extends PHATDeviceCommand {
 
         Node device = devicesAppState.getDevice(deviceId);
 
-        if (device != null && device.getParent() == null) {
+        if (device != null) {
+            if(device.getParent() != null) {
+                device.removeFromParent();
+                //device.setLocalRotation(new Quaternion().fromAngles(0f, 0f, 0f));
+            }
             List<Node> places = houseAppState.getHouse(houseId).getPlaceToPutThings(furnitureId);
             if (!places.isEmpty()) {
                 Node place = null;
@@ -79,9 +83,9 @@ public class SetDeviceOnFurnitureCommand extends PHATDeviceCommand {
                 if(placeId == null) {
                     place = places.get(0);
                 }
-                
                 device.setLocalTranslation(Vector3f.ZERO);
 
+                device.getControl(RigidBodyControl.class).setEnabled(true);
                 device.getControl(RigidBodyControl.class).setPhysicsLocation(place.getWorldTranslation().addLocal(0f, 0.015f, 0f));
                 device.getControl(RigidBodyControl.class).setPhysicsRotation(new Quaternion().fromAngles(-FastMath.HALF_PI, 0f, 0f));
 

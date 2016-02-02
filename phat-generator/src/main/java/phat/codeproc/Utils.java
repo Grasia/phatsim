@@ -69,8 +69,8 @@ public class Utils {
             GraphEntity[] entities = browser.getAllEntities();
             for (GraphEntity adl : entities) {
                 if (adl.getType().equalsIgnoreCase(profileType)) {
-                    GraphEntity human = Utils.getTargetEntity(adl, "ProfileOf");                    
-                    if (human!=null && human.getID().equals(humanId)) {
+                    GraphEntity human = Utils.getTargetEntity(adl, "ProfileOf");
+                    if (human != null && human.getID().equals(humanId)) {
                         return adl;
                     }
                 }
@@ -80,7 +80,7 @@ public class Utils {
         }
         return result;
     }
-    
+
     public static HashSet<GraphEntity> getPlayedRoles(GraphEntity agent)
             throws NullEntity {
         GraphEntity[] initialPlayedRoles = Utils.getRelatedElements(agent,
@@ -265,13 +265,13 @@ public class Utils {
         }
         return new Vector(new HashSet(related));
     }
-    
+
     public static Vector<GraphEntity> getRelatedElementsVectorInSameDiagram(
             GraphEntity agent, String relationshipname, String role)
             throws NullEntity {
-        GraphRelationship[] rels = agent.getRelationships();        
+        GraphRelationship[] rels = agent.getRelationships();
         Vector related = new Vector();
-        for (GraphRelationship gr:rels){        
+        for (GraphRelationship gr : rels) {
             if (gr.getType().toLowerCase()
                     .equals(relationshipname.toLowerCase())) {
                 GraphRole[] roles = gr.getRoles();
@@ -419,7 +419,7 @@ public class Utils {
         try {
             for (GraphRelationship gr : ge.getRelationships()) {
                 if (gr.getType().equals(relationType)) {
-                    for (GraphRole gRole: getTargetsRole(gr.getRoles()) ) {
+                    for (GraphRole gRole : getTargetsRole(gr.getRoles())) {
                         if (gRole != null && gRole.getPlayer().getID() != ge.getID()) {
                             result.add(gRole.getPlayer());
                         }
@@ -449,24 +449,24 @@ public class Utils {
         return result;
     }
 
-    public static GraphEntity getSourceEntity(GraphEntity ge, GraphRelationship gr)  {
-    	GraphRole gRole = getSourceRole( gr.getRoles());
+    public static GraphEntity getSourceEntity(GraphEntity ge, GraphRelationship gr) {
+        GraphRole gRole = getSourceRole(gr.getRoles());
         try {
-			if (gRole != null && gRole.getPlayer().getID() != ge.getID()) {
-			    return gRole.getPlayer();
-			}
-		} catch (NullEntity e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            if (gRole != null && gRole.getPlayer().getID() != ge.getID()) {
+                return gRole.getPlayer();
+            }
+        } catch (NullEntity e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         return null;
     }
-    
+
     public static GraphEntity getSourceEntity(GraphEntity ge, String relationType) {
         try {
             for (GraphRelationship gr : ge.getRelationships()) {
                 if (gr.getType().equals(relationType)) {
-                	 return getSourceEntity(ge, gr);
+                    return getSourceEntity(ge, gr);
                 }
             }
         } catch (Throwable ex) {
@@ -495,9 +495,13 @@ public class Utils {
 
     public static GraphEntity getTargetEntity(GraphEntity ge, String relationType) {
         try {
+            System.out.println("Relations:");
             for (GraphRelationship gr : ge.getRelationships()) {
+                System.out.println("\t" + gr.getType());
                 if (gr.getType().equals(relationType)) {
-                   return  getTargetEntity(ge, gr);
+                    GraphEntity result = getTargetEntity(ge, gr);
+                    if(result != null)
+                        return result;
                 }
             }
         } catch (Throwable ex) {
@@ -506,14 +510,19 @@ public class Utils {
         return null;
     }
 
-	public static GraphEntity getTargetEntity(GraphEntity ge, GraphRelationship gr)
-			throws NullEntity {
-		GraphRole gRole = getTargetRole(gr.getRoles());
-		if (gRole != null && !gRole.getPlayer().getID().equals(ge.getID())) {
-		    return gRole.getPlayer();
-		}
-		return null;
-	}
+    public static GraphEntity getTargetEntity(GraphEntity ge, GraphRelationship gr)
+            throws NullEntity {
+        GraphRole gRole = getTargetRole(gr.getRoles());
+        System.out.println("Roles:");
+        for (GraphRole r : gr.getRoles()) {
+            System.out.println("-"+r.getName() + "->"+r.getPlayer().getID());
+        }
+        System.out.println("gRole = " + gRole.getPlayer().getID());
+        if (gRole != null && !gRole.getPlayer().getID().equals(ge.getID())) {
+            return gRole.getPlayer();
+        }
+        return null;
+    }
 
     public static boolean isTargetOfAnyRelationship(GraphEntity ge)
             throws NullEntity {
@@ -542,7 +551,7 @@ public class Utils {
         }
         return result;
     }
-    
+
     public static List<GraphEntity> getFirstEntities(Graph graph) {
         List<GraphEntity> result = new ArrayList<>();;
         try {
@@ -765,32 +774,34 @@ public class Utils {
         return related;
     }
 
-	public static boolean contains(Graph graph, GraphEntity actor) {
-		try {
-			for (GraphEntity ge:graph.getEntities())
-				if (ge.equals(actor))
-					return true;
-		} catch (NullEntity e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return false;
-	}
-        
-        public static String getAttributeByName(GraphEntity ge, String attributeName) {
-            for(GraphAttribute ga: ge.getAllAttrs()) {
-                if(ga.getName().equals(attributeName)) {
-                    return ga.getSimpleValue();
+    public static boolean contains(Graph graph, GraphEntity actor) {
+        try {
+            for (GraphEntity ge : graph.getEntities()) {
+                if (ge.equals(actor)) {
+                    return true;
                 }
             }
-            return "";
+        } catch (NullEntity e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
-        
-        public static String yesNoToTrueFalse(String yesno) {
-            if(yesno.equalsIgnoreCase("Yes")) {
-                return "true";
-            } else {
-                return "false";
+        return false;
+    }
+
+    public static String getAttributeByName(GraphEntity ge, String attributeName) {
+        for (GraphAttribute ga : ge.getAllAttrs()) {
+            if (ga.getName().equals(attributeName)) {
+                return ga.getSimpleValue();
             }
         }
+        return "";
+    }
+
+    public static String yesNoToTrueFalse(String yesno) {
+        if (yesno.equalsIgnoreCase("Yes")) {
+            return "true";
+        } else {
+            return "false";
+        }
+    }
 }
