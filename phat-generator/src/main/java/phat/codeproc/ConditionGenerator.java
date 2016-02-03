@@ -44,6 +44,7 @@ public class ConditionGenerator {
     final static String CPROB_TYPE = "CProb";
     final static String CEVENT_TYPE = "CEvent";
     final static String CSYMP_TYPE = "CSymptom";
+    final static String CDAY_OF_THE_WEEK = "CDayOfTheWeek";
     
     public static String generateAndCondition(Collection<GraphEntity> conds) {
         if (!conds.isEmpty()) {
@@ -244,6 +245,21 @@ public class ConditionGenerator {
                 System.exit(-1);
             }
             return "new SymptomCondition(\"" + symptomName + "\", \"" + symptomLevel + "\")";
+        } else if (type.equals(CDAY_OF_THE_WEEK)) {
+            try {
+                GraphAttribute gaProb = geCond.getAttributeByName("DayOfTheWeekField");
+                if (gaProb.getSimpleValue().equals("")) {
+                    logger.log(Level.SEVERE,
+                            "Attribute {0} of entity {1} is not set.",
+                            new Object[]{"DayOfTheWeekField", geCond.getID()});
+                    System.exit(-1);
+                }
+                return "new DayCondition(DayCondition.DAY_OF_THE_WEEK." + gaProb.getSimpleValue() + ")";
+            } catch (NotFound ex) {
+                Logger.getLogger(ConditionGenerator.class.getName()).log(Level.SEVERE,
+                        "Entity {0} hasn't got attribute {1}", new Object[]{geCond.getID(), "ProbVarField"});
+                System.exit(-1);
+            }
         } else {
             logger.log(Level.SEVERE, "Condition {0} is not supported.",
                     new Object[]{geCond.getID()});

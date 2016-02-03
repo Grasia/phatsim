@@ -19,23 +19,19 @@
  */
 package phat.agents.automaton.conditions;
 
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import phat.agents.Agent;
 import phat.agents.automaton.Automaton;
-import phat.agents.filters.DiseaseManager;
-import phat.agents.filters.Symptom;
 
-public class SymptomCondition implements AutomatonCondition {
+public class DayCondition implements AutomatonCondition {
 
-    private final static Logger logger = Logger.getLogger(DayCondition.class.getName()); 
+    private final static Logger logger = Logger.getLogger(SymptomCondition.class.getName()); 
 
-    String symptomName;
-    String symptomLevel;
-
-    public SymptomCondition(String symptomName, String symptomLevel) {
-        this.symptomName = symptomName;
-        this.symptomLevel = symptomLevel;
+    public enum DAY_OF_THE_WEEK {Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday};
+    DAY_OF_THE_WEEK dayOfTheWeek;
+    
+    public DayCondition(DAY_OF_THE_WEEK dayOfTheWeek) {
+        this.dayOfTheWeek = dayOfTheWeek;
     }
 
     /**
@@ -49,22 +45,7 @@ public class SymptomCondition implements AutomatonCondition {
      */
     @Override
     public boolean evaluate(Agent agent) {
-        DiseaseManager dm = agent.getDiseaseManager();
-        if (dm != null) {
-            Symptom s = dm.getSymptom(symptomName);
-            if (s != null) {
-                if (s.getCurrentLevel().equals(Symptom.Level.valueOf(symptomLevel))) {
-                    return true;
-                }
-            } else {
-                logger.log(Level.WARNING, "Agent {0} hasn't got symptom {1}!", new Object[]{agent.getId(), symptomName});
-                return symptomLevel.equals(Symptom.Level.NONE.name());
-            }
-        } else {
-            logger.log(Level.WARNING, "Agent {0} hasn't got DiseaseManager", new Object[]{agent.getId()});
-            return symptomLevel.equals(Symptom.Level.NONE.name());
-        }
-        return false;
+        return dayOfTheWeek.ordinal() + 1 == agent.getTime().getDayOfWeek();
     }
 
     @Override
@@ -78,17 +59,9 @@ public class SymptomCondition implements AutomatonCondition {
     @Override
     public void automatonResumed(Automaton automaton) {
     }
-
-    public String getSymptomName() {
-        return symptomName;
-    }
-
-    public String getSymptomLevel() {
-        return symptomLevel;
-    }
     
     @Override
     public String toString() {
-        return "SymptomCondition("+symptomName+","+symptomLevel+")";
+        return "SymptomCondition("+dayOfTheWeek+")";
     }
 }
