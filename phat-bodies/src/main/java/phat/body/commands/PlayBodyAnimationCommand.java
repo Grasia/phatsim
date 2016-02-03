@@ -32,69 +32,71 @@ import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
 
 /**
- * 
+ *
  * @author pablo
  */
 public class PlayBodyAnimationCommand extends PHATCommand implements
-		AnimFinishedListener {
+        AnimFinishedListener {
 
-	private String bodyId;
-	private String animationName;
+    private String bodyId;
+    private String animationName;
 
-	public PlayBodyAnimationCommand(String bodyId, String animationName) {
-		this(bodyId, animationName, null);
-	}
+    public PlayBodyAnimationCommand(String bodyId, String animationName) {
+        this(bodyId, animationName, null);
+    }
 
-	public PlayBodyAnimationCommand(String bodyId, String animationName,
-			PHATCommandListener listener) {
-		super(listener);
-		this.bodyId = bodyId;
-		this.animationName = animationName;
-		logger.log(Level.INFO, "New Command: {0}", new Object[] { this });
-	}
+    public PlayBodyAnimationCommand(String bodyId, String animationName,
+            PHATCommandListener listener) {
+        super(listener);
+        this.bodyId = bodyId;
+        this.animationName = animationName;
+        logger.log(Level.INFO, "New Command: {0}", new Object[]{this});
+    }
 
-	@Override
-	public void runCommand(Application app) {
-		BodiesAppState bodiesAppState = app.getStateManager().getState(
-				BodiesAppState.class);
+    @Override
+    public void runCommand(Application app) {
+        BodiesAppState bodiesAppState = app.getStateManager().getState(
+                BodiesAppState.class);
 
-		Node body = bodiesAppState.getBody(bodyId);
+        Node body = bodiesAppState.getBody(bodyId);
 
-		if (body != null && body.getParent() != null) {
-			BasicCharacterAnimControl bcac = body
-					.getControl(BasicCharacterAnimControl.class);
-			bcac.setManualAnimation(
-					BasicCharacterAnimControl.AnimName.valueOf(animationName),
-					this);
-		}
-	}
+        if (body != null && body.getParent() != null) {
+            BasicCharacterAnimControl bcac = body
+                    .getControl(BasicCharacterAnimControl.class);
+            bcac.setManualAnimation(
+                    BasicCharacterAnimControl.AnimName.valueOf(animationName),
+                    this);
+        } else {
+            setState(State.Fail);
+        }
+    }
 
-	@Override
-	public void interruptCommand(Application app) {
-		BodiesAppState bodiesAppState = app.getStateManager().getState(
-				BodiesAppState.class);
+    @Override
+    public void interruptCommand(Application app) {
+        BodiesAppState bodiesAppState = app.getStateManager().getState(
+                BodiesAppState.class);
 
-		Node body = bodiesAppState.getBody(bodyId);
+        Node body = bodiesAppState.getBody(bodyId);
 
-		if (body != null && body.getParent() != null) {
-			BasicCharacterAnimControl bcac = body
-					.getControl(BasicCharacterAnimControl.class);
-			bcac.setManualAnimation(null,null);
-			setState(State.Interrupted);
-			return;
-		}
-		setState(State.Fail);
-	}
+        if (body != null && body.getParent() != null) {
+            BasicCharacterAnimControl bcac = body
+                    .getControl(BasicCharacterAnimControl.class);
+            bcac.setManualAnimation(null, null);
+            setState(State.Interrupted);
+            return;
+        }
+        setState(State.Fail);
+    }
 
-	@Override
-	public String toString() {
-		return getClass().getSimpleName() + "(" + bodyId + ",animationName="
-				+ animationName + ")";
-	}
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + bodyId + ",animationName="
+                + animationName + ")";
+    }
 
-	@Override
-	public void animFinished(BasicCharacterAnimControl.AnimName animationName) {
-		System.out.println("Animation finished = " + animationName.name());
-		setState(State.Success);
-	}
+    @Override
+    public void animFinished(BasicCharacterAnimControl.AnimName animationName) {
+        System.out.println("Animation finished = " + animationName.name());
+        setState(State.Success);
+    }
 }

@@ -157,16 +157,20 @@ public class BasicCharacterAnimControl extends AbstractControl implements
             if (speed > 0.1f) {
                 if (speed < 2f) {
                     setAnim("WalkForward", downBodyChannel);
-                    setAnim("WalkForward", upperBodyChannel);
                     downBodyChannel.setSpeed(speed);
-                    upperBodyChannel.setSpeed(speed);
+                    if (manualAnimation == null) {
+                        setAnim("WalkForward", upperBodyChannel);
+                        upperBodyChannel.setSpeed(speed);
+                    }
                 } else {
                     setAnim("RunForward", downBodyChannel);
-                    setAnim("RunForward", upperBodyChannel);
                     downBodyChannel.setSpeed(speed);
-                    upperBodyChannel.setSpeed(speed);
+                    if (manualAnimation == null) {
+                        setAnim("RunForward", upperBodyChannel);
+                        upperBodyChannel.setSpeed(speed);
+                    }
                 }
-            } else {
+            } else if (manualAnimation == null) {
                 setAnim("IdleStanding", downBodyChannel);
                 setAnim("IdleStanding", upperBodyChannel);
                 downBodyChannel.setSpeed(1f);
@@ -177,7 +181,7 @@ public class BasicCharacterAnimControl extends AbstractControl implements
         if (manualAnimation != null && !manualAnimation.name().equals(upperBodyChannel.getAnimationName())) {
             upperBodyChannel.setSpeed(1f);
             setAnim(manualAnimation.name(), upperBodyChannel);
-            if (getCharacterControl().isEnabled() || getCharacterControl().getWalkDirection().length() <= 0) {
+            if (!getCharacterControl().isEnabled() || getCharacterControl().getWalkDirection().length() <= 0) {
                 downBodyChannel.setSpeed(1f);
                 setAnim(manualAnimation.name(), downBodyChannel);
             }
