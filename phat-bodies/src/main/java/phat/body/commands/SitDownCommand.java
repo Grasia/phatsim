@@ -68,6 +68,15 @@ public class SitDownCommand extends PHATCommand implements AutonomousControlList
         this(bodyId, placeId, null);
     }
 
+    public boolean existsANearestFreeSeat(String placeId, String bodyId) {
+        body = bodiesAppState.getBody(bodyId);
+
+        if (body != null && body.getParent() != null) {
+            return getNearestFreeSeat(placeId, body) != null;
+        }
+        return false;
+    }
+    
     public Spatial getNearestFreeSeat(String placeId, Spatial body) {
         Spatial result = null;
         Node placeToSit = null;

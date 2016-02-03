@@ -44,7 +44,7 @@ public class UseWCAutomaton extends SimpleState implements PHATCommandListener {
 
     boolean useWCfinished;
     boolean tapClosed = false;
-    boolean fail = false;
+    boolean wcBusy = false;
     private String wcId;
     SitDownCommand sitDownCommand;
 
@@ -55,9 +55,10 @@ public class UseWCAutomaton extends SimpleState implements PHATCommandListener {
 
     @Override
     public boolean isFinished(PHATInterface phatInterface) {
-        if(tapClosed)
+        if (tapClosed) {
             return true;
-        useWCfinished = super.isFinished(phatInterface) || fail;
+        }
+        useWCfinished = super.isFinished(phatInterface);
         if (useWCfinished) {
             agent.runCommand(new StandUpCommand(agent.getId()));
             agent.runCommand(new OpenObjectCommand(agent.getId(), wcId));
@@ -69,13 +70,19 @@ public class UseWCAutomaton extends SimpleState implements PHATCommandListener {
     @Override
     public void commandStateChanged(PHATCommand command) {
         if (command.getState().equals(PHATCommand.State.Fail)) {
-            fail = true;
+            wcBusy = true;
         }
     }
 
     @Override
     public void simpleNextState(PHATInterface phatInterface) {
-        
+        if (wcBusy) {
+            finishCondition.automatonReset(automatonFahter);
+            if (sitDownCommand.existsANearestFreeSeat(wcId, agent.getId())) {
+                wcBusy = false;
+                useWC();
+            }
+        }
     }
 
     @Override
@@ -84,7 +91,7 @@ public class UseWCAutomaton extends SimpleState implements PHATCommandListener {
     }
 
     private void useWC() {
-        sitDownCommand = new SitDownCommand(agent.getId(), wcId);
+        sitDownCommand = new SitDownCommand(agent.getId(), wcId, this);
         agent.runCommand(sitDownCommand);
     }
 }
