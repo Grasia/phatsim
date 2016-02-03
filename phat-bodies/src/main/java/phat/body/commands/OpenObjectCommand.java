@@ -22,9 +22,12 @@ package phat.body.commands;
 import com.jme3.app.Application;
 import com.jme3.audio.AudioNode;
 import com.jme3.effect.ParticleEmitter;
+import com.jme3.material.Material;
 import com.jme3.math.Vector3f;
+import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
+import com.jme3.texture.Texture;
 
 import java.util.logging.Level;
 
@@ -76,6 +79,16 @@ public class OpenObjectCommand extends PHATCommand {
                     AudioNode an = (AudioNode) s;
                     an.setLooping(false);
                     an.play();
+                }
+            } else if (role.equals("TV")) {
+                Spatial tv = SpatialUtils.getSpatialById(SpatialFactory.getRootNode(), objectId);
+                if (tv != null) {
+                    String imagePath = "Textures/on.png";
+                    Geometry display = (Geometry) ((Node) (tv.getParent()).getChild("Geometries")).getChild("tv3");
+                    Material mat = new Material(SpatialFactory.getAssetManager(), "Common/MatDefs/Misc/Unshaded.j3md");
+                    Texture cube1Tex = SpatialFactory.getAssetManager().loadTexture(imagePath);
+                    mat.setTexture("ColorMap", cube1Tex);
+                    display.setMaterial(mat);
                 }
             } else {
                 Spatial s = ((Node) object).getChild("AudioNode");
