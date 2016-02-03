@@ -41,11 +41,6 @@ public class CompositeAndCondition implements AutomatonCondition {
                 return false;
             }
         }
-        CompositeAndCondition cac = new CompositeAndCondition(
-                new CompositeAndCondition(),
-                new CompositeAndCondition(),
-                new CompositeAndCondition(),
-                new CompositeAndCondition());
         return true;
     }
 
@@ -70,8 +65,9 @@ public class CompositeAndCondition implements AutomatonCondition {
         }
     }
     
-    public void add(AutomatonCondition ac) {
+    public AutomatonCondition add(AutomatonCondition ac) {
         conditions.add(ac);
+        return this;
     }
     
     @Override

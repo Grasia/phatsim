@@ -138,6 +138,11 @@ public class ActivityGenerator {
         repFather.add(repFirst);
         repFirst.add(new Var("actName", Utils.replaceBadChars(ge.getID())));
 
+        generateActivityInstances(adlSpec, repFather);
+        generateTransitions(adlSpec, repFather);
+    }
+
+    private void generateActivityInstances(Graph adlSpec, Repeat repFather) throws NullEntity {
         for (GraphEntity activity : adlSpec.getEntities()) {
             System.out.println(">>>>entity ->" + activity.getType() + ":"
                     + activity.getID());
@@ -157,22 +162,74 @@ public class ActivityGenerator {
                     Repeat rep2 = new Repeat("regLastActivityRep");
                     repFather.add(rep2);
                     rep2.add(new Var("finalActivity", Utils.replaceBadChars(activityName)));
-                } else {
-                    for (GraphEntity nextAct : nextEntities) {
-                        if (nextAct.getType().equals(ACTIVITY_TYPE)) {
-                            // registers a transition between activities without any
-                            // condition
-                            Repeat rep2 = new Repeat("regTrans");
-                            repFather.add(rep2);
-                            rep2.add(new Var("actSource", Utils.replaceBadChars(activityName)));
-                            rep2.add(new Var("actTarget", Utils.replaceBadChars(nextAct.getID())));
-                        }
-                    }
                 }
-            } else if (activity.getType().equals(IF_FLOW_CONTROL_TYPE)) {
-                // registers one or more transitions between activities
-                // depending on the conditions
-                processCondition(adlSpec, activity, repFather);
+            }
+        }
+    }
+
+    private void generateTransitions(Graph adlSpec, Repeat repFather) throws NullEntity {
+        for (GraphEntity activity : adlSpec.getEntities()) {
+            if (activity.getType().equals(ACTIVITY_TYPE)) {
+                generateDirectTransitions(activity, repFather);
+                generateCondTransitions(activity, repFather);
+            }
+        }
+    }
+
+    private void generateDirectTransitions(GraphEntity activity, Repeat repFather) {
+        for (GraphEntity previousAct : Utils.getSourcesEntity(activity, NEXT_ACTIVITY_REL)) {
+            if (previousAct.getType().equals(ACTIVITY_TYPE)) {
+                // registers a transition between activities without any
+                // condition
+                Repeat rep2 = new Repeat("regTrans");
+                repFather.add(rep2);
+                rep2.add(new Var("actSource", Utils.replaceBadChars(previousAct.getID())));
+                rep2.add(new Var("actTarget", Utils.replaceBadChars(activity.getID())));
+            }
+        }
+    }
+
+    private void generateCondTransitions(GraphEntity activity, Repeat repFather) {
+        for (GraphEntity previousIf : Utils.getSourcesEntity(activity, TRUE_FLOW_REL)) {
+            if (previousIf.getType().equals(IF_FLOW_CONTROL_TYPE)) {
+                Collection<GraphEntity> conds = Utils.getTargetsEntity(previousIf, IF_FLOW_COND_REL);
+
+                String condSentence = ConditionGenerator.generateAndCondition(conds);
+
+                propagateCond(activity, previousIf, "new CompositeAndCondition(" + condSentence + ")", repFather);
+            }
+        }
+        for (GraphEntity previousIf : Utils.getSourcesEntity(activity, FALSE_FLOW_REL)) {
+            if (previousIf.getType().equals(IF_FLOW_CONTROL_TYPE)) {
+                Collection<GraphEntity> conds = Utils.getTargetsEntity(previousIf, IF_FLOW_COND_REL);
+
+                String condSentence = ConditionGenerator.generateAndCondition(conds);
+
+                propagateCond(activity, previousIf, "new CompositeAndCondition(new NegateCondition(" + condSentence + "))", repFather);
+            }
+        }
+    }
+
+    private void propagateCond(GraphEntity targetActivity, GraphEntity cIf, String condition, Repeat repFather) {
+        for (GraphEntity previousAct : Utils.getSourcesEntity(cIf, NEXT_ACTIVITY_REL)) {
+            regCondTrans(previousAct, targetActivity, condition, repFather, false);
+        }
+        for (GraphEntity previousIf : Utils.getSourcesEntity(cIf, TRUE_FLOW_REL)) {
+            if (previousIf.getType().equals(IF_FLOW_CONTROL_TYPE)) {
+                Collection<GraphEntity> conds = Utils.getTargetsEntity(previousIf, IF_FLOW_COND_REL);
+
+                String condSentence = ConditionGenerator.generateAndCondition(conds);
+
+                propagateCond(targetActivity, previousIf, condition + ".add(" + condSentence + ")", repFather);
+            }
+        }
+        for (GraphEntity previousIf : Utils.getSourcesEntity(cIf, FALSE_FLOW_REL)) {
+            if (previousIf.getType().equals(IF_FLOW_CONTROL_TYPE)) {
+                Collection<GraphEntity> conds = Utils.getTargetsEntity(previousIf, IF_FLOW_COND_REL);
+
+                String condSentence = ConditionGenerator.generateAndCondition(conds);
+
+                propagateCond(targetActivity, previousIf, condition + ".add(" + "new NegateCondition(" + condSentence + "))", repFather);
             }
         }
     }
@@ -209,5 +266,22 @@ public class ActivityGenerator {
             }
         }
         return null;
+    }
+
+    private void regCondTrans(GraphEntity targetS, GraphEntity targetA, String condition, Repeat repFather, boolean negate) {
+        Repeat repCond = new Repeat("regCondTrans");
+        repFather.add(repCond);
+        repCond.add(new Var("condInst", condition));
+        if (!negate) {
+            Repeat rep = new Repeat("regTrueTrans");
+            repCond.add(rep);
+            rep.add(new Var("actSource", Utils.replaceBadChars(targetS.getID())));
+            rep.add(new Var("actTarget", Utils.replaceBadChars(targetA.getID())));
+        } else {
+            Repeat rep = new Repeat("regFalseTrans");
+            repCond.add(rep);
+            rep.add(new Var("actSource", Utils.replaceBadChars(targetS.getID())));
+            rep.add(new Var("actTarget", Utils.replaceBadChars(targetA.getID())));
+        }
     }
 }
