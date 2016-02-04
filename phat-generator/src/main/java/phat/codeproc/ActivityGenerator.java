@@ -118,6 +118,12 @@ public class ActivityGenerator {
                             rep.add(repDoNothing);
                         }
                     }
+                    String defState = Utils.getAttributeByName(ge, "DefaultActivityField");
+                    if (defState != null && !defState.equals("")) {
+                        Repeat setDefaultState = new Repeat("setDefaultState");
+                        rep.add(setDefaultState);
+                        setDefaultState.add(new Var("defState", Utils.replaceBadChars(defState)));
+                    }
                 }
             }
         }

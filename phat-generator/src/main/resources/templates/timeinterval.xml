@@ -10,9 +10,11 @@ import phat.agents.automaton.FSM;
 import phat.agents.automaton.*;
 import phat.agents.automaton.activities.*;
 import phat.agents.automaton.conditions.*;
+import phat.agents.automaton.tasks.seq.*;
 import phat.agents.automaton.TimeIntervalAutomaton;
 import phat.agents.automaton.Transition;
 import phat.agents.Agent;
+import phat.PHATInterface;
 
 public class @@@v@@@tisName@@@/v@@@TIA extends TimeIntervalAutomaton {
 
@@ -54,6 +56,10 @@ public class @@@v@@@tisName@@@/v@@@TIA extends TimeIntervalAutomaton {
     	
     	addTransition(fsm, true);
 	}
+        @@@repeat id="setDefaultState"@@@
+        public Automaton getDefaultState(PHATInterface phatInterface) {
+            return new @@@v@@@defState@@@/v@@@Task(agent, "@@@v@@@defState@@@/v@@@");
+        }@@@/repeat@@@
 }
 @@@/text@@@
 	@@@/saveto@@@
