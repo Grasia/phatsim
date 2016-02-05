@@ -22,6 +22,7 @@ package phat.app;
 import java.util.concurrent.Callable;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AppState;
+import com.jme3.audio.AudioContext;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.scene.Spatial;
 
@@ -58,19 +59,15 @@ public class PHATApplication extends SimpleApplication {
 
     @Override
     public void update() {
-        super.update();
+        simpleApplicationUpdate();
+        //System.out.println("tpf = " + timer.getTimePerFrame() * speed + " (" + timer.getTimePerFrame() + ", " + speed + ")");
+        //System.out.println("fps = " + timer.getFrameRate() / speed);
 
-        BulletAppState bullet = stateManager.getState(BulletAppState.class);
-        
         if (speed == 0) {
             timer.update();
-            
-            if(bullet != null) {
-                bullet.setEnabled(false);
-            }
-           
+
             final float tpf = timer.getTimePerFrame();
-            
+
             if (inputEnabled) {
                 inputManager.update(tpf);
             }
@@ -80,24 +77,59 @@ public class PHATApplication extends SimpleApplication {
 
             // render states
             stateManager.render(renderManager);
-            
-			// render is called in the render thread
-			// otherwise, an exception could be called
-            this.enqueue(new Callable<Spatial>() {
-            	// to avoid "java.lang.IllegalStateException: Scene graph is not properly updated for rendering."
-                public Spatial call() throws Exception {
-                    renderManager.render(tpf, context.isRenderable());
-                    simpleRender(renderManager);
-                    stateManager.postRender();
-                    return null;
-                }
-            });
-        } else if(bullet != null) {
-            bullet.setEnabled(true);
+            renderManager.render(tpf, context.isRenderable());
+            simpleRender(renderManager);
+            stateManager.postRender();
         }
     }
 
+    private void applicationUpdate() {
+        AudioContext.setAudioRenderer(audioRenderer);
 
+        runQueuedTasks();
+
+        if (speed == 0 || paused) {
+            return;
+        }
+
+        timer.update();
+
+        if (inputEnabled) {
+            inputManager.update(timer.getTimePerFrame());
+        }
+
+        if (audioRenderer != null) {
+            audioRenderer.update(timer.getTimePerFrame());
+        }
+    }
+
+    private void simpleApplicationUpdate() {
+        applicationUpdate();
+        if (speed == 0 || paused) {
+            return;
+        }
+
+        float tpf = timer.getTimePerFrame() * speed;
+
+        stateManager.update(tpf);
+
+        // simple update and root node
+        simpleUpdate(tpf);
+
+        rootNode.updateLogicalState(tpf);
+        guiNode.updateLogicalState(tpf);
+
+        rootNode.updateGeometricState();
+        guiNode.updateGeometricState();
+
+        //if (timer.getFrameRate() / speed > 30f) {
+            stateManager.render(renderManager);
+            
+            renderManager.render(tpf, context.isRenderable());
+            simpleRender(renderManager);
+            stateManager.postRender();
+       //}
+    }
 
     public boolean isInitialized() {
         return initialized;

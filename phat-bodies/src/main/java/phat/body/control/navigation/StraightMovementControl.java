@@ -115,12 +115,13 @@ public class StraightMovementControl extends AbstractControl implements Autonomo
             spatial.removeControl(this);
         }
     }
-    
     Vector3f currentDir = new Vector3f();
     Vector3f targetDir = new Vector3f();
     Vector3f diff = new Vector3f();
     Vector3f effectDir = new Vector3f();
     Vector3f aux = new Vector3f();
+    Vector3f angOri = new Vector3f();
+    Vector3f angRes = new Vector3f();
 
     private void move(float tpf) {
         currentDir.set(getCharacterControl().getViewDirection());
@@ -133,14 +134,31 @@ public class StraightMovementControl extends AbstractControl implements Autonomo
         currentDir.add(aux, aux);
         aux.normalizeLocal();
         effectDir.set(aux);
-        characterControl.setViewDirection(effectDir);
-        effectDir.mult(getSpeed(diff, distanceToTarget), aux);
-        characterControl.setWalkDirection(aux);
+        if (tpf > 1 / 15) {
+            if (getDistanceToTarget() < getSpeed() * tpf) {
+                characterControl.setLocation(targetLocation);
+                characterControl.setWalkDirection(Vector3f.ZERO);
+                spatial.removeControl(this);
+                return;
+            }
+            characterControl.setViewDirection(targetDir);
+            characterControl.setWalkDirection(targetDir);
+            return;
+        }
+        currentDir.cross(targetDir, angOri);
+        currentDir.cross(aux, angRes);
+        if (angOri.add(angRes).length() < angOri.length()) {
+            characterControl.setViewDirection(targetDir);
+            characterControl.setWalkDirection(targetDir);
+        } else {
+            effectDir.mult(getSpeed(diff, distanceToTarget), aux);
+            characterControl.setViewDirection(effectDir);
+            characterControl.setWalkDirection(aux);
+        }
     }
-
     Vector3f lastLocation = new Vector3f();
     float timeToJump = 1f;
-    
+
     private void jumpIfNecessary(float tpf) {
         if (characterLocation.distance(lastLocation) < 0.001f
                 && effectDir.length() != 0.2f) {

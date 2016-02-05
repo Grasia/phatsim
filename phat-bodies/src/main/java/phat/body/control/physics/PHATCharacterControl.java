@@ -69,6 +69,10 @@ public class PHATCharacterControl extends BetterCharacterControl implements Cont
         control.setJumpForce(jumpForce);
         return control;
     }
+    
+    public void setLocation(Vector3f location) {
+        super.setPhysicsLocation(location);
+    }
 
     public float getRadius() {
         return radius;

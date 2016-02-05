@@ -65,7 +65,7 @@ public class CompositeAndCondition implements AutomatonCondition {
         }
     }
     
-    public AutomatonCondition add(AutomatonCondition ac) {
+    public CompositeAndCondition add(AutomatonCondition ac) {
         conditions.add(ac);
         return this;
     }
