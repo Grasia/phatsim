@@ -22,15 +22,19 @@ package phat.gui.logging;
 import com.jme3.app.Application;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import javax.swing.JFrame;
 import phat.agents.Agent;
 import phat.agents.AgentListener;
 import phat.agents.AgentsAppState;
 import phat.agents.automaton.Automaton;
+import phat.agents.automaton.Automaton.STATE;
 import phat.agents.automaton.AutomatonListener;
 import phat.app.PHATApplication;
 import phat.world.PHATCalendar;
@@ -47,9 +51,8 @@ public class LoggingViewerAppState extends AbstractAppState implements Automaton
     PHATCalendar simStartTime;
     PHATCalendar simTime;
     JFrame frame;
-    
     Map<String, Logger> loggers = new HashMap<>();
-    
+
     @Override
     public void initialize(AppStateManager stateManager, Application app) {
         super.initialize(stateManager, app);
@@ -60,27 +63,37 @@ public class LoggingViewerAppState extends AbstractAppState implements Automaton
 
         simTime = agentsAppState.getPHAInterface().getSimTime();
         simStartTime = new PHATCalendar(simTime);
-        
+
         tableModel = new LogRecordTableModel();
 
         LogTableHandler tableHandler = new LogTableHandler(tableModel);
         tableHandler.setLevel(Level.INFO);
         tableHandler.setFilter(null);
-        
+
+        FileHandler fh = null;
+        try {
+            fh = new FileHandler(System.currentTimeMillis()+".log");
+            PHATLogFormatter formatter = new PHATLogFormatter();
+            fh.setFormatter(formatter);
+        } catch (SecurityException | IOException e) {
+            e.printStackTrace();
+        }
+
         System.out.println("\n\n\n***************************");
         System.out.println(agentsAppState.getAgentIds());
-        
+
         for (String id : agentsAppState.getAgentIds()) {
             Agent a = agentsAppState.getAgent(id);
-            if(a.getAutomaton() != null) {
+            if (a.getAutomaton() != null) {
                 a.getAutomaton().addListener(this);
             }
             a.addListener(this);
             Logger logger = Logger.getLogger(id);
             loggers.put(id, logger);
             logger.addHandler(tableHandler);
+            if(fh != null) logger.addHandler(fh);
         }
-        System.out.println("***************************\n\n\n");  
+        System.out.println("***************************\n\n\n");
 
         createAndShowGUI();
     }
@@ -113,74 +126,53 @@ public class LoggingViewerAppState extends AbstractAppState implements Automaton
     public void show() {
         frame.setVisible(true);
     }
-    
+
     public boolean isShown() {
         return frame.isVisible();
     }
-    
+
     public void hide() {
         frame.setVisible(false);
     }
-    
+
     @Override
     public void cleanup() {
         super.cleanup();
-        
-        if(frame != null) {
+
+        if (frame != null) {
             frame.setVisible(false);
             frame.dispose();
         }
     }
 
     @Override
-    public void preInit(Automaton automaton) {
-    }
-
-    @Override
-    public void postInit(Automaton automaton) {
-        log(automaton, "START");
+    public void stateChanged(Automaton automaton, Automaton.STATE state) {
+        log(automaton, state.name());
+        if (state == STATE.STARTED) {
+            automaton.addListener(this);
+        }
     }
 
     private void log(Automaton automaton, String state) {
         String message = automaton.getMetadata("SOCIAALML_DESCRIPTION");
         String taskID = automaton.getMetadata("SOCIAALML_ENTITY_ID");
         String taskType = automaton.getMetadata("SOCIAALML_ENTITY_TYPE");
-                
-        if(taskID == null || taskID.equals("")) {
+
+        if (taskID == null || taskID.equals("")) {
             return;
         }
-        
-        String time = ""+(simStartTime.spentTimeTo(simTime));
-        
+
+        String time = "" + (simStartTime.spentTimeTo(simTime));
+
         Logger logger = loggers.get(automaton.getAgent().getId());
-        
+
         Object[] params = {time, state, taskID, taskType, automaton};
         logger.log(Level.INFO, message, params);
-    }
-    
-    @Override
-    public void nextAutomaton(Automaton previousAutomaton, Automaton nextAutomaton) {
-        nextAutomaton.addListener(this);
-    }
-
-    @Override
-    public void automatonFinished(Automaton automaton, boolean isSuccessful) {
-        log(automaton, "FINISH");
-    }
-
-    @Override
-    public void automatonInterrupted(Automaton automaton) {
-        log(automaton, "INTERRUPT");
-    }
-
-    @Override
-    public void automatonResumed(Automaton resumedAutomaton) {
-        log(resumedAutomaton, "RESUME");
     }
 
     @Override
     public void agentChanged(Agent agent) {
-        if(agent.getAutomaton() != null) {
+        if (agent.getAutomaton() != null) {
             agent.getAutomaton().addListener(this);
         }
     }
