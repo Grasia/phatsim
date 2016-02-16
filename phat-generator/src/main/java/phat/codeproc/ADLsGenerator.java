@@ -96,11 +96,12 @@ public class ADLsGenerator {
                             Collection<GraphEntity> nextEntities = Utils.getTargetsEntity(timeInterval,
                                     "NextTI");
                             if (nextEntities.isEmpty()) {
-                                // It is the last time interval
-                                System.out.println("REGISTER FINAL STATE!!!!! -> " + Utils.replaceBadChars(timeInterval.getID()));
-                                Repeat lastRep = new Repeat("tiLast");
-                                adlsRep.add(lastRep);
-                                lastRep.add(new Var("tiID", Utils.replaceBadChars(timeInterval.getID())));
+                                GraphEntity ge = Utils.getFirstEntity(adlSpec);
+                                // Link last state with first one
+                                Repeat transRep = new Repeat("tiTrans");
+                                adlsRep.add(transRep);
+                                transRep.add(new Var("tiIDS", Utils.replaceBadChars(timeInterval.getID())));
+                                transRep.add(new Var("tiIDT", Utils.replaceBadChars(ge.getID())));
                             } else {
                                 for (GraphEntity timeIntervalNext : nextEntities) {
                                     Repeat transRep = new Repeat("tiTrans");

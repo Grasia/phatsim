@@ -45,6 +45,7 @@ public class ConditionGenerator {
     final static String CEVENT_TYPE = "CEvent";
     final static String CSYMP_TYPE = "CSymptom";
     final static String CDAY_OF_THE_WEEK = "CDayOfTheWeek";
+    final static String CWEIGHT = "CObjWeight";
     
     public static String generateAndCondition(Collection<GraphEntity> conds) {
         if (!conds.isEmpty()) {
@@ -255,6 +256,21 @@ public class ConditionGenerator {
                     System.exit(-1);
                 }
                 return "new DayCondition(DayCondition.DAY_OF_THE_WEEK." + gaProb.getSimpleValue() + ")";
+            } catch (NotFound ex) {
+                Logger.getLogger(ConditionGenerator.class.getName()).log(Level.SEVERE,
+                        "Entity {0} hasn't got attribute {1}", new Object[]{geCond.getID(), "ProbVarField"});
+                System.exit(-1);
+            }
+        } else if (type.equals(CWEIGHT)) {
+            try {
+                GraphAttribute gaWeight = geCond.getAttributeByName("ObjWeightInGramsField");
+                if (gaWeight.getSimpleValue().equals("")) {
+                    logger.log(Level.SEVERE,
+                            "Attribute {0} of entity {1} is not set.",
+                            new Object[]{"ObjWeightInGramsField", geCond.getID()});
+                    System.exit(-1);
+                }
+                return "new ObjectWeightCondition(\"obj\"," + gaWeight.getSimpleValue() + "f)";
             } catch (NotFound ex) {
                 Logger.getLogger(ConditionGenerator.class.getName()).log(Level.SEVERE,
                         "Entity {0} hasn't got attribute {1}", new Object[]{geCond.getID(), "ProbVarField"});

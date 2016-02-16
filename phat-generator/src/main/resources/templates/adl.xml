@@ -30,8 +30,6 @@ public class @@@v@@@adlID@@@/v@@@ADL extends TimeIntervalManager {
 	    @@@/repeat@@@
 	    @@@repeat id="tiTrans"@@@registerTransition(@@@v@@@tiIDS@@@/v@@@Transition.getTarget(), @@@v@@@tiIDT@@@/v@@@Transition);
 	    @@@/repeat@@@
-	    @@@repeat id="tiLast"@@@registerFinalState(@@@v@@@tiID@@@/v@@@Transition.getTarget());
-            @@@/repeat@@@
 	}
 }
 @@@/text@@@

@@ -40,6 +40,8 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
         Main@@@v@@@simName@@@/v@@@PHATSimulation sim = new Main@@@v@@@simName@@@/v@@@PHATSimulation();
         PHATInterface phat = new PHATInterface(sim, new ArgumentProcessor(args));
         @@@repeat id="setSeed"@@@phat.setSeed(@@@v@@@seedValue@@@/v@@@L);@@@/repeat@@@
+        @@@repeat id="setResolution"@@@phat.setDisplayHeight(@@@v@@@displayHeight@@@/v@@@);
+        phat.setDisplayWidth(@@@v@@@displayWidth@@@/v@@@);@@@/repeat@@@
         phat.start();
     }
 

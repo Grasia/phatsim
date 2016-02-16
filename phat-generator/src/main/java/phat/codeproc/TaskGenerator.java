@@ -211,6 +211,7 @@ public class TaskGenerator {
         params.add(className);
 
         if (taskGE.getType().equals("GoIntoBed")) {
+            params.add("Bed1");
         } else if (taskGE.getType().equals("OpenTask") || taskGE.getType().equals("CloseTask")) {
             params.add(getFieldValue(taskGE, "OpenCloseObjField", "null", true));
         } else if (taskGE.getType().equals("BGoToTask")) {

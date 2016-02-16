@@ -29,15 +29,16 @@ public class @@@v@@@tisName@@@/v@@@TIA extends TimeIntervalAutomaton {
 	public void initSubAutomaton() {
 		FSM fsm = new FSM(agent, 1,"FSM-@@@v@@@tisName@@@/v@@@TIA");
 		@@@repeat id="activities"@@@ActivityAutomaton @@@v@@@actName@@@/v@@@Activity = new @@@v@@@actName@@@/v@@@Activity(agent, "@@@v@@@actName@@@/v@@@");
-		@@@/repeat@@@    	
+		@@@/repeat@@@
+                @@@repeat id="conditions"@@@AutomatonCondition @@@v@@@condId@@@/v@@@ = @@@v@@@condInst@@@/v@@@;
+                @@@/repeat@@@
     	@@@repeat id="firstActivity"@@@fsm.registerStartState(@@@v@@@actName@@@/v@@@Activity);
     	@@@/repeat@@@
         @@@repeat id="regCondTrans"@@@
         {
-            AutomatonCondition c = @@@v@@@condInst@@@/v@@@;
             @@@repeat id="regTrueTrans"@@@            
             Transition @@@v@@@actSource@@@/v@@@To@@@v@@@actTarget@@@/v@@@Transition = 
-    			new Transition(c, @@@v@@@actTarget@@@/v@@@Activity);    	    	
+    			new Transition(@@@v@@@condInst@@@/v@@@, @@@v@@@actTarget@@@/v@@@Activity);    	    	
             fsm.registerTransition(@@@v@@@actSource@@@/v@@@Activity, @@@v@@@actSource@@@/v@@@To@@@v@@@actTarget@@@/v@@@Transition);@@@/repeat@@@
             @@@repeat id="regFalseTrans"@@@            
             Transition @@@v@@@actSource@@@/v@@@To@@@v@@@actTarget@@@/v@@@Transition = 

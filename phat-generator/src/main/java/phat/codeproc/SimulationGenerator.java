@@ -82,7 +82,7 @@ public class SimulationGenerator {
                             }
                         }
                     } catch (NotFound nf) {
-                        System.out.println("NOT FOUND ShowName"+nf.getMessage());
+                        System.out.println("NOT FOUND ShowName" + nf.getMessage());
                     }
                     bodyRep.add(new Var("showName", showName));
                     String initialLoc = getInitialLocation(humanId, simDiag);
@@ -147,21 +147,21 @@ public class SimulationGenerator {
             Repeat rep) throws NullEntity, NotFound {
         GraphEntity ge = getEntity(simDiags, "WorldInitialization");
         GraphAttribute seedworld = ge.getAttributeByName("SimulationSeedField");
-        
-        if(seedworld != null && !seedworld.getSimpleValue().equals("")) {
-            System.out.println("\n\n\nSEED = "+seedworld.getSimpleValue()+"\n\n\n");
+
+        if (seedworld != null && !seedworld.getSimpleValue().equals("")) {
+            System.out.println("\n\n\nSEED = " + seedworld.getSimpleValue() + "\n\n\n");
             Repeat setSeed = new Repeat("setSeed");
             rep.add(setSeed);
             setSeed.add(new Var("seedValue", seedworld.getSimpleValue()));
         }
-        
+
         GraphAttribute houseType = ge.getAttributeByName("HouseTypeField");
         String houseTypeString = "House3room2bath";
-        if(houseType != null && !houseType.getSimpleValue().equals("")) {
-            houseTypeString = houseType.getSimpleValue();            
+        if (houseType != null && !houseType.getSimpleValue().equals("")) {
+            houseTypeString = houseType.getSimpleValue();
         }
         rep.add(new Var("houseType", houseTypeString));
-        
+
         GraphEntity iniDate = Utils.getTargetEntity(ge, "InitialDate");
         if (iniDate == null) {
             System.out.println("Hola");
@@ -179,6 +179,21 @@ public class SimulationGenerator {
         rep.add(new Var("hour", hour.getSimpleValue()));
         rep.add(new Var("min", min.getSimpleValue()));
         rep.add(new Var("sec", sec.getSimpleValue()));
+
+        ge = getEntity(simDiags, "FlyCamInit");
+        if (ge != null) {
+            GraphAttribute width = ge.getAttributeByName("CamWidth");
+            GraphAttribute height = ge.getAttributeByName("CamHeight");
+            
+            if (width != null && !width.getSimpleValue().equals("") && 
+                    height != null && !height.getSimpleValue().equals("")) {
+                System.out.println("\n\n\nSEED = " + seedworld.getSimpleValue() + "\n\n\n");
+                Repeat setResolution = new Repeat("setResolution");
+                rep.add(setResolution);
+                setResolution.add(new Var("displayHeight", height.getSimpleValue()));
+                setResolution.add(new Var("displayWidth", width.getSimpleValue()));
+            }
+        }
     }
 
     private void generateSmartphones(String simId, Graph simDiags,

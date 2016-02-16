@@ -29,6 +29,7 @@ public class @@@v@@@dpName@@@/v@@@_@@@v@@@aName@@@/v@@@ extends DiseaseManager {
         switch (simulation){
     	@@@repeat id="simInit"@@@
             case "@@@v@@@simName@@@/v@@@":
+                @@@v@@@sympName@@@/v@@@.setDiseaseManager(this);
                 @@@v@@@sympName@@@/v@@@.setCurrentLevel(@@@v@@@symptomLevel@@@/v@@@);
                 break;@@@/repeat@@@	    
         }
@@ -46,6 +47,7 @@ public class @@@v@@@dpName@@@/v@@@_@@@v@@@aName@@@/v@@@ extends DiseaseManager {
                 @@@repeat id="FDelayFilter"@@@DelayFilter @@@v@@@filterName@@@/v@@@ = new DelayFilter();
                 @@@v@@@filterName@@@/v@@@.setDelay(@@@v@@@delayValude@@@/v@@@);@@@/repeat@@@
                 @@@repeat id="FTaskSelectorFilter"@@@ SelectorFilter @@@v@@@filterName@@@/v@@@ = new SelectorFilter();
+                @@@v@@@filterName@@@/v@@@.setByType(@@@v@@@byType@@@/v@@@);
                 @@@repeat id="allowedTaskRep"@@@
                 @@@v@@@filterName@@@/v@@@.addType("@@@v@@@taskType@@@/v@@@");
                 @@@v@@@filterName@@@/v@@@.addId("@@@v@@@taskId@@@/v@@@");@@@/repeat@@@
@@ -60,7 +62,7 @@ public class @@@v@@@dpName@@@/v@@@_@@@v@@@aName@@@/v@@@ extends DiseaseManager {
         @@@/repeat@@@
                 
         @@@/repeat@@@
-        agent.getAutomaton().addListener(this);
+        agent.getAutomaton().setAutomatonModificator(this);
     }
 }
 @@@/text@@@
