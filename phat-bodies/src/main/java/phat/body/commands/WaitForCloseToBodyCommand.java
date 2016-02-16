@@ -75,7 +75,7 @@ public class WaitForCloseToBodyCommand extends PHATCommand implements
             
             perceptionControl = new BasicObjectPerceptionControl();
             perceptionControl.setTarget(targetBody);
-            perceptionControl.setDistance(0.5f);
+            perceptionControl.setDistance(1f);
             perceptionControl.setFrecuency(0.5f);
             perceptionControl.addObserver(this);
             

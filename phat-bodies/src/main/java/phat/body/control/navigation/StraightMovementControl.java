@@ -107,7 +107,7 @@ public class StraightMovementControl extends AbstractControl implements Autonomo
                 spatial.removeControl(this);
                 return;
             }
-
+            
             move(tpf);
             jumpIfNecessary(tpf);
         } else {
@@ -134,7 +134,7 @@ public class StraightMovementControl extends AbstractControl implements Autonomo
         currentDir.add(aux, aux);
         aux.normalizeLocal();
         effectDir.set(aux);
-        if (tpf > 1 / 15) {
+        if (tpf > 1f / 15f) {
             if (getDistanceToTarget() < getSpeed() * tpf) {
                 characterControl.setLocation(targetLocation);
                 characterControl.setWalkDirection(Vector3f.ZERO);
@@ -142,14 +142,15 @@ public class StraightMovementControl extends AbstractControl implements Autonomo
                 return;
             }
             characterControl.setViewDirection(targetDir);
-            characterControl.setWalkDirection(targetDir);
+            characterControl.setLocation(getLocation().add(targetDir.multLocal(getSpeed()*tpf)));
+            characterControl.setWalkDirection(Vector3f.ZERO);
             return;
         }
         currentDir.cross(targetDir, angOri);
         currentDir.cross(aux, angRes);
         if (angOri.add(angRes).length() < angOri.length()) {
             characterControl.setViewDirection(targetDir);
-            characterControl.setWalkDirection(targetDir);
+            characterControl.setWalkDirection(targetDir.multLocal(getSpeed()*tpf));
         } else {
             effectDir.mult(getSpeed(diff, distanceToTarget), aux);
             characterControl.setViewDirection(effectDir);

@@ -36,7 +36,7 @@ import phat.body.control.physics.PHATCharacterControl;
  */
 public class BasicObjectPerceptionControl extends AbstractControl {
     
-    float distance = 0.5f;
+    float distance = 1f;
     float frecuency = 0.5f;
     float timer = frecuency;
     
