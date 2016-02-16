@@ -58,7 +58,7 @@ public class UseObjectAutomaton extends SimpleState {
     }
     
     @Override
-    public void interrupt() {
-        indirectAutomaton.interrupt();
+    public void interrupt(PHATInterface phatInterface) {
+        indirectAutomaton.interrupt(phatInterface);
     }
 }

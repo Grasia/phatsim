@@ -25,7 +25,7 @@ import java.util.Map;
 import phat.PHATInterface;
 import phat.agents.Agent;
 import phat.agents.automaton.Automaton;
-import phat.agents.automaton.AutomatonListener;
+import phat.agents.automaton.AutomatonModificator;
 import phat.agents.automaton.DoNothing;
 import phat.agents.automaton.conditions.TimerFinishedCondition;
 import phat.agents.filters.types.Filter;
@@ -35,7 +35,7 @@ import phat.body.commands.SetStoopedBodyCommand;
  *
  * @author pablo
  */
-public class DiseaseManager implements AutomatonListener {
+public class DiseaseManager implements AutomatonModificator {
 
     Agent agent;
     Map<String, Symptom> symptomMap = new HashMap<>();
@@ -79,53 +79,24 @@ public class DiseaseManager implements AutomatonListener {
     }
 
     @Override
-    public void preInit(Automaton automaton) {
-    }
-
-    @Override
-    public void nextAutomaton(Automaton previousAutomaton, Automaton nextAutomaton) {
-        System.out.println("\n\n\n**********************************Applying filters!!"
+    public Automaton monitoring(Automaton nextAutomaton) {
+        Automaton result = nextAutomaton;
+        if (!Filter.hasBeenFiltered(result)) {
+            System.out.println("\n\n\n**********************************Applying filters!!"
                 + "**********************************\n\n");
-        
-        if (!Filter.hasBeenFiltered(nextAutomaton)) {
-            Filter.markFiltered(nextAutomaton);
-            Automaton alternative = nextAutomaton;
+            Filter.markFiltered(result);
             for (Symptom symptom : symptomMap.values()) {
-                alternative = symptom.processFilters(agent, alternative);
-                System.out.println("Result for symptom (" + symptom.getSymptomType() + ") = " + alternative);
-                if (alternative == null) {
-                    alternative = new DoNothing(agent, stage).setFinishCondition(new TimerFinishedCondition(0, 0, 1));
+                result = symptom.processFilters(agent, result);
+                System.out.println("Result for symptom (" + symptom.getSymptomType() + ") = " + result);
+                if (result == null) {
+                    result = new DoNothing(agent, stage).setFinishCondition(new TimerFinishedCondition(0, 0, 1));
                     break;
                 }
             }
-            System.out.println("nextAutomaton = "+nextAutomaton);
-            System.out.println("alternative = "+alternative);
-            if (!alternative.equals(nextAutomaton)) {
-                System.out.println("Replace!!");
-                nextAutomaton.getParent().replaceCurrentAutomaton(alternative);
-                alternative.addListener(this);
-            } else {
-                nextAutomaton.addListener(this);
+            if(result != null) {
+                result.setAutomatonModificator(this);
             }
-        } else {
-            nextAutomaton.addListener(this);
         }
-        
-    }
-
-    @Override
-    public void automatonFinished(Automaton automaton, boolean isSuccessful) {
-    }
-
-    @Override
-    public void postInit(Automaton automaton) {
-    }
-
-    @Override
-    public void automatonInterrupted(Automaton automaton) {
-    }
-
-    @Override
-    public void automatonResumed(Automaton resumedAutomaton) {
+        return result;
     }
 }

@@ -43,7 +43,7 @@ public abstract class TimeIntervalManager extends FSM {
     public void nextState(PHATInterface phatInterface) {
         if (currentState != null && areNextStatesAvailable(currentState)) {
             System.out.println("Set finish!!!");
-            currentState.setFinished(true);
+            currentState.setState(STATE.FINISHED);
         }
         super.nextState(phatInterface);
     }

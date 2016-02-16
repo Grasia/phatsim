@@ -39,9 +39,8 @@ public class PutOnClothingAutomaton  extends SimpleState {
     }
     
     @Override
-    public void interrupt() {
-        super.interrupt();
-        setFinished(true);
+    public void interrupt(PHATInterface phatInterface) {
+        super.interrupt(phatInterface);
     }
 
     @Override

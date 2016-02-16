@@ -19,9 +19,7 @@
  */
 package phat.agents.automaton;
 
-import com.jme3.scene.Node;
 import java.util.ArrayList;
-import java.util.List;
 import phat.PHATInterface;
 import phat.agents.Agent;
 import phat.body.BodyUtils;
@@ -41,9 +39,16 @@ public class InterruptionAutomaton extends Automaton {
     Automaton preAutomaton;
 
     public InterruptionAutomaton(Agent agent, Automaton firstAutomaton, Automaton resumedAutomaton) {
-        super(agent);
+        super(agent, 10, "InterruptionAutomaton");
         this.firstAutomaton = firstAutomaton;
         this.resumedAutomaton = resumedAutomaton;
+        System.out.println("*************************************************");
+        System.out.println("InterruptionAutomaton");
+        System.out.println("*************************************************");
+        System.out.println("agent: "+agent.getId());
+        System.out.println("Activity to do: "+firstAutomaton.getName());
+        System.out.println("Interrupted behaviour: "+resumedAutomaton);
+        //this.resumedAutomaton.interrupt();
         super.name = getClass().getSimpleName();
         bodyPosture = agent.getBodyPosture();
 
@@ -77,7 +82,12 @@ public class InterruptionAutomaton extends Automaton {
     @Override
     public Automaton getDefaultState(PHATInterface phatInterface) {
         if (!defaultFlag) {
-            FSM result = new FSM(agent);
+            if(preAutomaton != null) {
+                defaultFlag = true;
+                //resumedAutomaton.resume();
+                return preAutomaton;
+            }
+            /*FSM result = new FSM(agent);
             if (resumedAutomaton != null) {
                 resumedAutomaton.resume();
                 if (preAutomaton != null) {
@@ -89,13 +99,8 @@ public class InterruptionAutomaton extends Automaton {
             }
             result.registerFinalState(resumedAutomaton);
             defaultFlag = true;
-            return result;
+            return result;*/
         }
-        return null;
-    }
-
-    @Override
-    public ArrayList<Automaton> createNewTransitions(PHATInterface phatInterface) {
         return null;
     }
 }

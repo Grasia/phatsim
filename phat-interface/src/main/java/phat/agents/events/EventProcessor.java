@@ -26,32 +26,33 @@ import phat.agents.automaton.Automaton;
 import phat.agents.automaton.conditions.AutomatonCondition;
 
 public class EventProcessor {
-	String eventId;
-	AutomatonCondition condition;
-	Class<? extends  Automaton> activity;
-	
-	public EventProcessor(String eventId, AutomatonCondition condition,
-			Class<? extends  Automaton> activity) {
-		super();
-		this.eventId = eventId;
-		this.condition = condition;
-		this.activity = activity;
-	}
-	
-	public Automaton process(Agent agent) {
-		if(condition == null || condition.evaluate(agent)) {
-			try {
-				return activity.getConstructor(Agent.class).newInstance(agent);
-			} catch (InstantiationException | IllegalAccessException
-					| IllegalArgumentException | InvocationTargetException
-					| NoSuchMethodException | SecurityException e) {
-				e.printStackTrace();
-			}
-		}
-		return null;
-	}
 
-	public String getEventId() {
-		return eventId;
-	}
+    String eventId;
+    AutomatonCondition condition;
+    Class<? extends Automaton> activity;
+
+    public EventProcessor(String eventId, AutomatonCondition condition,
+            Class<? extends Automaton> activity) {
+        super();
+        this.eventId = eventId;
+        this.condition = condition;
+        this.activity = activity;
+    }
+
+    public Automaton process(Agent agent) {
+        if (condition == null || condition.evaluate(agent)) {
+            try {
+                System.out.println("Activity ===> "+activity.getClass().getSimpleName());
+                return activity.getConstructor(Agent.class, String.class).
+                        newInstance(agent, activity.getClass().getSimpleName());
+            } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    public String getEventId() {
+        return eventId;
+    }
 }

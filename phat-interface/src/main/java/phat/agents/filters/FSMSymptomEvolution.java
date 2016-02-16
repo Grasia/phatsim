@@ -47,7 +47,7 @@ public abstract class FSMSymptomEvolution extends FSM implements SymptomEvolutio
     @Override
     public void nextState(PHATInterface phatInterface) {
         if (currentState != null && areNextStatesAvailable(currentState)) {
-            currentState.setFinished(true);
+            currentState.setState(STATE.FINISHED);
         }
         super.nextState(phatInterface);
     }
@@ -55,23 +55,58 @@ public abstract class FSMSymptomEvolution extends FSM implements SymptomEvolutio
     @Override
     public void initState(PHATInterface phatInterface) {
         initSymptomEvolutionBehavior(phatInterface);
-        
+
         chooseAnInitialState(phatInterface);
-        logger.log(Level.SEVERE, "Initial State for level {0} of symptom {1} is {2}", 
-                    new Object[]{symptom.getSymptomType(), symptom.getCurrentLevel().name(), initialState});
+        logger.log(Level.SEVERE, "Initial State for level {0} of symptom {1} is {2}",
+                new Object[]{symptom.getSymptomType(), symptom.getCurrentLevel().name(), initialState});
     }
-    
+
     protected abstract void initSymptomEvolutionBehavior(PHATInterface phatInterface);
-    
+
     protected void chooseAnInitialState(PHATInterface phatInterface) {
+        System.out.println("Choosing an initial state for "+symptom.getSymptomType());
         List<SymptomState> states = getStateForSymptomLevel(symptom.getCurrentLevel());
-        if(!states.isEmpty()) {
-            int index = phatInterface.getRandom().nextInt(states.size());
-            registerStartState(states.get(index));
+        if (!states.isEmpty()) {
+            //int index = phatInterface.getRandom().nextInt(states.size());
+            //registerStartState(states.get(index));
+            // Choose one whose evolution may keep at the same level of the symptom
+            registerStartState(getFirstState(states));
         } else {
-            logger.log(Level.SEVERE, "No States for level {0} of symptom {1}", 
+            logger.log(Level.SEVERE, "No States for level {0} of symptom {1}",
                     new Object[]{symptom.getSymptomType(), symptom.getCurrentLevel().name()});
         }
+    }
+
+    private SymptomState getFirstState(List<SymptomState> states) {
+        SymptomState ss = null;
+        int count = 0;
+        
+        for (SymptomState state : states) {
+            System.out.println("\tState = "+state.getName());
+            int c = getNumberNodesAtSameLevel(state);
+            System.out.println("\tc = "+c);
+            if(c > count) {
+                count = c;
+                ss = state;
+            }
+        }
+
+        return ss;
+    }
+
+    private int getNumberNodesAtSameLevel(SymptomState state) {
+        int result = 0;
+        for (Transition t : possibleTransitions.get(state)) {
+            System.out.println("\tTransitions("+state.getName()+"): "+t.getTarget().getName());
+            if (t.getTarget() instanceof SymptomState) {
+                SymptomState target = (SymptomState) t.getTarget();
+                System.out.println("\tLevel = "+target.getLevel());
+                if (target.getLevel().equals(state.getLevel())) {
+                    return 1 + getNumberNodesAtSameLevel(target);
+                }
+            }
+        }
+        return result;
     }
 
     public List<SymptomState> getStateForSymptomLevel(Symptom.Level level) {

@@ -44,7 +44,7 @@ public class SelectorFilter extends Filter {
                 }
             } else {
                 String ref = automaton.getMetadata("SOCIAALML_ENTITY_ID");
-                if (taskTypes.isEmpty() || (ref != null && taskIds.contains(ref))) {
+                if (taskIds.isEmpty() || (ref != null && taskIds.contains(ref))) {
                     return true;
                 }
             }

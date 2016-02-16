@@ -44,9 +44,4 @@ public abstract class TimeIntervalAutomaton extends Automaton {
     public Automaton getDefaultState(PHATInterface phatInterface) {
         return null;
     }
-
-    @Override
-    public ArrayList<Automaton> createNewTransitions(PHATInterface phatInterface) {
-        return null;
-    }
 }

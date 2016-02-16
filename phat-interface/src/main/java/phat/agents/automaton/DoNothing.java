@@ -38,12 +38,6 @@ public class DoNothing extends SimpleState {
         super(agent,0,name);
 
     }
-    
-    @Override
-    public void interrupt() {
-        super.interrupt();
-        setFinished(true);
-    }
 
     @Override
     public void simpleNextState(PHATInterface phatInterface) {

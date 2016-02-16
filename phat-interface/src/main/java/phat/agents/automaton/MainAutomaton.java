@@ -44,9 +44,4 @@ public class MainAutomaton extends Automaton {
 		return new DoNothing(agent, "Default behaviour: do nothing");
 	}
 
-	@Override
-	public ArrayList<Automaton> createNewTransitions(PHATInterface phatInterface) {
-		return null;
-	}
-
 }

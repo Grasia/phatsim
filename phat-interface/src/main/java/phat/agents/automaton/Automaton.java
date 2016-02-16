@@ -70,12 +70,6 @@ public abstract class Automaton {
      */
     protected LinkedList<Automaton> pendingTransitions;
     /**
-     * Booleano para indicar que el automata ha terminado.finished indica tanto
-     * parada como pausa dependiendo de que alguien vuelva a ejecutar el
-     * automata o no.
-     */
-    private boolean finished;
-    /**
      * Imprimir evolución de automata por pantalla
      */
     protected static boolean ECHO = true;
@@ -88,15 +82,15 @@ public abstract class Automaton {
      * Nombre del estado o comportamientos del autómata
      */
     protected String name;
+
     /**
-     * Marca para pausar el autómata, por ejemplo durante ciertas interacciones
+     * Automaton states
      */
-    protected boolean pause = false;
-    /**
-     * Inidica si se ha inicializado el estado
-     */
-    protected boolean init = false;
-    protected boolean resumed = false;
+    public static enum STATE {
+
+        NOT_INIT, STARTED, DEFAULT, FINISHED, RESUMED, INTERRUPTED
+    };
+    STATE state = STATE.NOT_INIT;
     /**
      * Referencia a automata padre, no obligatoria
      */
@@ -104,7 +98,7 @@ public abstract class Automaton {
     protected AutomatonCondition finishCondition;
     List<AutomatonListener> listeners = new ArrayList<>();
     boolean canBeInterrupted = true;
-    private boolean idle;
+    AutomatonModificator automatonModificator;
 
     public void addListener(AutomatonListener l) {
         if (!listeners.contains(l)) {
@@ -116,24 +110,10 @@ public abstract class Automaton {
         listeners.remove(l);
     }
 
-    void notifityListeners(boolean isSuccessful) {
+    void notifityListeners() {
         for (AutomatonListener al : listeners) {
-            al.automatonFinished(this, isSuccessful);
+            al.stateChanged(this, state);
         }
-    }
-
-    void notifityPreInitToListeners() {
-        for (AutomatonListener al : listeners) {
-            al.preInit(this);
-        }
-    }
-
-    public boolean isIdle() {
-        return this.idle;
-    }
-
-    public void setIdle(boolean idle) {
-        this.idle = idle;
     }
 
     public Automaton containsStateOfKind(Class<? extends Automaton> targetClass) {
@@ -170,30 +150,6 @@ public abstract class Automaton {
         return null;
     }
 
-    void notifityPostInitToListeners() {
-        for (AutomatonListener al : listeners) {
-            al.postInit(this);
-        }
-    }
-
-    public void notifyNextAutomaton(Automaton nextAutomaton) {
-        for (AutomatonListener al : listeners) {
-            al.nextAutomaton(this, nextAutomaton);
-        }
-    }
-
-    void notifyInterruptedAutomaton(Automaton automaton) {
-        for (AutomatonListener al : listeners) {
-            al.automatonInterrupted(automaton);
-        }
-    }
-
-    public void notifyResumedAutomaton(Automaton automaton) {
-        for (AutomatonListener al : listeners) {
-            al.automatonResumed(automaton);
-        }
-    }
-
     /**
      * Este método crea un autómata principal. El más alto de la jerarquía. Por
      * eso no hace falta pasar valores como la duración o la prioridad.
@@ -205,7 +161,6 @@ public abstract class Automaton {
         pendingTransitions = new LinkedList<>();
         this.name = agent.getId() + "-AUTOMATON";
         this.priority = 0;
-        this.finished = false;
     }
 
     public void setPriority(int priority) {
@@ -233,7 +188,6 @@ public abstract class Automaton {
         pendingTransitions = new LinkedList<>();
         this.name = name;
         this.priority = priority;
-        this.finished = false;
 
     }
 
@@ -272,55 +226,25 @@ public abstract class Automaton {
         }
     }
 
-    /**
-     * Devuelve la transición de más prioridad, la primera (saca de lista, borra
-     * y pone finish a false). Si se le pasa un estado actual, lo pausa, y lo
-     * mete en cola para volverlo a ejecutar en el futuro. Para testar esta
-     * clase se puede comparar nombres de transiciones intercambiadas y así
-     * asegurarse que el campo y el pause se hacen adecuadamente.
-     *
-     * @nota La versión anterior usaba setFinished, actualmente la pausa es lo
-     * que hace que el estado se prepare para una futura reanudación.
-     */
-    protected Automaton nextAutomaton(Automaton stateToBeReplaced,
-            PHATInterface phatInterface) {
-        // if(currentState!=null) System.out.println("STATE: " +
-        // currentState.toString() + " PENDING " +
-        // this.pendingTransitions.toString());
-        printPendingTransitions();
-        Automaton newTransition = pendingTransitions.getFirst();
-        pendingTransitions.removeFirst();
-        if (stateToBeReplaced != null) {
-            stateToBeReplaced.interrupt();// el estado será retomado
-            if (ECHO) {
-                System.out.println(agent.getId() + ", " + name + " paused "
-                        + stateToBeReplaced.name);
-            }
-            addTransition(stateToBeReplaced, true);
+    protected Automaton getNextAutomaton() {
+        Automaton newTransition = null;
+        if (!pendingTransitions.isEmpty()) {
+            newTransition = pendingTransitions.getFirst();
+            pendingTransitions.removeFirst();
+
+            transmitListeners(newTransition);
         }
         return newTransition;
     }
 
-    public void replaceCurrentAutomaton(Automaton automaton) {
-        System.out.println("replaceCurrentAutomaton..."+getName());
-        System.out.println("Current state to be interrupted = " + currentState);
-        if (currentState != null) {
-            System.out.println("Interrupt!!");
-            currentState.interrupt();
-            currentState.setFinished(true);
-        }
-        currentState = automaton;
-        System.out.println("currentState = " + automaton);
-        System.out.println("notifyNextAutomaton!");
-        notifyNextAutomaton(automaton);
-        System.out.println("...replaceCurrentAutomaton");
-    }
+    private void transmitListeners(Automaton newTransition) {
+        if (newTransition != null) {
+            System.out.println("NextState = " + newTransition);
+            newTransition.setAutomatonModificator(automatonModificator);
 
-    public void printPendingTransitions() {
-        System.out.println(agent.getId() + ":" + name
-                + " - Pending Transitions:");
-        for (Automaton a : pendingTransitions) {
-            System.out.println("\t-" + a);
+            for (AutomatonListener al : listeners) {
+                newTransition.addListener(al);
+            }
         }
     }
 
@@ -367,6 +291,12 @@ public abstract class Automaton {
         return this.pendingTransitions.size();
     }
 
+    public void interrupt(PHATInterface phatInterface) {
+    }
+
+    public void resume(PHATInterface phatInterface) {
+    }
+
     /**
      * Este método lleva le control del autómata. En esencia, se delega en el
      * nextState del estado/autómata hijo actual. Utiliza dos métodos abstractos
@@ -379,175 +309,96 @@ public abstract class Automaton {
      * @return
      */
     public void nextState(PHATInterface phatInterface) {
-        // si marca de pausa, ignorar
-        if (pause || finished) {
-            return;
-        }
-        if (resumed) {
-            if (finishCondition != null) {
-                finishCondition.automatonResumed(this);
-            }
-            if (currentState != null) {
-                currentState.resume(phatInterface);
-            }
-            resume(phatInterface);
-            notifyResumedAutomaton(this);
-            resumed = false;
-        } else if (!init) {
-            notifityPreInitToListeners();
-            initState(phatInterface);
-            init = true;
-            notifityPostInitToListeners();
-        }
-        // generar nuevas transiciones y añadirlas en cola si no se devuelve
-        // null
-        ArrayList<Automaton> newTransitions = createNewTransitions(phatInterface);
-        if (newTransitions != null && !newTransitions.isEmpty()) {
-            for (Automaton ps : newTransitions) {
-                this.addTransition(ps, false);
-            }
-            if (ECHO) {
-                System.out.println(agent.getId() + ", " + name
-                        + " pending transitions extended "
-                        + pendingTransitions.toString());
-            }
-        }
-        // tratamiento para dar estado inicial y comprobar si estado actual se
-        // ha acabado.
-        if (currentState == null || currentState.isFinished(phatInterface)) {
-            if (currentState != null) {// ya había un estado y ahora esta
-                // terminado
-                if (ECHO) {
-                    System.out.println(agent.getId() + ", " + name
-                            + " automaton finished " + currentState.toString());
-                }
-                currentState.setFinished(true);// fijar como terminado
-                currentState.notifityListeners(true);
-            }
-            if (!pendingTransitions.isEmpty()) {
-                this.setIdle(false);
-                // tomar siguiente transición
-                // pendiente (tanto si es como
-                // estado inicial o como
-                // siguiente)
-                currentState = nextAutomaton(null, phatInterface);
-                if (currentState != null) {
-                    notifyNextAutomaton(currentState);
-                }
-                if (ECHO) {
-                    System.out.println(agent.getId() + ", " + name
-                            + " automaton changes to state "
-                            + currentState.toString());
-                }
-            } else {// si no hay transiciones pendintes ir a estado por defecto
-                // (tanto si es como estado inicial o como siguiente)
+        switch (state) {
+            case NOT_INIT:
+                initState(phatInterface);
+                currentState = getNextAutomaton();
+                setState(STATE.STARTED);
+                break;
+            case DEFAULT:
                 currentState = getDefaultState(phatInterface);
-                this.setIdle(true);
+                if (currentState == null) {
+                    setState(STATE.FINISHED);
+                } else {
+                    currentState.setAutomatonModificator(automatonModificator);
+                    for (AutomatonListener al : listeners) {
+                        currentState.addListener(al);
+                    }
+                    setState(STATE.STARTED);
+                }
+                break;
+            case STARTED:
+                run(phatInterface);
+                break;
+            case FINISHED:
+                break;
+            case INTERRUPTED:
+                if (finishCondition != null) {
+                    finishCondition.automatonInterrupted(this);
+                }
                 if (currentState != null) {
-                    notifyNextAutomaton(currentState);
+                    currentState.setState(STATE.INTERRUPTED);
+                    currentState.nextState(phatInterface);
                 }
-                if (ECHO && currentState != null) {
-                    System.out.println(agent.getId() + ", " + name
-                            + " automaton changes default state "
-                            + currentState.toString());
+                interrupt(phatInterface);
+                break;
+            case RESUMED:
+                if (finishCondition != null) {
+                    finishCondition.automatonResumed(this);
                 }
-            }
-            if (currentState == null) {// no hay estado por defecto ni
-                // transiciones pendientes, se pone
-                // finalizado y se devuelve para dar
-                // control al autómata padre
-                this.setFinished(true);
-                //notifityListeners(true);
-                if (ECHO) {
-                    System.out
-                            .println(agent.getId()
-                            + ", "
-                            + name
-                            + " automaton finished and no default state given, control returned to upper automaton. ");
+                if (currentState != null) {
+                    currentState.setState(STATE.RESUMED);
+                    currentState.nextState(phatInterface);
                 }
-                return;
+                resume(phatInterface);
+                setState(STATE.STARTED);
+                break;
+        }
+    }
+
+    private void run(PHATInterface phatInterface) {
+        if (isFinished(phatInterface)) {
+            setState(STATE.FINISHED);
+        } else if (currentState == null) {
+            setState(STATE.DEFAULT);
+        } else if (currentState.getState() == STATE.INTERRUPTED) {
+            currentState.setState(STATE.RESUMED);
+        } else {
+            // There is one state with higher priority?
+            if (isPossibleAttendAHigherPriorityState()) {
+                currentState.setState(STATE.INTERRUPTED);
+                currentState.nextState(phatInterface); // Transmit the interruption
+                addTransition(currentState, true);
+                currentState = getNextAutomaton();
+            } else if (currentState.getState() == STATE.FINISHED) {
+                currentState = getNextAutomaton();
+            } else {
+                if (automatonModificator != null) {
+                    Automaton last = currentState;
+                    currentState = automatonModificator.monitoring(currentState);
+                    if(last != currentState) {
+                        transmitListeners(currentState);
+                    }
+                }
+                currentState.nextState(phatInterface);
             }
         }
+    }
 
-        // parar estado en curso para iniciar uno de mayor prioridad
-        if ((!pendingTransitions.isEmpty())
+    protected boolean isPossibleAttendAHigherPriorityState() {
+        return !pendingTransitions.isEmpty()
                 && pendingTransitions.getFirst().priority > currentState.priority
-                && currentState.isCanBeInterrupted()) {
-            currentState.notifityListeners(true);
-            currentState = nextAutomaton(currentState, phatInterface);
-            if (ECHO) {
-                System.out.println(agent.getId() + ", change due to priority, "
-                        + name + " automaton changes to state "
-                        + currentState.toString());
-            }
-
-        }
-
-        // siguiente paso del estado actual
-        currentState.nextState(phatInterface); // los estados tienen a su vez
-        // subestados, es automata
-        // jerárquico.
-
+                && (currentState == null || currentState.isCanBeInterrupted());
     }
 
-    /**
-     * Este método es llamado cuando un estado es parado por falta de prioridad.
-     * En él se debe preparar el estado para una reanudación. Si el estado es,
-     * por ejemplo, ir al baño, y te quedas en un punto del plano cuando te
-     * paran... no basta retomar dicho estado tras un tiempo porque tu posición
-     * habrá cambiado. En esos casos, entre otras cosas, habrá que borrar la
-     * lista de transiciones pendientes con clearPendingTransitions. Se puede
-     * redefinir para dar otros comportamientos. Por ejemplo, asignar restar
-     * tiempos de ejecución (ver MoveAndStay donde se recupera la transición
-     * Stay y se le resta de la duración el tiempo ya ejeceutado).
-     */
-    public void interrupt() {
-        if (finishCondition != null) {
-            finishCondition.automatonInterrupted(this);
-        }
-        if (currentState != null) {
-            currentState.interrupt();
-        }
-        setFinished(true);
-        setPause(true);
-        notifyInterruptedAutomaton(this);
+    public STATE getState() {
+        return state;
     }
 
-    public void resume() {
-        setFinished(false);
-        pause = false;
-        resumed = true;
-        if (currentState != null) {
-            currentState.resume();
-        }
-    }
-
-    /**
-     *
-     * @param phatInterface
-     */
-    public void resume(PHATInterface phatInterface) {
-        if (currentState == null) {
-            initState(phatInterface);
-        }
-    }
-
-    /**
-     * Este método es llamado cuando se quiere usar una instancia de automata
-     * otra vez sin crear una nueva. Por ejemplo por ejemplo en el automata
-     * estático. Deben ponerse todas las variables necesarias como en el inicio
-     * de la clase.
-     *
-     * @param simState
-     */
-    public void restart(PHATInterface phatInterface) {
-        if (finishCondition != null) {
-            finishCondition.automatonReset(this);
-        }
-        setFinished(false);
-        currentState = null;
-        pause = false;
-        this.clearPendingTransitions();
+    public void setState(STATE state) {
+        System.out.println(this);
+        this.state = state;
+        notifityListeners();
     }
 
     /**
@@ -565,27 +416,7 @@ public abstract class Automaton {
         if (finishCondition != null && finishCondition.evaluate(agent)) {
             return true;
         }
-        return finished;
-    }
-
-    /**
-     * Fijar que el automata termine. No confundir con método pause, no hay
-     * reanudación tras finish.
-     *
-     * @param finished
-     */
-    public void setFinished(boolean finished) {
-        this.finished = finished;
-    }
-
-    /**
-     * Fijar que el automata en el estado actual termine. No confundir con
-     * método pause, no hay reanudación tras finish.
-     *
-     * @param finished
-     */
-    public void setFinishedTheCurrentState(boolean finished) {
-        currentState.finished = finished;
+        return false;
     }
 
     /**
@@ -594,8 +425,13 @@ public abstract class Automaton {
      *
      * @return
      */
+    @Override
     public String toString() {
-        return name;
+        String result = agent.getId() + ": " + name + " (" + state + "):\n";
+        for (Automaton a : pendingTransitions) {
+            result += "\t- " + a.name + " (" + state + ")\n";
+        }
+        return result;
     }
 
     /**
@@ -604,24 +440,6 @@ public abstract class Automaton {
      */
     protected void clearPendingTransitions() {
         this.pendingTransitions.clear();
-    }
-
-    /**
-     * Ver si automatata esta pausado
-     *
-     * @return
-     */
-    public boolean getPause() {
-        return pause;
-    }
-
-    /**
-     * Pausar automata
-     *
-     * @param b
-     */
-    public void setPause(boolean b) {
-        this.pause = b;
     }
 
     /**
@@ -661,20 +479,6 @@ public abstract class Automaton {
      * @return
      */
     public abstract Automaton getDefaultState(PHATInterface phatInterface);
-
-    /**
-     * Método que devuelve un conjunto de autómatas/estados a los que transitar
-     * desde el estado actual. Este método se redefine en automatas que
-     * extiendan Automaton para crear los sub-autómatas o estados. Este método
-     * creará los autómatas/estados necesarios El método puede usar currentState
-     * para decidir el siguiente estado que se dará. En caso de dar varios
-     * estados se tomarán por orden de prioridad (aunque el array devuelto puede
-     * ir desordenado)
-     *
-     * @return
-     */
-    public abstract ArrayList<Automaton> createNewTransitions(
-            PHATInterface phatInterface);
 
     /**
      * Obtener nombre del autómata.
@@ -772,6 +576,14 @@ public abstract class Automaton {
         }
     }
 
+    public Automaton getCurrentAutomaton() {
+        Automaton result = this;
+        while (result.currentState != null) {
+            result = result.currentState;
+        }
+        return result;
+    }
+
     public Automaton getLeafAutomaton() {
         return getLeafAutomaton(new Vector<Automaton>());
     }
@@ -834,5 +646,13 @@ public abstract class Automaton {
             return this;
         }
         return parent;
+    }
+
+    public AutomatonModificator getAutomatonModificator() {
+        return automatonModificator;
+    }
+
+    public void setAutomatonModificator(AutomatonModificator automatonModificator) {
+        this.automatonModificator = automatonModificator;
     }
 }

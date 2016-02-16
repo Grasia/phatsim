@@ -44,13 +44,13 @@ public class SitDownAutomaton extends SimpleState implements PHATCommandListener
     }
 
     @Override
-    public void interrupt() {
+    public void interrupt(PHATInterface phatInterface) {
     	if(sitDownCommand != null && sitDownCommand.getState().equals(PHATCommand.State.Running)) {
             sitDownCommand.setFunction(PHATCommand.Function.Interrupt);
             agent.runCommand(sitDownCommand);
         }
             
-    	super.interrupt();
+    	super.interrupt(phatInterface);
     }
     
     @Override

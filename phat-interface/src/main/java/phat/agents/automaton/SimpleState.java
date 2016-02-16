@@ -24,6 +24,11 @@ import java.util.ArrayList;
 
 import phat.PHATInterface;
 import phat.agents.Agent;
+import static phat.agents.automaton.Automaton.STATE.FINISHED;
+import static phat.agents.automaton.Automaton.STATE.INTERRUPTED;
+import static phat.agents.automaton.Automaton.STATE.NOT_INIT;
+import static phat.agents.automaton.Automaton.STATE.RESUMED;
+import static phat.agents.automaton.Automaton.STATE.STARTED;
 
 /**
  * Estados que no tienen un autómata asociado. Es decir, autómatas más bajos de la jerarquía.
@@ -43,26 +48,47 @@ public abstract class SimpleState extends Automaton{
 
     }
 
-    @Override
-    public ArrayList<Automaton> createNewTransitions(PHATInterface phatInterface) {
-        return null;
-    }
-
     /**
      * Se obliga a implementar un nextState ya que en automaton depende del autómata subordinado.
      * @param state
      */
     @Override
     public void nextState(PHATInterface phatInterface) {
-        if (!init) {
-            notifityPreInitToListeners();
-            initState(phatInterface);
-            init = true;
-            notifityPostInitToListeners();
-        }
-        if(isFinished(phatInterface))
-        	return ;
-        simpleNextState(phatInterface);        
+        switch (state) {
+            case NOT_INIT:
+                initState(phatInterface);
+                setState(STATE.STARTED);
+                break;
+            case STARTED:
+                if(isFinished(phatInterface)) {
+                    setState(FINISHED);
+                } else {
+                    simpleNextState(phatInterface);
+                }
+                break;
+            case FINISHED:
+                break;
+            case INTERRUPTED:
+                if (finishCondition != null) {
+                    finishCondition.automatonInterrupted(this);
+                }
+                interrupt(phatInterface);
+                break;
+            case RESUMED:
+                if (finishCondition != null) {
+                    finishCondition.automatonResumed(this);
+                }
+                resume(phatInterface);
+                setState(STATE.STARTED);
+                break;
+        }    
+    }
+    
+    @Override
+    public void resume(PHATInterface phatInterface) {
+        super.resume(phatInterface);
+        
+        initState(phatInterface);
     }
     
     public abstract void simpleNextState(PHATInterface phatInterface);

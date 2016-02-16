@@ -54,13 +54,13 @@ public class DrinkAutomaton extends SimpleState implements PHATCommandListener {
     }
     
     @Override
-    public void interrupt() {
+    public void interrupt(PHATInterface phatInterface) {
     	if(playAnimCommand != null && playAnimCommand.getState().equals(PHATCommand.State.Running)) {
             playAnimCommand.setFunction(PHATCommand.Function.Interrupt);
             agent.runCommand(playAnimCommand);
         }
             
-    	super.interrupt();
+    	super.interrupt(phatInterface);
     }
     
     @Override

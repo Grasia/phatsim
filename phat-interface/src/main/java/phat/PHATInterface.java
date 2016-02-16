@@ -95,6 +95,8 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
     boolean multiListener = false;
     private boolean displayFps = false;
     private boolean statView = false;
+    private int displayWidth = 480;
+    private int displayHeight = 800;
 
     public PHATInterface(PHATInitializer initializer) {
         this.initializer = initializer;
@@ -191,8 +193,8 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
 
         AppSettings s = new AppSettings(true);
         s.setTitle(initializer.getTittle());
-        s.setWidth(480);
-        s.setHeight(800);
+        s.setWidth(displayWidth);
+        s.setHeight(displayHeight);
         if(multiListener) {
             s.setAudioRenderer(AurellemSystemDelegate.SEND);
             JmeSystem.setSystemDelegate(new PHATSystemDelegate());
@@ -407,5 +409,21 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
 
     public void setStatView(boolean statView) {
         this.statView = statView;
+    }
+
+    public int getDisplayWidth() {
+        return displayWidth;
+    }
+
+    public void setDisplayWidth(int displayWidth) {
+        this.displayWidth = displayWidth;
+    }
+
+    public int getDisplayHeight() {
+        return displayHeight;
+    }
+
+    public void setDisplayHeight(int displayHeight) {
+        this.displayHeight = displayHeight;
     }
 }

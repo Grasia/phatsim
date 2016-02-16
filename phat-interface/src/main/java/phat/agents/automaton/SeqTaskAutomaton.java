@@ -46,9 +46,4 @@ public abstract class SeqTaskAutomaton extends Automaton {
     public Automaton getDefaultState(PHATInterface phatInterface) {
         return null;
     }
-
-    @Override
-    public ArrayList<Automaton> createNewTransitions(PHATInterface phatInterface) {
-        return null;
-    }
 }

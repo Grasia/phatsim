@@ -33,33 +33,10 @@ public class PHATAudioEventAutomatonFinishedListener extends PHATAudioEvent impl
     }
 
     @Override
-    public void automatonFinished(Automaton automaton, boolean isSuccessful) {
-        if (isSuccessful) {
-            agent.getAgentsAppState().add(this);
+    public void stateChanged(Automaton automaton, Automaton.STATE state) {
+        switch(state) {
+            case FINISHED:
+                agent.getAgentsAppState().add(this);
         }
-    }
-
-    @Override
-    public void nextAutomaton(Automaton previousAutomaton, Automaton nextAutomaton) {
-    }
-
-    @Override
-    public void preInit(Automaton automaton) {
-        
-    }
-
-    @Override
-    public void postInit(Automaton automaton) {
-        
-    }
-
-    @Override
-    public void automatonInterrupted(Automaton automaton) {
-        
-    }
-
-    @Override
-    public void automatonResumed(Automaton resumedAutomaton) {
-        
     }
 }

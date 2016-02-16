@@ -72,7 +72,7 @@ public class HaveAShowerAutomaton extends SimpleState implements PHATCommandList
     }
 
     @Override
-    public void interrupt() {
+    public void interrupt(PHATInterface phatInterface) {
         if (goIntoShower != null && goIntoShower.getState().equals(PHATCommand.State.Running)) {
             goIntoShower.setFunction(PHATCommand.Function.Interrupt);
             agent.runCommand(goIntoShower);
@@ -83,7 +83,7 @@ public class HaveAShowerAutomaton extends SimpleState implements PHATCommandList
         }
         tapClosed = true;
 
-        super.interrupt();
+        super.interrupt(phatInterface);
     }
 
     @Override

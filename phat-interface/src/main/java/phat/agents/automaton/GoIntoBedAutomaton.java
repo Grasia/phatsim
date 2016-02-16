@@ -45,13 +45,13 @@ public class GoIntoBedAutomaton extends SimpleState implements PHATCommandListen
     }
 
     @Override
-    public void interrupt() {
+    public void interrupt(PHATInterface phatInterface) {
         if (goIntoBedCommand != null && goIntoBedCommand.getState().equals(PHATCommand.State.Running)) {
             goIntoBedCommand.setFunction(PHATCommand.Function.Interrupt);
             agent.runCommand(goIntoBedCommand);
         }
 
-        super.interrupt();
+        super.interrupt(phatInterface);
     }
 
     @Override

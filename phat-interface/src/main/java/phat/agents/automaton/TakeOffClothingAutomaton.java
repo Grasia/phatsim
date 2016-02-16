@@ -35,12 +35,6 @@ public class TakeOffClothingAutomaton extends SimpleState {
     }
     
     @Override
-    public void interrupt() {
-        super.interrupt();
-        setFinished(true);
-    }
-
-    @Override
     public void simpleNextState(PHATInterface phatInterface) {
     }
 

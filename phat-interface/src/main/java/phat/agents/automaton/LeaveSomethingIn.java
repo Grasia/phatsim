@@ -51,13 +51,13 @@ public class LeaveSomethingIn extends SimpleState implements PHATCommandListener
     }
 
     @Override
-    public void interrupt() {
+    public void interrupt(PHATInterface phatInterface) {
         if (setObjectOnCommand != null && setObjectOnCommand.getState().equals(PHATCommand.State.Running)) {
             setObjectOnCommand.setFunction(PHATCommand.Function.Interrupt);
             agent.runCommand(setObjectOnCommand);
         }
 
-        super.interrupt();
+        super.interrupt(phatInterface);
     }
 
     @Override

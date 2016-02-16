@@ -53,11 +53,10 @@ public class WaitForCloseToBodyAutomaton extends SimpleState implements PHATComm
     }
 
     @Override
-    public void interrupt() {
-        super.interrupt();
+    public void interrupt(PHATInterface phatInterface) {
+        super.interrupt(phatInterface);
         waitForBodyClose.setFunction(PHATCommand.Function.Interrupt);
         agent.runCommand(waitForBodyClose);
-        setFinished(true);
     }
 
     public WaitForCloseToBodyAutomaton(Agent agent, String name, String destinyBodyName, float distance) {

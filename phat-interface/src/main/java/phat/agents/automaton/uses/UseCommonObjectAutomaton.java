@@ -77,7 +77,7 @@ public class UseCommonObjectAutomaton extends SimpleState implements PHATCommand
     }
     
     @Override
-    public void interrupt() {
+    public void interrupt(PHATInterface phatInterface) {
     	if(goCloseToObj != null && goCloseToObj.getState().equals(PHATCommand.State.Running)) {
             goCloseToObj.setFunction(PHATCommand.Function.Interrupt);
             agent.runCommand(goCloseToObj);
@@ -85,7 +85,7 @@ public class UseCommonObjectAutomaton extends SimpleState implements PHATCommand
         agent.runCommand(new CloseObjectCommand(agent.getId(), objId));
         tapClosed = true;
             
-    	super.interrupt();
+    	super.interrupt(phatInterface);
     }
     
     @Override

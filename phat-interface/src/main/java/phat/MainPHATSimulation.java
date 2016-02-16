@@ -66,6 +66,8 @@ public class MainPHATSimulation implements PHATInitializer {
         MainPHATSimulation sim = new MainPHATSimulation();
         PHATInterface phat = new PHATInterface(sim, new ArgumentProcessor(a));
         phat.setSeed(0);
+        phat.setDisplayHeight(800);
+        phat.setDisplayWidth(480);
         phat.start();
     }
 

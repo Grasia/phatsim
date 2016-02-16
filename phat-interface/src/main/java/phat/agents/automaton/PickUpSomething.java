@@ -48,13 +48,13 @@ public class PickUpSomething extends SimpleState implements PHATCommandListener 
     }
     
     @Override
-    public void interrupt() {
+    public void interrupt(PHATInterface phatInterface) {
         if (pickUpCommand != null && pickUpCommand.getState().equals(PHATCommand.State.Running)) {
             pickUpCommand.setFunction(PHATCommand.Function.Interrupt);
             agent.runCommand(pickUpCommand);
         }
 
-        super.interrupt();
+        super.interrupt(phatInterface);
     }
 
     @Override

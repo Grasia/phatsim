@@ -44,12 +44,12 @@ public class MoveToSpace extends SimpleState implements PHATCommandListener {
     }
 
     @Override
-    public void interrupt() {
+    public void interrupt(PHATInterface phatInterface) {
         if (goToSpaceCommand != null) {
             goToSpaceCommand.setFunction(PHATCommand.Function.Interrupt);
             agent.runCommand(goToSpaceCommand);
         }
-        super.interrupt();
+        super.interrupt(phatInterface);
     }
 
     public MoveToSpace(Agent agent, String name, String destinyName, float distance) {

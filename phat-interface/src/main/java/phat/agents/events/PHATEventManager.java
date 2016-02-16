@@ -51,7 +51,7 @@ public class PHATEventManager {
     }
 
     public synchronized void process(PHATInterface phatInterface) {
-	List<PHATEvent> eventsToRemove = new ArrayList<>();
+        List<PHATEvent> eventsToRemove = new ArrayList<>();
         for (PHATEvent event : events) {
             if (!event.state.equals(PHATEvent.State.Started)) {
                 eventHistory.add(event);
@@ -59,44 +59,42 @@ public class PHATEventManager {
                 continue;
             }
             if (event.isPerceptible(agent)) {
-                EventProcessor ep = null;
-
-                ep = eventsMapping.get(event.getId());
+                EventProcessor ep = eventsMapping.get(event.getId());
 
                 if (ep != null) {
                     Automaton automaton = ep.process(agent);
                     if (automaton != null) {
-                        ActivityAutomaton aa = agent.getAutomaton()
-                                .getCurrentUpperAutomatonByType(
-                                ActivityAutomaton.class);
-                        if (aa != null) {
-                            Automaton currentAction = aa.getLeafAutomaton();
-                            if (currentAction == null || currentAction.isCanBeInterrupted()) {
-                                InterruptionAutomaton ia = new InterruptionAutomaton(agent, automaton, agent.getAutomaton());
-                                Automaton ca = agent.getAutomaton();
-                                ca.interrupt();
-                                agent.setAutomaton(ia);
-                                System.out.println("agent id = " + agent.getId());
-                                System.out.println("Event id = " + event.id);
-                                System.out.println("NotofyNextAutomaton1234");
-                                ca.notifyNextAutomaton(ia);
-                                /*if(currentAction != null) {
-                                 System.out.println("Current task = "
-                                 + aa.getLeafAutomaton().getName());
-                                 currentAction.interrupt();
-                                 }
-                                 aa.interrupt();
-                                 aa.addTransition(automaton, true);
-                                 aa.initState(phatInterface);
-                                 aa.printPendingTransitions();*/
-                                agent.getAutomaton().printPendingTransitions();
-                                event.setEventState(PHATEvent.State.Assigned);
-                                eventHistory.add(event);
-                                eventsToRemove.add(event);
-                            } else {
-                                System.out.println(currentAction.getName() + " NO Interrupted!");
-                            }
-                        }
+                        //Automaton currentAction = agent.getAutomaton().getCurrentAutomaton();
+                        //InterruptionAutomaton ia = new InterruptionAutomaton(agent, automaton, currentAction);
+                        automaton.setPriority(10);
+                        agent.getAutomaton().addTransition(automaton, true);
+                        event.setEventState(PHATEvent.State.Assigned);
+                        eventHistory.add(event);
+                        eventsToRemove.add(event);
+                        //agent.getAutomaton().notifyNextAutomaton(ia);
+                        /*ActivityAutomaton aa = agent.getAutomaton()
+                         .getCurrentUpperAutomatonByType(
+                         ActivityAutomaton.class);
+                         if (aa != null) {
+                         Automaton currentAction = aa.getLeafAutomaton();
+                         if (currentAction == null || currentAction.isCanBeInterrupted()) {
+                         InterruptionAutomaton ia = new InterruptionAutomaton(agent, automaton, agent.getAutomaton());
+                         Automaton ca = agent.getAutomaton();
+                         ca.interrupt();
+                         agent.setAutomaton(ia);
+                         System.out.println("agent id = " + agent.getId());
+                         System.out.println("Event id = " + event.id);
+                         System.out.println("NotofyNextAutomaton1234");
+                         ca.notifyNextAutomaton(ia);
+                                
+                         agent.getAutomaton().printPendingTransitions();
+                         event.setEventState(PHATEvent.State.Assigned);
+                         eventHistory.add(event);
+                         eventsToRemove.add(event);
+                         } else {
+                         System.out.println(currentAction.getName() + " NO Interrupted!");
+                         }
+                         }*/
                     } else {
                         event.setEventState(PHATEvent.State.Ignored);
                         eventHistory.add(event);
@@ -105,7 +103,7 @@ public class PHATEventManager {
                 }
             }
         }
-	events.removeAll(eventsToRemove);
+        events.removeAll(eventsToRemove);
     }
 
     public PHATEvent getEvent(String id) {

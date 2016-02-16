@@ -56,11 +56,10 @@ public class MoveToBodyLocAutomaton extends SimpleState implements PHATCommandLi
     }
 
     @Override
-    public void interrupt() {
-        super.interrupt();
+    public void interrupt(PHATInterface phatInterface) {
+        super.interrupt(phatInterface);
         moveToBodyCommand.setFunction(PHATCommand.Function.Interrupt);
         agent.runCommand(moveToBodyCommand);
-        setFinished(true);
     }
 
     public MoveToBodyLocAutomaton(Agent agent, String name, String destinyBodyName, float distance) {

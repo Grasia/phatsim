@@ -57,12 +57,12 @@ public class SwitchTVAutomaton extends SimpleState implements PHATCommandListene
     }
 
     @Override
-    public void interrupt() {
+    public void interrupt(PHATInterface phatInterface) {
         if (goCloseToObj != null && goCloseToObj.getState().equals(PHATCommand.State.Running)) {
             goCloseToObj.setFunction(PHATCommand.Function.Interrupt);
             agent.runCommand(goCloseToObj);
         }
-        super.interrupt();
+        super.interrupt(phatInterface);
     }
 
     @Override

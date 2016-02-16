@@ -32,6 +32,7 @@ import org.jfree.util.WaitingImageObserver;
 
 import phat.PHATInterface;
 import phat.agents.automaton.Automaton;
+import phat.agents.automaton.Automaton.STATE;
 import phat.agents.automaton.AutomatonListener;
 import phat.agents.automaton.MainAutomaton;
 import phat.agents.automaton.MoveToBodyLocAutomaton;
@@ -88,99 +89,75 @@ public abstract class Agent implements PHATAgentTick {
                 private AgentPHATEvent lastEvent = null;
 
                 @Override
-                public void preInit(Automaton automaton) {
-                    // TODO Auto-generated method stub
-                }
+                public void stateChanged(Automaton automaton, STATE state) {
+                    if (state == STATE.STARTED) {
+                        AgentPHATEvent currentEvent = null;
+                        String aided = null;
+                        Automaton result = automaton.containsStateOfKind(MoveToBodyLocAutomaton.class);
 
-                @Override
-                public void postInit(Automaton automaton) {
-                    AgentPHATEvent currentEvent = null;
-                    String aided = null;
-                    Automaton result = automaton.containsStateOfKind(MoveToBodyLocAutomaton.class);
-                    
-                    if (result != null) {
-                        aided = ((MoveToBodyLocAutomaton) result).getDestinyBodyName();
-                    }
-                    
-                    Automaton thereIsSuccess = automaton.getRootParent().containsStateWithPrefix("success_");
-                    Automaton thereIsFailure = automaton.getRootParent().containsStateWithPrefix("failure_");
-                    
-                   
-                    	
-                    
-                    String waitingForAssistance = null;
+                        if (result != null) {
+                            aided = ((MoveToBodyLocAutomaton) result).getDestinyBodyName();
+                        }
 
-                    if (automaton instanceof WaitForCloseToBodyAutomaton) {
-                        waitingForAssistance = ((WaitForCloseToBodyAutomaton) automaton).getDestinyBodyName();
-                    }
-
-                    if (automaton.getLeafAutomaton() != null) {
-                        currentEvent =
-                                new AgentPHATEvent(getId(),
-                                getLocation(),
-                                getTime(), getBodyPosture(),
-                                automaton.getLeafAutomaton().getName());
-                    } else {
-                        currentEvent =
-                                new AgentPHATEvent(getId(),
-                                getLocation(),
-                                getTime(), getBodyPosture(),
-                                "undertermined");
+                        Automaton thereIsSuccess = automaton.getRootParent().containsStateWithPrefix("success_");
+                        Automaton thereIsFailure = automaton.getRootParent().containsStateWithPrefix("failure_");
 
 
-                    }
-                    currentEvent.setAided(aided);
-                    currentEvent.setElapsedTime(getElapsedTimeSeconds());
-                    if (automaton.getMetadata("SOCIAALML_ENTITY_TYPE")!=null && !automaton.getMetadata("SOCIAALML_ENTITY_TYPE").equals(""))                    	
-                    	currentEvent.setActionType(automaton.getMetadata("SOCIAALML_ENTITY_TYPE"));
-                    else
-                    	currentEvent.setActionType(automaton.getName());
-                    
-					currentEvent.setScope(automaton.getName());
-					 if (thereIsSuccess!=null)
-						 currentEvent.setSuccess(true);
-					 if (thereIsFailure!=null)
-						 currentEvent.setFailure(true);
-					 
-					 if (automaton.getName().toLowerCase().startsWith("success_"))
-						 currentEvent.setSuccessAction(true);
-					 if (automaton.getName().toLowerCase().startsWith("failure_"))
-						 currentEvent.setFailureAction(true);
-					
-                    System.out.println("Registrandoooooo2 " + currentEvent);
-                    if (lastEvent == null || (lastEvent != null && !lastEvent.similar(currentEvent))) {
-                        lastEvent = currentEvent;
-              
+
+
+                        String waitingForAssistance = null;
+
+                        if (automaton instanceof WaitForCloseToBodyAutomaton) {
+                            waitingForAssistance = ((WaitForCloseToBodyAutomaton) automaton).getDestinyBodyName();
+                        }
+
+                        if (automaton.getLeafAutomaton() != null) {
+                            currentEvent =
+                                    new AgentPHATEvent(getId(),
+                                    getLocation(),
+                                    getTime(), getBodyPosture(),
+                                    automaton.getLeafAutomaton().getName());
+                        } else {
+                            currentEvent =
+                                    new AgentPHATEvent(getId(),
+                                    getLocation(),
+                                    getTime(), getBodyPosture(),
+                                    "undertermined");
+
+
+                        }
+                        currentEvent.setAided(aided);
+                        currentEvent.setElapsedTime(getElapsedTimeSeconds());
+                        if (automaton.getMetadata("SOCIAALML_ENTITY_TYPE") != null && !automaton.getMetadata("SOCIAALML_ENTITY_TYPE").equals("")) {
+                            currentEvent.setActionType(automaton.getMetadata("SOCIAALML_ENTITY_TYPE"));
+                        } else {
+                            currentEvent.setActionType(automaton.getName());
+                        }
+
+                        currentEvent.setScope(automaton.getName());
+                        if (thereIsSuccess != null) {
+                            currentEvent.setSuccess(true);
+                        }
+                        if (thereIsFailure != null) {
+                            currentEvent.setFailure(true);
+                        }
+
+                        if (automaton.getName().toLowerCase().startsWith("success_")) {
+                            currentEvent.setSuccessAction(true);
+                        }
+                        if (automaton.getName().toLowerCase().startsWith("failure_")) {
+                            currentEvent.setFailureAction(true);
+                        }
+
+                        System.out.println("Registrandoooooo2 " + currentEvent);
+                        if (lastEvent == null || (lastEvent != null && !lastEvent.similar(currentEvent))) {
+                            lastEvent = currentEvent;
+
                             System.out.println("Registrandoooooo1");
                             eventListener.notifyEvent(currentEvent);
-                 
+
+                        }
                     }
-                }
-
-                @Override
-                public void nextAutomaton(Automaton previousAutomaton,
-                        Automaton nextAutomaton) {
-
-
-                    nextAutomaton.addListener(this);
-
-
-
-                }
-
-                @Override
-                public void automatonResumed(Automaton resumedAutomaton) {
-                    // TODO Auto-generated method stub
-                }
-
-                @Override
-                public void automatonInterrupted(Automaton automaton) {
-                    // TODO Auto-generated method stub
-                }
-
-                @Override
-                public void automatonFinished(Automaton automaton, boolean isSuccessful) {
-                    // TODO Auto-generated method stub
                 }
             });
         }
@@ -254,15 +231,14 @@ public abstract class Agent implements PHATAgentTick {
         }
         if (automaton != null) {
             automaton.nextState(phatInterface);
-            if (automaton.isIdle()) {
-                initAutomaton();
-            }
-
+            /*if (automaton.isIdle()) {
+             initAutomaton();
+             }*/
         } else {
             initAutomaton();
         }
 
-        if(eventListener != null) {
+        if (eventListener != null) {
             eventListener.setSimTime(phatInterface.getSimTime().getTimeInMillis());
         }
     }
@@ -278,7 +254,7 @@ public abstract class Agent implements PHATAgentTick {
     public PHATCalendar getTime() {
         return agentsAppState.getBodiesAppState().getTime();
     }
-    
+
     public long getElapsedTimeSeconds() {
         return agentsAppState.getPHAInterface().getElapsedSimTimeSeconds();
     }

@@ -32,33 +32,25 @@ public class AllRandomAutomaton extends Automaton {
     public AllRandomAutomaton(Agent agent) {
         super(agent);
     }
-    
+
     @Override
-    protected Automaton nextAutomaton(
-			Automaton stateToBeReplaced, PHATInterface phatInterface) {
-        Automaton automaton = null;
-        int size = pendingTransitions.size();
-        if(stateToBeReplaced == null && size > 0) {
-            int randomIndex = phatInterface.getRandom().nextInt(size);
-            automaton = pendingTransitions.get(randomIndex);
-            pendingTransitions.remove(automaton);
+    protected Automaton getNextAutomaton() {
+        Automaton newTransition = null;
+        if (!pendingTransitions.isEmpty()) {
+            int size = pendingTransitions.size();
+            int randomIndex = agent.getAgentsAppState().getPHAInterface().getRandom().nextInt(size);
+            newTransition = pendingTransitions.get(randomIndex);
+            pendingTransitions.removeFirst();
         }
-        return automaton;
+        return newTransition;
     }
-    
+
     @Override
     public void initState(PHATInterface phatInterface) {
-        
     }
 
     @Override
     public Automaton getDefaultState(PHATInterface phatInterface) {
         return null;
     }
-
-    @Override
-    public ArrayList<Automaton> createNewTransitions(PHATInterface phatInterface) {
-        return null;
-    }
-    
 }

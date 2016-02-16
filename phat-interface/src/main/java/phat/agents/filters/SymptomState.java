@@ -41,13 +41,7 @@ public class SymptomState extends SimpleState {
         this.symptom = symptom;
         this.level = level;
     }
-
-    @Override
-    public void interrupt() {
-        super.interrupt();
-        setFinished(true);
-    }
-
+    
     @Override
     public void simpleNextState(PHATInterface phatInterface) {
         if (!symptom.getCurrentLevel().equals(level)) {

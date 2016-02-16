@@ -61,13 +61,16 @@ public class AutomatonIcon implements AutomatonListener {
     }
     
     @Override
-    public void automatonFinished(Automaton automaton, boolean isSuccessful) {
-        removeIcon(automaton);
-    }
-
-    @Override
-    public void automatonInterrupted(Automaton automaton) {
-        removeIcon(automaton);
+    public void stateChanged(Automaton automaton, Automaton.STATE state) {
+        switch(state) {
+            case FINISHED:
+            case INTERRUPTED:
+                removeIcon(automaton);
+                break;
+            case STARTED:
+                addIcon(automaton);
+                break;
+        }
     }
     
     private void removeIcon(Automaton automaton) {
@@ -75,26 +78,6 @@ public class AutomatonIcon implements AutomatonListener {
         if(iconPath != null) {
             automaton.getAgent().runCommand(new AttachIconCommand(automaton.getAgent().getId(), iconPath, false));
         }
-    }
-    
-    @Override
-    public void nextAutomaton(Automaton previousAutomaton, Automaton nextAutomaton) {
-        nextAutomaton.addListener(this);
-    }
-
-    @Override
-    public void preInit(Automaton automaton) {
-        
-    }
-
-    @Override
-    public void postInit(Automaton automaton) {
-        addIcon(automaton);
-    }
-
-    @Override
-    public void automatonResumed(Automaton resumedAutomaton) {
-        addIcon(resumedAutomaton);
     }
 
     private void addIcon(Automaton automaton) {

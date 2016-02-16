@@ -187,28 +187,42 @@ public class FSM extends Automaton {
      * @param simState
      * @return
      */
-    public Automaton decideTransition(PHATInterface phatInterface) {
-        ArrayList<Transition> states = possibleNextStates(currentState);
-        if (states.isEmpty()) {
-            return null;
-        }
-        Transition r = states.get(phatInterface.getRandom().nextInt(
-                states.size()));
-        notifyNextAutomaton(r.getTarget());
-        return r.getTarget();
-
-    }
-
     @Override
-    public void replaceCurrentAutomaton(Automaton automaton) {
-        if (currentState != null) {
-            for (Transition t : possibleTransitions.get(currentState)) {
-                registerTransition(automaton, t);
+    protected Automaton getNextAutomaton() {
+        Automaton result = null;
+        if (currentState == null) {
+            result = initialState;
+        } else if (finalStates.contains(currentState)) {
+            return null;
+        } else {
+            ArrayList<Transition> states = possibleNextStates(currentState);
+            if (states.isEmpty()) {
+                return null;
             }
-            currentState.setFinished(true);
-            currentState.notifyNextAutomaton(automaton);
+            Transition r = states.get(agent.getAgentsAppState().getPHAInterface().getRandom().nextInt(
+                    states.size()));
+            if (automatonModificator != null) {
+                r.getTarget().setAutomatonModificator(automatonModificator);
+            }
+            result = r.getTarget();
         }
-        currentState = automaton;
+        if (result != null) {
+            System.out.println("NextState = " + result);
+            result.setAutomatonModificator(automatonModificator);
+
+            for (AutomatonListener al : listeners) {
+                result.addListener(al);
+            }
+        }
+
+        if (result != null) {
+            if (result.getState() == STATE.FINISHED) {
+                result.setState(STATE.NOT_INIT);
+            } else if (result.getState() == STATE.INTERRUPTED) {
+                result.setState(STATE.RESUMED);
+            }
+        }
+        return result;
     }
 
     private Automaton checkIfTransitionIsActivated(Automaton source, PHATInterface phatInterface) {
@@ -229,132 +243,12 @@ public class FSM extends Automaton {
         return null;
     }
 
-    /**
-     * Este método lleva le control del autómata. Si el estado actual ha
-     * terminado, se toma aleatoriamente uno de los estados a los que se puede
-     * transitar. Si el estado alcanzado es final, se finaliza el automáta.
-     * Vease comentarios en código de método.
-     *
-     * @param state
-     */
-    @Override
-    public void nextState(PHATInterface phatInterface) {
-        if (!init) {
-            notifityPreInitToListeners();
-            initState(phatInterface);
-            init = true;
-            notifityPostInitToListeners();
-        }
-        // si este nivel esta terminado, devolver control
-        if (this.isFinished(phatInterface)) {
-            setFinished(true);
-            return;
-        }
-        // si marca de pausa, ignorar
-        if (pause) {
-            return;
-        }
-        // El estado incial se da en el primer registro.
-        if (currentState == null) {
-            currentState = this.initialState;
-            if (initialState == null) {
-                throw new UnsupportedOperationException(
-                        "Initial state not given, some transitions must be registered");
-            }
-            notifyNextAutomaton(currentState);
-            if (!currentState.init) {
-                notifityPreInitToListeners();
-                currentState.initState(phatInterface);
-                currentState.init = true;
-                notifityPostInitToListeners();
-            }
-        }
-        // se comprueba si se cumple una condicion de transicion
-		/*Automaton nextstate = checkIfTransitionIsActivated(currentState, phatInterface);
-         if (nextstate != null) {
-         currentState = nextstate;
-         currentState.restart(phatInterface);// reiniciar estado por si ya se
-         // había usado
-         if (ECHO) {
-         System.out.println(agent.getId() + " with automaton " + name
-         + ", transition to state " + currentState.toString());
-         }
-         }*/
-
-        // comprobar si estado actual se ha acabado.
-        if (currentState.isFinished(phatInterface)) {
-            currentState.setFinished(true);
-            currentState.notifityListeners(true);
-            printPendingTransitions();
-            // comrpobar si era estado final para dar por termiando este
-            // automata
-            if (ECHO) {
-                System.out.println(agent.getId() + " with automaton " + name
-                        + ", finishes states " + currentState.toString());
-            }
-            if (this.finalStates.contains(currentState)) {
-                this.setFinished(true);
-                //notifityListeners(true);
-                if (ECHO) {
-                    System.out.println(agent.getId() + ", " + name
-                            + " automaton finished");
-                }
-                return;
-            }
-            // si no, llamar a decidir una transición
-            Automaton nstate = decideTransition(phatInterface);
-            if (nstate != null) {
-                currentState = nstate;
-                if (currentState.isFinished(phatInterface)) {
-                    currentState.restart(phatInterface);
-                    restartConditionsOfTransitions(currentState);
-                    currentState.initState(phatInterface);
-                } else {
-                    currentState.restart(phatInterface);// reiniciar estado por si
-                    // ya se había usado
-                    restartConditionsOfTransitions(currentState);
-                }
-            }
-            if (ECHO) {
-                System.out.println(agent.getId() + " with automaton " + name
-                        + ", transition to state " + currentState.toString());
-            }
-        }
-
-        if (!currentState.isFinished(phatInterface)) {
-            // siguiente paso del estado actual
-            currentState.nextState(phatInterface); // los estados tienen a su
-            // bez subestados, es
-            // automata jerárquico.
-        }
-
-    }
-
     private void restartConditionsOfTransitions(Automaton automaton) {
         List<Transition> transitions = possibleTransitions.get(automaton);
         if (transitions != null) {
             for (Transition t : possibleTransitions.get(automaton)) {
                 t.getCondition().automatonReset(automaton);
             }
-        }
-    }
-
-    /**
-     * Método forceState para simular una comunicación entre automatas. Se le
-     * pasa el estado al que se quiere forzar el automata a transitar.
-     *
-     * @param state Estado al que transitar
-     * @param simState
-     */
-    public void forceState(Automaton state, PHATInterface phatInterface) {
-        currentState = state;
-        currentState.restart(phatInterface);// reiniciar estado por si ya se
-        // había usado
-        if (ECHO) {
-            System.out
-                    .println(agent.getId() + " with automaton " + name
-                    + ", transition forced to state "
-                    + currentState.toString());
         }
     }
 
@@ -368,12 +262,7 @@ public class FSM extends Automaton {
 
     @Override
     public Automaton getDefaultState(PHATInterface phatInterface) {
-        throw new UnsupportedOperationException("Not used");
-    }
-
-    @Override
-    public ArrayList<Automaton> createNewTransitions(PHATInterface phatInterface) {
-        throw new UnsupportedOperationException("Not used");
+        return null;
     }
 
     @Override

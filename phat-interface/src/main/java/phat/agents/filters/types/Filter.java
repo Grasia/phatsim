@@ -53,8 +53,6 @@ public abstract class Filter {
     }
     
     public static boolean hasBeenFiltered(Automaton automaton) {
-    	if (automaton.getMetadata(FILTER_TAG) != null)
-    		System.out.println("**ha sido filtrado "+automaton.getName());
         return automaton.getMetadata(FILTER_TAG) != null;
     }
     

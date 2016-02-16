@@ -17,32 +17,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package phat.agents.events;
+package phat.agents.automaton;
 
-import phat.agents.Agent;
-import phat.agents.automaton.Automaton;
-import static phat.agents.automaton.Automaton.STATE.FINISHED;
-import phat.agents.automaton.AutomatonListener;
-
-public class PHATEventForAll extends PHATEvent implements AutomatonListener {
-
-    Agent agent;
-
-    public PHATEventForAll(Agent agent, String id, EventSource eventSource) {
-        super(id, eventSource);
-        this.agent = agent;
-    }
-
-    @Override
-    public void stateChanged(Automaton automaton, Automaton.STATE state) {
-        switch(state) {
-            case FINISHED:
-                agent.getAgentsAppState().add(this);
-        }
-    }
-
-    @Override
-    public boolean isPerceptible(Agent agent) {
-        return true;
-    }
+/**
+ *
+ * @author pablo
+ */
+public interface AutomatonModificator {
+    public Automaton monitoring(Automaton next);
 }

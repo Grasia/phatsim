@@ -81,12 +81,12 @@ public class UseDoorbellAutomaton extends SimpleState implements PHATCommandList
     public void simpleNextState(PHATInterface phatInterface) {
     }
 
-    public void interrupt() {
+    public void interrupt(PHATInterface phatInterface) {
     	if(goCloseToDoorbell != null && goCloseToDoorbell.getState().equals(PHATCommand.State.Running)) {
             goCloseToDoorbell.setFunction(PHATCommand.Function.Interrupt);
             agent.runCommand(goCloseToDoorbell);
         }            
-    	super.interrupt();
+    	super.interrupt(phatInterface);
     }
         
     @Override
