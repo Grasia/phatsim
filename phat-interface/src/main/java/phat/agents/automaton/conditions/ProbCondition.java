@@ -22,7 +22,7 @@ package phat.agents.automaton.conditions;
 import phat.agents.Agent;
 import phat.agents.automaton.Automaton;
 
-public class ProbCondition implements AutomatonCondition {
+public class ProbCondition extends AutomatonCondition {
 
     float prob;
 
@@ -36,7 +36,7 @@ public class ProbCondition implements AutomatonCondition {
     }
 
     @Override
-    public boolean evaluate(Agent agent) {
+    public boolean simpleEvaluation(Agent agent) {
         float v = getRandomValue(agent);
         boolean value =  (v <= prob);
         return value;

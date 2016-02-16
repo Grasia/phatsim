@@ -26,7 +26,7 @@ import phat.agents.automaton.Automaton;
 import phat.agents.filters.DiseaseManager;
 import phat.agents.filters.Symptom;
 
-public class SymptomCondition implements AutomatonCondition {
+public class SymptomCondition extends AutomatonCondition {
 
     private final static Logger logger = Logger.getLogger(DayCondition.class.getName()); 
 
@@ -48,7 +48,7 @@ public class SymptomCondition implements AutomatonCondition {
      * @return 
      */
     @Override
-    public boolean evaluate(Agent agent) {
+    public boolean simpleEvaluation(Agent agent) {
         DiseaseManager dm = agent.getDiseaseManager();
         if (dm != null) {
             Symptom s = dm.getSymptom(symptomName);

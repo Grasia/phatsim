@@ -24,7 +24,7 @@ import java.util.List;
 import phat.agents.Agent;
 import phat.agents.automaton.Automaton;
 
-public class CompositeAndCondition implements AutomatonCondition {
+public class CompositeAndCondition extends AutomatonCondition {
 
     List<AutomatonCondition> conditions = new ArrayList<>();
 
@@ -35,7 +35,7 @@ public class CompositeAndCondition implements AutomatonCondition {
     }
 
     @Override
-    public boolean evaluate(Agent agent) {
+    public boolean simpleEvaluation(Agent agent) {
         for(AutomatonCondition ac: conditions) {
             if(!ac.evaluate(agent)) {
                 return false;

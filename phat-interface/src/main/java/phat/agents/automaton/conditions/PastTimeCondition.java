@@ -22,12 +22,12 @@ package phat.agents.automaton.conditions;
 import phat.agents.Agent;
 import phat.agents.automaton.Automaton;
 
-public class PastTimeCondition implements AutomatonCondition {
+public class PastTimeCondition extends AutomatonCondition {
 
     int hours;
     int minutes;
     int seconds;
-    int marginInSecs = 30*60;
+    int marginInSecs = 4*60*60;
 
     public PastTimeCondition(int hours, int minutes, int seconds) {
         super();
@@ -37,7 +37,7 @@ public class PastTimeCondition implements AutomatonCondition {
     }
 
     @Override
-    public boolean evaluate(Agent agent) {
+    public boolean simpleEvaluation(Agent agent) {
         return agent.getTime().pastTime(hours, minutes, seconds, marginInSecs);
     }
 

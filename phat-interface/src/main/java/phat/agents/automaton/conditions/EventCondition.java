@@ -26,7 +26,7 @@ import phat.agents.automaton.Automaton;
 import phat.agents.events.PHATEvent;
 import phat.agents.events.PHATEventManager;
 
-public class EventCondition implements AutomatonCondition {
+public class EventCondition extends AutomatonCondition {
 
     private final static Logger logger = Logger.getLogger(EventCondition.class.getName()); 
 
@@ -46,7 +46,7 @@ public class EventCondition implements AutomatonCondition {
      * @return 
      */
     @Override
-    public boolean evaluate(Agent agent) {
+    public boolean simpleEvaluation(Agent agent) {
         PHATEventManager em = agent.getEventManager();
         if (em != null) {
             PHATEvent event = em.getEvent(idEvent);

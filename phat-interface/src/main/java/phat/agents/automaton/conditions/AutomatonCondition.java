@@ -28,14 +28,24 @@ import phat.agents.automaton.Automaton;
  * @author escalope
  *
  */
-public interface AutomatonCondition {
+public abstract class AutomatonCondition {
 
+    long timestamp = 0;
+    boolean evaluation = false;
 	/**
 	 * It tells if the condition is met
 	 * @return
 	 */
-	boolean evaluate(Agent agent);
-        void automatonInterrupted(Automaton automaton);
-        void automatonResumed(Automaton automaton);
-        void automatonReset(Automaton automaton);
+	public boolean evaluate(Agent agent) {
+            long t = agent.getAgentsAppState().getPHAInterface().getSimTime().getTimeInMillis();
+            if(t != timestamp) {
+                timestamp = t;
+                evaluation = simpleEvaluation(agent);
+            }
+            return evaluation;
+        }
+        abstract boolean simpleEvaluation(Agent agent);
+        public abstract void automatonInterrupted(Automaton automaton);
+        public abstract void automatonResumed(Automaton automaton);
+        public abstract void automatonReset(Automaton automaton);
 }

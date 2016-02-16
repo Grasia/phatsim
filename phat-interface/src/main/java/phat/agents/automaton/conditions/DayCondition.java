@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 import phat.agents.Agent;
 import phat.agents.automaton.Automaton;
 
-public class DayCondition implements AutomatonCondition {
+public class DayCondition extends AutomatonCondition {
 
     private final static Logger logger = Logger.getLogger(SymptomCondition.class.getName()); 
 
@@ -44,7 +44,7 @@ public class DayCondition implements AutomatonCondition {
      * @return 
      */
     @Override
-    public boolean evaluate(Agent agent) {
+    public boolean simpleEvaluation(Agent agent) {
         return dayOfTheWeek.ordinal() + 1 == agent.getTime().getDayOfWeek();
     }
 

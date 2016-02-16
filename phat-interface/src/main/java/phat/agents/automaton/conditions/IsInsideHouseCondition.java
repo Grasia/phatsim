@@ -22,14 +22,14 @@ package phat.agents.automaton.conditions;
 import phat.agents.Agent;
 import phat.agents.automaton.Automaton;
 
-public class IsInsideHouseCondition implements AutomatonCondition {
+public class IsInsideHouseCondition extends AutomatonCondition {
 
     public IsInsideHouseCondition() {
         super();
     }
 
     @Override
-    public boolean evaluate(Agent agent) {
+    public boolean simpleEvaluation(Agent agent) {
         return agent.getBodiesAppState().isBodyInAHouse(agent.getId());
     }
 

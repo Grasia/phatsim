@@ -17,48 +17,43 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package phat.agents.automaton;
+package phat.agents.automaton.conditions;
 
-import java.util.ArrayList;
-import phat.PHATInterface;
 import phat.agents.Agent;
+import phat.agents.automaton.Automaton;
 
 /**
  *
  * @author pablo
  */
-public class OneRandomAutomaton1 extends Automaton {
+public class ObjectWeightCondition extends AutomatonCondition {
+    float wieght;
+    String objId;
 
-    public OneRandomAutomaton1(Agent agent) {
-        super(agent);
+    public ObjectWeightCondition(String objId, float wieght) {
+        this.wieght = wieght;
+        this.objId = objId;
     }
     
     @Override
-    protected Automaton nextAutomaton(
-			Automaton stateToBeReplaced, PHATInterface phatInterface) {
-        Automaton automaton = null;
-        int size = pendingTransitions.size();
-        if(stateToBeReplaced == null && size > 0) {
-            int randomIndex = phatInterface.getRandom().nextInt(size);
-            automaton = pendingTransitions.get(randomIndex);
-            pendingTransitions.clear();
-        }
-        return automaton;
-    }
-    
-    @Override
-    public void initState(PHATInterface phatInterface) {
-        
+    public boolean simpleEvaluation(Agent agent) {
+        return false;
     }
 
     @Override
-    public Automaton getDefaultState(PHATInterface phatInterface) {
-        return null;
+    public void automatonInterrupted(Automaton automaton) {
     }
 
     @Override
-    public ArrayList<Automaton> createNewTransitions(PHATInterface phatInterface) {
-        return null;
+    public void automatonResumed(Automaton automaton) {
     }
     
+    @Override
+    public void automatonReset(Automaton automaton) {
+    }
+    
+    @Override
+    public String toString() {
+        return "ObjectWeightCondition("+objId+","+wieght+")";
+    }
 }

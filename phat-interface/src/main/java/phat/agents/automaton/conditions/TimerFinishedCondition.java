@@ -23,7 +23,7 @@ import phat.agents.Agent;
 import phat.agents.automaton.Automaton;
 import phat.world.PHATCalendar;
 
-public class TimerFinishedCondition implements AutomatonCondition {
+public class TimerFinishedCondition extends AutomatonCondition {
 
     long seconds;
     long timeLeft;
@@ -38,7 +38,7 @@ public class TimerFinishedCondition implements AutomatonCondition {
     }
 
     @Override
-    public boolean evaluate(Agent agent) {
+    public boolean simpleEvaluation(Agent agent) {
         if (!init) {
             initialTime = (PHATCalendar) agent.getTime().clone();
             init = true;

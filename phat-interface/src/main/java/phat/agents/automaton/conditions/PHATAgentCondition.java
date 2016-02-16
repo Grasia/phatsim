@@ -22,7 +22,7 @@ package phat.agents.automaton.conditions;
 import phat.agents.Agent;
 
 
-public abstract class PHATAgentCondition implements AutomatonCondition {
+public abstract class PHATAgentCondition extends AutomatonCondition {
 
 	private Agent masonAgent=null;
 	public PHATAgentCondition(Agent agent){
@@ -32,6 +32,6 @@ public abstract class PHATAgentCondition implements AutomatonCondition {
 	public Agent getAgent(){return masonAgent;};
 	
 	@Override
-	public abstract boolean evaluate(Agent agent) ;
+	public abstract boolean simpleEvaluation(Agent agent) ;
 
 }

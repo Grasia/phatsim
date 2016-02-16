@@ -22,7 +22,7 @@ package phat.agents.automaton.conditions;
 import phat.agents.Agent;
 import phat.agents.automaton.Automaton;
 
-public class NegateCondition implements AutomatonCondition {
+public class NegateCondition extends AutomatonCondition {
 
     AutomatonCondition condition;
 
@@ -31,7 +31,7 @@ public class NegateCondition implements AutomatonCondition {
     }
 
     @Override
-    public boolean evaluate(Agent agent) {
+    public boolean simpleEvaluation(Agent agent) {
         return !condition.evaluate(agent);
     }
 

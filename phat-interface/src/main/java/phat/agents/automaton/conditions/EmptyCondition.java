@@ -22,10 +22,10 @@ package phat.agents.automaton.conditions;
 import phat.agents.Agent;
 import phat.agents.automaton.Automaton;
 
-public class EmptyCondition implements AutomatonCondition {
+public class EmptyCondition extends AutomatonCondition {
 
     @Override
-    public boolean evaluate(Agent agent) {
+    public boolean simpleEvaluation(Agent agent) {
         return true;
     }
 
