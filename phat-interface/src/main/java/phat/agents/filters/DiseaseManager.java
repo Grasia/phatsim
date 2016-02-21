@@ -82,12 +82,12 @@ public class DiseaseManager implements AutomatonModificator {
     public Automaton monitoring(Automaton nextAutomaton) {
         Automaton result = nextAutomaton;
         if (!Filter.hasBeenFiltered(result)) {
-            System.out.println("\n\n\n**********************************Applying filters!!"
-                + "**********************************\n\n");
+            //System.out.println("\n\n\n**********************************Applying filters!!"
+            //    + "**********************************\n\n");
             Filter.markFiltered(result);
             for (Symptom symptom : symptomMap.values()) {
                 result = symptom.processFilters(agent, result);
-                System.out.println("Result for symptom (" + symptom.getSymptomType() + ") = " + result);
+                //System.out.println("Result for symptom (" + symptom.getSymptomType() + ") = " + result);
                 if (result == null) {
                     result = new DoNothing(agent, stage).setFinishCondition(new TimerFinishedCondition(0, 0, 1));
                     break;

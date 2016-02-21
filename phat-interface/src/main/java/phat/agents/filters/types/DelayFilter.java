@@ -44,17 +44,17 @@ public class DelayFilter extends Filter {
 
     @Override
     public Automaton apply(Agent agent, Automaton automaton) {
-        System.out.println("Applying Delay Filter..."+automaton.getMetadata("SOCIAALML_ENTITY_ID"));
-        System.out.println("Automaton is instance of " +automaton.getClass().getName());
+        //System.out.println("Applying Delay Filter..."+automaton.getMetadata("SOCIAALML_ENTITY_ID"));
+        //System.out.println("Automaton is instance of " +automaton.getClass().getName());
         if (automaton instanceof MoveToSpace) {
             MoveToSpace move = (MoveToSpace) automaton;
-            System.out.println("delay = "+delay);
+            //System.out.println("delay = "+delay);
             float speed = agent.getBodiesAppState().getSpeed(agent.getId());
-            System.out.println("speed = "+speed);
+            //System.out.println("speed = "+speed);
             if(speed > 0) {
                 move.setSpeed(speed/delay);
             }
-            System.out.println("speed = "+move.getSpeed());
+            //System.out.println("speed = "+move.getSpeed());
             
         } else {
             AutomatonCondition ac = automaton.getFinishCondition();
@@ -63,7 +63,7 @@ public class DelayFilter extends Filter {
                 tfc.setSeconds(Math.round(delay * tfc.getSeconds()));
             }
         }
-        System.out.println("....Applying Delay Filter");
+        //System.out.println("....Applying Delay Filter");
         return automaton;
     }
 }

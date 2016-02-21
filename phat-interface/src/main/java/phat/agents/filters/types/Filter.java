@@ -34,13 +34,13 @@ public abstract class Filter {
     Filter alterrnativeFilter;
     
     public Automaton process(Agent agent, Automaton automaton) {        
-        System.out.println("*************************************Process Filter "+getClass().getSimpleName());
-        System.out.println("Automaton ("+automaton.getMetadata("SOCIAALML_ENTITY_ID")+")");
+        //System.out.println("*************************************Process Filter "+getClass().getSimpleName());
+        //System.out.println("Automaton ("+automaton.getMetadata("SOCIAALML_ENTITY_ID")+")");
         Automaton result = automaton;
         if(checkCondition(agent, automaton)) {
-            System.out.println("Condition ok!");
+            //System.out.println("Condition ok!");
             result = apply(agent, automaton);
-            System.out.println("result = "+result);
+            //System.out.println("result = "+result);
             if(nextFilter != null) {
                 //System.out.println("nextFilter...");
                 return nextFilter.process(agent, result);

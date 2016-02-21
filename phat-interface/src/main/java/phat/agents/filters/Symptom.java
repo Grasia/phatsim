@@ -60,7 +60,7 @@ public class Symptom {
         Automaton result = automaton;
         List<Filter> levelFilters = filters.get(currentLevel);
         if (levelFilters != null) {
-            System.out.println("Symptom = "+symptomType+", Filter chain number = "+levelFilters.size());
+            //System.out.println("Symptom = "+symptomType+", Filter chain number = "+levelFilters.size());
             for (Filter filter : levelFilters) {
                 result = filter.process(agent, result);
             }

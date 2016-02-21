@@ -36,7 +36,7 @@ public class PHATAudioEvent extends PHATEvent {
     
     @Override
     public boolean isPerceptible(Agent agent) {
-        if(agent.getLocation().distance(getEventSource().getLocation()) < minDistance) {
+        if(agent.getLocation() != null && agent.getLocation().distance(getEventSource().getLocation()) < minDistance) {
             return true;
         }
         return false;

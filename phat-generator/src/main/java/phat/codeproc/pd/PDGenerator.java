@@ -244,7 +244,7 @@ public class PDGenerator {
                     Repeat selectRep = new Repeat("nextFilterRep");
                     filterSet.add(selectRep);
                     selectRep.add(new Var("sourceFilter", entity.getID()));
-                    selectRep.add(new Var("targetFilter", targetGA.getID()));
+                    selectRep.add(new Var("targetFilter", Utils.replaceBadChars(targetGA.getID())));
                 } else {
                     System.out.println("\tnextFilter: " + targetGA);
                 }
@@ -254,7 +254,7 @@ public class PDGenerator {
                     Repeat selectRep = new Repeat("alternativeFilterRep");
                     filterSet.add(selectRep);
                     selectRep.add(new Var("sourceFilter", entity.getID()));
-                    selectRep.add(new Var("targetFilter", targetGA.getID()));
+                    selectRep.add(new Var("targetFilter", Utils.replaceBadChars(targetGA.getID())));
                 } else {
                     System.out.println("\tAlternative: " + targetGA);
                 }

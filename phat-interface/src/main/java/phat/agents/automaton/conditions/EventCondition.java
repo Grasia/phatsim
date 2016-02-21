@@ -19,10 +19,12 @@
  */
 package phat.agents.automaton.conditions;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import phat.agents.Agent;
 import phat.agents.automaton.Automaton;
+import phat.agents.events.EventRecord;
 import phat.agents.events.PHATEvent;
 import phat.agents.events.PHATEventManager;
 
@@ -47,12 +49,12 @@ public class EventCondition extends AutomatonCondition {
      */
     @Override
     public boolean simpleEvaluation(Agent agent) {
+        //System.out.println("********************************** EVENT CONDITION ***********************************");
         PHATEventManager em = agent.getEventManager();
         if (em != null) {
-            PHATEvent event = em.getEvent(idEvent);
-            if (event != null) {
-                return true;
-            }
+            List<EventRecord> events = em.getLastEvents(5000, agent.getAgentsAppState().getPHAInterface().getSimTime().getMillisecond());
+            //System.out.println("Events = "+events.size());
+            return em.contains(events, idEvent);
         } else {
             logger.log(Level.WARNING, "Agent {0} hasn't got EventManager!", new Object[]{agent.getId()});
         }

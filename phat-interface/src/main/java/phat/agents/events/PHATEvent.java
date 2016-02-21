@@ -50,4 +50,9 @@ public abstract class PHATEvent {
     public void setEventState(State state) {
     	this.state = state;
     }
+    
+    @Override
+    public String toString() {
+        return id+"("+state+")"+eventSource.getLocation().toString();
+    }
 }

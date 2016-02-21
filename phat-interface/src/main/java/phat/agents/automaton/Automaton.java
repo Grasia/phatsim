@@ -311,6 +311,10 @@ public abstract class Automaton {
     public void nextState(PHATInterface phatInterface) {
         switch (state) {
             case NOT_INIT:
+                /*currentState = null;
+                if(pendingTransitions != null) {
+                    pendingTransitions.clear();
+                }*/ 
                 initState(phatInterface);
                 currentState = getNextAutomaton();
                 setState(STATE.STARTED);

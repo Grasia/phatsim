@@ -42,7 +42,7 @@ public class EventProcessor {
     public Automaton process(Agent agent) {
         if (condition == null || condition.evaluate(agent)) {
             try {
-                System.out.println("Activity ===> "+activity.getClass().getSimpleName());
+                System.out.println(eventId+": "+activity.getClass().getSimpleName());
                 return activity.getConstructor(Agent.class, String.class).
                         newInstance(agent, activity.getClass().getSimpleName());
             } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {

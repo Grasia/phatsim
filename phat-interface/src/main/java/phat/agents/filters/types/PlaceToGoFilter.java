@@ -36,9 +36,9 @@ public class PlaceToGoFilter extends Filter {
     
     @Override
     public Automaton apply(Agent agent, Automaton automaton) {
-        System.out.println("applying PlaceToGoFilter..."+automaton.getClass().getSimpleName());
+        //System.out.println("applying PlaceToGoFilter..."+automaton.getClass().getSimpleName());
         if(automaton instanceof MoveToSpace) {
-            System.out.println("destiny changed! "+destiny);
+            //System.out.println("destiny changed! "+destiny);
             MoveToSpace move = (MoveToSpace) automaton;
             move.setDestinyName(destiny);
         }
