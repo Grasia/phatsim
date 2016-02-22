@@ -19,7 +19,6 @@
  */
 package phat.codeproc;
 
-
 import ingenias.exception.NotFound;
 import ingenias.exception.NullEntity;
 import ingenias.generator.browser.GraphAttribute;
@@ -46,7 +45,7 @@ public class ConditionGenerator {
     final static String CSYMP_TYPE = "CSymptom";
     final static String CDAY_OF_THE_WEEK = "CDayOfTheWeek";
     final static String CWEIGHT = "CObjWeight";
-    
+
     public static String generateAndCondition(Collection<GraphEntity> conds) {
         if (!conds.isEmpty()) {
             List<GraphEntity> conditions = new ArrayList<>(conds);
@@ -57,7 +56,7 @@ public class ConditionGenerator {
                 for (int i = 0; i < conditions.size(); i++) {
                     GraphEntity geCond = conditions.get(i);
                     result += getCondition(geCond);
-                    if(i != conditions.size()-1) {
+                    if (i != conditions.size() - 1) {
                         result += ",";
                     }
                 }
@@ -178,10 +177,29 @@ public class ConditionGenerator {
                         new Object[]{SECS_FIELD, geCond.getID()});
             }
             return "new TimerFinishedCondition(" + String.valueOf(hours) + "," + String.valueOf(mins) + "," + String.valueOf(secs) + ")";
-        } else if (type.equals(CINSIDE_HOUSE_TYPE)) {
-            return "new IsInsideHouseCondition()";
-        } else if (type.equals(COUTSIDE_HOUSE_TYPE)) {
-            return negate("new IsInsideHouseCondition()");
+        } else if (type.equals(CINSIDE_HOUSE_TYPE) || type.equals(COUTSIDE_HOUSE_TYPE)) {
+            GraphAttribute gaHuman = null;
+            String humanId = null;
+            try {
+                gaHuman = geCond.getAttributeByName("HumanTarget");
+                if (gaHuman != null && !gaHuman.getSimpleValue().equals("")) {
+                    humanId = gaHuman.getSimpleValue();
+                }
+            } catch (NotFound ex) {
+                logger.log(Level.WARNING,
+                        "Entity {0} hasn't got attribute {1}", new Object[]{geCond.getID(), "HumanTarget"});
+
+            }
+            String sentence;
+            if (humanId != null) {
+                sentence = "new IsInsideHouseCondition(\"" + humanId + "\")";
+            } else {
+                sentence = "new IsInsideHouseCondition()";
+            }
+            if(type.equals(COUTSIDE_HOUSE_TYPE)) {
+                sentence = negate(sentence);
+            }
+            return sentence;
         } else if (type.equals(CPROB_TYPE)) {
             try {
                 GraphAttribute gaProb = geCond.getAttributeByName("ProbVarField");

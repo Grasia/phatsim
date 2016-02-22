@@ -17,41 +17,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package phat.agents.automaton.conditions;
+package phat.agents.events;
 
-import phat.agents.Agent;
-import phat.agents.automaton.Automaton;
+/**
+ *
+ * @author pablo
+ */
+public class EventRecord {
+    long timestamp;
+    PHATEvent event;
 
-public class IsInsideHouseCondition extends AutomatonCondition {
-    String bodyId;
-    
-    public IsInsideHouseCondition() {
-        super();
+    public EventRecord(long timestamp, PHATEvent event) {
+        this.timestamp = timestamp;
+        this.event = event;
     }
 
-    public IsInsideHouseCondition(String bodyId) {
-        this();
-        this.bodyId = bodyId;
+    public long getTimestamp() {
+        return timestamp;
     }
-    
-    @Override
-    public boolean simpleEvaluation(Agent agent) {
-        if(bodyId != null) {
-            return agent.getBodiesAppState().isBodyInAHouse(bodyId);
-        } else {
-            return agent.getBodiesAppState().isBodyInAHouse(agent.getId());
-        }
+
+    public PHATEvent getEvent() {
+        return event;
     }
 
     @Override
-    public void automatonInterrupted(Automaton automaton) {
-    }
-
-    @Override
-    public void automatonResumed(Automaton automaton) {
-    }
-    
-    @Override
-    public void automatonReset(Automaton automaton) {
+    public String toString() {
+        return "EventRecord{" + "timestamp=" + timestamp + ", event=" + event + '}';
     }
 }

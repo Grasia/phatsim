@@ -25,6 +25,7 @@ import java.util.List;
 
 import phat.PHATInterface;
 import phat.agents.Agent;
+import phat.agents.automaton.conditions.AutomatonCondition;
 
 /**
  * Esta clase implementa un automata de estados finitos. En ella, hay que dar
@@ -163,8 +164,8 @@ public class FSM extends Automaton {
         ArrayList<Transition> r = possibleTransitions.get(source);
         if (r == null) {
             throw new UnsupportedOperationException(
-                    "Not transitions registered from " + source.toString()
-                    + ", automaton " + this.toString());
+                    "Not transitions registered from " + source.getName()
+                    + ", automaton " + this.getName());
         }
         ArrayList<Transition> activatedTransitions = new ArrayList<Transition>();
         for (Transition t : r) {
@@ -217,6 +218,7 @@ public class FSM extends Automaton {
 
         if (result != null) {
             if (result.getState() == STATE.FINISHED) {
+                resetConditions(result);
                 result.setState(STATE.NOT_INIT);
             } else if (result.getState() == STATE.INTERRUPTED) {
                 result.setState(STATE.RESUMED);
@@ -267,5 +269,71 @@ public class FSM extends Automaton {
 
     @Override
     public void initState(PHATInterface phatInterface) {
+        /*List<Transition> transitions = possibleTransitions.get(currentState);
+         if(transitions != null) {
+         for(Transition t: transitions) {
+         AutomatonCondition ac = t.getCondition();
+         if(ac != null) {
+         ac.automatonReset(currentState);
+         }
+         }
+         }*/
+    }
+
+    @Override
+    public String toString() {
+        String result = agent.getId() + ": " + name + " (" + state + "):\n";
+        if (currentState != null) {
+            result += "\tcurrentState: " + currentState.getName()+"\n";
+            result += "\tTransitions:"+"\n";
+            if (possibleTransitions.get(currentState) != null) {
+                for (Transition t : possibleTransitions.get(currentState)) {
+                    result += "\t\t- " + t.getCondition() + "? -> " + t.getTarget().getName() + ")\n";
+                }
+            }
+        }
+        return result;
+    }
+
+    protected void resetConditions(Automaton automaton) {
+        List<Transition> transitions = possibleTransitions.get(automaton);
+        if (transitions != null) {
+            for (Transition t : transitions) {
+                AutomatonCondition ac = t.getCondition();
+                if (ac != null) {
+                    ac.automatonReset(currentState);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void interrupt(PHATInterface phatInterface) {
+        if (currentState != null) {
+            List<Transition> transitions = possibleTransitions.get(currentState);
+            if (transitions != null) {
+                for (Transition t : transitions) {
+                    AutomatonCondition ac = t.getCondition();
+                    if (ac != null) {
+                        ac.automatonInterrupted(this);
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public void resume(PHATInterface phatInterface) {
+        if (currentState != null) {
+            List<Transition> transitions = possibleTransitions.get(currentState);
+            if (transitions != null) {
+                for (Transition t : transitions) {
+                    AutomatonCondition ac = t.getCondition();
+                    if (ac != null) {
+                        ac.automatonResumed(this);
+                    }
+                }
+            }
+        }
     }
 }

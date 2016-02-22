@@ -93,9 +93,13 @@ public class AgentsAppState extends AbstractAppState {
             for (PHATEvent e : events) {
                 ((Agent) agent).getEventManager().add(e);
             }
+        }
+        events.clear();
+
+        for (PHATAgentTick agent : availableAgents.values()) {
             agent.update(phatInterface);
         }
-
+        
         commands.clear();
     }
 

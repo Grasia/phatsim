@@ -45,6 +45,7 @@ public class TimerFinishedCondition extends AutomatonCondition {
         }
         long secs = initialTime.spentTimeTo(agent.getTime());
         timeLeft = secs - secondsInterrupted;
+        secondsInterrupted = 0;
         return timeLeft >= seconds;
     }
 
