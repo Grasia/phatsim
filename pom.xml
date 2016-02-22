@@ -46,8 +46,8 @@
         <developeremail>pabcampi@ucm.es</developeremail>
         <jme.version>3.0.1</jme.version>
         <sociaal.version>1.0.6-SNAPSHOT</sociaal.version>
-        <jali.version>1.0.5</jali.version>
-        <jdos.version>1.0.3</jdos.version>
+        <jali.version>1.0.6-SNAPSHOT</jali.version>
+        <jdos.version>1.0.4-SNAPSHOT</jdos.version>
     </properties>
     
     <modules>

@@ -29,6 +29,7 @@ import com.jme3.renderer.RenderManager;
 import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Spatial;
 import com.jme3.scene.control.Control;
+
 import phat.sensors.Sensor;
 import phat.sensors.SensorListener;
 
@@ -113,9 +114,11 @@ public class AccelerometerControl extends Sensor {
                 accelerations.getX(),
                 accelerations.getY(),
                 accelerations.getZ());
-        for (SensorListener al : listeners) {
-            al.update(this, ad);
+        Object[] listenersArray = listeners.toArray();
+        for (int k=0;k<listenersArray.length;k++){
+        	((SensorListener)listenersArray[k]).update(this, ad);
         }
+        
     }
 
     private float filter(float a) {

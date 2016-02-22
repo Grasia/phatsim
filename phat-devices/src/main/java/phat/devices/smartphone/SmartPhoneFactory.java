@@ -80,6 +80,26 @@ public class SmartPhoneFactory {
         blackMat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         blackMat.setColor("Color", ColorRGBA.Black);
     }
+    
+    public static Node createAccelGeometry(String sensorId, Vector3f dimensions) {
+        Node sensor = new Node(sensorId);
+        
+        sensor.setUserData("ID", sensorId);
+        sensor.setUserData("ROLE", "Accelerometer");
+        sensor.setUserData("TYPE", "Sensor");
+        
+        Box box = new Box(dimensions.x, dimensions.y, dimensions.z);
+        Geometry deviceBody = new Geometry(sensorId, box);
+        deviceBody.setMaterial(blackMat);
+        sensor.attachChild(deviceBody);
+        
+        
+        RigidBodyControl rbc = new RigidBodyControl(new BoxCollisionShape(), 5f);
+        sensor.addControl(rbc);
+        rbc.setFriction(1f);
+        
+        return sensor;
+    }
 
     public static Node createSmartphoneGeometry(String smartphoneId, Vector3f dimensions) {
         Node smartphone = new Node(smartphoneId);

@@ -45,10 +45,11 @@ public class CreateAllPresenceSensorServersCommand extends PHATServerCommand {
         for (String deviceId : devicesAppState.getDeviceIds()) {
             Node device = devicesAppState.getDevice(deviceId);
             String type = device.getUserData("ROLE");
+            String sensorID=deviceId; // TBD: change in the future with a specific sensorid 
             if (type != null && type.equals("PresenceSensor")) {
                 PHATPresenceSensor ps = (PHATPresenceSensor)device.getControl(PHATPresenceSensor.class);
                 if(ps != null) {
-                    serverManager.createAndStartPresenceServer(deviceId, ps);
+                    serverManager.createAndStartPresenceServer(deviceId, sensorID, ps);
                 }
             }
         }

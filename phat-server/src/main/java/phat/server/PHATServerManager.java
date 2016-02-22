@@ -54,7 +54,7 @@ public class PHATServerManager {
     InetAddress inetAddress = getAddress();
     Map<String, List<TCPSensorServer>> tcpSensorServers = new HashMap<String, List<TCPSensorServer>>();
 
-    public TCPAudioMicroServer createAndStartAudioMicroServer(String id, MicrophoneControl mc) {
+    public TCPAudioMicroServer createAndStartAudioMicroServer(String servicesetid,String serviceid, MicrophoneControl mc) {
         TCPAudioMicroServer ams = null;
         int port = ServiceManagerServer.getInstance().getNextPort();
         try {
@@ -65,16 +65,16 @@ public class PHATServerManager {
             return null;
         }
 
-        registerService(id, ams, Service.MICROPHONE);
+        registerService(serviceid,serviceid, ams, Service.MICROPHONE);
 
         ams.start();
 
-        add(id, ams);
+        add(servicesetid, ams);
 
         return ams;
     }
 
-    public TCPCameraSensorServer createAndStartCameraServer(String id, CameraSensor cameraSensor) {
+    public TCPCameraSensorServer createAndStartCameraServer(String servicesetid,String serviceid, CameraSensor cameraSensor) {
         TCPCameraSensorServer ams = null;
         int port = ServiceManagerServer.getInstance().getNextPort();
         try {
@@ -85,16 +85,16 @@ public class PHATServerManager {
             return null;
         }
 
-        registerService(id, ams, Service.CAMERA);
+        registerService(servicesetid,serviceid, ams, Service.CAMERA);
 
         ams.start();
 
-        add(id, ams);
+        add(servicesetid, ams);
 
         return ams;
     }
 
-    public TCPAccelerometerServer createAndStartAccelerometerServer(String id, AccelerometerControl accSensor) {
+    public TCPAccelerometerServer createAndStartAccelerometerServer(String servicesetid,String serviceid, AccelerometerControl accSensor) {
         TCPAccelerometerServer ams = null;
         int port = ServiceManagerServer.getInstance().getNextPort();
         try {
@@ -105,16 +105,16 @@ public class PHATServerManager {
             return null;
         }
 
-        registerService(id, ams, Service.ACCELEROMETER);
+        registerService(servicesetid,serviceid, ams, Service.ACCELEROMETER);
 
         ams.start();
 
-        add(id, ams);
+        add(servicesetid, ams);
 
         return ams;
     }
 
-    public TCPPresenceServer createAndStartPresenceServer(String id, PHATPresenceSensor accSensor) {
+    public TCPPresenceServer createAndStartPresenceServer(String servicesetid,String serviceid, PHATPresenceSensor accSensor) {
         TCPPresenceServer ams = null;
         int port = ServiceManagerServer.getInstance().getNextPort();
         try {
@@ -125,16 +125,16 @@ public class PHATServerManager {
             return null;
         }
 
-        registerService(id, ams, Service.PRESENCE);
+        registerService(servicesetid,serviceid, ams, Service.PRESENCE);
 
         ams.start();
 
-        add(id, ams);
+        add(servicesetid, ams);
 
         return ams;
     }
     
-    public TCPDoorSensorServer createAndStartDoorSensorServer(String id, PHATDoorSensor doorSensor) {
+    public TCPDoorSensorServer createAndStartDoorSensorServer(String servicesetid,String serviceid,  PHATDoorSensor doorSensor) {
         TCPDoorSensorServer ams = null;
         int port = ServiceManagerServer.getInstance().getNextPort();
         try {
@@ -145,14 +145,16 @@ public class PHATServerManager {
             return null;
         }
 
-        registerService(id, ams, Service.DOOR);
+        registerService(servicesetid, serviceid, ams, Service.DOOR);
 
         ams.start();
 
-        add(id, ams);
+        add(servicesetid, ams);
 
         return ams;
     }
+    
+  
     
     public void stop() {
         for (List<TCPSensorServer> list : tcpSensorServers.values()) {
@@ -172,8 +174,8 @@ public class PHATServerManager {
         list.add(server);
     }
 
-    private void registerService(String serviceSetId, TCPSensorServer server, String type) {
-        Service service = new ServiceImpl(type, server.getIp(), server.getPort());
+    private void registerService(String serviceSetId, String serviceid, TCPSensorServer server, String type) {
+        Service service = new ServiceImpl(serviceid,type, server.getIp(), server.getPort());
         System.out.println("New Service: " + service);
         ServiceManagerServer sms = ServiceManagerServer.getInstance();
         sms.getServiceManager().registerService(serviceSetId, service);
@@ -183,11 +185,11 @@ public class PHATServerManager {
         return inetAddress.getHostAddress();
     }
     
-    public int getPort() {
+    public static int getPort() {
         return CommonVars.SERVICE_MANAGER_SERVER_PORT;
     }
 
-    private InetAddress getAddress() {
+    public static InetAddress getAddress() {
         try {
             for (Enumeration e = NetworkInterface.getNetworkInterfaces();
                     e.hasMoreElements();) {

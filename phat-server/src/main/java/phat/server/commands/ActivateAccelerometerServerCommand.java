@@ -38,22 +38,20 @@ import phat.server.microphone.TCPAudioMicroServer;
  *
  * @author pablo
  */
-public class SetAndroidEmulatorCommand extends PHATServerCommand {
+public class ActivateAccelerometerServerCommand extends PHATServerCommand {
 
-    private String smartphoneId;
-    private String avdId;
-    private String serialEmulator;
-    private String emuOptions;
+    private String sensorID;
+    private String sensorGroupID;
+  
 
-    public SetAndroidEmulatorCommand(String smartphoneId, String avdId, String serialEmulator) {
-        this(smartphoneId, avdId, serialEmulator, null);
+    public ActivateAccelerometerServerCommand(String sensorgroupID, String sensorID) {
+        this(sensorgroupID,sensorID, null);
     }
 
-    public SetAndroidEmulatorCommand(String smartphoneId, String avdId, String serialEmulator, PHATCommandListener listener) {
+    public ActivateAccelerometerServerCommand(String sensorgroupID,String sensorID, PHATCommandListener listener) {
         super(listener);
-        this.smartphoneId = smartphoneId;
-        this.avdId = avdId;
-        this.serialEmulator = serialEmulator;
+        this.sensorID = sensorID;  
+        this.sensorGroupID=sensorgroupID;
         logger.log(Level.INFO, "New Command: {0}", new Object[]{this});
     }
 
@@ -62,32 +60,17 @@ public class SetAndroidEmulatorCommand extends PHATServerCommand {
         DevicesAppState devicesAppState = app.getStateManager().getState(DevicesAppState.class);
         ServerAppState serverAppState = app.getStateManager().getState(ServerAppState.class);
         devicesAppState.registerAllAndroidDevicesInScenario();
-        Node device = devicesAppState.getDevice(smartphoneId);
+        Node device = devicesAppState.getDevice(sensorID);
         if (device != null) {
-            AndroidVirtualDevice avd = new AndroidVirtualDevice(avdId, serialEmulator, smartphoneId);
-            if(emuOptions != null) {
-                avd.setEmuOptions(emuOptions);
-            }
+          
+
             PHATServerManager serverManager = serverAppState.getServerManager();
-            avd.sendConfigFileForService(serverManager.getIP(), serverManager.getPort());
-
-            CameraSensor cameraSensor = device.getControl(CameraSensor.class);
-            if (cameraSensor != null) {
-                TCPCameraSensorServer cameraServer = serverAppState.getServerManager().createAndStartCameraServer(smartphoneId, "camback-"+smartphoneId, cameraSensor);
-                cameraServer.setRate(1f);
-                }
-
-            MicrophoneControl micSensor = device.getControl(MicrophoneControl.class);
-            if(micSensor != null) {
-                TCPAudioMicroServer audioServer = serverManager.createAndStartAudioMicroServer(smartphoneId, "mic-"+smartphoneId, micSensor);
-            }
-
+          //  avd.sendConfigFileForService(serverManager.getIP(), serverManager.getPort());
+            
             AccelerometerControl accSensor = device.getControl(AccelerometerControl.class);
             if(accSensor != null) {
-                TCPAccelerometerServer accServer = serverManager.createAndStartAccelerometerServer(smartphoneId, "gsensor-"+smartphoneId, accSensor);
-            }
-
-            serverAppState.addAVD(smartphoneId, avd);
+                TCPAccelerometerServer accServer = serverManager.createAndStartAccelerometerServer(sensorGroupID,sensorID, accSensor);
+            }          
 
             setState(State.Success);
             return;
@@ -95,26 +78,13 @@ public class SetAndroidEmulatorCommand extends PHATServerCommand {
         setState(State.Fail);
     }
 
-    public String getEmuOptions() {
-        return emuOptions;
+ 
+
+    public String getSensorId() {
+        return sensorID;
     }
 
-    public SetAndroidEmulatorCommand setEmuOptions(String emuOptions) {
-        this.emuOptions = emuOptions;
-        return this;
-    }
 
-    public String getSmartphoneId() {
-        return smartphoneId;
-    }
-
-    public String getAvdId() {
-        return avdId;
-    }
-
-    public String getSerialEmulator() {
-        return serialEmulator;
-    }
 
     @Override
     public void interruptCommand(Application app) {
@@ -123,6 +93,6 @@ public class SetAndroidEmulatorCommand extends PHATServerCommand {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + smartphoneId + ", " + avdId + ")";
+        return getClass().getSimpleName() + "(" +sensorGroupID+","+ sensorID + ")";
     }
 }

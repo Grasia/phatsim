@@ -76,7 +76,7 @@ public class TestBodiesAppState implements PHATInitAppListener {
         
 		BulletAppState bulletAppState = new BulletAppState();
         stateManager.attach(bulletAppState);
-        bulletAppState.setDebugEnabled(true);
+      //  bulletAppState.setDebugEnabled(true);
         
         SpatialEnvironmentAPI seAPI = SpatialEnvironmentAPI.createSpatialEnvironmentAPI(app);
         
