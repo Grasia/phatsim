@@ -34,11 +34,12 @@ public class PHATLogFormatter extends Formatter {
     @Override
     public synchronized String format(LogRecord record) {
         return record.getParameters()[0]+separator+
-                record.getLoggerName()+separator+
                 record.getParameters()[1]+separator+
+                record.getLoggerName()+separator+
                 record.getParameters()[2]+separator+
                 record.getParameters()[3]+separator+
-                ((Automaton)record.getParameters()[4]).getFinishCondition()+separator+
+                record.getParameters()[4]+separator+
+                ((Automaton)record.getParameters()[5]).getFinishCondition()+separator+
                 record.getMessage()+endLogMark;
     }
 }

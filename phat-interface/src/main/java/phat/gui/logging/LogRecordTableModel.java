@@ -40,25 +40,27 @@ public class LogRecordTableModel extends AbstractTableModel {
 
     @Override
     public int getColumnCount() {
-        return 7;
+        return 8;
     }
 
     @Override
     public String getColumnName(int col) {
         switch (col) {
             case 0:
-                return "SimTime";
+                return "Secs";
             case 1:
-                return "Name";
+                return "SimTime";
             case 2:
-                return "State";
+                return "Name";
             case 3:
-                return "Action";
+                return "State";
             case 4:
-                return "Type";
+                return "Action";
             case 5:
-                return "FinishCondition";
+                return "Type";
             case 6:
+                return "FinishCondition";
+            case 7:
                 return "Description";
         }
         return "null";
@@ -72,17 +74,14 @@ public class LogRecordTableModel extends AbstractTableModel {
             Object[] params = log.getParameters();
             switch (columnIndex) {
                 case 0:
-                    if (params != null) {
-                        return Integer.parseInt((String) log.getParameters()[0]);
-                    }
-                    break;
+                    return Integer.parseInt((String) log.getParameters()[0]);
                 case 1:
-                    return log.getLoggerName();
-                case 2:
                     if (params != null) {
-                        return params[1];
+                        return log.getParameters()[1];
                     }
                     break;
+                case 2:
+                    return log.getLoggerName();
                 case 3:
                     if (params != null) {
                         return params[2];
@@ -95,11 +94,16 @@ public class LogRecordTableModel extends AbstractTableModel {
                     break;
                 case 5:
                     if (params != null) {
-                        Automaton aut = (Automaton) params[4];
-                        return aut.getFinishCondition();
+                        return params[4];
                     }
                     break;
                 case 6:
+                    if (params != null) {
+                        Automaton aut = (Automaton) params[5];
+                        return aut.getFinishCondition();
+                    }
+                    break;
+                case 7:
                     return log.getMessage();
             }
         }

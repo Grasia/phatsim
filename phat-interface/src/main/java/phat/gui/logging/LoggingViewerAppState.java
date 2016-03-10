@@ -162,14 +162,23 @@ public class LoggingViewerAppState extends AbstractAppState implements Automaton
             return;
         }
 
-        String time = "" + (simStartTime.spentTimeTo(simTime));
-
+        String secs = "" + (simStartTime.spentTimeTo(simTime));
+        String time = 
+                getTwoDigits(simTime.getHourOfDay())+":"+getTwoDigits(simTime.getMinute())+":"+getTwoDigits(simTime.getSecond())+"-"+
+                getTwoDigits(simTime.getMonth())+"/"+getTwoDigits(simTime.getDayOfMonth())+"/"+simTime.getYear();
         Logger logger = loggers.get(automaton.getAgent().getId());
 
-        Object[] params = {time, state, taskID, taskType, automaton};
+        Object[] params = {secs, time, state, taskID, taskType, automaton};
         logger.log(Level.INFO, message, params);
     }
 
+    private String getTwoDigits(int number) {
+        if(number < 10 ) {
+            return "0"+number;
+        } else {
+            return ""+number;
+        }
+    }
     @Override
     public void agentChanged(Agent agent) {
         if (agent.getAutomaton() != null) {
