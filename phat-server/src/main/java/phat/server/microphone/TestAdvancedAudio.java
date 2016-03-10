@@ -266,7 +266,7 @@ public class TestAdvancedAudio extends SimpleApplication {
         geo1.addControl(micControl);
         
         serverManager = new PHATServerManager();
-        serverManager.createAndStartAudioMicroServer("device1", micControl);
+        serverManager.createAndStartAudioMicroServer("device1", micControl.getId(), micControl);
         
         
         

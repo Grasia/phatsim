@@ -19,7 +19,7 @@
  */
 package phat.devices.commands;
 
-import phat.devices.commands.tests.*;
+
 import com.jme3.animation.SkeletonControl;
 import com.jme3.app.Application;
 import com.jme3.bullet.control.RigidBodyControl;
