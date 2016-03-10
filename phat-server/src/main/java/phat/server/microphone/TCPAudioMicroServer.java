@@ -29,8 +29,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.sound.sampled.AudioFormat;
 import phat.mobile.servicemanager.server.ServiceManagerServer;
 import phat.sensors.microphone.MicrophoneControl;
 import phat.sensors.microphone.MicrophoneData;
@@ -77,7 +79,7 @@ public class TCPAudioMicroServer implements SensorListener, TCPSensorServer {
                             System.out.println("Nuevo Cliente: " + socket);
                             upClient(socket);
                         } catch (SocketException ex) {
-                            if(!endServer) {
+                            if (!endServer) {
                                 Logger.getLogger(TCPAudioMicroServer.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
@@ -104,7 +106,7 @@ public class TCPAudioMicroServer implements SensorListener, TCPSensorServer {
         }
     }
 
-    public boolean send(byte[] buffer, int offset, int numSamples, int numReadings) {
+    /*public boolean send(byte[] buffer, int offset, int numSamples, int numReadings) {
         if (socket != null && socket.isConnected() && oos != null) {
             try {
                 int totalSize = numSamples * numReadings;
@@ -123,7 +125,7 @@ public class TCPAudioMicroServer implements SensorListener, TCPSensorServer {
             return true;
         }
         return false;
-    }
+    }*/
 
     @Override
     public void stop() {
@@ -144,6 +146,9 @@ public class TCPAudioMicroServer implements SensorListener, TCPSensorServer {
             Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, null, e1);
         }
     }
+    Random random = new Random();
+    //byte[] newRated = new byte[266]; // 8000 Hz
+    byte[] newRated = new byte[532];    // 16000 Hz
 
     @Override
     public void update(Sensor source, SensorData sd) {
@@ -155,10 +160,32 @@ public class TCPAudioMicroServer implements SensorListener, TCPSensorServer {
             if (socket != null && socket.isConnected() && oos != null) {
                 try {
                     int totalSize = microphoneData.getData().length;
-                    int numSamples = microphoneData.getAudioFormat().getSampleSizeInBits();
+                    int frameSize = microphoneData.getAudioFormat().getFrameSize();
                     byte[] data = new byte[totalSize];
                     System.arraycopy(microphoneData.getData(), 0, data, 0, totalSize);
-                    AudioStreamDataPacket asdp = new AudioStreamDataPacket(data, numSamples, totalSize / numSamples);
+
+                    //int i = 0, j = 0, c = 0;
+                    for (int i = 0, j = 0, c = 0; i < newRated.length - 1 && j < data.length - 1; i += 2, j += 6/*10*/) {
+                        newRated[i] = data[j];
+                        newRated[i + 1] = data[j + 1];
+                        if (c > 2) {
+                            //j += 2;
+                            j -= 2;
+                            c = 0;
+                        } else {
+                            c++;
+                        }
+                    }
+
+                    //new AudioFormat(8000, 16, 1, true, false);
+                    //System.out.println(microphoneData.getAudioFormat());
+                    for (int i = 1; i < newRated.length; i += 2) {
+                        if (random.nextBoolean()) {
+                            newRated[i]++;
+                        }
+                    }
+                    //System.out.println(totalSize+":"+newRated.length+":"+microphoneData.getAudioFormat().getSampleRate());
+                    AudioStreamDataPacket asdp = new AudioStreamDataPacket(newRated, newRated.length / frameSize, frameSize);
                     oos.writeObject(asdp);
                     oos.flush();
                     oos.reset();
