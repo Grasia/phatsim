@@ -33,6 +33,8 @@ import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.ForkJoinTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.sound.sampled.AudioFormat;
 import phat.sensors.Sensor;
 import phat.sensors.SensorData;
@@ -42,14 +44,13 @@ import phat.sensors.SensorListener;
  *
  * @author Pablo
  */
-public class MicrophoneControl extends Sensor implements SoundProcessor {
+public class MicrophoneControl extends Sensor implements SoundProcessor, Runnable {
 
     Control c;
-    
     //private List<AudioBuffer> bufferList;
     private int readIndex = 0;
     private int writeIndex = 0;
-    private final int BUFFER_SIZE= 1470;
+    private final int BUFFER_SIZE = 1470;
     private final int NUM_BUFFERS = 2;
     private int buf_i = 0;
     private byte[][] buffer = new byte[NUM_BUFFERS][BUFFER_SIZE];
@@ -58,13 +59,12 @@ public class MicrophoneControl extends Sensor implements SoundProcessor {
     private List<NotifyTask<Void>> callables = new ArrayList<NotifyTask<Void>>();
 
     /*
-    @Override
-    public void add(SensorListener sl) {
-        super.add(sl);
+     @Override
+     public void add(SensorListener sl) {
+     super.add(sl);
 
-        callables.add(new NotifyTask(this, sl));
-    }*/
-
+     callables.add(new NotifyTask(this, sl));
+     }*/
     public MicrophoneControl(String name, int bufferSize, AudioRenderer audioRenderer) {
         super(name);
         System.out.println("MicrophoneControl created!!");
@@ -90,10 +90,26 @@ public class MicrophoneControl extends Sensor implements SoundProcessor {
 
         pool.invokeAll(callables);
     }
-    
+
     private void serialNotification(final Sensor s, MicrophoneData md) {
         for (SensorListener sl : listeners) {
             sl.update(s, md);
+        }
+    }
+    final Thread notifier = new Thread(this);
+    boolean notifying = false;
+    MicrophoneData md;
+
+    @Override
+    public void run() {
+        while (notifying) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                synchronized (notifier) {
+                    serialNotification(this, md);
+                }
+            }
         }
     }
 
@@ -118,18 +134,21 @@ public class MicrophoneControl extends Sensor implements SoundProcessor {
             return null;
         }
     }
-    
+
     @Override
     public void process(ByteBuffer audioSamples, int numSamples, AudioFormat format) {
-        
+
         if (enabled) {
             audioSamples.clear();
             int numBytes = (numSamples > BUFFER_SIZE) ? BUFFER_SIZE : numSamples;
             audioSamples.get(buffer[buf_i], 0, numBytes);
-            
-            MicrophoneData md = new MicrophoneData(buffer[buf_i], format);
+
+            synchronized (notifier) {
+                md = new MicrophoneData(buffer[buf_i], format);
+                notifier.interrupt();
+            }
             //concurrentNotification(md);
-            serialNotification(MicrophoneControl.this, md);
+            //serialNotification(MicrophoneControl.this, md);
 
             audioSamples.clear();
             /*
@@ -139,7 +158,7 @@ public class MicrophoneControl extends Sensor implements SoundProcessor {
              sl.update(MicrophoneControl.this, md);
              }
              }.start();*/
-            buf_i = (buf_i+1) % NUM_BUFFERS;
+            buf_i = (buf_i + 1) % NUM_BUFFERS;
         }
     }
 
@@ -155,7 +174,6 @@ public class MicrophoneControl extends Sensor implements SoundProcessor {
     public Control cloneForSpatial(Spatial spatial) {
         return null;
     }
-    
     private boolean init = false;
 
     private void init() {
@@ -165,6 +183,8 @@ public class MicrophoneControl extends Sensor implements SoundProcessor {
             rf.registerSoundProcessor(listener, this);
         }
         init = true;
+        notifying = true;
+        notifier.start();
     }
 
     @Override
@@ -187,5 +207,7 @@ public class MicrophoneControl extends Sensor implements SoundProcessor {
         super.cleanUp();
         buffer = null;
         listener = null;
+        notifying = false;
+        notifier.interrupt();
     }
 }
