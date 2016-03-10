@@ -51,12 +51,7 @@ public class AgentsGenerator {
                 rep.add(new Var("aName", Utils.replaceBadChars(actor.getID())));
                 String humanId = actor.getID();
 
-                String adlName = ADLsGenerator.getADLName(humanId, browser);
-                if (adlName != null) {
-                    Repeat adlRep = new Repeat("ADL");
-                    rep.add(adlRep);
-                    adlRep.add(new Var("adlName", adlName));
-                }
+                
                 new InteractionDiagramGenerator(browser).generateEventProcessor(humanId, rep);
                 PDGenerator.linkPDManager(humanId, rep, browser);
                 new PDGenerator(browser).generatePD(seq, actor);

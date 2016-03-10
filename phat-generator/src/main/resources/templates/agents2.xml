@@ -26,14 +26,6 @@ public class @@@v@@@aName@@@/v@@@Agent extends Agent {
 
     @Override
     protected void initAutomaton() {
-        @@@repeat id="ADL"@@@
-            FSM adl = new @@@v@@@adlName@@@/v@@@ADL(this, "ADL-@@@v@@@adlName@@@/v@@@");
-            MainAutomaton mainAutomaton = new MainAutomaton(this);
-	    mainAutomaton.addTransition(adl, false);
-            mainAutomaton.addListener(new AutomatonIcon());
-            setAutomaton(mainAutomaton);
-        @@@/repeat@@@
-	
         @@@repeat id="filterManager"@@@
             setDiseaseManager(new @@@v@@@fmName@@@/v@@@_@@@v@@@aName@@@/v@@@(this, simulation));@@@/repeat@@@
 	

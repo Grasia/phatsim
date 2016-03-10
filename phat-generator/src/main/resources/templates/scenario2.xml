@@ -26,6 +26,9 @@ import phat.structures.houses.commands.*;
 import phat.PHATInitializer;
 import phat.PHATInterface;
 import phat.agents.impl.*;
+import phat.agents.automaton.*;
+import phat.agents.automaton.adl.*;
+import phat.agents.automaton.activities.*;
 import phat.util.PHATUtils;
 import phat.ArgumentProcessor;
 
@@ -113,9 +116,23 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
     @Override
     public void initAgents(AgentConfigurator agentsConfig) {
        @@@repeat id="agent"@@@
-       {@@@v@@@agentname@@@/v@@@Agent patient=new @@@v@@@agentname@@@/v@@@Agent("@@@v@@@agentname@@@/v@@@","@@@v@@@simName@@@/v@@@" );
-       patient.registerListener(meq); 
-       agentsConfig.add(patient);}@@@/repeat@@@
+       {@@@v@@@agentname@@@/v@@@Agent agent = new @@@v@@@agentname@@@/v@@@Agent("@@@v@@@agentname@@@/v@@@","@@@v@@@simName@@@/v@@@" );
+       @@@repeat id="ADL"@@@
+            FSM adl = new @@@v@@@adlName@@@/v@@@ADL(agent, "ADL-@@@v@@@adlName@@@/v@@@");
+            MainAutomaton mainAutomaton = new MainAutomaton(agent);
+	    mainAutomaton.addTransition(adl, false);
+            mainAutomaton.addListener(new AutomatonIcon());
+            agent.setAutomaton(mainAutomaton);
+        @@@/repeat@@@
+        @@@repeat id="setActivity"@@@
+            ActivityAutomaton @@@v@@@actName@@@/v@@@Activity = new @@@v@@@actName@@@/v@@@Activity(agent, "@@@v@@@actName@@@/v@@@");
+            MainAutomaton mainAutomaton = new MainAutomaton(agent);
+	    mainAutomaton.addTransition(@@@v@@@actName@@@/v@@@Activity, false);
+            mainAutomaton.addListener(new AutomatonIcon());
+            agent.setAutomaton(mainAutomaton);
+        @@@/repeat@@@
+       agent.registerListener(meq); 
+       agentsConfig.add(agent);}@@@/repeat@@@
     }
     
     @Override
@@ -154,6 +171,9 @@ import phat.structures.houses.commands.*;
 import phat.PHATInitializer;
 import phat.PHATInterface;
 import phat.agents.impl.*;
+import phat.agents.automaton.*;
+import phat.agents.automaton.adl.*;
+import phat.agents.automaton.activities.*;
 import phat.util.PHATUtils;
 import phat.ArgumentProcessor;
 
@@ -215,9 +235,23 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices implements PHATIn
     @Override
     public void initAgents(AgentConfigurator agentsConfig) {
        @@@repeat id="agent"@@@
-       {@@@v@@@agentname@@@/v@@@Agent patient=new @@@v@@@agentname@@@/v@@@Agent("@@@v@@@agentname@@@/v@@@","@@@v@@@simName@@@/v@@@" );
-       patient.registerListener(meq); 
-       agentsConfig.add(patient);}@@@/repeat@@@
+       {@@@v@@@agentname@@@/v@@@Agent agent = new @@@v@@@agentname@@@/v@@@Agent("@@@v@@@agentname@@@/v@@@","@@@v@@@simName@@@/v@@@" );
+       @@@repeat id="ADL"@@@
+            FSM adl = new @@@v@@@adlName@@@/v@@@ADL(agent, "ADL-@@@v@@@adlName@@@/v@@@");
+            MainAutomaton mainAutomaton = new MainAutomaton(agent);
+	    mainAutomaton.addTransition(adl, false);
+            mainAutomaton.addListener(new AutomatonIcon());
+            agent.setAutomaton(mainAutomaton);
+        @@@/repeat@@@
+        @@@repeat id="setActivity"@@@
+            ActivityAutomaton @@@v@@@actName@@@/v@@@Activity = new @@@v@@@actName@@@/v@@@Activity(agent, "@@@v@@@actName@@@/v@@@");
+            MainAutomaton mainAutomaton = new MainAutomaton(agent);
+	    mainAutomaton.addTransition(@@@v@@@actName@@@/v@@@Activity, false);
+            mainAutomaton.addListener(new AutomatonIcon());
+            agent.setAutomaton(mainAutomaton);
+        @@@/repeat@@@
+       agent.registerListener(meq); 
+       agentsConfig.add(agent);}@@@/repeat@@@
     }
     
     @Override

@@ -94,14 +94,25 @@ public class SimulationGenerator {
                         initLocRep.add(new Var("iniLoc", initialLoc));
                     }
 
-                    if (ADLsGenerator.getADL(humanId, browser) != null) {
-                        Repeat bodyRep1 = new Repeat("agent");
-                        simInitRep.add(bodyRep1);
-                        bodyRep1.add(new Var("agentname", humanId));
+                    Repeat bodyRep1 = new Repeat("agent");
+                    simInitRep.add(bodyRep1);
+                    bodyRep1.add(new Var("agentname", humanId));
+                    GraphEntity activity = Utils.getTargetEntity(hi, "InitialActivity", simDiag.getRelationships());
+                    if (activity != null) {
+                        Repeat adlRep = new Repeat("setActivity");
+                        bodyRep1.add(adlRep);
+                        adlRep.add(new Var("actName", Utils.replaceBadChars(activity.getID())));
+                    } else {
+                        String adlName = ADLsGenerator.getADLName(humanId, browser);
+                        if (adlName != null) {
+                            Repeat adlRep = new Repeat("ADL");
+                            bodyRep1.add(adlRep);
+                            adlRep.add(new Var("adlName", adlName));
+                        } else {
+                            // The agent does not have a behaviour defined
+                        }
                     }
                 }
-
-
             }
         }
     }
@@ -184,9 +195,9 @@ public class SimulationGenerator {
         if (ge != null) {
             GraphAttribute width = ge.getAttributeByName("CamWidth");
             GraphAttribute height = ge.getAttributeByName("CamHeight");
-            
-            if (width != null && !width.getSimpleValue().equals("") && 
-                    height != null && !height.getSimpleValue().equals("")) {
+
+            if (width != null && !width.getSimpleValue().equals("")
+                    && height != null && !height.getSimpleValue().equals("")) {
                 System.out.println("\n\n\nSEED = " + seedworld.getSimpleValue() + "\n\n\n");
                 Repeat setResolution = new Repeat("setResolution");
                 rep.add(setResolution);
