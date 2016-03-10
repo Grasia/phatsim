@@ -173,7 +173,7 @@ public class PHATServerManager {
     }
 
     private void registerService(String serviceSetId, TCPSensorServer server, String type) {
-        Service service = new ServiceImpl(type, server.getIp(), server.getPort());
+        Service service = new ServiceImpl(serviceSetId+"-"+type, type, server.getIp(), server.getPort());
         System.out.println("New Service: " + service);
         ServiceManagerServer sms = ServiceManagerServer.getInstance();
         sms.getServiceManager().registerService(serviceSetId, service);

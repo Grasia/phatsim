@@ -190,13 +190,13 @@ public class SensorPresenceHouseTest implements PHATInitAppListener, PHATCommand
             CreatePresenceSensorCommand cpsc = (CreatePresenceSensorCommand) command;
             Node psNode = devicesAppState.getDevice(cpsc.getPresenceSensorId());
             if (psNode != null) {
-                PHATPresenceSensor psControl = psNode.getControl(PHATPresenceSensor.class);
+                /*PHATPresenceSensor psControl = psNode.getControl(PHATPresenceSensor.class);
                 if (psControl != null) {
                     PresenceStatePanel psp1 = new PresenceStatePanel();
                     psControl.add(psp1);
                     sensorMonitor.getContentPane().add(psp1);
                     sensorMonitor.pack();
-                }
+                }*/
             }
         }
     }
