@@ -115,7 +115,7 @@ public class SmartPhoneFactory {
         
         Geometry screen = createDisplayGeometry("Screen1", dimensions.x*2f, dimensions.y*2f);
         screen.setMaterial(screenMat);
-        screen.move(-dimensions.x, -dimensions.y, dimensions.z+0.01f);
+        screen.move(-dimensions.x, -dimensions.y, dimensions.z+0.001f);
         smartphone.attachChild(screen);
         
         RigidBodyControl rbc = new RigidBodyControl(new BoxCollisionShape(), 5f);
@@ -159,7 +159,7 @@ public class SmartPhoneFactory {
 
     public static void enableCameraFacility(Node smartphone) {
         Camera smartPhoneCamera = new Camera(480, 800);//camera.clone();
-        smartPhoneCamera.setFrustumPerspective(45f, (float) camera.getWidth() / camera.getHeight(), 0.1f, 1000f);
+        smartPhoneCamera.setFrustumPerspective(45f, (float) camera.getWidth() / camera.getHeight(), 0.01f, 1000f);
         /*smartPhoneCamera.setLocation(loc);
          smartPhoneCamera.setRotation(cam.getRotation());
          smartPhoneCamera.setAxes(cam.getLeft(), cam.getUp(), cam.getDirection());*/
