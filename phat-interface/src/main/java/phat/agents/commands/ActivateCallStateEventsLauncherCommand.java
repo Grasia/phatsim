@@ -17,32 +17,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package phat.config.impl;
+package phat.agents.commands;
 
-import phat.agents.Agent;
+import com.jme3.app.Application;
 import phat.agents.AgentsAppState;
-import phat.agents.commands.PHATAgentCommand;
-import phat.config.AgentConfigurator;
+import phat.agents.events.actuators.EventLauncher;
+import phat.commands.PHATCommandListener;
+import phat.devices.DevicesAppState;
 
-public class AgentConfiguratorImpl implements AgentConfigurator {
-	AgentsAppState agentsAppState;
-
-	public AgentConfiguratorImpl(AgentsAppState agentsAppState) {
-		super();
-		this.agentsAppState = agentsAppState;
-	}
-
-	public AgentsAppState getAgentsAppState() {
-		return agentsAppState;
-	}
-
-	@Override
-	public void add(Agent agent) {
-		agentsAppState.add(agent);
-	}
+public class ActivateCallStateEventsLauncherCommand extends PHATAgentCommand {
+    
+    public ActivateCallStateEventsLauncherCommand(PHATCommandListener listener) {
+        super(listener);
+    }
 
     @Override
-    public void runCommand(PHATAgentCommand command) {
-        agentsAppState.runCommand(command);
+    public void runCommand(Application app) {
+        AgentsAppState agentsAppState = app.getStateManager().getState(AgentsAppState.class);
+        agentsAppState.activateAllCallStateEventLaunchers();
+        
+        setState(State.Success);
+    }
+
+    @Override
+    public void interruptCommand(Application app) {
+        setState(State.Interrupted);
+    }
+    
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "()";
     }
 }

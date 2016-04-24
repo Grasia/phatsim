@@ -30,7 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import phat.devices.actuators.VibratorActuator;
 import phat.mobile.servicemanager.CommonVars;
 import phat.mobile.servicemanager.server.ServiceManagerServer;
 import phat.mobile.servicemanager.services.Service;
@@ -42,7 +41,6 @@ import phat.server.microphone.TCPAudioMicroServer;
 import phat.sensors.microphone.MicrophoneControl;
 import phat.sensors.presence.PHATPresenceSensor;
 import phat.server.accelerometer.TCPAccelerometerServer;
-import phat.server.actuators.UDPVibratorServer;
 import phat.server.camera.TCPCameraSensorServer;
 import phat.server.doorSensor.TCPDoorSensorServer;
 import phat.server.presence.TCPPresenceServer;
@@ -156,25 +154,7 @@ public class PHATServerManager {
         return ams;
     }
     
-  public UDPVibratorServer createAndStartVibratorServer(String servicesetid, String serviceid, VibratorActuator vibratorActuator) {
-        UDPVibratorServer vs = null;
-        int port = ServiceManagerServer.getInstance().getNextPort();
-        try {
-            System.out.println("IP:PORT -> " + inetAddress + ":" + port);
-            vs = new UDPVibratorServer(inetAddress, port, vibratorActuator);
-        } catch (IOException ex) {
-            Logger.getLogger(PHATServerManager.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-
-        registerService(servicesetid, serviceid, vs, Service.VIBRATOR);
-
-        vs.start();
-
-        add(servicesetid, vs);
-
-        return vs;
-    }
+  
     
     public void stop() {
         for (List<TCPSensorServer> list : tcpSensorServers.values()) {
@@ -194,8 +174,13 @@ public class PHATServerManager {
         list.add(server);
     }
 
+<<<<<<< HEAD
+    private void registerService(String serviceSetId, TCPSensorServer server, String type) {
+        Service service = new ServiceImpl(serviceSetId+"-"+type, type, server.getIp(), server.getPort());
+=======
     private void registerService(String serviceSetId, String serviceid, TCPSensorServer server, String type) {
         Service service = new ServiceImpl(serviceid,type, server.getIp(), server.getPort());
+>>>>>>> 3accc64273c5face06d90ca421e7e9a4ffd781ea
         System.out.println("New Service: " + service);
         ServiceManagerServer sms = ServiceManagerServer.getInstance();
         sms.getServiceManager().registerService(serviceSetId, service);

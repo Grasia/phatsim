@@ -57,11 +57,33 @@ public class InteractionDiagramGenerator {
 			if (interactionSpec != null && interactionSpec.getEntities().length > 0) {
 				for(GraphEntity ge: Utils.getEntities(interactionSpec, "EventProcessor")) {
 					GraphEntity event = Utils.getTargetEntity(ge, "RelatedEvent");
+                                        String eventId = Utils.replaceBadChars(event.getID());
+                                        if(event.getType().equals("VibrateEvent")) {
+                                            GraphAttribute deviceSource = event.getAttributeByName("DeviceSource");
+                                            if(deviceSource == null || deviceSource.getSimpleValue().equals("")) {
+                                                System.exit(-1);
+                                            }
+                                            GraphAttribute state = event.getAttributeByName("DeviceState");
+                                            if(deviceSource == null || deviceSource.getSimpleValue().equals("")) {
+                                                System.exit(-1);
+                                            }
+                                            eventId = deviceSource.getSimpleValue() + "-Vibrator-"+state.getSimpleValue();
+                                        } else if(event.getType().equals("CallStateEvent")) {
+                                            GraphAttribute deviceSource = event.getAttributeByName("DeviceSource");
+                                            if(deviceSource == null || deviceSource.getSimpleValue().equals("")) {
+                                                System.exit(-1);
+                                            }
+                                            GraphAttribute state = event.getAttributeByName("CallStateField");
+                                            if(deviceSource == null || deviceSource.getSimpleValue().equals("")) {
+                                                System.exit(-1);
+                                            }
+                                            eventId = deviceSource.getSimpleValue() + "-Call-"+state.getSimpleValue();
+                                        }
 					GraphEntity activity = Utils.getTargetEntity(ge, "ActivityAttached");
 					Collection<GraphEntity> conds = Utils.getTargetsEntity(ge, "ConditionNeeded");
 					Repeat repEP = new Repeat("eventProcessor");
 					repFather.add(repEP);
-					repEP.add(new Var("eventId", Utils.replaceBadChars(event.getID())));
+					repEP.add(new Var("eventId", eventId));
 					repEP.add(new Var("eventCondition", ConditionGenerator.generateAndCondition(conds)));
 					repEP.add(new Var("acticity", Utils.replaceBadChars(activity.getID())));
 				}

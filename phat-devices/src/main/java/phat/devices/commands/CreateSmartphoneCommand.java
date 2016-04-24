@@ -85,6 +85,8 @@ public class CreateSmartphoneCommand extends PHATDeviceCommand {
         if (cameraSensor) {            
             SmartPhoneFactory.enableCameraFacility(smartphone);
         }
+        
+        SmartPhoneFactory.enableVibratorFacility(smartphone);
 
         if (attachCoordinateAxes) {
             Debug.attachCoordinateAxes(Vector3f.ZERO, 0.5f, SmartPhoneFactory.assetManager, smartphone);

@@ -24,6 +24,7 @@ import com.jme3.scene.Node;
 import java.util.logging.Level;
 import phat.commands.PHATCommandListener;
 import phat.devices.DevicesAppState;
+import phat.devices.actuators.VibratorActuator;
 import phat.mobile.adm.AndroidVirtualDevice;
 import phat.sensors.accelerometer.AccelerometerControl;
 import phat.sensors.camera.CameraSensor;
@@ -87,6 +88,11 @@ public class SetAndroidEmulatorCommand extends PHATServerCommand {
                 TCPAccelerometerServer accServer = serverManager.createAndStartAccelerometerServer(smartphoneId, "gsensor-"+smartphoneId, accSensor);
             }
 
+            VibratorActuator vibratorActuator = device.getControl(VibratorActuator.class);
+            if(vibratorActuator != null) {
+                serverManager.createAndStartVibratorServer(smartphoneId, "vibrator-"+smartphoneId, vibratorActuator);
+            }
+            
             serverAppState.addAVD(smartphoneId, avd);
 
             setState(State.Success);

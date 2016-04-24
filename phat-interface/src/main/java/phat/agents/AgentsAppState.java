@@ -25,10 +25,11 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
+import java.util.ArrayList;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -36,10 +37,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import phat.PHATInterface;
 import phat.agents.commands.PHATAgentCommand;
 import phat.agents.events.PHATEvent;
-import phat.agents.events.PHATEventManager;
+import phat.agents.events.PHATEventListener;
+import phat.agents.events.actuators.CallStateEventLauncher;
+import phat.agents.events.actuators.DeviceSource;
+import phat.agents.events.actuators.EventLauncher;
 import phat.body.BodiesAppState;
 import phat.commands.PHATCommand;
-import phat.gui.logging.LoggingViewerAppState;
+import phat.devices.DevicesAppState;
+import phat.devices.commands.PHATDeviceCommand;
+import phat.mobile.adm.AndroidVirtualDevice;
+import phat.server.ServerAppState;
 import phat.structures.houses.HouseAppState;
 import phat.world.WorldAppState;
 
@@ -47,7 +54,7 @@ import phat.world.WorldAppState;
  *
  * @author pablo
  */
-public class AgentsAppState extends AbstractAppState {
+public class AgentsAppState extends AbstractAppState implements PHATEventListener {
 
     SimpleApplication app;
     AssetManager assetManager;
@@ -56,10 +63,14 @@ public class AgentsAppState extends AbstractAppState {
     HouseAppState houseAppState;
     WorldAppState worldAppState;
     BodiesAppState bodiesAppState;
+    DevicesAppState devicesAppState;
+    ServerAppState serverAppState;
     PHATInterface phatInterface;
     final Map<String, Agent> availableAgents = new HashMap<>();
-    ConcurrentLinkedQueue<PHATAgentCommand> commands = new ConcurrentLinkedQueue<>();
+    ConcurrentLinkedQueue<PHATAgentCommand> runningCommands = new ConcurrentLinkedQueue<>();
+    ConcurrentLinkedQueue<PHATAgentCommand> pendingCommands = new ConcurrentLinkedQueue<>();
     ConcurrentLinkedQueue<PHATEvent> events = new ConcurrentLinkedQueue<>();
+    List<CallStateEventLauncher> callStateEventLaunchers = new ArrayList<CallStateEventLauncher>();
 
     public AgentsAppState(PHATInterface phatInterface) {
         this.phatInterface = phatInterface;
@@ -75,7 +86,9 @@ public class AgentsAppState extends AbstractAppState {
 
         bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
         houseAppState = app.getStateManager().getState(HouseAppState.class);
-        
+        devicesAppState = app.getStateManager().getState(DevicesAppState.class);
+        serverAppState = app.getStateManager().getState(ServerAppState.class);
+
         for (Agent a : availableAgents.values()) {
             a.setAgentsAppState(this);
         }
@@ -85,8 +98,19 @@ public class AgentsAppState extends AbstractAppState {
     public void update(float tpf) {
         super.update(tpf);
 
-        for (PHATCommand bc : commands) {
-            bc.run(app);
+        if (!callStateEventLaunchers.isEmpty()) {
+            for (CallStateEventLauncher callStateEventLauncher : callStateEventLaunchers) {
+                callStateEventLauncher.update(tpf);
+            }
+        }
+
+        if (!pendingCommands.isEmpty()) {
+            runningCommands.addAll(pendingCommands);
+            pendingCommands.clear();
+            for (PHATAgentCommand bc : runningCommands) {
+                bc.run(app);
+            }
+            runningCommands.clear();
         }
 
         for (PHATAgentTick agent : availableAgents.values()) {
@@ -99,8 +123,6 @@ public class AgentsAppState extends AbstractAppState {
         for (PHATAgentTick agent : availableAgents.values()) {
             agent.update(phatInterface);
         }
-        
-        commands.clear();
     }
 
     public void add(Agent agent) {
@@ -122,7 +144,11 @@ public class AgentsAppState extends AbstractAppState {
     public void setBodiesAppState(BodiesAppState bodiesAppState) {
         this.bodiesAppState = bodiesAppState;
     }
-    
+
+    public DevicesAppState getDevicesAppState() {
+        return devicesAppState;
+    }
+
     public HouseAppState getHouseAppState() {
         return houseAppState;
     }
@@ -130,12 +156,31 @@ public class AgentsAppState extends AbstractAppState {
     public PHATInterface getPHAInterface() {
         return phatInterface;
     }
-    
+
     public Set<String> getAgentIds() {
         return availableAgents.keySet();
     }
-    
+
     public Agent getAgent(String id) {
         return availableAgents.get(id);
+    }
+
+    public void runCommand(PHATAgentCommand command) {
+        pendingCommands.add(command);
+    }
+
+    public void activateAllCallStateEventLaunchers() {
+        for (String id : devicesAppState.getDeviceIds()) {
+            Node device = devicesAppState.getDevice(id);
+            AndroidVirtualDevice avd = serverAppState.getAVD(id);
+            if (device != null && avd != null) {
+                callStateEventLaunchers.add(new CallStateEventLauncher(avd, new DeviceSource(device), this));
+            }
+        }
+    }
+
+    @Override
+    public void newEvent(PHATEvent event) {
+        add(event);
     }
 }

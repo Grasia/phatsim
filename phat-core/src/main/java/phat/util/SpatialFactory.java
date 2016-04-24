@@ -23,9 +23,11 @@ import com.jme3.asset.AssetManager;
 import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.material.Material;
+import com.jme3.material.RenderState;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector2f;
 import com.jme3.math.Vector3f;
+import com.jme3.renderer.queue.RenderQueue;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Mesh;
 import com.jme3.scene.Node;
@@ -34,6 +36,7 @@ import com.jme3.scene.VertexBuffer;
 import com.jme3.scene.control.BillboardControl;
 import com.jme3.scene.debug.Arrow;
 import com.jme3.scene.shape.Box;
+import com.jme3.scene.shape.Sphere;
 import com.jme3.texture.Texture;
 import com.jme3.util.BufferUtils;
 import java.util.logging.Level;
@@ -105,6 +108,20 @@ public class SpatialFactory {
         return g;
     }
     
+    public static Geometry createSphere(float radius, ColorRGBA color, boolean transparent) {
+        Sphere sphere = new Sphere(32, 32, radius);
+        Geometry rangeGeometry = new Geometry("Shiny rock", sphere);
+        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat.setColor("Color", color);        
+        if(transparent) {
+            mat.getAdditionalRenderState().setBlendMode(RenderState.BlendMode.Alpha);
+        }
+        rangeGeometry.setMaterial(mat);        
+        if(transparent) {
+            rangeGeometry.setQueueBucket(RenderQueue.Bucket.Transparent);
+        } 
+        return rangeGeometry;
+    }
     /**
      * Creates a geometry with the same name of the given node.
      * It adds a controller called BillboardControl that turns the

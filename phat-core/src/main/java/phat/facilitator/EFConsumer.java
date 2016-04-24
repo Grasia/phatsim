@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2014 Pablo Campillo-Sanchez <pabcampi@ucm.es>
  *
@@ -17,12 +16,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */package phat.config;
+ */
+package phat.facilitator;
 
-import phat.agents.Agent;
-import phat.agents.commands.PHATAgentCommand;
-
-public interface AgentConfigurator {
-	public void add(Agent agent);
-        public void runCommand(PHATAgentCommand command);
+/**
+ *
+ * @author pablo
+ */
+public interface EFConsumer {
+    
 }

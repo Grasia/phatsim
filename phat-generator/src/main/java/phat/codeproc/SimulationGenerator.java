@@ -115,6 +115,11 @@ public class SimulationGenerator {
                 }
             }
         }
+
+        if (Utils.hasAnyEntity(browser, "CallStateEvent")) {
+            Repeat activateCallStatesRep = new Repeat("activateCallStates");
+            simInitRep.add(activateCallStatesRep);
+        }
     }
 
     private void generateCameraPositionToBody(Graph simDiag, Repeat simInitRep)

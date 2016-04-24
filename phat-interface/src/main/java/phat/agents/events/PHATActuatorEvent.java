@@ -1,4 +1,3 @@
-
 /*
  * Copyright (C) 2014 Pablo Campillo-Sanchez <pabcampi@ucm.es>
  *
@@ -17,12 +16,44 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */package phat.config;
+ */
+package phat.agents.events;
 
 import phat.agents.Agent;
-import phat.agents.commands.PHATAgentCommand;
 
-public interface AgentConfigurator {
-	public void add(Agent agent);
-        public void runCommand(PHATAgentCommand command);
+/**
+ *
+ * @author pablo
+ */
+public class PHATActuatorEvent extends PHATEvent {
+    float minDistance = 10f;
+    float volume = 1f;
+
+    public PHATActuatorEvent(String id, EventSource eventSource) {
+        super(id, eventSource);
+    }
+    
+    @Override
+    public boolean isPerceptible(Agent agent) {
+        if(agent.getLocation() != null && agent.getLocation().distance(getEventSource().getLocation()) < minDistance) {
+            return true;
+        }
+        return false;
+    }
+
+    public float getMinDistance() {
+        return minDistance;
+    }
+
+    public void setMinDistance(float minDistance) {
+        this.minDistance = minDistance;
+    }
+
+    public float getVolume() {
+        return volume;
+    }
+
+    public void setVolume(float volume) {
+        this.volume = volume;
+    }
 }

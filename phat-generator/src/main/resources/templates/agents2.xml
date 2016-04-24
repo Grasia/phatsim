@@ -35,8 +35,6 @@ public class @@@v@@@aName@@@/v@@@Agent extends Agent {
 	    				@@@v@@@eventCondition@@@/v@@@, 
 	    				@@@v@@@acticity@@@/v@@@Activity.class));
 	    	@@@/repeat@@@
-
-    	
     }
 }
 @@@/text@@@

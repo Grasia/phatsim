@@ -791,7 +791,30 @@ public class Utils {
         }
         return result;
     }
+    
+    public static List<GraphEntity> getEntities(Browser b, String typeName) {
+        List<GraphEntity> result = new ArrayList<GraphEntity>();
+        
+        for(GraphEntity ge: b.getAllEntities()) {
+            if(ge.getType().equals(typeName)) {
+                result.add(ge);
+            }
+        }
+        return result;
+    }
 
+    public static boolean hasAnyEntity(Browser b, String typeName) {
+        boolean result = false;
+        
+        for(GraphEntity ge: b.getAllEntities()) {
+            if(ge.getType().equals(typeName)) {
+                result = true;
+                break;
+            }
+        }
+        return result;
+    }
+    
     public static Vector<GraphRole> getRolesFromRelationship(
             GraphRelationship rel, String role) {
         Vector<GraphRole> related = new Vector<GraphRole>();

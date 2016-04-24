@@ -25,10 +25,14 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.scene.Node;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import phat.devices.DevicesAppState;
 import phat.server.commands.DisplayAVDScreenCommand;
 import phat.server.commands.PHATServerCommand;
 import phat.devices.smartphone.SmartPhoneFactory;
@@ -46,6 +50,7 @@ public class ServerAppState extends AbstractAppState {
     AssetManager assetManager;
     BulletAppState bulletAppState;
     PHATServerManager serverManager;
+    DevicesAppState devicesAppState;
     HouseAppState houseAppState;
     WorldAppState worldAppState;
     Map<String, AndroidVirtualDevice> availableAVDs = new HashMap<String, AndroidVirtualDevice>();
@@ -62,7 +67,8 @@ public class ServerAppState extends AbstractAppState {
         worldAppState = app.getStateManager().getState(WorldAppState.class);
         houseAppState = app.getStateManager().getState(HouseAppState.class);
         bulletAppState = app.getStateManager().getState(BulletAppState.class);
-
+        devicesAppState = app.getStateManager().getState(DevicesAppState.class);
+        
         serverManager = new PHATServerManager();
 
         SmartPhoneFactory.init(bulletAppState, assetManager, app.getRenderManager(), app.getCamera(), app.getAudioRenderer());
@@ -95,7 +101,7 @@ public class ServerAppState extends AbstractAppState {
     public AndroidVirtualDevice getAVD(String deviceId) {
         return availableAVDs.get(deviceId);
     }
-
+    
     @Override
     public void cleanup() {
         super.cleanup();

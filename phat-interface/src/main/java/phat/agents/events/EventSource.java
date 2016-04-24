@@ -26,5 +26,6 @@ import com.jme3.math.Vector3f;
  * @author pablo
  */
 public interface EventSource {
+    public String getId();
     public Vector3f getLocation();
 }

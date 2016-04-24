@@ -45,6 +45,9 @@ import com.jme3.texture.Texture;
 import com.jme3.texture.Texture2D;
 import com.jme3.texture.plugins.AWTLoader;
 import java.awt.image.BufferedImage;
+import phat.devices.actuators.Actuator;
+import phat.devices.actuators.ActuatorListener;
+import phat.devices.actuators.VibratorActuator;
 import phat.sensors.accelerometer.AccelerometerControl;
 import phat.sensors.camera.CameraSensor;
 import phat.sensors.microphone.MicrophoneControl;
@@ -204,6 +207,12 @@ public class SmartPhoneFactory {
         //accControl.start(bulletAppState.getPhysicsSpace());
     }
 
+    public static void enableVibratorFacility(Node smartphone) {
+        VibratorActuator vibratorControl = new VibratorActuator(smartphone.getName()+"-Vibrator");
+        vibratorControl.setDebug(true);
+        smartphone.addControl(vibratorControl);
+    }
+    
     private static ViewPort createViewPort(Camera smartPhoneCamera) {
         float xFactor = (float) camera.getWidth() / (float) smartPhoneCamera.getWidth();
         float yFactor = (float) camera.getHeight() / (float) smartPhoneCamera.getHeight();

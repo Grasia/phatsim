@@ -17,32 +17,43 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package phat.config.impl;
+package phat.agents.events.actuators;
 
-import phat.agents.Agent;
-import phat.agents.AgentsAppState;
-import phat.agents.commands.PHATAgentCommand;
-import phat.config.AgentConfigurator;
+import phat.agents.events.*;
 
-public class AgentConfiguratorImpl implements AgentConfigurator {
-	AgentsAppState agentsAppState;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Node;
+import phat.devices.actuators.VibratorActuator;
 
-	public AgentConfiguratorImpl(AgentsAppState agentsAppState) {
-		super();
-		this.agentsAppState = agentsAppState;
-	}
+public class VibratorEventSource implements EventSource {
 
-	public AgentsAppState getAgentsAppState() {
-		return agentsAppState;
-	}
+    Node device;
+    VibratorActuator vibratorActuator;
 
-	@Override
-	public void add(Agent agent) {
-		agentsAppState.add(agent);
-	}
+    public VibratorEventSource(VibratorActuator vibratorActuator, Node device) {
+        this.vibratorActuator = vibratorActuator;
+        this.device = device;
+    }
+    
+    @Override
+    public Vector3f getLocation() {
+        return device.getWorldTranslation();
+    }
 
     @Override
-    public void runCommand(PHATAgentCommand command) {
-        agentsAppState.runCommand(command);
+    public String getId() {
+        return device.getUserData("ID");
+    }
+    
+    public String getState() {
+        return vibratorActuator.getState().name();
+    }
+
+    public Node getDevice() {
+        return device;
+    }
+
+    public VibratorActuator getVibratorActuator() {
+        return vibratorActuator;
     }
 }

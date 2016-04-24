@@ -160,6 +160,11 @@ public class SymptomEvolutionTest implements PHATInitializer {
                     public Vector3f getLocation() {
                         return Vector3f.ZERO;
                     }
+
+                    @Override
+                    public String getId() {
+                        return "";
+                    }
                 });
                 remindAutomaton.addListener(remindEvent);
 

@@ -21,6 +21,11 @@
             <artifactId>jali-adm</artifactId>
             <version>${jali.version}</version>
         </dependency>
+        <dependency>
+            <groupId>net.sf.jali</groupId>
+            <artifactId>jali-vapi-common</artifactId>
+            <version>${jali.version}</version>
+        </dependency>
         <!-- Dependences in local repository -->
         <dependency>
             <groupId>net.sf.jdos</groupId>
@@ -33,7 +38,6 @@
             <artifactId>jdos-common</artifactId>
             <version>${jdos.version}</version>
         </dependency>
-        
         <dependency>
             <groupId>net.sf.phat</groupId>
             <artifactId>phat-devices</artifactId>
