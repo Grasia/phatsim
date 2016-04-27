@@ -21,7 +21,7 @@ package phat.agents.events.actuators;
 
 import phat.agents.events.PHATEventListener;
 import phat.mobile.adm.AndroidVirtualDevice;
-import phat.mobile.adm.TelephoyRegistryChecker;
+import phat.mobile.adm.TelephonyRegistryChecker;
 
 /**
  *
@@ -29,14 +29,14 @@ import phat.mobile.adm.TelephoyRegistryChecker;
  */
 public class CallStateEventLauncher {
 
-    TelephoyRegistryChecker telephoyRegistryChecker;
+    TelephonyRegistryChecker telephonyRegistryChecker;
     DeviceSource deviceSource;
     AndroidVirtualDevice avd;
     PHATEventListener eventListener;
     String lastPhoneNumber = "";
     float timeToChek = 0.5f;
     float timer = 0f;
-    String currentCallState = TelephoyRegistryChecker.CALL_STATES.IDLE.name();
+    String currentCallState = TelephonyRegistryChecker.CALL_STATES.IDLE.name();
     boolean stateChanged = false;
     
     Thread callStateProxy;
@@ -45,7 +45,7 @@ public class CallStateEventLauncher {
         this.avd = avd;
         this.deviceSource = deviceSource;
         this.eventListener = eventListener;
-        this.telephoyRegistryChecker = new TelephoyRegistryChecker(avd.getSerialNumber());
+        this.telephonyRegistryChecker = new TelephonyRegistryChecker(avd.getSerialNumber());
     }
 
     public void update(float tpf) {
@@ -67,8 +67,8 @@ public class CallStateEventLauncher {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {
-                        String phoneNumber = telephoyRegistryChecker.getIncomingPhoneNumber();
-                        String state = telephoyRegistryChecker.getCallState().name();
+                        String phoneNumber = telephonyRegistryChecker.getIncomingPhoneNumber();
+                        String state = telephonyRegistryChecker.getCallState().name();
                         if(!state.equals(currentCallState)) {
                             stateChanged = true;
                         }
