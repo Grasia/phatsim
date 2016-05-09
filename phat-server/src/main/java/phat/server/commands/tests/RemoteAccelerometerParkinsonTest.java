@@ -118,10 +118,10 @@ public class RemoteAccelerometerParkinsonTest implements PHATInitAppListener {
 		app.getCamera().setLocation(new Vector3f(0.2599395f, 2.7232018f, 3.373138f));
 		app.getCamera().setRotation(new Quaternion(-0.0035931943f, 0.9672268f, -0.25351822f, -0.013704466f));
 
-		BulletAppState bulletAppState = new BulletAppState();
+		/*BulletAppState bulletAppState = new BulletAppState();
 		bulletAppState.setThreadingType(BulletAppState.ThreadingType.PARALLEL);
 		stateManager.attach(bulletAppState);
-		bulletAppState.getPhysicsSpace().setAccuracy(1 / 60f);
+		bulletAppState.getPhysicsSpace().setAccuracy(1 / 60f);*/
 		//bulletAppState.setDebugEnabled(true);
 
 		worldAppState = new WorldAppState();
@@ -136,10 +136,10 @@ public class RemoteAccelerometerParkinsonTest implements PHATInitAppListener {
 		bodiesAppState.createBody(BodiesAppState.BodyType.ElderLP, "Patient");
 		bodiesAppState.runCommand(new SetBodyInCoordenatesCommand("Patient", Vector3f.ZERO));
 		bodiesAppState.runCommand(new RandomWalkingCommand("Patient", true));
-		bodiesAppState.runCommand(new TremblingHandCommand("Patient", true, true));
-		TremblingHeadCommand thc = new TremblingHeadCommand("Patient", true);
-		thc.setAngular(FastMath.HALF_PI);
-		bodiesAppState.runCommand(thc);
+		//bodiesAppState.runCommand(new TremblingHandCommand("Patient", true, true));
+		//TremblingHeadCommand thc = new TremblingHeadCommand("Patient", true);
+		//thc.setAngular(FastMath.HALF_PI);
+		//bodiesAppState.runCommand(thc);
 
 		bodiesAppState.runCommand(new SetSpeedDisplacemenetCommand("Patient", 0.5f));        
 		//bodiesAppState.runCommand(new SetRigidArmCommand("Patient", true, true));
@@ -162,7 +162,7 @@ public class RemoteAccelerometerParkinsonTest implements PHATInitAppListener {
 
 		devicesAppState.runCommand(new CreateAccelerometerSensorCommand("sensor2"));
 		devicesAppState.runCommand(new SetDeviceOnPartOfBodyCommand("Patient", "sensor2",
-				SetDeviceOnPartOfBodyCommand.PartOfBody.RightHand));
+				SetDeviceOnPartOfBodyCommand.PartOfBody.LeftHand));
 
 		serverAppState = new ServerAppState();
 		stateManager.attach(serverAppState);
@@ -193,14 +193,14 @@ public class RemoteAccelerometerParkinsonTest implements PHATInitAppListener {
 			public void update(float f) {
 				if (!init) {
 					AccelerometerControl ac = devicesAppState.getDevice("sensor1").getControl(AccelerometerControl.class);
-					ac.setMode(AccelerometerControl.AMode.GRAVITY_MODE);
+					ac.setMode(AccelerometerControl.AMode.ACCELEROMETER_MODE);
 					XYAccelerationsChart chart = new XYAccelerationsChart("Chart - Acc.", "Local accelerations", "m/s2", "x,y,z");
 					ac.add(chart);
 					chart.showWindow();
 					init = true;
 
 				}
-				cont += f;
+				/*cont += f;
 				if (cont > timeToFall && cont < timeToFall + 1 && !fall) {
 					bodiesAppState.runCommand(new FallDownCommand("Patient"));
 					fall = true;
@@ -209,7 +209,7 @@ public class RemoteAccelerometerParkinsonTest implements PHATInitAppListener {
 					bodiesAppState.runCommand(standUp);
 					fall = false;
 					cont = 0;
-				}
+				}*/
 			}
 		});
 	}

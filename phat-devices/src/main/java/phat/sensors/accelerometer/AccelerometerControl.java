@@ -59,7 +59,7 @@ public class AccelerometerControl extends Sensor {
 
         GRAVITY_MODE, ACCELEROMETER_MODE
     }
-    AMode mode = AMode.GRAVITY_MODE;
+    AMode mode = AMode.ACCELEROMETER_MODE;
 
     public AccelerometerControl(String id) {
         super(id);
@@ -175,7 +175,7 @@ public class AccelerometerControl extends Sensor {
                 updateIncrementalListeners(time, gravity);
                 break;
             case ACCELEROMETER_MODE:
-                currentVelocity.subtract(lastVelocity, acceleration);
+                lastVelocity.subtract(currentVelocity, acceleration);
                 acceleration.divideLocal(time);
                 rot.mult(acceleration, acceleration);
                 acceleration.negateLocal();
@@ -184,7 +184,7 @@ public class AccelerometerControl extends Sensor {
                 //acceleration.divideLocal(2f);
                 
                 acceleration.addLocal(gravity);
-                if(acceleration.length() > 15f) {
+                if(acceleration.length() > 50f) {
                     acceleration.set(lastAcc);
                 }
                 //abs.setX(acceleration.length());

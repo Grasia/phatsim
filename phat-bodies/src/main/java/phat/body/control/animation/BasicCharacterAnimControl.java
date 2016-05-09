@@ -124,7 +124,11 @@ public class BasicCharacterAnimControl extends AbstractControl implements
     }
 
     private void setAnim(String animName, AnimChannel bodyChannel, float blend) {
-        if (bodyChannel.getAnimationName() == null
+        if(bodyChannel.getAnimationName() != null && bodyChannel.getAnimationName().equals(AnimName.WalkForward.name())) {
+            if(bodyChannel.getTime() > bodyChannel.getAnimMaxTime() - 0.5f) {
+                bodyChannel.setAnim(animName, 0.5f);
+            }
+        } else if (bodyChannel.getAnimationName() == null
                 || !bodyChannel.getAnimationName().equals(animName)) {
             bodyChannel.setAnim(animName, blend);
         }

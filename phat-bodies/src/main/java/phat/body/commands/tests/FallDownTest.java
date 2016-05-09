@@ -125,7 +125,7 @@ public class FallDownTest implements PHATInitAppListener {
             boolean init = false;
             float cont = 0f;
             boolean fall = false;
-            float timeToFall = 7f;
+            float timeToFall = 10f;
             @Override
             public void update(float f) {
                 if(!init) {
