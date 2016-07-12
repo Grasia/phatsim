@@ -12,6 +12,8 @@ import java.rmi.AlreadyBoundException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import phat.agents.Agent;
 import phat.body.BodiesAppState;
 import phat.body.commands.*;
@@ -27,11 +29,13 @@ import phat.PHATInitializer;
 import phat.PHATInterface;
 import phat.agents.impl.*;
 import phat.agents.automaton.*;
-import phat.agents.automaton.adl.*;
+@@@repeat id="importADL"@@@import phat.agents.automaton.adl.*;
+@@@/repeat@@@
 import phat.agents.automaton.activities.*;
 import phat.util.PHATUtils;
 import phat.ArgumentProcessor;
 import phat.agents.commands.*;
+import phat.body.sensing.hearing.GrammarFacilitator;
 
 /**
  *
@@ -116,6 +120,8 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
     
     @Override
     public void initAgents(AgentConfigurator agentsConfig) {
+        System.setProperty("java.util.logging.config.class", "");
+        Logger.getLogger("").setLevel(Level.OFF);
        @@@repeat id="agent"@@@
        {@@@v@@@agentname@@@/v@@@Agent agent = new @@@v@@@agentname@@@/v@@@Agent("@@@v@@@agentname@@@/v@@@","@@@v@@@simName@@@/v@@@" );
        @@@repeat id="ADL"@@@
@@ -133,7 +139,19 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
             agent.setAutomaton(mainAutomaton);
         @@@/repeat@@@
        agent.registerListener(meq); 
-       agentsConfig.add(agent);}@@@/repeat@@@
+       agentsConfig.add(agent);
+        @@@repeat id="ActivateHearingSense"@@@
+       ActivateWordsHeardEventsLauncherCommand awhelc = new ActivateWordsHeardEventsLauncherCommand("@@@v@@@agentname@@@/v@@@", null);
+       @@@repeat id="wordsToBeListened"@@@
+       awhelc.addWord("@@@v@@@word@@@/v@@@");@@@/repeat@@@
+       
+        GrammarFacilitator grammarFacilitator = new GrammarFacilitator(System.getProperty("user.dir"), "basic");
+        @@@repeat id="sentenceRep"@@@
+        grammarFacilitator.add("@@@v@@@sentence@@@/v@@@");@@@/repeat@@@
+        grammarFacilitator.createFile();
+        awhelc.setGrammarFacilitator(grammarFacilitator);
+        agentsConfig.runCommand(awhelc);@@@/repeat@@@
+        }@@@/repeat@@@
        agentsConfig.runCommand(new ActivateActuatorEventsLauncherCommand(null));
        @@@repeat id="activateCallStates"@@@
        agentsConfig.runCommand(new ActivateCallStateEventsLauncherCommand(null));@@@/repeat@@@
@@ -176,7 +194,8 @@ import phat.PHATInitializer;
 import phat.PHATInterface;
 import phat.agents.impl.*;
 import phat.agents.automaton.*;
-import phat.agents.automaton.adl.*;
+@@@repeat id="importADL"@@@import phat.agents.automaton.adl.*;
+@@@/repeat@@@
 import phat.agents.automaton.activities.*;
 import phat.util.PHATUtils;
 import phat.ArgumentProcessor;

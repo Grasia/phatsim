@@ -32,62 +32,73 @@ import java.util.Vector;
 import java.util.Collection;
 
 public class InteractionDiagramGenerator {
-	final static String TIME_INTERVAL_TYPE = "TimeInterval";
-	final static String INTERVAL_CLOCK_REL = "IntervalClockTime";
-	final static String INTERACTION_PROFILE_SPEC_DIAGRAM = "InteractionProfile";
 
-	Browser browser;
+    final static String TIME_INTERVAL_TYPE = "TimeInterval";
+    final static String INTERVAL_CLOCK_REL = "IntervalClockTime";
+    final static String INTERACTION_PROFILE_SPEC_DIAGRAM = "InteractionProfile";
+    Browser browser;
 
-	public InteractionDiagramGenerator(Browser browser) {
-		this.browser = browser;
-	}
+    public InteractionDiagramGenerator(Browser browser) {
+        this.browser = browser;
+    }
 
-	public void generateEventProcessor(String humanId, Repeat repFather) throws NotFound,
-			NullEntity {
+    public void generateEventProcessor(String humanId, Repeat repFather) throws NotFound,
+            NullEntity {
 
-		Vector<GraphEntity> ips = Utils.getProfilesTypeOf(humanId, INTERACTION_PROFILE_SPEC_DIAGRAM, browser);
-		for (GraphEntity ip:ips){
-			GraphAttribute ga = ip.getAttributeByName("InteractionSpecDiagField");
-			if (ga == null || ga.getSimpleValue().equals("")) {
-				return;
-			}
+        Vector<GraphEntity> ips = Utils.getProfilesTypeOf(humanId, INTERACTION_PROFILE_SPEC_DIAGRAM, browser);
+        for (GraphEntity ip : ips) {
+            GraphAttribute ga = ip.getAttributeByName("InteractionSpecDiagField");
+            if (ga == null || ga.getSimpleValue().equals("")) {
+                return;
+            }
 
-			String interactionDiagName = ga.getSimpleValue();
-			Graph interactionSpec = browser.getGraph(interactionDiagName);
-			if (interactionSpec != null && interactionSpec.getEntities().length > 0) {
-				for(GraphEntity ge: Utils.getEntities(interactionSpec, "EventProcessor")) {
-					GraphEntity event = Utils.getTargetEntity(ge, "RelatedEvent");
-                                        String eventId = Utils.replaceBadChars(event.getID());
-                                        if(event.getType().equals("VibrateEvent")) {
-                                            GraphAttribute deviceSource = event.getAttributeByName("DeviceSource");
-                                            if(deviceSource == null || deviceSource.getSimpleValue().equals("")) {
-                                                System.exit(-1);
-                                            }
-                                            GraphAttribute state = event.getAttributeByName("DeviceState");
-                                            if(deviceSource == null || deviceSource.getSimpleValue().equals("")) {
-                                                System.exit(-1);
-                                            }
-                                            eventId = deviceSource.getSimpleValue() + "-Vibrator-"+state.getSimpleValue();
-                                        } else if(event.getType().equals("CallStateEvent")) {
-                                            GraphAttribute deviceSource = event.getAttributeByName("DeviceSource");
-                                            if(deviceSource == null || deviceSource.getSimpleValue().equals("")) {
-                                                System.exit(-1);
-                                            }
-                                            GraphAttribute state = event.getAttributeByName("CallStateField");
-                                            if(deviceSource == null || deviceSource.getSimpleValue().equals("")) {
-                                                System.exit(-1);
-                                            }
-                                            eventId = deviceSource.getSimpleValue() + "-Call-"+state.getSimpleValue();
-                                        }
-					GraphEntity activity = Utils.getTargetEntity(ge, "ActivityAttached");
-					Collection<GraphEntity> conds = Utils.getTargetsEntity(ge, "ConditionNeeded");
-					Repeat repEP = new Repeat("eventProcessor");
-					repFather.add(repEP);
-					repEP.add(new Var("eventId", eventId));
-					repEP.add(new Var("eventCondition", ConditionGenerator.generateAndCondition(conds)));
-					repEP.add(new Var("acticity", Utils.replaceBadChars(activity.getID())));
-				}
-			}
-		}
-	}
+            String interactionDiagName = ga.getSimpleValue();
+            Graph interactionSpec = browser.getGraph(interactionDiagName);
+            if (interactionSpec != null && interactionSpec.getEntities().length > 0) {
+                for (GraphEntity ge : Utils.getEntities(interactionSpec, "EventProcessor")) {
+                    GraphEntity event = Utils.getTargetEntity(ge, "RelatedEvent");
+                    String eventId = Utils.replaceBadChars(event.getID());
+                    if (event.getType().equals("VibrateEvent")) {
+                        GraphAttribute deviceSource = event.getAttributeByName("DeviceSource");
+                        if (deviceSource == null || deviceSource.getSimpleValue().equals("")) {
+                            System.exit(-1);
+                        }
+                        GraphAttribute state = event.getAttributeByName("DeviceState");
+                        if (deviceSource == null || deviceSource.getSimpleValue().equals("")) {
+                            System.exit(-1);
+                        }
+                        eventId = deviceSource.getSimpleValue() + "-Vibrator-" + state.getSimpleValue();
+                    } else if (event.getType().equals("CallStateEvent")) {
+                        GraphAttribute deviceSource = event.getAttributeByName("DeviceSource");
+                        if (deviceSource == null || deviceSource.getSimpleValue().equals("")) {
+                            System.exit(-1);
+                        }
+                        GraphAttribute state = event.getAttributeByName("CallStateField");
+                        if (deviceSource == null || deviceSource.getSimpleValue().equals("")) {
+                            System.exit(-1);
+                        }
+                        eventId = deviceSource.getSimpleValue() + "-Call-" + state.getSimpleValue();
+                    } else if (event.getType().equals("MessageListenedEvent")) {
+                        GraphAttribute message = event.getAttributeByName("Message");
+                        if (message == null || message.getSimpleValue().equals("")) {
+                            System.exit(-1);
+                        }
+                        eventId = humanId + ":";
+                        String[] words = message.getSimpleValue().split(" ");
+                        for (int i = 0; i < words.length - 1; i++) {
+                            eventId += words[i] + "-";
+                        }
+                        eventId += words[words.length - 1];
+                    }
+                    GraphEntity activity = Utils.getTargetEntity(ge, "ActivityAttached");
+                    Collection<GraphEntity> conds = Utils.getTargetsEntity(ge, "ConditionNeeded");
+                    Repeat repEP = new Repeat("eventProcessor");
+                    repFather.add(repEP);
+                    repEP.add(new Var("eventId", eventId));
+                    repEP.add(new Var("eventCondition", ConditionGenerator.generateAndCondition(conds)));
+                    repEP.add(new Var("acticity", Utils.replaceBadChars(activity.getID())));
+                }
+            }
+        }
+    }
 }

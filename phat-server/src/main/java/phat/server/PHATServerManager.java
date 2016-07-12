@@ -19,6 +19,7 @@
  */
 package phat.server;
 
+import com.jme3.scene.Node;
 import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
@@ -46,6 +47,7 @@ import phat.server.actuators.UDPVibratorServer;
 import phat.server.camera.TCPCameraSensorServer;
 import phat.server.doorSensor.TCPDoorSensorServer;
 import phat.server.presence.TCPPresenceServer;
+import phat.server.speaker.TCPAudioSpeakerServer;
 
 /**
  *
@@ -174,6 +176,26 @@ public class PHATServerManager {
         add(servicesetid, vs);
 
         return vs;
+    }
+  
+  public TCPAudioSpeakerServer createAndStartAudioSpeakerServer(ServerAppState serverAppState, String servicesetid, String serviceid, Node device) {
+        TCPAudioSpeakerServer ams = null;
+        int port = ServiceManagerServer.getInstance().getNextPort();
+        try {
+            System.out.println("IP:PORT -> " + inetAddress + ":" + port);
+            ams = new TCPAudioSpeakerServer(serverAppState, inetAddress, port, device);
+        } catch (IOException ex) {
+            Logger.getLogger(PHATServerManager.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+
+        registerService(serviceid,serviceid, ams, Service.SPEAKER);
+
+        ams.start();
+
+        add(servicesetid, ams);
+
+        return ams;
     }
     
     public void stop() {

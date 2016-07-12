@@ -17,43 +17,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package phat.agents.events;
+package phat.client;
 
-import phat.agents.Agent;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 
 /**
  *
  * @author pablo
  */
-public class PHATAudioEvent extends PHATEvent {
-    float minDistance = 10f;
-    float volume = 1f;
-
-    public PHATAudioEvent(String id, EventSource eventSource) {
-        super(id, eventSource);
+public class DOSObjectClientWriter {
+    
+    private final PHATClientConnection phatClientConnection;
+    private ObjectOutputStream objectOutputStream;
+    
+    public DOSObjectClientWriter(PHATClientConnection phatClientConnection) {
+        this.phatClientConnection = phatClientConnection;
     }
     
-    @Override
-    public boolean isPerceptible(Agent agent) {
-        if(agent.getLocation() != null && agent.getLocation().distance(getEventSource().getLocation()) < minDistance) {
-            return true;
-        }
-        return false;
+    public void connect() throws IOException {
+        phatClientConnection.connect();
+        objectOutputStream = new ObjectOutputStream(phatClientConnection.getSocket().getOutputStream());
     }
-
-    public float getMinDistance() {
-        return minDistance;
+    
+    public void write(Object object) throws IOException {
+        objectOutputStream.writeObject(object);
     }
-
-    public void setMinDistance(float minDistance) {
-        this.minDistance = minDistance;
-    }
-
-    public float getVolume() {
-        return volume;
-    }
-
-    public void setVolume(float volume) {
-        this.volume = volume;
+    
+    public void close() throws IOException {
+        objectOutputStream.close();
+        phatClientConnection.close();
     }
 }

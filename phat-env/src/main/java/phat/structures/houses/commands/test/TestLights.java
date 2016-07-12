@@ -70,8 +70,8 @@ public class TestLights  extends SimpleApplication {
         SpatialEnvironmentAPI seAPI = SpatialEnvironmentAPI.createSpatialEnvironmentAPI(this);
         
         seAPI.getWorldAppState().setCalendar(2013, 1, 1, 1, 0, 0);
-        seAPI.getWorldAppState().setEnableShadows(true);
-        seAPI.getWorldAppState().setLandType(WorldAppState.LandType.Basic);
+        //seAPI.getWorldAppState().setEnableShadows(true);
+        seAPI.getWorldAppState().setLandType(WorldAppState.LandType.Grass);
         
         seAPI.getHouseAppState().runCommand(new CreateHouseCommand("House1", HouseFactory.HouseType.House3room2bath));
         seAPI.getHouseAppState().runCommand(new SwitchLight("House1", "BedRoom1", true));

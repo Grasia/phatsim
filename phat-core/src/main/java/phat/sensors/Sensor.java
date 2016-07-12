@@ -34,6 +34,7 @@ public abstract class Sensor extends AbstractControl {
 
     protected String id;
     protected List<SensorListener> listeners;
+    protected List<SensorDataFilter> filters;
     SensorNotificationLauncher launcher;
 
     public Sensor(String id) {
@@ -41,6 +42,7 @@ public abstract class Sensor extends AbstractControl {
         this.id = id;
         this.listeners = new ArrayList<SensorListener>();
         this.launcher = new SensorNotificationLauncher(listeners, this);
+        this.filters = new ArrayList<SensorDataFilter>();
     }
 
     public void setId(String id) {
@@ -66,6 +68,10 @@ public abstract class Sensor extends AbstractControl {
         }
     }
 
+    public void addFilter(SensorDataFilter filter) {
+        filters.add(filter);
+    }
+    
     public boolean hasListener(SensorListener sl) {
         return listeners.contains(sl);
     }
@@ -84,8 +90,17 @@ public abstract class Sensor extends AbstractControl {
     }
 
     @SuppressWarnings("empty-statement")
-    protected void notifyListeners(SensorData sourceData) {
-        this.launcher.notify(sourceData);
+    protected void notifyListeners(SensorData sensorData) {
+        // Apply filters
+        //System.out.println("Apply Filters ("+getId()+"):");
+        SensorData sd = sensorData;
+        for(SensorDataFilter filter: filters) {
+            //System.out.println("\t"+filter.getClass().getSimpleName());
+            sd = filter.filter(sd);
+        }
+        
+        // notify to sensor listeners using a new Thread
+        this.launcher.notify(sd);
     }
 
     /*protected void notifyListeners(SensorData sourceData) {

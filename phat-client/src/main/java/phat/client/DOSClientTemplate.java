@@ -78,6 +78,7 @@ public abstract class DOSClientTemplate implements Runnable {
         return false;
     }
 
+    @Override
     public void run() {
         while (running) {
             if (s == null || oin == null) {

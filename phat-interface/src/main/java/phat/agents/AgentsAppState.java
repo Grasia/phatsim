@@ -24,8 +24,10 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
+import com.jme3.audio.AudioSource;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.scene.Node;
+import edu.cmu.sphinx.api.Microphone;
 import java.util.ArrayList;
 
 import java.util.HashMap;
@@ -36,16 +38,22 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import phat.PHATInterface;
 import phat.agents.commands.PHATAgentCommand;
+import phat.agents.events.BodyEventSource;
+import phat.agents.events.EventSource;
+import phat.agents.events.PHATAudioEvent;
 import phat.agents.events.PHATEvent;
 import phat.agents.events.PHATEventListener;
 import phat.agents.events.actuators.CallStateEventLauncher;
 import phat.agents.events.actuators.DeviceSource;
 import phat.agents.events.actuators.EventLauncher;
 import phat.body.BodiesAppState;
+import phat.body.sensing.hearing.HearingSense;
+import phat.body.sensing.hearing.WordsHeardListener;
 import phat.commands.PHATCommand;
 import phat.devices.DevicesAppState;
 import phat.devices.commands.PHATDeviceCommand;
 import phat.mobile.adm.AndroidVirtualDevice;
+import phat.sensors.microphone.MicrophoneControl;
 import phat.server.ServerAppState;
 import phat.structures.houses.HouseAppState;
 import phat.world.WorldAppState;
@@ -54,7 +62,7 @@ import phat.world.WorldAppState;
  *
  * @author pablo
  */
-public class AgentsAppState extends AbstractAppState implements PHATEventListener {
+public class AgentsAppState extends AbstractAppState implements PHATEventListener, WordsHeardListener {
 
     SimpleApplication app;
     AssetManager assetManager;
@@ -182,5 +190,22 @@ public class AgentsAppState extends AbstractAppState implements PHATEventListene
     @Override
     public void newEvent(PHATEvent event) {
         add(event);
+    }
+
+    public void activateWoredsHeard(String id) {
+        Node body = bodiesAppState.getBody(id);
+        MicrophoneControl micro = body.getControl(MicrophoneControl.class);
+        HearingSense hs = micro.getListener(HearingSense.class);
+        hs.add(this);
+    }
+
+    @Override
+    public void notifyNewWordsHeard(String bodyId, String[] words) {
+        String id = bodyId + ":";
+        for (int i = 0; i < words.length - 1; i++) {
+            id += words[i] + "-";
+        }
+        id += words[words.length - 1];
+        add(new PHATAudioEvent(id, new BodyEventSource(bodiesAppState.getBody(bodyId))));
     }
 }

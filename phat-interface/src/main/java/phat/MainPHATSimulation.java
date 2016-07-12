@@ -19,8 +19,12 @@
  */
 package phat;
 
+import com.android.ide.common.xml.ManifestData;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import phat.agents.Agent;
 import phat.agents.AgentImpl;
+import phat.agents.automaton.ActivityAutomaton;
 import phat.agents.automaton.Automaton;
 import phat.agents.automaton.AutomatonIcon;
 import phat.agents.automaton.DoNothing;
@@ -37,25 +41,20 @@ import phat.agents.automaton.conditions.TimerFinishedCondition;
 import phat.agents.automaton.uses.UseDoorbellAutomaton;
 import phat.agents.commands.ActivateActuatorEventsLauncherCommand;
 import phat.agents.commands.ActivateCallStateEventsLauncherCommand;
-import phat.agents.events.EventProcessor;
+import phat.agents.commands.ActivateWordsHeardEventsLauncherCommand;
 import phat.body.BodiesAppState;
 import phat.body.commands.SetBodyHeightCommand;
 import phat.body.commands.SetBodyInHouseSpaceCommand;
 import phat.body.commands.SetStoopedBodyCommand;
 import phat.body.commands.TremblingHandCommand;
 import phat.body.commands.TremblingHeadCommand;
+import phat.body.sensing.hearing.GrammarFacilitator;
 import phat.config.AgentConfigurator;
 import phat.config.BodyConfigurator;
 import phat.config.DeviceConfigurator;
 import phat.config.HouseConfigurator;
 import phat.config.ServerConfigurator;
 import phat.config.WorldConfigurator;
-import phat.devices.commands.CreateSmartphoneCommand;
-import phat.devices.commands.SetDeviceOnFurnitureCommand;
-import phat.devices.commands.SetImageOnScreenCommand;
-import phat.server.commands.DisplayAVDScreenCommand;
-import phat.server.commands.SetAndroidEmulatorCommand;
-import phat.server.commands.StartActivityCommand;
 import phat.structures.houses.HouseFactory;
 import phat.world.WorldAppState;
 
@@ -107,20 +106,20 @@ public class MainPHATSimulation implements PHATInitializer {
     
     @Override
     public void initDevices(DeviceConfigurator deviceConfig) {
-        deviceConfig.runCommand(new CreateSmartphoneCommand("Smartphone1"));
-        deviceConfig.runCommand(new SetDeviceOnFurnitureCommand("Smartphone1", "House1", "Table1"));
+        //deviceConfig.runCommand(new CreateSmartphoneCommand("Smartphone1"));
+        //deviceConfig.runCommand(new SetDeviceOnFurnitureCommand("Smartphone1", "House1", "Table1"));
     }
 
     @Override
     public void initServer(ServerConfigurator deviceConfig) {
-        deviceConfig.runCommand(new SetAndroidEmulatorCommand("Smartphone1", "Smartphone1", "emulator-5554"));
+        /*deviceConfig.runCommand(new SetAndroidEmulatorCommand("Smartphone1", "Smartphone1", "emulator-5554"));
         //deviceConfig.runCommand(new StartActivityCommand("Smartphone1", "phat.android.apps", "CameraCaptureActivity"));
         
         deviceConfig.runCommand(new StartActivityCommand("Smartphone1", "phat.android.apps.vibrator", "VibratorTestActivity"));
         
         DisplayAVDScreenCommand displayCommand = new DisplayAVDScreenCommand("Smartphone1", "Smartphone1");
         displayCommand.setFrecuency(0.5f);
-        deviceConfig.runCommand(displayCommand);
+        deviceConfig.runCommand(displayCommand);*/
     }
     
     @Override
@@ -146,7 +145,7 @@ public class MainPHATSimulation implements PHATInitializer {
         StandUpAutomaton standUp2 = new StandUpAutomaton(relative, "StandUpFromBed");
         
         DoNothing sleep = new DoNothing(relative, "Sleep");
-        sleep.setFinishCondition(new TimerFinishedCondition(0, 0, 3));
+        sleep.setFinishCondition(new TimerFinishedCondition(0, 0, 5));
         
         MoveToSpace moveToGettingDressedArea1 = new MoveToSpace(relative, "GoToGettingDressedArea1", "GettingDressedArea1");
         
@@ -159,24 +158,33 @@ public class MainPHATSimulation implements PHATInitializer {
         UseObjectAutomaton useSink = new UseObjectAutomaton(relative, "Sink");
         useSink.setFinishCondition(new TimerFinishedCondition(0, 0, 30));
         
-        DoNothing fin = new DoNothing(relative, "Fin");
-        fin.setFinishCondition(new TimerFinishedCondition(0, 0, 30));
+        Automaton wait1 = new DoNothing(relative, "Wait1").setFinishCondition(new TimerFinishedCondition(0, 0, 5));
+        Automaton wait2 = new DoNothing(relative, "Wait2").setFinishCondition(new TimerFinishedCondition(0, 0, 5));
+        Automaton wait3 = new DoNothing(relative, "Wait3").setFinishCondition(new TimerFinishedCondition(0, 0, 5));
+        Automaton wait4 = new DoNothing(relative, "Wait3").setFinishCondition(new TimerFinishedCondition(0, 0, 5));
         
         UseDoorbellAutomaton useDoorbell = new UseDoorbellAutomaton(relative, "Doorbell1");
         
         FallAutomaton fall = new FallAutomaton(relative, "TripOver");
         fall.setFinishCondition(new TimerFinishedCondition(0, 0, 5));
         
-        SayAutomaton goodMorning = new SayAutomaton(relative, "SayGoodMorning", "Good Morning, Jorge!", 0.1f);
+        SayAutomaton say1 = new SayAutomaton(relative, "SayGoodMorning", "i need help", 0.5f);
+        SayAutomaton say2 = new SayAutomaton(relative, "SayGoodMorning", "where are you", 0.5f);
+        SayAutomaton say3 = new SayAutomaton(relative, "SayGoodMorning", "look at me", 0.5f);
         
         StandUpAutomaton standUp3 = new StandUpAutomaton(relative, "StandUp");
-                
+        
+
         FSM fsm = new FSM(relative);
-        fsm.registerStartState(sleep);
-        fsm.registerTransition(goIntoBed, sleep);
-        fsm.registerTransition(sleep, standUp1);
-        fsm.registerTransition(standUp1, goodMorning);
-        fsm.registerTransition(goodMorning, moveToBathroom1);
+        fsm.registerStartState(wait1);
+        fsm.registerTransition(wait1, say1);
+        fsm.registerTransition(say1, wait2);
+        fsm.registerTransition(wait2, say2);
+        fsm.registerTransition(say2, wait3);
+        fsm.registerTransition(wait3, say3);
+        fsm.registerTransition(say3, wait4);
+        fsm.registerTransition(wait4, moveToBathroom1);
+        
         fsm.registerTransition(moveToBathroom1, fall);
         fsm.registerTransition(fall, standUp3);
         fsm.registerTransition(standUp3, useShower);
@@ -187,16 +195,37 @@ public class MainPHATSimulation implements PHATInitializer {
         fsm.registerTransition(sitDownInKitchen, haveBreakfast);
         fsm.registerTransition(haveBreakfast, standUp2);
         fsm.registerTransition(standUp2, useSink);
-        fsm.registerTransition(useSink, fin);
-        fsm.registerFinalState(fin);
+        fsm.registerFinalState(useSink);
         
         fsm.addListener(new AutomatonIcon());
         
         relative.setAutomaton(fsm);
         agentsConfig.add(relative);
         
+        System.setProperty("java.util.logging.config.class", "");
+        Logger.getLogger("").setLevel(Level.OFF);
+        
         agentsConfig.runCommand(new ActivateActuatorEventsLauncherCommand(null));
         agentsConfig.runCommand(new ActivateCallStateEventsLauncherCommand(null));
+        ActivateWordsHeardEventsLauncherCommand awhelc = new ActivateWordsHeardEventsLauncherCommand("Relative", null);
+        awhelc.addWord("i");
+        awhelc.addWord("need");
+        awhelc.addWord("help");
+        awhelc.addWord("where");
+        awhelc.addWord("are");
+        awhelc.addWord("you");
+        awhelc.addWord("look");
+        awhelc.addWord("at");
+        awhelc.addWord("me");
+        
+        GrammarFacilitator grammarFacilitator = new GrammarFacilitator(System.getProperty("user.dir"), "basic");
+        grammarFacilitator.add("i need help");
+        grammarFacilitator.add("where are you");
+        grammarFacilitator.add("look at me");
+        grammarFacilitator.createFile();
+        awhelc.setGrammarFacilitator(grammarFacilitator);
+        
+        agentsConfig.runCommand(awhelc);
     }
 
     @Override

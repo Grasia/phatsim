@@ -17,43 +17,41 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package phat.agents.events;
+package phat.util.controls;
 
-import phat.agents.Agent;
+import com.jme3.renderer.RenderManager;
+import com.jme3.renderer.ViewPort;
+import com.jme3.scene.control.AbstractControl;
 
 /**
+ * The spatial is removed after a given time
  *
- * @author pablo
+ * @author Pablo
  */
-public class PHATAudioEvent extends PHATEvent {
-    float minDistance = 10f;
-    float volume = 1f;
-
-    public PHATAudioEvent(String id, EventSource eventSource) {
-        super(id, eventSource);
+public class RemoveSpatialTimerControl extends AbstractControl {
+    private final float seconds;
+    private float timer;
+    
+    public RemoveSpatialTimerControl(float seconds) {
+        this.seconds = seconds;
+        this.timer = seconds;
     }
     
     @Override
-    public boolean isPerceptible(Agent agent) {
-        if(agent.getLocation() != null && agent.getLocation().distance(getEventSource().getLocation()) < minDistance) {
-            return true;
+    protected void controlUpdate(float f) {
+        timer -= f;
+        if(timer <= 0) {
+            getSpatial().removeFromParent();
         }
-        return false;
+    }
+    
+    public void reset() {
+        this.timer = seconds;
     }
 
-    public float getMinDistance() {
-        return minDistance;
+    @Override
+    protected void controlRender(RenderManager rm, ViewPort vp) {
+        
     }
-
-    public void setMinDistance(float minDistance) {
-        this.minDistance = minDistance;
-    }
-
-    public float getVolume() {
-        return volume;
-    }
-
-    public void setVolume(float volume) {
-        this.volume = volume;
-    }
+    
 }

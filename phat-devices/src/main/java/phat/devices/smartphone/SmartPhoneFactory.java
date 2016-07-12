@@ -21,6 +21,7 @@ package phat.devices.smartphone;
 
 import com.jme3.asset.AssetManager;
 import com.jme3.audio.AudioRenderer;
+import com.jme3.bounding.BoundingBox;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.collision.shapes.BoxCollisionShape;
 import com.jme3.bullet.control.RigidBodyControl;
@@ -28,6 +29,7 @@ import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
+import com.jme3.math.FastMath;
 import com.jme3.math.Vector3f;
 import com.jme3.renderer.Camera;
 import com.jme3.renderer.RenderManager;
@@ -113,13 +115,16 @@ public class SmartPhoneFactory {
         
         Box box = new Box(dimensions.x, dimensions.y, dimensions.z);
         Geometry deviceBody = new Geometry(smartphoneId, box);
+//deviceBody.rotate(0f, 0f, FastMath.DEG_TO_RAD*90f);
         deviceBody.setMaterial(blackMat);
         smartphone.attachChild(deviceBody);
         
-        Geometry screen = createDisplayGeometry("Screen1", dimensions.x*2f, dimensions.y*2f);
+        Geometry screen = createDisplayGeometry("Screen1", dimensions.x*2f*0.9f, dimensions.y*2f*0.9f);
+//screen.rotate(0f, FastMath.DEG_TO_RAD*180f, FastMath.DEG_TO_RAD*90f);
         screen.setMaterial(screenMat);
-        screen.move(-dimensions.x, -dimensions.y, dimensions.z+0.001f);
         smartphone.attachChild(screen);
+//screen.move(0f, 0f, dimensions.z+0.001f);
+        screen.move(-dimensions.x, -dimensions.y, dimensions.z+0.001f);
         
         RigidBodyControl rbc = new RigidBodyControl(new BoxCollisionShape(), 5f);
         smartphone.addControl(rbc);
@@ -161,8 +166,13 @@ public class SmartPhoneFactory {
     }
 
     public static void enableCameraFacility(Node smartphone) {
-        Camera smartPhoneCamera = new Camera(480, 800);//camera.clone();
-        smartPhoneCamera.setFrustumPerspective(45f, (float) camera.getWidth() / camera.getHeight(), 0.01f, 1000f);
+        enableCameraFacility(smartphone, 43f);
+    }
+    
+    public static void enableCameraFacility(Node smartphone, float fovY) {
+        // TODO cambiar resolución
+        Camera smartPhoneCamera = new Camera(800, 480);//camera.clone(); 
+        smartPhoneCamera.setFrustumPerspective(fovY, (float) camera.getWidth() / camera.getHeight(), 0.01f, 1000f);
         /*smartPhoneCamera.setLocation(loc);
          smartPhoneCamera.setRotation(cam.getRotation());
          smartPhoneCamera.setAxes(cam.getLeft(), cam.getUp(), cam.getDirection());*/
@@ -183,6 +193,7 @@ public class SmartPhoneFactory {
         vp.setOutputFrameBuffer(fb);
 
         CameraSensor cameraSensor = new CameraSensor("CameraSensor-" + smartphone.getName());
+        cameraSensor.setPeriod(0.5f);
         //cameraSensor.setEnabled(false);
         smartphone.addControl(cameraSensor);
         vp.addProcessor(cameraSensor);

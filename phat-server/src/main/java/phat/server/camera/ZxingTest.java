@@ -20,11 +20,17 @@
 package phat.server.camera;
 
 import com.jme3.asset.TextureKey;
+import com.jme3.bounding.BoundingBox;
+import com.jme3.bounding.BoundingVolume;
 import phat.sensors.camera.*;
 import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.font.BitmapText;
 import com.jme3.input.KeyInput;
 import com.jme3.input.controls.ActionListener;
 import com.jme3.input.controls.KeyTrigger;
+import com.jme3.light.AmbientLight;
+import com.jme3.light.DirectionalLight;
+import com.jme3.light.Light;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.FastMath;
@@ -66,17 +72,19 @@ public class ZxingTest extends SimpleScenario {
 
     DevicesAppState devicesAppState;
     ServerAppState serverAppState;
-    
-    Geometry screen;
+    Geometry screenQR;
     Vector3f screenLoc;
     Vector3f qrInitialPos = new Vector3f(0f, 1f, 1f);
     float step = 0.01f;
-    float qrSize = 0.1f;
-    float initialDistance = 1.2f;
+    float fov = 43f;
+    float qrSize = 0.01f;
+    float initialDistance = 0.2f;
     float MIN_ANGLE = -45f;
     float MAX_ANGLE = 45f;
     float incAngle = 22.5f;
     float currentAngle = 0f;
+    BitmapText bitmapText;
+    private String qrTag = "PHAT-QR_1.png"; // "PHAT-QR.png"
 
     public enum Action {
 
@@ -94,8 +102,9 @@ public class ZxingTest extends SimpleScenario {
         app.setShowSettings(false);
 
         AppSettings settings = new AppSettings(true);
-        settings.setWidth(480);
-        settings.setHeight(800);
+        settings.setTitle("PHAT - QR test");
+        settings.setWidth(800);
+        settings.setHeight(480);
         app.setSettings(settings);
 
         app.start();
@@ -104,24 +113,48 @@ public class ZxingTest extends SimpleScenario {
     @Override
     public void simpleInitApp() {
         SmartPhoneFactory.init(bulletAppState, assetManager, renderManager, cam, audioRenderer);
+        SpatialFactory.init(assetManager, rootNode);
+        
+        setDisplayFps(false);
+        setDisplayStatView(false);
+        
         devicesAppState = new DevicesAppState();
         stateManager.attach(devicesAppState);
-        
+
         serverAppState = new ServerAppState();
         stateManager.attach(serverAppState);
-
-        super.simpleInitApp();
 
         viewPort.setBackgroundColor(ColorRGBA.White);
 
         initKeys();
-        
+
         serverAppState.runCommand(new SetAndroidEmulatorCommand("Smartphone1", "Smartphone1", "emulator-5554"));
-        serverAppState.runCommand(new StartActivityCommand("Smartphone1", "phat.android.apps.camera", "CameraCaptureActivity"));
-        
+        serverAppState.runCommand(new StartActivityCommand("Smartphone1", "com.google.zxing.client.android", "CaptureActivity"));
+
         DisplayAVDScreenCommand displayCommand = new DisplayAVDScreenCommand("Smartphone1", "Smartphone1");
         displayCommand.setFrecuency(0.5f);
         serverAppState.runCommand(displayCommand);
+
+        super.simpleInitApp();
+        
+        initLight();
+    }
+    
+    private void initLight() {
+        System.out.println("LightList size = "+rootNode.getLocalLightList().size());
+        while(rootNode.getLocalLightList().size() > 0) {
+            System.out.println("\t"+rootNode.getLocalLightList().get(0).getType().name());
+            rootNode.removeLight(rootNode.getLocalLightList().get(0));
+        }
+        System.out.println("LightList size = "+rootNode.getLocalLightList().size());
+        
+        DirectionalLight sun = new DirectionalLight();
+        sun.setDirection(new Vector3f(0f, -1f, 0f));
+        rootNode.addLight(sun);
+
+        AmbientLight ambientLight = new AmbientLight();
+        ambientLight.setColor(ColorRGBA.Red.mult(0.1f));
+        rootNode.addLight(ambientLight);
     }
 
     private void initKeys() {
@@ -203,7 +236,7 @@ public class ZxingTest extends SimpleScenario {
     }
 
     float distanceToScreen() {
-        return smartphone.getWorldTranslation().distance(screenLoc);
+        return Math.round(smartphone.getWorldTranslation().distance(screenLoc) * 100f) / 100f;
     }
 
     void moveForward() {
@@ -211,7 +244,7 @@ public class ZxingTest extends SimpleScenario {
         dir.normalizeLocal();
         dir.multLocal(step);
         smartphone.move(dir);
-        System.out.println("d = " + distanceToScreen());
+        bitmapText.setText(String.valueOf(distanceToScreen()+"m"));
     }
 
     void moveBackward() {
@@ -220,7 +253,7 @@ public class ZxingTest extends SimpleScenario {
         dir.multLocal(step);
         dir.negateLocal();
         smartphone.move(dir);
-        System.out.println("d = " + distanceToScreen());
+        bitmapText.setText(String.valueOf(distanceToScreen())+"m");
     }
 
     void initialPos() {
@@ -233,7 +266,8 @@ public class ZxingTest extends SimpleScenario {
 
         smartphone.setLocalTranslation(screenLoc.add(dir.mult(initialDistance)));
         smartphone.lookAt(screenLoc, Vector3f.UNIT_Y);
-        System.out.println("smartphone.loc = " + smartphone.getWorldTranslation());
+        bitmapText.setText(String.valueOf(distanceToScreen())+"m");
+        camNode.lookAt(screenQR.getWorldTranslation(), Vector3f.UNIT_Y);
     }
 
     @Override
@@ -242,28 +276,43 @@ public class ZxingTest extends SimpleScenario {
         Quad quadMesh = new Quad(1, 1);
         quadMesh.updateGeometry(1, 1, true);
 
-        screen = new Geometry("Textured Quad", quadMesh);
-        screenNode.attachChild(screen);
+        screenQR = new Geometry("Textured Quad", quadMesh);
+        screenNode.attachChild(screenQR);
 
         //assetManager.registerLocator("https://jmonkeyengine.googlecode.com/svn/BookSamples/assets/Textures/", UrlLocator.class);
-        TextureKey key = new TextureKey("Textures/PHAT-QR.png", false);
+        TextureKey key = new TextureKey("Textures/"+qrTag, false);
         key.setGenerateMips(true);
         Texture tex = assetManager.loadTexture(key);
 
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
         mat.setTexture("ColorMap", tex);
-        screen.setMaterial(mat);
+        screenQR.setMaterial(mat);
 
-        screen.setLocalScale(new Vector3f(qrSize, qrSize, 1));
-        screen.center();
-        screen.move(qrInitialPos);
+        screenQR.setLocalScale(new Vector3f(qrSize, qrSize, 1));
+        screenQR.center();
+        screenQR.move(qrInitialPos);
 
         //screenNode.setLocalTranslation(0f,1f,1f);
         screenNode.lookAt(new Vector3f(0f, 0f, 1f), Vector3f.UNIT_Y);
+
+        bitmapText = SpatialFactory.attachAName(screenNode, "0.00");
+        bitmapText.move(qrInitialPos.add(-0.1f, 0.25f, 0f));
+        bitmapText.setSize(bitmapText.getSize()*0.5f);
+
         rootNode.attachChild(screenNode);
 
         createSmartphone("Smartphone1", new Vector3f(0f, 0f, 0f), ColorRGBA.Cyan);
+        
+        float height = 0.15f;
+        float distance = -0.35f;
+        
+        camNode = new CameraNode("CamNode", cam);
+        camNode.setControlDir(CameraControl.ControlDirection.SpatialToCamera);
+        camNode.setLocalTranslation(new Vector3f(0, height, distance));
+        camNode.lookAt(screenQR.getWorldTranslation(), Vector3f.UNIT_Y);
+        smartphone.attachChild(camNode);
     }
+    CameraNode camNode;
 
     @Override
     protected void createCameras() {
@@ -273,10 +322,10 @@ public class ZxingTest extends SimpleScenario {
 
         cam.setFrustumPerspective(45f, (float) cam.getWidth() / cam.getHeight(), 0.01f, 1000f);
 
-        Vector3f center = screen.getModelBound().getCenter();
+        Vector3f center = screenQR.getModelBound().getCenter();
         center.multLocal(qrSize);
-        screenLoc = screen.getWorldTranslation().add(center);
-
+        screenLoc = screenQR.getWorldTranslation().add(center);
+        
         initialPos();
     }
 
@@ -285,14 +334,14 @@ public class ZxingTest extends SimpleScenario {
         smartphone.removeControl(RigidBodyControl.class);
         smartphone.setLocalTranslation(loc);
         smartphone.attachChild(smartphone);
-        
+
         //smartphone.getChild(smartphoneId).rotate(0f, FastMath.DEG_TO_RAD*180, FastMath.DEG_TO_RAD*90);
         //smartphone.getChild("Screen").rotate(0f, FastMath.DEG_TO_RAD*180, FastMath.DEG_TO_RAD*90);
         smartphone.setName(smartphoneId);
 
-        SmartPhoneFactory.enableCameraFacility(smartphone);
+        SmartPhoneFactory.enableCameraFacility(smartphone, fov);
         //Debug.attachCoordinateAxes(Vector3f.ZERO, 0.5f, SmartPhoneFactory.assetManager, smartphone);
-
+        
 
         devicesAppState.addDevice(smartphoneId, smartphone);
 
@@ -300,19 +349,28 @@ public class ZxingTest extends SimpleScenario {
 
         /*CameraSensor cp = smartphone.getControl(CameraSensor.class);
 
-        CameraSensorListenerFrame cameraFrame = new CameraSensorListenerFrame();
-        cp.add(cameraFrame);
+         CameraSensorListenerFrame cameraFrame = new CameraSensorListenerFrame();
+         cp.add(cameraFrame);
 
-        JFrame frame = new JFrame();
-        frame.setTitle("Camera of " + smartphoneId);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(480, 800);
-        frame.setVisible(true);
-        frame.setContentPane(cameraFrame);
+         JFrame frame = new JFrame();
+         frame.setTitle("Camera of " + smartphoneId);
+         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+         frame.setSize(480, 800);
+         frame.setVisible(true);
+         frame.setContentPane(cameraFrame);
 
-        frames.add(frame);*/
+         frames.add(frame);*/
 
         rootNode.attachChild(smartphone);
+        
+        Geometry screen = (Geometry) smartphone.getChild("Screen");
+        Geometry body = (Geometry) smartphone.getChild("Smartphone1");
+        BoundingVolume screenBB = screen.getWorldBound();
+        BoundingVolume bodyBB = body.getWorldBound();
+        screen.setLocalTranslation(
+                bodyBB.getCenter().x - screenBB.getCenter().x, 
+                bodyBB.getCenter().y - screenBB.getCenter().y, 
+                -0.003f);
     }
 
     private ViewPort createViewPort(Camera smartPhoneCamera) {

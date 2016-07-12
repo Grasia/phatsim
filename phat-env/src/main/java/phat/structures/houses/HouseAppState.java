@@ -77,7 +77,7 @@ public class HouseAppState extends AbstractAppState {
         Node place = worldAppState.getFirstHousePlacesFree();
         if (place != null) {
             House house = HouseFactory.createHouse(houseId, ht);
-            house.build(place, assetManager, bulletAppState.getPhysicsSpace());
+            house.build(place, app);
             houses.put(houseId, house);
             return true;
         }

@@ -26,9 +26,7 @@ import java.util.Map;
 
 import phat.PHATInterface;
 import phat.agents.Agent;
-import phat.agents.automaton.ActivityAutomaton;
 import phat.agents.automaton.Automaton;
-import phat.agents.automaton.InterruptionAutomaton;
 
 /**
  *
@@ -37,7 +35,7 @@ import phat.agents.automaton.InterruptionAutomaton;
 public class PHATEventManager {
 
     Agent agent;
-    Map<String, EventProcessor> eventsMapping = new Hashtable<String, EventProcessor>();
+    Map<String, EventProcessor> eventsMapping = new Hashtable<>();
     List<PHATEvent> events = new ArrayList<>();
     List<EventRecord> eventHistory = new ArrayList<>();
     PHATEvent currentEvent;

@@ -28,8 +28,13 @@ import ingenias.generator.browser.GraphEntity;
 import ingenias.generator.datatemplate.Repeat;
 import ingenias.generator.datatemplate.Sequences;
 import ingenias.generator.datatemplate.Var;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import java.util.List;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class SimulationGenerator {
 
@@ -94,22 +99,44 @@ public class SimulationGenerator {
                         initLocRep.add(new Var("iniLoc", initialLoc));
                     }
 
-                    Repeat bodyRep1 = new Repeat("agent");
-                    simInitRep.add(bodyRep1);
-                    bodyRep1.add(new Var("agentname", humanId));
+                    Repeat agentRep = new Repeat("agent");
+                    simInitRep.add(agentRep);
+                    agentRep.add(new Var("agentname", humanId));
                     GraphEntity activity = Utils.getTargetEntity(hi, "InitialActivity", simDiag.getRelationships());
                     if (activity != null) {
                         Repeat adlRep = new Repeat("setActivity");
-                        bodyRep1.add(adlRep);
+                        agentRep.add(adlRep);
                         adlRep.add(new Var("actName", Utils.replaceBadChars(activity.getID())));
                     } else {
                         String adlName = ADLsGenerator.getADLName(humanId, browser);
                         if (adlName != null) {
+
+                            Repeat importADLRep = new Repeat("importADL");
+                            simInitRep.add(importADLRep);
+
                             Repeat adlRep = new Repeat("ADL");
-                            bodyRep1.add(adlRep);
+                            agentRep.add(adlRep);
                             adlRep.add(new Var("adlName", adlName));
                         } else {
                             // The agent does not have a behaviour defined
+                        }
+                    }
+                    List<List<String>> sentencesWordByWord = getSentencesWordByWord(humanId);
+                    if (!sentencesWordByWord.isEmpty()) {
+                        Repeat hearingRep = new Repeat("ActivateHearingSense");
+                        agentRep.add(hearingRep);
+
+                        for (List<String> sentence : sentencesWordByWord) {
+                            String joinedSentence = "";
+                            for (String w : sentence) {
+                                Repeat wordRep = new Repeat("wordsToBeListened");
+                                hearingRep.add(wordRep);
+                                wordRep.add(new Var("word", w));
+                                joinedSentence += w + " ";
+                            }
+                            Repeat sentenceRep = new Repeat("sentenceRep");
+                            hearingRep.add(sentenceRep);
+                            sentenceRep.add(new Var("sentence", joinedSentence));
                         }
                     }
                 }
@@ -120,6 +147,43 @@ public class SimulationGenerator {
             Repeat activateCallStatesRep = new Repeat("activateCallStates");
             simInitRep.add(activateCallStatesRep);
         }
+
+        if (Utils.hasAnyEntity(browser, "MessageListenedEvent")) {
+            Repeat activateCallStatesRep = new Repeat("activateCallStates");
+            simInitRep.add(activateCallStatesRep);
+        }
+    }
+
+    private List<List<String>> getSentencesWordByWord(String actorId) {
+        List<List<String>> result = new ArrayList<>();
+        System.out.println("\n\n\ncontainsWordHeardEvent..." + actorId);
+        Vector<GraphEntity> interactionProfiles = Utils.getProfilesTypeOf(actorId, "InteractionProfile", browser);
+        System.out.println("interactionDiagrams=" + interactionProfiles.size());
+        for (GraphEntity ge : interactionProfiles) {
+            System.out.println("-" + ge.getID());
+            GraphAttribute ga = null;
+            try {
+                ga = ge.getAttributeByName("InteractionSpecDiagField");
+                if (ga != null && !ga.getSimpleValue().equals("")) {
+                    System.out.println("\t-" + ga.getSimpleValue());
+                    Graph interactionGraph = Utils.getGraphByName(ga.getSimpleValue(), browser);
+                    if (interactionGraph != null) {
+                        System.out.println("\t-" + interactionGraph.getName());
+                        for (GraphEntity mle : Utils.getEntities(interactionGraph, "MessageListenedEvent")) {
+                            GraphAttribute message = mle.getAttributeByName("Message");
+                            if (!"".equals(message.getSimpleValue())) {
+                                List<String> words = new ArrayList<>();
+                                words.addAll(Arrays.asList(message.getSimpleValue().split("[\\s,?!]")));
+                                result.add(words);
+                            }
+                        }
+                    }
+                }
+            } catch (NotFound | NullEntity ex) {
+                Logger.getLogger(SimulationGenerator.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return result;
     }
 
     private void generateCameraPositionToBody(Graph simDiag, Repeat simInitRep)

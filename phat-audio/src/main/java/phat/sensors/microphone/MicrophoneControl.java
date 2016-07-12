@@ -32,12 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.ForkJoinTask;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.sound.sampled.AudioFormat;
 import phat.sensors.Sensor;
-import phat.sensors.SensorData;
 import phat.sensors.SensorListener;
 
 /**
@@ -80,7 +76,16 @@ public class MicrophoneControl extends Sensor implements SoundProcessor, Runnabl
             writeIndex = 0;
         }
     }
-
+    
+    public <T extends SensorListener> T getListener(Class<T> listener) {
+        for(SensorListener l: listeners) {
+            if(listener.isAssignableFrom(l.getClass())) {
+                return (T) l;
+            }
+        }
+        return null;
+    }
+    
     private void concurrentNotification(final MicrophoneData md) {
         ForkJoinPool pool = new ForkJoinPool();
 
@@ -145,7 +150,8 @@ public class MicrophoneControl extends Sensor implements SoundProcessor, Runnabl
 
             synchronized (notifier) {
                 md = new MicrophoneData(buffer[buf_i], format);
-                notifier.interrupt();
+                buf_i = (buf_i + 1) % NUM_BUFFERS;
+                notifyListeners(md);
             }
             //concurrentNotification(md);
             //serialNotification(MicrophoneControl.this, md);
@@ -158,7 +164,7 @@ public class MicrophoneControl extends Sensor implements SoundProcessor, Runnabl
              sl.update(MicrophoneControl.this, md);
              }
              }.start();*/
-            buf_i = (buf_i + 1) % NUM_BUFFERS;
+            
         }
     }
 

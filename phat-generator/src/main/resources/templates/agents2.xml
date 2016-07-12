@@ -8,10 +8,8 @@ package phat.agents.impl;
 
 import phat.agents.Agent;
 import phat.agents.automaton.*;
-import phat.agents.automaton.adl.*;
 import phat.agents.automaton.activities.*;
 import phat.agents.automaton.conditions.*;
-import phat.agents.automaton.timeIntervals.*;
 import phat.agents.events.*;
 import phat.agents.filters.*;
 

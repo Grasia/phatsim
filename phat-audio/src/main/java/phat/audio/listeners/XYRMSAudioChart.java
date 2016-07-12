@@ -95,25 +95,31 @@ public class XYRMSAudioChart extends ApplicationFrame implements SensorListener 
     public synchronized void update(Sensor source, SensorData sd) {
         if (sd instanceof MicrophoneData) {
             MicrophoneData md = (MicrophoneData) sd;
-            byte[] data = md.getData();
-            acumulativeTime += (1.0f / md.getAudioFormat().getSampleRate()) * (data.length / 2f);
-            //values.add(acumulativeTime, volumeRMS(data, 0, data.length));
-            values.add(acumulativeTime, getMax(md));
-            /*int sample = 0;
-             for (int i = 0; i < data.length; i += 2) {
-                acumulativeTime += (1.0f / md.getAudioFormat().getSampleRate());
-                sample += Math.abs((short) (data[i] | data[i + 1]));
-                values.add(acumulativeTime, sample / (data.length / 2));
-             }*/
+
+            acumulativeTime += (1.0f / md.getAudioFormat().getSampleRate()) * (md.getData().length / md.getAudioFormat().getFrameSize());
+            values.add(acumulativeTime, mean(md));
+        }
+    }
+
+    public void addAll(MicrophoneData md) {
+        byte[] data = md.getData();
+
+        int numSamples = data.length / md.getAudioFormat().getFrameSize();
+        float[] out = new float[numSamples];
+        FloatSampleTools.byte2floatInterleaved(
+                data, 0, out, 0, numSamples, md.getAudioFormat());
+
+        for (float f : out) {
+            acumulativeTime += (1.0f / md.getAudioFormat().getSampleRate());
+            values.add(acumulativeTime, f);
         }
     }
 
     public float getMax(MicrophoneData md) {
-        int numSamples = md.getData().length;
+        int numSamples = md.getData().length / md.getAudioFormat().getFrameSize();
         float[] out = new float[numSamples];
-        FloatSampleTools.
-                byte2floatInterleaved(
-                md.getData(), 0, out, 0, numSamples / md.getAudioFormat().getFrameSize(), md.getAudioFormat());
+        FloatSampleTools.byte2floatInterleaved(
+                md.getData(), 0, out, 0, numSamples, md.getAudioFormat());
 
         float max = Float.NEGATIVE_INFINITY;
         float value = 0;
@@ -127,24 +133,24 @@ public class XYRMSAudioChart extends ApplicationFrame implements SensorListener 
     }
 
     public double mean(MicrophoneData md) {
-        byte [] raw = md.getData();
+        byte[] raw = md.getData();
         int size = md.getData().length;
-        
+
         double sum = 0d;
         if (raw.length == 0) {
             return sum;
         } else {
             for (int ii = 0; ii < size; ii += 2) {
-                sum += (raw[ii] | raw[ii + 1])*(raw[ii] | raw[ii + 1]);
+                sum += (float) (raw[ii + 1] << 8 | raw[ii] & 0x00FF);//)*(raw[ii] | raw[ii + 1]);
             }
         }
-        return sum / (size*2);
+        return sum / (size / 2);//(size*2);
     }
-    
+
     public double volumeRMS(MicrophoneData md) {
-        byte [] raw = md.getData();
+        byte[] raw = md.getData();
         int size = md.getData().length;
-        
+
         double sum = 0d;
         if (raw.length == 0) {
             return sum;
@@ -153,13 +159,13 @@ public class XYRMSAudioChart extends ApplicationFrame implements SensorListener 
                 sum += (raw[ii] | raw[ii + 1]);
             }
         }
-        double average = sum / (size*2);
+        double average = sum / (size * 2);
 
         double sumMeanSquare = 0d;
         for (int ii = 0; ii < size; ii += 2) {
             sumMeanSquare += Math.pow((raw[ii] | raw[ii + 1]) - average, 2d);
         }
-        double averageMeanSquare = sumMeanSquare / (size*2);
+        double averageMeanSquare = sumMeanSquare / (size * 2);
         double rootMeanSquare = Math.pow(averageMeanSquare, 0.5d);
 
         return rootMeanSquare;

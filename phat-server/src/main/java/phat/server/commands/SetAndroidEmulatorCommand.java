@@ -93,6 +93,8 @@ public class SetAndroidEmulatorCommand extends PHATServerCommand {
                 serverManager.createAndStartVibratorServer(smartphoneId, "vibrator-"+smartphoneId, vibratorActuator);
             }
             
+            serverManager.createAndStartAudioSpeakerServer(serverAppState, smartphoneId, "speaker-"+smartphoneId, device);
+            
             serverAppState.addAVD(smartphoneId, avd);
 
             setState(State.Success);

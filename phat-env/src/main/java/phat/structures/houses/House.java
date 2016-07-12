@@ -20,7 +20,9 @@
 package phat.structures.houses;
 
 import com.jme3.ai.navmesh.NavMesh;
+import com.jme3.app.SimpleApplication;
 import com.jme3.asset.AssetManager;
+import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.collision.CollisionResults;
@@ -39,6 +41,8 @@ import com.jme3.scene.Node;
 import com.jme3.scene.SceneGraphVisitor;
 import com.jme3.scene.Spatial;
 import com.jme3.shadow.EdgeFilteringMode;
+import com.jme3.shadow.PointLightShadowFilter;
+import com.jme3.shadow.PointLightShadowRenderer;
 import com.jme3.shadow.SpotLightShadowFilter;
 import com.jme3.shadow.SpotLightShadowRenderer;
 
@@ -52,6 +56,7 @@ import phat.util.PhysicsUtils;
 
 import phat.util.SpatialFactory;
 import phat.util.SpatialUtils;
+import static phat.world.WorldAppState.SHADOWMAP_SIZE;
 
 /**
  *
@@ -91,9 +96,8 @@ public class House {
      * @param assetManager
      * @param physicsSpace
      */
-    public void build(Node rootNode, AssetManager assetManager,
-            PhysicsSpace physicsSpace) {
-        house = (Node) assetManager.loadModel(urlResource);
+    public void build(Node rootNode, SimpleApplication app) {
+        house = (Node) app.getAssetManager().loadModel(urlResource);
         house.setUserData("ID", houseId);
         house.setUserData("ROLE", "House");
         System.out.println("\n\nBuinding " + house.getName());
@@ -107,10 +111,10 @@ public class House {
                 .getChild("SpatialCoordenates");
 
         initSpatials();
-        initLights();
+        initLights(app);
 
-        physicsSpace.addAll(physicalEntities);
-        physicsSpace.addAll(physicsStructure);
+        app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().addAll(physicalEntities);
+        app.getStateManager().getState(BulletAppState.class).getPhysicsSpace().addAll(physicsStructure);
 
         rootNode.attachChild(house);
 
@@ -127,17 +131,41 @@ public class House {
         return c.size() > 0;
     }
 
-    private void initLights() {
+    private void initLights(SimpleApplication app) {
         for (String roomName : getRoomNames()) {
             Node clights = getNode(roomName, "Lights");
             if (clights != null) {
                 System.out.println(roomName + " -> new PointLight()");
+
                 PointLight pl = new PointLight();
                 pl.setColor(ColorRGBA.Yellow);
                 pl.setPosition(clights.getWorldTranslation());
                 pl.setRadius(0.1f);
                 add(roomName, pl);
-                house.addLight(pl);
+
+                app.getRootNode().addLight(pl);
+
+                PointLightShadowRenderer slsr = new PointLightShadowRenderer(SpatialFactory.getAssetManager(), SHADOWMAP_SIZE);
+                slsr.setLight(pl);
+                slsr.setShadowIntensity(0.6f);
+                slsr.setEdgeFilteringMode(EdgeFilteringMode.Nearest);
+                //dlsr.displayDebug();
+                app.getViewPort().addProcessor(slsr);
+
+                PointLightShadowFilter slsf = new PointLightShadowFilter(app.getAssetManager(), SHADOWMAP_SIZE);
+                slsf.setLight(pl);
+                slsf.setShadowIntensity(0.6f);
+                slsf.setEdgeFilteringMode(EdgeFilteringMode.Nearest);
+                slsf.setEnabled(true);
+
+                FilterPostProcessor fpp = new FilterPostProcessor(app.getAssetManager());
+                fpp.addFilter(slsf);
+
+                /*SSAOFilter ssaoFilter = new SSAOFilter(12.940201f, 43.928635f, 0.32999992f, 0.6059958f);
+                 fpp.addFilter(ssaoFilter);
+                 new SSAOUI(app.getInputManager(), ssaoFilter);*/
+
+                app.getViewPort().addProcessor(fpp);
             }
         }
     }
@@ -375,23 +403,23 @@ public class House {
         }
         return result;
     }
-    
+
     public String getClosestPlaceToPutThings(Vector3f ori, String Furniture) {
-        System.out.println("\n\n\ngetClosestPlaceToPutThings... "+Furniture+" -> "+ori);
+        System.out.println("\n\n\ngetClosestPlaceToPutThings... " + Furniture + " -> " + ori);
         List<Node> places = getPlaceToPutThings(Furniture);
-        System.out.println("places = "+places.size());
-        if(!places.isEmpty()) {
+        System.out.println("places = " + places.size());
+        if (!places.isEmpty()) {
             Node closest = null;
             float minDistance = Float.MAX_VALUE;
-            for(Node n: places) {                
+            for (Node n : places) {
                 float d = n.getWorldTranslation().distance(ori);
-                System.out.println(n+": "+d);
-                if(d < minDistance) {
+                System.out.println(n + ": " + d);
+                if (d < minDistance) {
                     minDistance = d;
                     closest = n;
                 }
             }
-            if(closest != null) {
+            if (closest != null) {
                 return closest.getName();
             }
         }

@@ -41,6 +41,7 @@ import com.jme3.scene.Spatial;
 import com.jme3.shadow.DirectionalLightShadowFilter;
 import com.jme3.shadow.DirectionalLightShadowRenderer;
 import com.jme3.shadow.EdgeFilteringMode;
+import com.jme3.shadow.SpotLightShadowFilter;
 import com.jme3.shadow.SpotLightShadowRenderer;
 /*import com.jme3.shadow.DirectionalLightShadowFilter;
  import com.jme3.shadow.DirectionalLightShadowRenderer;
@@ -50,6 +51,7 @@ import com.jme3.shadow.SpotLightShadowRenderer;
 import com.jme3.system.AppSettings;
 import java.util.ArrayList;
 import java.util.List;
+import phat.structures.houses.commands.test.SSAOUI;
 import phat.util.SpatialFactory;
 import phat.util.SpatialUtils;
 
@@ -89,7 +91,7 @@ public class WorldAppState extends AbstractAppState {
     public static final int SHADOWMAP_SIZE = 1024;
     private DirectionalLightShadowRenderer dlsr;
     private DirectionalLightShadowFilter dlsf;
-
+    
     private void initShadow() {
         Node world = (Node) rootNode.getChild("World");
         world.getChild("terrain").setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
@@ -108,10 +110,14 @@ public class WorldAppState extends AbstractAppState {
         dlsf.setLambda(0.55f);
         dlsf.setShadowIntensity(0.6f);
         dlsf.setEdgeFilteringMode(EdgeFilteringMode.Nearest);
-        dlsf.setEnabled(false);
+        dlsf.setEnabled(true);
 
         FilterPostProcessor fpp = new FilterPostProcessor(assetManager);
         fpp.addFilter(dlsf);
+        
+        /*SSAOFilter ssaoFilter = new SSAOFilter(12.940201f, 43.928635f, 0.32999992f, 0.6059958f);
+        fpp.addFilter(ssaoFilter);
+        new SSAOUI(app.getInputManager(), ssaoFilter);*/
         
         app.getViewPort().addProcessor(fpp);
     }

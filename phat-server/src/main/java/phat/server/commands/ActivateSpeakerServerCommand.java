@@ -27,23 +27,22 @@ import phat.devices.DevicesAppState;
 import phat.sensors.accelerometer.AccelerometerControl;
 import phat.server.PHATServerManager;
 import phat.server.ServerAppState;
-import phat.server.accelerometer.TCPAccelerometerServer;
 
 /**
  *
  * @author pablo
  */
-public class ActivateAccelerometerServerCommand extends PHATServerCommand {
+public class ActivateSpeakerServerCommand extends PHATServerCommand {
 
     private String sensorID;
     private String sensorGroupID;
   
 
-    public ActivateAccelerometerServerCommand(String sensorgroupID, String sensorID) {
+    public ActivateSpeakerServerCommand(String sensorgroupID, String sensorID) {
         this(sensorgroupID,sensorID, null);
     }
 
-    public ActivateAccelerometerServerCommand(String sensorgroupID,String sensorID, PHATCommandListener listener) {
+    public ActivateSpeakerServerCommand(String sensorgroupID, String sensorID, PHATCommandListener listener) {
         super(listener);
         this.sensorID = sensorID;  
         this.sensorGroupID=sensorgroupID;
@@ -55,7 +54,7 @@ public class ActivateAccelerometerServerCommand extends PHATServerCommand {
         DevicesAppState devicesAppState = app.getStateManager().getState(DevicesAppState.class);
         ServerAppState serverAppState = app.getStateManager().getState(ServerAppState.class);
         devicesAppState.registerAllAndroidDevicesInScenario();
-        Node device = devicesAppState.getDevice(sensorID);
+        Node device = devicesAppState.getDevice(sensorGroupID);
         if (device != null) {
           
 
@@ -64,7 +63,8 @@ public class ActivateAccelerometerServerCommand extends PHATServerCommand {
             
             AccelerometerControl accSensor = device.getControl(AccelerometerControl.class);
             if(accSensor != null) {
-                TCPAccelerometerServer accServer = serverManager.createAndStartAccelerometerServer(sensorGroupID,sensorID, accSensor);
+                serverManager.createAndStartAudioSpeakerServer(
+                        serverAppState,sensorGroupID,sensorID, device);
             }          
 
             setState(State.Success);

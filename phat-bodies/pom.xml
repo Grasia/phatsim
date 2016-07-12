@@ -22,7 +22,19 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
-        </dependency>		
+        </dependency>	
+        
+        <dependency>
+            <groupId>edu.cmu.sphinx</groupId>
+            <artifactId>sphinx4-core</artifactId>
+            <version>5prealpha-SNAPSHOT</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>edu.cmu.sphinx</groupId>
+            <artifactId>sphinx4-data</artifactId>
+            <version>5prealpha-SNAPSHOT</version>
+        </dependency>	
     </dependencies>
     
     <profiles>
@@ -91,7 +103,7 @@
                 </configuration>
             </plugin>
 
-	    <!-- shade plugin must go before izpack to be executed first -->
+            <!-- shade plugin must go before izpack to be executed first -->
             <!--plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>

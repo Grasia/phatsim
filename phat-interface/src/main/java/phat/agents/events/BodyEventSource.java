@@ -19,41 +19,27 @@
  */
 package phat.agents.events;
 
-import phat.agents.Agent;
+import com.jme3.math.Vector3f;
+import com.jme3.scene.Node;
 
 /**
  *
  * @author pablo
  */
-public class PHATAudioEvent extends PHATEvent {
-    float minDistance = 10f;
-    float volume = 1f;
-
-    public PHATAudioEvent(String id, EventSource eventSource) {
-        super(id, eventSource);
+public class BodyEventSource implements EventSource {
+    Node body;
+    
+    public BodyEventSource(Node body) {
+        this.body = body;
     }
     
     @Override
-    public boolean isPerceptible(Agent agent) {
-        if(agent.getLocation() != null && agent.getLocation().distance(getEventSource().getLocation()) < minDistance) {
-            return true;
-        }
-        return false;
+    public String getId() {
+        return body.getUserData("ID");
     }
-
-    public float getMinDistance() {
-        return minDistance;
-    }
-
-    public void setMinDistance(float minDistance) {
-        this.minDistance = minDistance;
-    }
-
-    public float getVolume() {
-        return volume;
-    }
-
-    public void setVolume(float volume) {
-        this.volume = volume;
+    
+    @Override
+    public Vector3f getLocation() {
+        return body.getWorldTranslation();
     }
 }

@@ -62,7 +62,7 @@ public class CreateScreenCommand extends PHATDeviceCommand {
         DevicesAppState devicesAppState = app.getStateManager().getState(DevicesAppState.class);
         
         Node screenNode = new Node();
-        Geometry screen = SmartPhoneFactory.createDisplayGeometry(screenId, width, height);
+        Geometry screen = SmartPhoneFactory.createDisplayGeometry(screenId, width*0.9f, height*0.9f);
         screenNode.attachChild(screen);
         
         //assetManager.registerLocator("https://jmonkeyengine.googlecode.com/svn/BookSamples/assets/Textures/", UrlLocator.class);

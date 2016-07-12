@@ -22,9 +22,16 @@ package phat.body.commands;
 import com.jme3.app.Application;
 import com.jme3.bullet.control.KinematicRagdollControl;
 import com.jme3.scene.Node;
+import java.io.File;
+import java.io.IOException;
 
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import jme3tools.optimize.GeometryBatchFactory;
+import phat.audio.filters.ResampleAudioFilter;
+import phat.audio.filters.WhiteNoiseGenerator;
+import phat.audio.listeners.AudioSourceWaveFileWriter;
+import phat.audio.listeners.XYRMSAudioChart;
 
 import phat.body.BodiesAppState;
 import phat.body.BodyUtils;
@@ -36,6 +43,8 @@ import phat.bullet.control.ragdoll.BVHRagdollPreset;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommand.State;
 import phat.body.control.animation.FootStepsControl;
+import phat.body.sensing.hearing.HearingSense;
+import phat.sensors.microphone.MicrophoneControl;
 
 /**
  *
@@ -52,12 +61,12 @@ public class CreateBodyTypeCommand extends PHATCommand {
         this.urlResource = urlResource;
         logger.log(Level.INFO, "New Command: {0}", new Object[]{this});
     }
-    
+
     @Override
     public void runCommand(Application app) {
         BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
         Node body = (Node) bodiesAppState.getAssetManager().loadModel(urlResource);
-        if(body.getName().contains("LP")) {
+        if (body.getName().contains("LP")) {
             body = (Node) body.getChild("Body");
             body.removeFromParent();
             body.setUserData("Speed", 0.5f);
@@ -65,55 +74,56 @@ public class CreateBodyTypeCommand extends PHATCommand {
         body.setName(bodyId);
         body.setUserData("ID", bodyId);
         body.setUserData("ROLE", "Body");
-        
+
         GeometryBatchFactory.optimize(body);
-        
+
         PHATCharacterControl phatCharacterControl = body.getControl(PHATCharacterControl.class);
-        if(phatCharacterControl == null) {
+        if (phatCharacterControl == null) {
             phatCharacterControl = new PHATCharacterControl(0.2f, 1.7f, 80f);
             body.addControl(phatCharacterControl);
         }
-        
+
         BasicCharacterAnimControl bcac = body.getControl(BasicCharacterAnimControl.class);
-        if(bcac == null) {
+        if (bcac == null) {
             bcac = new BasicCharacterAnimControl();
             body.addControl(bcac);
         }
-        
+
         NavMeshMovementControl navMesh = body.getControl(NavMeshMovementControl.class);
-        if(navMesh == null) {
+        if (navMesh == null) {
             navMesh = new NavMeshMovementControl();
             body.addControl(navMesh);
         }
-        
+
         BVHRagdollPreset preset = new BVHRagdollPreset();
-        KinematicRagdollControl krc = new KinematicRagdollControl(preset, 0.5f);        
-        krc.setKinematicMode();   
+        KinematicRagdollControl krc = new KinematicRagdollControl(preset, 0.5f);
+        krc.setKinematicMode();
         krc.setRootMass(10f);
         body.addControl(krc);
         krc.setEnabled(false);
-        
+
         body.addControl(new FootStepsControl());
         //body.addControl(new RandomWalkControl());
         body.addControl(new PersuitAndAvoidControl());
         //body.addControl(new LookAtControl());
         
         bodiesAppState.addBody(bodyId, body);
-        
+
         //PhysicsUtils.setHighPhysicsPrecision(body);
         //body.addControl(new VisionControl());
-        
+
         BodyUtils.setBodyPosture(body, BodyUtils.BodyPosture.Standing);
-        
+
         setState(State.Success);
     }
+
     @Override
-	public void interruptCommand(Application app) {
-		setState(State.Interrupted);
-	}
-    
+    public void interruptCommand(Application app) {
+        setState(State.Interrupted);
+    }
+
     @Override
     public String toString() {
-        return getClass().getSimpleName()+"("+bodyId+", "+urlResource+")";
+        return getClass().getSimpleName() + "(" + bodyId + ", " + urlResource + ")";
     }
 }

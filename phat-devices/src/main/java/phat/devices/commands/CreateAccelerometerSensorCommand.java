@@ -21,20 +21,13 @@ package phat.devices.commands;
 
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
-import com.jme3.material.Material;
-import com.jme3.math.FastMath;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
-import com.jme3.scene.shape.Quad;
-import java.util.List;
 import java.util.logging.Level;
 import phat.commands.PHATCommandListener;
 import phat.devices.DevicesAppState;
 import phat.devices.smartphone.SmartPhoneFactory;
-import static phat.devices.smartphone.SmartPhoneFactory.assetManager;
 import phat.util.Debug;
 import phat.util.SpatialUtils;
 
@@ -61,20 +54,18 @@ public class CreateAccelerometerSensorCommand extends PHATDeviceCommand {
     @Override
     public void runCommand(Application app) {
         DevicesAppState devicesAppState = app.getStateManager().getState(DevicesAppState.class);
-        
-        Spatial device = SpatialUtils.getSpatialById(((SimpleApplication)app).getRootNode(), sensorID);
+
+        Spatial device = SpatialUtils.getSpatialById(((SimpleApplication) app).getRootNode(), sensorID);
         Node sensor;
-        System.out.println("DEVICE ===== "+device);
-        if(device != null && device instanceof Node) {
-            sensor = (Node) device;            
+        System.out.println("DEVICE ===== " + device);
+        if (device != null && device instanceof Node) {
+            sensor = (Node) device;
         } else {
             sensor = SmartPhoneFactory.createAccelGeometry(sensorID, dimensions);
         }
         sensor.setName(sensorID);
-        
-      
-            SmartPhoneFactory.enableAccelerometerFacility(sensor);
-     
+
+        SmartPhoneFactory.enableAccelerometerFacility(sensor);
 
         if (attachCoordinateAxes) {
             Debug.attachCoordinateAxes(Vector3f.ZERO, 0.5f, SmartPhoneFactory.assetManager, sensor);
@@ -82,7 +73,6 @@ public class CreateAccelerometerSensorCommand extends PHATDeviceCommand {
         devicesAppState.addDevice(sensorID, sensor);
         setState(State.Success);
     }
-    
 
     @Override
     public void interruptCommand(Application app) {
@@ -98,7 +88,7 @@ public class CreateAccelerometerSensorCommand extends PHATDeviceCommand {
         this.attachCoordinateAxes = attachCoordinateAxes;
         return this;
     }
-    
+
     public CreateAccelerometerSensorCommand setDimensions(float width, float height, float depth) {
         dimensions.set(width, height, depth);
         return this;
@@ -107,7 +97,6 @@ public class CreateAccelerometerSensorCommand extends PHATDeviceCommand {
     public Vector3f getDimensions() {
         return dimensions;
     }
-
 
     public String getSensorID() {
         return sensorID;

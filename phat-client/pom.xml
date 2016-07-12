@@ -20,6 +20,12 @@
             <artifactId>jdos-client</artifactId>
             <version>${jdos.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>net.sf.jali</groupId>
+            <artifactId>jali-vapi</artifactId>
+            <version>${jali.version}</version>
+        </dependency>
     </dependencies>
 
     <profiles>

@@ -51,7 +51,7 @@ public class CameraSensor extends Sensor implements SceneProcessor {
     int width;
     int height;
     static final int BUF_SIZE = 10;
-    float rate = 0.1f;
+    float period = 0.1f;
     float time = 0f;
     BufferedImage[] rawFrame = new BufferedImage[BUF_SIZE];
     int currentIndex = 0;
@@ -92,6 +92,14 @@ public class CameraSensor extends Sensor implements SceneProcessor {
         }
     }
 
+    public float getPeriod() {
+        return period;
+    }
+    
+    public void setPeriod(float period) {
+        this.period = period;
+    }
+    
     @Override
     public boolean isInitialized() {
         return initialized;
@@ -161,7 +169,7 @@ public class CameraSensor extends Sensor implements SceneProcessor {
     public void postFrame(FrameBuffer fb) {
         if (enabled) {
             this.time += this.cfps;
-            if (time > rate) {
+            if (time > period) {
                 BufferedImage result = easy(fb);
                 currentIndex = (currentIndex + 1) % BUF_SIZE;
                 //process2(fb);
@@ -170,7 +178,7 @@ public class CameraSensor extends Sensor implements SceneProcessor {
 
                 CameraSensorData csd = new CameraSensorData(cfps, result, width, height, 0);
                 notifyListeners(csd);
-                time = 0f;
+                time -= period;
             }
         }
     }
