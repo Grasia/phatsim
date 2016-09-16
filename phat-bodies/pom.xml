@@ -25,15 +25,15 @@
         </dependency>	
         
         <dependency>
-            <groupId>edu.cmu.sphinx</groupId>
+            <groupId>net.sf.phat</groupId>
             <artifactId>sphinx4-core</artifactId>
-            <version>5prealpha-SNAPSHOT</version>
+            <version>5prealpha</version>
         </dependency>
         
         <dependency>
-            <groupId>edu.cmu.sphinx</groupId>
+            <groupId>net.sf.phat</groupId>
             <artifactId>sphinx4-data</artifactId>
-            <version>5prealpha-SNAPSHOT</version>
+            <version>5prealpha</version>
         </dependency>	
     </dependencies>
     
