@@ -46,8 +46,8 @@
         <developeremail>pabcampi@ucm.es</developeremail>
         <jme.version>3.0.1</jme.version>
         <sociaal.version>1.0.7-SNAPSHOT</sociaal.version>
-        <jali.version>1.0.7-SNAPSHOT</jali.version>
-        <jdos.version>1.0.5-SNAPSHOT</jdos.version>
+        <jali.version>1.0.7</jali.version>
+        <jdos.version>1.0.5</jdos.version>
     </properties>
     
     <modules>
@@ -58,7 +58,6 @@
         <module>phat-interface</module>
         <module>phat-devices</module>
         <module>phat-server</module>
-        <module>phat-client</module>
         <module>phat-generator</module>
     </modules>
     
