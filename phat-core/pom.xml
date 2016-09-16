@@ -11,9 +11,6 @@
 
     <name>PHAT - Core</name>
 
-    <!-- Note that the jmonkey.version variable is set in our parent pom.xml.
-                    Currently the value is   3.0.0.20120512-SNAPSHOT
-    -->
     <dependencies>
         
         <!-- Dependences in local repository -->

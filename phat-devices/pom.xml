@@ -11,12 +11,7 @@
     <packaging>jar</packaging>
     <name>PHAT - Devices</name>
 
-    <dependencies>        
-        <!--dependency>
-            <groupId>net.sf.phat</groupId>
-            <artifactId>phat-server</artifactId>
-            <version>1.0.2-SNAPSHOT</version>
-        </dependency-->
+    <dependencies>
         <dependency>
             <groupId>net.sf.phat</groupId>
             <artifactId>phat-audio</artifactId>
@@ -176,11 +171,6 @@
 
         </plugins>
     </build>
-
-    <properties>
-        <jmonkey.version>3.0.0.20120512-SNAPSHOT</jmonkey.version>
-        <natives.version>0.0.7</natives.version>
-    </properties>
 </project>
 
 <!--

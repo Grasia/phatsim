@@ -11,9 +11,6 @@
 
     <name>PHAT - Audio</name>
 
-    <!-- Note that the jmonkey.version variable is set in our parent pom.xml.
-                                                                    Currently the value is   3.0.0.20120512-SNAPSHOT
-    -->
     <dependencies>
         <dependency>
             <groupId>net.sf.phat</groupId>
@@ -144,10 +141,6 @@
 
         </plugins>
     </build>
-
-    <properties>
-        <jmonkey.version>3.0.0.20120512-SNAPSHOT</jmonkey.version>
-    </properties>
 </project>
 
 <!--

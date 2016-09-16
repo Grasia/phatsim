@@ -159,10 +159,6 @@
 
         </plugins>
     </build>
-
-    <properties>
-        <jmonkey.version>3.0.0.20120512-SNAPSHOT</jmonkey.version>
-    </properties>
 </project>
 
 <!--
