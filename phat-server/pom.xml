@@ -26,6 +26,11 @@
             <artifactId>jali-vapi-common</artifactId>
             <version>${jali.version}</version>
         </dependency>
+        <dependency>
+            <groupId>net.sf.jali</groupId>
+            <artifactId>jali-phat-client</artifactId>
+            <version>${jali.version}</version>
+        </dependency>
         <!-- Dependences in local repository -->
         <dependency>
             <groupId>net.sf.jdos</groupId>
@@ -41,11 +46,6 @@
         <dependency>
             <groupId>net.sf.phat</groupId>
             <artifactId>phat-devices</artifactId>
-            <version>1.0.9-SNAPSHOT</version>
-        </dependency>	
-        <dependency>
-            <groupId>net.sf.phat</groupId>
-            <artifactId>phat-client</artifactId>
             <version>1.0.9-SNAPSHOT</version>
         </dependency>	
     </dependencies>
