@@ -9,7 +9,7 @@
     <groupId>net.sf.phat</groupId>
     <artifactId>phat-sim</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.9</version>
+    <version>1.0.10-SNAPSHOT</version>
     <name>PHAT - Physical Human Activity Tester</name>
     <description>Physical Human Activity Tester</description>
     <url>https://sourceforge.net/projects/phatsim/</url>
