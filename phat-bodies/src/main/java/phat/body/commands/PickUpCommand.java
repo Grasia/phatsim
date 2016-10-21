@@ -32,17 +32,19 @@ import java.util.logging.Level;
 import phat.agents.actors.ActorFactory;
 import phat.body.BodiesAppState;
 import phat.body.control.navigation.AutonomousControlListener;
-import phat.body.control.navigation.navmesh.NavMeshMovementControl;
 import phat.body.control.physics.PHATCharacterControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
+import phat.commands.PHATCommandAnn;
 import phat.util.SpatialUtils;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name="PickUp", type="body", debug = false)
 public class PickUpCommand extends PHATCommand implements AutonomousControlListener {
 
     public enum Hand {Left, Right}
@@ -51,6 +53,9 @@ public class PickUpCommand extends PHATCommand implements AutonomousControlListe
     String bodyId;
     String entityId;
     Hand hand;
+
+    public PickUpCommand() {
+    }
     
     public PickUpCommand(String bodyId, String entityId, Hand hand, PHATCommandListener listener) {
         super(listener);
@@ -143,5 +148,20 @@ public class PickUpCommand extends PHATCommand implements AutonomousControlListe
 
     public Hand getHand() {
         return hand;
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory=true, order=2)
+    public void setEntityId(String entityId) {
+        this.entityId = entityId;
+    }
+
+    @PHATCommParam(mandatory=true, order=3)
+    public void setHand(Hand hand) {
+        this.hand = hand;
     }
 }

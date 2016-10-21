@@ -23,15 +23,21 @@ import com.jme3.app.Application;
 import com.jme3.scene.Node;
 import java.util.logging.Level;
 import phat.body.BodiesAppState;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
+import phat.commands.PHATCommandAnn;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name="RemoveBodyFromSpace", type="body", debug = false)
 public class RemoveBodyFromSpaceCommand extends PHATCommand {
 
     private String bodyId;
+
+    public RemoveBodyFromSpaceCommand() {
+    }
     
     public RemoveBodyFromSpaceCommand(String bodyId) {
         super(null);
@@ -58,5 +64,10 @@ public class RemoveBodyFromSpaceCommand extends PHATCommand {
     @Override
     public String toString() {
         return getClass().getSimpleName()+"("+bodyId+")";
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
     }
 }

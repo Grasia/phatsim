@@ -29,84 +29,109 @@ import phat.body.BodiesAppState;
 import phat.body.control.navigation.AutonomousControlListener;
 import phat.body.control.navigation.navmesh.NavMeshMovementControl;
 import phat.body.control.physics.PHATCharacterControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
+import phat.commands.PHATCommandAnn;
 
 /**
- * 
+ *
  * @author pablo
  */
+@PHATCommandAnn(name = "GoCloseToBody", type = "body", debug = false)
 public class GoCloseToBodyCommand extends PHATCommand implements
-		AutonomousControlListener {
+        AutonomousControlListener {
 
-	private String bodyId;
-	private String targetBodyId;
+    private String bodyId;
+    private String targetBodyId;
 
-	public GoCloseToBodyCommand(String bodyId, String targetBodyId,
-			PHATCommandListener listener) {
-		super(listener);
-		this.bodyId = bodyId;
-		this.targetBodyId = targetBodyId;
-		logger.log(Level.INFO, "New Command: {0}", new Object[] { this });
-	}
+    public GoCloseToBodyCommand() {
+    }
 
-	public GoCloseToBodyCommand(String bodyId, String targetBodyId) {
-		this(bodyId, targetBodyId, null);
-	}
+    public GoCloseToBodyCommand(String bodyId, String targetBodyId,
+            PHATCommandListener listener) {
+        super(listener);
+        this.bodyId = bodyId;
+        this.targetBodyId = targetBodyId;
+        logger.log(Level.INFO, "New Command: {0}", new Object[]{this});
+    }
 
-	@Override
-	public void runCommand(Application app) {
-		BodiesAppState bodiesAppState = app.getStateManager().getState(
-				BodiesAppState.class);
+    public GoCloseToBodyCommand(String bodyId, String targetBodyId) {
+        this(bodyId, targetBodyId, null);
+    }
 
-		Node body = bodiesAppState.getBody(bodyId);
+    @Override
+    public void runCommand(Application app) {
+        BodiesAppState bodiesAppState = app.getStateManager().getState(
+                BodiesAppState.class);
 
-		if (body != null && body.getParent() != null) {
-			Node targetBody = bodiesAppState.getBody(targetBodyId);
-			if (targetBody != null && targetBody.getParent() != null) {
-				NavMeshMovementControl nmmc = body
-						.getControl(NavMeshMovementControl.class);
-				if (nmmc != null) {
-					PHATCharacterControl cc = targetBody
-							.getControl(PHATCharacterControl.class);
-					nmmc.setMinDistance(0.5f);
-					boolean reachable = nmmc.moveTo(cc.getLocation());
-					if (reachable) {
-						nmmc.setListener(this);
-						return;
-					}
-				}
-			}
-		}
-		setState(State.Fail);
-	}
+        Node body = bodiesAppState.getBody(bodyId);
 
-	@Override
-	public void interruptCommand(Application app) {
-		BodiesAppState bodiesAppState = app.getStateManager().getState(
-				BodiesAppState.class);
+        if (body != null && body.getParent() != null) {
+            Node targetBody = bodiesAppState.getBody(targetBodyId);
+            if (targetBody != null && targetBody.getParent() != null) {
+                NavMeshMovementControl nmmc = body
+                        .getControl(NavMeshMovementControl.class);
+                if (nmmc != null) {
+                    PHATCharacterControl cc = targetBody
+                            .getControl(PHATCharacterControl.class);
+                    nmmc.setMinDistance(0.5f);
+                    boolean reachable = nmmc.moveTo(cc.getLocation());
+                    if (reachable) {
+                        nmmc.setListener(this);
+                        return;
+                    }
+                }
+            }
+        }
+        setState(State.Fail);
+    }
 
-		Node body = bodiesAppState.getBody(bodyId);
+    @Override
+    public void interruptCommand(Application app) {
+        BodiesAppState bodiesAppState = app.getStateManager().getState(
+                BodiesAppState.class);
 
-		if (body != null && body.getParent() != null) {
-			NavMeshMovementControl nmmc = body
-					.getControl(NavMeshMovementControl.class);
-			nmmc.moveTo(null);
-			setState(State.Interrupted);
-			return;
-		}
-		setState(State.Fail);
-	}
+        Node body = bodiesAppState.getBody(bodyId);
 
-	@Override
-	public void destinationReached(Vector3f destination) {
-		setState(State.Success);
-	}
+        if (body != null && body.getParent() != null) {
+            NavMeshMovementControl nmmc = body
+                    .getControl(NavMeshMovementControl.class);
+            nmmc.moveTo(null);
+            setState(State.Interrupted);
+            return;
+        }
+        setState(State.Fail);
+    }
 
-	@Override
-	public String toString() {
-		return getClass().getSimpleName() + "(" + bodyId + ",targetBodyId="
-				+ targetBodyId + ")";
-	}
+    @Override
+    public void destinationReached(Vector3f destination) {
+        setState(State.Success);
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + bodyId + ",targetBodyId="
+                + targetBodyId + ")";
+    }
+
+    public String getBodyId() {
+        return bodyId;
+    }
+
+    public String getTargetBodyId() {
+        return targetBodyId;
+    }
+
+    @PHATCommParam(mandatory = true, order = 1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory = true, order = 2)
+    public void setTargetBodyId(String targetBodyId) {
+        this.targetBodyId = targetBodyId;
+    }
+
 }

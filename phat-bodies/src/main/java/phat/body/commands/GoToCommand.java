@@ -31,7 +31,6 @@ import phat.body.control.navigation.navmesh.NavMeshMovementControl;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
-import phat.structures.houses.HouseAppState;
 import phat.util.Lazy;
 
 /**
@@ -43,6 +42,9 @@ public class GoToCommand extends PHATCommand implements AutonomousControlListene
     private String bodyId;
     private Lazy<Vector3f> destiny;
     private float minDistance;
+
+    public GoToCommand() {
+    }
     
     public GoToCommand(String bodyId, Lazy<Vector3f> destiny, PHATCommandListener listener) {
         super(listener);

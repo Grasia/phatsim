@@ -27,6 +27,10 @@ import phat.commands.PHATCommandListener;
  * @author pablo
  */
 public abstract class PHATDeviceCommand extends PHATCommand {
+
+    public PHATDeviceCommand() {
+        super();
+    }
     
     public PHATDeviceCommand(PHATCommandListener listener) {
         super(listener);

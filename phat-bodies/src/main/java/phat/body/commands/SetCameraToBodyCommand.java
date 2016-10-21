@@ -21,30 +21,31 @@ package phat.body.commands;
 
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
-import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.CameraNode;
 import com.jme3.scene.Node;
 import com.jme3.scene.control.CameraControl.ControlDirection;
 import java.util.logging.Level;
 import phat.body.BodiesAppState;
-import phat.body.control.navigation.navmesh.NavMeshMovementControl;
-import phat.body.control.physics.PHATCharacterControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
-import phat.structures.houses.HouseAppState;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name="SetCameraToBody", type="body", debug = true)
 public class SetCameraToBodyCommand extends PHATCommand {
 
     private String bodyId;
     CameraNode camNode;
     float distance = 2f;
     float height = 2f;
+
+    public SetCameraToBodyCommand() {
+    }
 
     public SetCameraToBodyCommand(String bodyId, PHATCommandListener listener) {
         super(listener);
@@ -93,16 +94,8 @@ public class SetCameraToBodyCommand extends PHATCommand {
         return distance;
     }
 
-    public void setDistance(float distance) {
-        this.distance = distance;
-    }
-
     public float getHeight() {
         return height;
-    }
-
-    public void setHeight(float height) {
-        this.height = height;
     }
 
     public boolean isFront() {
@@ -118,5 +111,20 @@ public class SetCameraToBodyCommand extends PHATCommand {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + bodyId + ",distance="+Math.abs(distance)+",height="+height+",front="+isFront()+")";
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory=true, order=2)
+    public void setDistance(float distance) {
+        this.distance = distance;
+    }
+
+    @PHATCommParam(mandatory=true, order=3)
+    public void setHeight(float height) {
+        this.height = height;
     }
 }

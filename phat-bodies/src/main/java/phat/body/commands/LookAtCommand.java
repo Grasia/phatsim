@@ -25,7 +25,9 @@ import com.jme3.scene.Spatial;
 import java.util.logging.Level;
 import phat.body.BodiesAppState;
 import phat.body.control.animation.LookAtControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
 import phat.util.SpatialUtils;
 
@@ -33,10 +35,14 @@ import phat.util.SpatialUtils;
  *
  * @author pablo
  */
+@PHATCommandAnn(name="LookAt", type="body", debug = false)
 public class LookAtCommand extends PHATCommand {
 
     private String bodyId;
     private String targetId;
+
+    public LookAtCommand() {
+    }
 
     public LookAtCommand(String bodyId, String targetId, PHATCommandListener listener) {
         super(listener);
@@ -86,5 +92,23 @@ public class LookAtCommand extends PHATCommand {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + bodyId + ", targetId=" + targetId + ")";
+    }
+
+    public String getBodyId() {
+        return bodyId;
+    }
+
+    public String getTargetId() {
+        return targetId;
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory=true, order=2)
+    public void setTargetId(String targetId) {
+        this.targetId = targetId;
     }
 }

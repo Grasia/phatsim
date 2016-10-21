@@ -20,13 +20,8 @@
 package phat.devices.commands;
 
 import com.jme3.app.Application;
-import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.control.BetterCharacterControl;
-import com.jme3.bullet.control.PhysicsControl;
-import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.material.Material;
 import com.jme3.math.FastMath;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
@@ -35,21 +30,26 @@ import com.jme3.scene.shape.Quad;
 import java.util.List;
 
 import java.util.logging.Level;
+import phat.commands.PHATCommParam;
+import phat.commands.PHATCommandAnn;
 
 import phat.commands.PHATCommandListener;
 import phat.devices.DevicesAppState;
 import static phat.devices.smartphone.SmartPhoneFactory.assetManager;
-import phat.util.SpatialFactory;
 import phat.util.SpatialUtils;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name = "SetImageOnScreen", type = "device", debug = false)
 public class SetImageOnScreenCommand extends PHATDeviceCommand {
 
     private String deviceId;
     private String imagePath;
+
+    public SetImageOnScreenCommand() {
+    }
 
     public SetImageOnScreenCommand(String deviceId, String imagePath) {
         this(deviceId, imagePath, null);
@@ -99,5 +99,15 @@ public class SetImageOnScreenCommand extends PHATDeviceCommand {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + deviceId + ", " + imagePath + ")";
+    }
+    
+    @PHATCommParam(mandatory = true, order = 1)
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    @PHATCommParam(mandatory = true, order = 2)
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 }

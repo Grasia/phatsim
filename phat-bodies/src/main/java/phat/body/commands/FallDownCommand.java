@@ -23,11 +23,8 @@ import com.jme3.animation.Bone;
 import com.jme3.animation.SkeletonControl;
 import com.jme3.app.Application;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.PhysicsSpace;
-import com.jme3.bullet.PhysicsTickListener;
 import com.jme3.bullet.control.KinematicRagdollControl;
 import com.jme3.bullet.objects.PhysicsRigidBody;
-import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 
@@ -41,25 +38,28 @@ import phat.body.control.animation.SitDownControl;
 import phat.body.control.navigation.StraightMovementControl;
 import phat.body.control.physics.PHATCharacterControl;
 import phat.body.control.physics.ragdoll.BVHRagdollPreset;
-import phat.bullet.control.ragdoll.PushChestFoward;
-import phat.bullet.control.ragdoll.SimulateTripOver;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
+import phat.commands.PHATCommandAnn;
 import phat.structures.houses.House;
 import phat.structures.houses.HouseAppState;
-import phat.util.PhysicsUtils;
 import phat.util.SpatialUtils;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name="FallDown", type="body", debug = false)
 public class FallDownCommand extends PHATCommand {
 
     private String bodyId;
     HouseAppState houseAppState;
     BodiesAppState bodiesAppState;
+
+    public FallDownCommand() {
+    }
 
     public FallDownCommand(String bodyId, PHATCommandListener listener) {
         super(listener);
@@ -185,5 +185,14 @@ public class FallDownCommand extends PHATCommand {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + bodyId + ")";
+    }
+
+    public String getBodyId() {
+        return bodyId;
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
     }
 }

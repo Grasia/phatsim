@@ -21,11 +21,12 @@ package phat.devices.commands;
 
 import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
-import com.jme3.math.Matrix3f;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import java.util.logging.Level;
+import phat.commands.PHATCommParam;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
 import phat.devices.DevicesAppState;
 import phat.devices.smartphone.SmartPhoneFactory;
@@ -38,10 +39,11 @@ import phat.world.WorldAppState;
  *
  * @author pablo
  */
+@PHATCommandAnn(name = "CreatePresenceSensor", type = "device", debug = false)
 public class CreatePresenceSensorCommand extends PHATDeviceCommand {
 
     private String presenceSensorId;
-    private boolean enableDebug = false;
+    private boolean enableDebug = true;
     private Vector3f dimensions = new Vector3f(0.048f, 0.08f, 0.002f);
     private float frecuency = 1f;
     private float distance = 5.0f;
@@ -50,6 +52,10 @@ public class CreatePresenceSensorCommand extends PHATDeviceCommand {
     private float vAngle = 30.0f;
     private Vector3f rotate = new Vector3f();
 
+    public CreatePresenceSensorCommand() {
+    }
+
+    
     public CreatePresenceSensorCommand(String presenceSensorId) {
         this(presenceSensorId, null);
     }
@@ -125,10 +131,6 @@ public class CreatePresenceSensorCommand extends PHATDeviceCommand {
         return presenceSensorId;
     }
 
-    public void setPresenceSensorId(String presenceSensorId) {
-        this.presenceSensorId = presenceSensorId;
-    }
-
     public boolean isEnableDebug() {
         return enableDebug;
     }
@@ -137,40 +139,19 @@ public class CreatePresenceSensorCommand extends PHATDeviceCommand {
         return frecuency;
     }
 
-    public void setFrecuency(float frecuency) {
-        this.frecuency = frecuency;
-    }
-
     public float getDistance() {
         return distance;
-    }
-
-    public void setDistance(float distance) {
-        this.distance = distance;
     }
 
     public float gethAngle() {
         return hAngle;
     }
-
-    public void sethAngle(float hAngle) {
-        this.hAngle = hAngle;
-    }
-
     public float getAngleStep() {
         return angleStep;
     }
 
-    public void setAngleStep(float angleStep) {
-        this.angleStep = angleStep;
-    }
-
     public float getvAngle() {
         return vAngle;
-    }
-
-    public void setvAngle(float vAngle) {
-        this.vAngle = vAngle;
     }
 
     public Vector3f getRotate() {
@@ -179,5 +160,35 @@ public class CreatePresenceSensorCommand extends PHATDeviceCommand {
 
     public void setRotate(Vector3f rotate) {
         this.rotate = rotate;
+    }
+
+    @PHATCommParam(mandatory = true, order = 1)
+    public void setPresenceSensorId(String presenceSensorId) {
+        this.presenceSensorId = presenceSensorId;
+    }
+
+    @PHATCommParam(mandatory = false, order = 5)
+    public void setDistance(float distance) {
+        this.distance = distance;
+    }
+
+    @PHATCommParam(mandatory = false, order = 6)
+    public void sethAngle(float hAngle) {
+        this.hAngle = hAngle;
+    }
+
+    @PHATCommParam(mandatory = false, order = 7)
+    public void setvAngle(float vAngle) {
+        this.vAngle = vAngle;
+    }
+
+    @PHATCommParam(mandatory = false, order = 8)
+    public void setFrecuency(float frecuency) {
+        this.frecuency = frecuency;
+    }
+
+    @PHATCommParam(mandatory = false, order = 9)
+    public void setAngleStep(float angleStep) {
+        this.angleStep = angleStep;
     }
 }

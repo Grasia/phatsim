@@ -20,9 +20,7 @@
 package phat.body.commands;
 
 import com.jme3.app.Application;
-import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
-import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 
@@ -33,19 +31,21 @@ import phat.body.BodyUtils;
 import phat.body.control.animation.SitDownControl;
 import phat.body.control.navigation.AutonomousControlListener;
 import phat.body.control.physics.PHATCharacterControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
+import phat.commands.PHATCommandAnn;
 import phat.structures.houses.House;
 import phat.structures.houses.HouseAppState;
 import phat.util.Lazy;
-import phat.util.SpatialFactory;
 import phat.util.SpatialUtils;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name="SitDown", type="body", debug = false)
 public class SitDownCommand extends PHATCommand implements AutonomousControlListener, PHATCommandListener {
 
     public static String AVAILABLE_SEAT_KEY = "AVAILABLE_SEAT_KEY";
@@ -56,6 +56,9 @@ public class SitDownCommand extends PHATCommand implements AutonomousControlList
     HouseAppState houseAppState;
     Spatial nearestSeat;
     Node body;
+
+    public SitDownCommand() {
+    }
 
     public SitDownCommand(String bodyId, String placeId, PHATCommandListener listener) {
         super(listener);
@@ -231,5 +234,15 @@ public class SitDownCommand extends PHATCommand implements AutonomousControlList
 
     public String getPlaceId() {
         return placeId;
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory=true, order=2)
+    public void setPlaceId(String placeId) {
+        this.placeId = placeId;
     }
 }

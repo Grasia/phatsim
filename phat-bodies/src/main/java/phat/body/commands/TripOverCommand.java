@@ -44,6 +44,9 @@ public class TripOverCommand extends PHATCommand {
 
     private String bodyId;
 
+    public TripOverCommand() {
+    }
+
     public TripOverCommand(String bodyId, PHATCommandListener listener) {
         super(listener);
         this.bodyId = bodyId;

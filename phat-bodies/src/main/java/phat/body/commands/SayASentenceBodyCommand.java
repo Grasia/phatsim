@@ -34,20 +34,26 @@ import phat.audio.PHATAudioAppState;
 import phat.audio.controls.AudioSourceStatusListener;
 import phat.audio.controls.AudioStatusNotifierControl;
 import phat.body.BodiesAppState;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
+import phat.commands.PHATCommandAnn;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name="SayASentence", type="body", debug = false)
 public class SayASentenceBodyCommand extends PHATCommand implements AudioSourceStatusListener {
 
     private String bodyId;
     private String message;
     private float volume = 1.0f;
     AudioSpeakerSource speaker;
+
+    public SayASentenceBodyCommand() {
+    }
     
     public SayASentenceBodyCommand(String bodyId, String message, PHATCommandListener listener) {
         super(listener);
@@ -113,10 +119,6 @@ public class SayASentenceBodyCommand extends PHATCommand implements AudioSourceS
     public float getVolume() {
         return volume;
     }
-
-    public void setVolume(float volume) {
-        this.volume = volume;
-    }
     
     public String getMessage() {
     	return message;
@@ -133,5 +135,20 @@ public class SayASentenceBodyCommand extends PHATCommand implements AudioSourceS
             audioNode.removeFromParent();
             setState(State.Success);
         }
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory=true, order=2)
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    @PHATCommParam(mandatory=false, order=3)
+    public void setVolume(float volume) {
+        this.volume = volume;
     }
 }

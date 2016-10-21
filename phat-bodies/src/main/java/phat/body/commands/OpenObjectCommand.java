@@ -23,7 +23,6 @@ import com.jme3.app.Application;
 import com.jme3.audio.AudioNode;
 import com.jme3.effect.ParticleEmitter;
 import com.jme3.material.Material;
-import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -32,11 +31,11 @@ import com.jme3.texture.Texture;
 import java.util.logging.Level;
 
 import phat.body.BodiesAppState;
-import phat.body.control.navigation.AutonomousControlListener;
-import phat.body.control.navigation.navmesh.NavMeshMovementControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
+import phat.commands.PHATCommandAnn;
 import phat.controls.FridgeDoorControl;
 import phat.util.SpatialFactory;
 import phat.util.SpatialUtils;
@@ -45,11 +44,15 @@ import phat.util.SpatialUtils;
  *
  * @author pablo
  */
+@PHATCommandAnn(name="OpenObject", type="body", debug = false)
 public class OpenObjectCommand extends PHATCommand {
 
     float minDistanceToAction = 1.2f;
     String bodyId;
     String objectId;
+
+    public OpenObjectCommand() {
+    }
 
     public OpenObjectCommand(String bodyId, String objectId, PHATCommandListener listener) {
         super(listener);
@@ -108,7 +111,7 @@ public class OpenObjectCommand extends PHATCommand {
                 if (fridge.getChild("Hinge") != null) {
                     FridgeDoorControl control = fridge.getChild("Hinge").getControl(FridgeDoorControl.class);
                     if (control != null) {
-                        control.setState(FridgeDoorControl.STATE.OPEN);
+                        control.setState(FridgeDoorControl.STATE.OPENED);
                         setState(State.Success);
                         return;
                     }
@@ -138,5 +141,20 @@ public class OpenObjectCommand extends PHATCommand {
 
     public String getEntityId() {
         return objectId;
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory=true, order=2)
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
+    }
+
+    @PHATCommParam(mandatory=false, order=3)
+    public void setMinDistance(float minDistanceToAction) {
+        this.minDistanceToAction = minDistanceToAction;
     }
 }

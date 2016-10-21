@@ -48,7 +48,7 @@ import phat.structures.houses.HouseAppState;
 import phat.structures.houses.HouseFactory;
 import phat.structures.houses.TestHouse;
 import phat.structures.houses.commands.CreateHouseCommand;
-import phat.structures.houses.commands.test.ShowAllLabelsOfScenario;
+import phat.structures.houses.commands.ShowAllLabelsOfScenario;
 import phat.util.SpatialFactory;
 import phat.util.SpatialUtils;
 import phat.world.WorldAppState;

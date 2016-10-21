@@ -69,7 +69,6 @@ public class HouseAppState extends AbstractAppState {
         //bulletAppState.setDebugEnabled(true); // to show the collision wireframes
 
         //setHouseType(houseType);
-
         setShowNavMesh(showNavMesh);
     }
 
@@ -152,7 +151,7 @@ public class HouseAppState extends AbstractAppState {
 
     public House getHouse(Spatial spatial) {
         Vector3f center = SpatialUtils.getCenterBoinding(spatial);
-        for(House house: houses.values()) {
+        for (House house : houses.values()) {
             Node node = house.getRootNode();
             /*node.updateModelBound();
             if(node.getWorldBound().contains(spatial.getWorldTranslation())) {
@@ -160,7 +159,7 @@ public class HouseAppState extends AbstractAppState {
             }*/
             Vector3f min = SpatialUtils.getMinBounding(node);
             Vector3f max = SpatialUtils.getMaxBounding(node);
-            if(min.x <= center.x && min.y <= center.y && min.z <= center.z
+            if (min.x <= center.x && min.y <= center.y && min.z <= center.z
                     && max.x >= center.x && max.y >= center.y && max.z >= center.z) {
                 return house;
             }
@@ -176,6 +175,13 @@ public class HouseAppState extends AbstractAppState {
             }
             parent = parent.getParent();
         }*/
+        return null;
+    }
+
+    public String getRoomNameLocation(String objID) {
+        if (!houses.isEmpty()) {
+            return houses.get("House1").getRoomNameLocation(objID);
+        }
         return null;
     }
 }

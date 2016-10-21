@@ -6,14 +6,14 @@
 @@@text@@@
 package phat.agents.impl;
 
-import phat.agents.Agent;
+import phat.agents.HumanAgent;
 import phat.agents.automaton.*;
 import phat.agents.automaton.activities.*;
 import phat.agents.automaton.conditions.*;
 import phat.agents.events.*;
 import phat.agents.filters.*;
 
-public class @@@v@@@aName@@@/v@@@Agent extends Agent {
+public class @@@v@@@aName@@@/v@@@Agent extends HumanAgent {
     private String simulation="";
     
     public @@@v@@@aName@@@/v@@@Agent(String bodyId, String simName) {

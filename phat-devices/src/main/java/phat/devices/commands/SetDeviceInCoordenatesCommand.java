@@ -20,17 +20,14 @@
 package phat.devices.commands;
 
 import com.jme3.app.Application;
-import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.control.BetterCharacterControl;
-import com.jme3.bullet.control.PhysicsControl;
 import com.jme3.bullet.control.RigidBodyControl;
-import com.jme3.math.FastMath;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
 
 import java.util.logging.Level;
+import phat.commands.PHATCommParam;
+import phat.commands.PHATCommandAnn;
 
 import phat.commands.PHATCommandListener;
 import phat.devices.DevicesAppState;
@@ -40,12 +37,19 @@ import phat.util.SpatialFactory;
  *
  * @author pablo
  */
+@PHATCommandAnn(name = "SetDeviceInCoordenates", type = "device", debug = false)
 public class SetDeviceInCoordenatesCommand extends PHATDeviceCommand {
 
     private String deviceId;
     private Vector3f location;
+    float x;
+    float y;
+    float z;
     private Quaternion rotation;
     private float scale = 1f;
+
+    public SetDeviceInCoordenatesCommand() {
+    }
     
     public SetDeviceInCoordenatesCommand(String deviceId, Vector3f location) {
         this(deviceId, location, null);
@@ -67,6 +71,9 @@ public class SetDeviceInCoordenatesCommand extends PHATDeviceCommand {
         if (device != null) {
             //device.setLocalRotation(new Quaternion(new float[]{98* FastMath.DEG_TO_RAD, 149* FastMath.DEG_TO_RAD, 5* FastMath.DEG_TO_RAD}));
             SpatialFactory.getRootNode().attachChild(device);
+            if(location == null) {
+                location = new Vector3f(x, y, z);
+            }
             setLocation(device, location);
             if(rotation != null) {
                 setRotation(device, rotation);
@@ -129,5 +136,25 @@ public class SetDeviceInCoordenatesCommand extends PHATDeviceCommand {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + deviceId + ", " + location + ")";
+    }
+
+    @PHATCommParam(mandatory = true, order = 1)
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    @PHATCommParam(mandatory = true, order = 2)
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    @PHATCommParam(mandatory = true, order = 3)
+    public void setY(float y) {
+        this.y = y;
+    }
+
+    @PHATCommParam(mandatory = true, order = 4)
+    public void setZ(float z) {
+        this.z = z;
     }
 }

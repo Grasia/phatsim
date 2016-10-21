@@ -25,19 +25,24 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.control.BillboardControl;
 import java.util.logging.Level;
 import phat.body.BodiesAppState;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
-import phat.scene.control.PHATBillboardControl;
 import phat.util.SpatialFactory;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name = "AttachIcon", type = "body", debug = true)
 public class AttachIconCommand extends PHATCommand {    
     private String bodyId;
     private String imagePath;
     private Boolean show;
+
+    public AttachIconCommand() {
+    }
 
     public AttachIconCommand(String bodyId, String imagePath, Boolean show, PHATCommandListener listener) {
         super(listener);
@@ -85,5 +90,20 @@ public class AttachIconCommand extends PHATCommand {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + bodyId + ",imagePath="+imagePath+",show=" + show + ")";
+    }
+
+    @PHATCommParam(mandatory = true, order = 1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory = true, order = 2)
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    @PHATCommParam(mandatory = true, order = 3)
+    public void setShow(Boolean show) {
+        this.show = show;
     }
 }

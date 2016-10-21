@@ -21,30 +21,20 @@ package phat.structures.houses;
 
 import com.jme3.ai.navmesh.NavMesh;
 import com.jme3.app.SimpleApplication;
-import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.PhysicsSpace;
 import com.jme3.bullet.control.RigidBodyControl;
 import com.jme3.collision.CollisionResults;
 import com.jme3.light.Light;
-import com.jme3.light.LightList;
 import com.jme3.light.PointLight;
-import com.jme3.light.SpotLight;
 import com.jme3.math.ColorRGBA;
 import com.jme3.math.Quaternion;
 import com.jme3.math.Ray;
 import com.jme3.math.Vector3f;
-import com.jme3.post.FilterPostProcessor;
-import com.jme3.renderer.ViewPort;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.SceneGraphVisitor;
 import com.jme3.scene.Spatial;
-import com.jme3.shadow.EdgeFilteringMode;
-import com.jme3.shadow.PointLightShadowFilter;
-import com.jme3.shadow.PointLightShadowRenderer;
-import com.jme3.shadow.SpotLightShadowFilter;
-import com.jme3.shadow.SpotLightShadowRenderer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,7 +46,6 @@ import phat.util.PhysicsUtils;
 
 import phat.util.SpatialFactory;
 import phat.util.SpatialUtils;
-import static phat.world.WorldAppState.SHADOWMAP_SIZE;
 
 /**
  *
@@ -77,6 +66,7 @@ public class House {
     List<String> roomNames = new ArrayList<String>();
     Map<String, List<Light>> lights = new HashMap<>();
     Map<String, Spatial> spatials = new HashMap<>();
+    Map<String, List<Vector3f>> roomBoundings = new HashMap<>();
 
     /**
      * Creates a house whose model is given by urlResource
@@ -131,6 +121,62 @@ public class House {
         return c.size() > 0;
     }
 
+    public boolean isSpatialInRoom(Spatial spatial, String roomName) {
+        List<Vector3f> points = roomBoundings.get(roomName);
+        if (points != null) {
+            Vector3f objCenter = spatial.getWorldBound().getCenter();
+            return contains(objCenter, points);
+        }
+        return false;
+    }
+
+    public String getRoomNameLocation(String objID) {
+        Spatial obj = SpatialUtils.getSpatialById(SpatialUtils.getRootNode(house), objID);
+        if (obj != null) {
+            return getRoomNameLocation(obj);
+        }
+        return null;
+    }
+
+    public String getRoomNameLocation(Spatial spatial) {
+        for (String roomName : roomBoundings.keySet()) {
+            if (isSpatialInRoom(spatial, roomName)) {
+                return roomName;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * https://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+     *
+     * @param test
+     * @param points
+     * @return
+     */
+    private boolean contains(Vector3f test, List<Vector3f> points) {
+        int i;
+        int j;
+        boolean result = false;
+        for (i = 0, j = points.size() - 1; i < points.size(); j = i++) {
+            if (((points.get(i).z > test.z) != (points.get(j).z > test.z))
+                    && (test.x < (points.get(j).x - points.get(i).x)
+                    * (test.z - points.get(i).z) / (points.get(j).z - points.get(i).z)
+                    + points.get(i).x)) {
+                result = !result;
+            }
+        }
+        return result;
+    }
+
+    public boolean isObjInRoom(String objID, String roomName) {
+        Spatial obj = SpatialUtils.getSpatialById(SpatialUtils.getRootNode(house), objID);
+        if (obj != null) {
+            return isSpatialInRoom(obj, roomName);
+        }
+        return false;
+    }
+
     private void initLights(SimpleApplication app) {
         for (String roomName : getRoomNames()) {
             Node clights = getNode(roomName, "Lights");
@@ -145,7 +191,7 @@ public class House {
 
                 app.getRootNode().addLight(pl);
 
-                PointLightShadowRenderer slsr = new PointLightShadowRenderer(SpatialFactory.getAssetManager(), SHADOWMAP_SIZE);
+                /*PointLightShadowRenderer slsr = new PointLightShadowRenderer(SpatialFactory.getAssetManager(), SHADOWMAP_SIZE);
                 slsr.setLight(pl);
                 slsr.setShadowIntensity(0.6f);
                 slsr.setEdgeFilteringMode(EdgeFilteringMode.Nearest);
@@ -159,13 +205,12 @@ public class House {
                 slsf.setEnabled(true);
 
                 FilterPostProcessor fpp = new FilterPostProcessor(app.getAssetManager());
-                fpp.addFilter(slsf);
+                fpp.addFilter(slsf);*/
 
-                /*SSAOFilter ssaoFilter = new SSAOFilter(12.940201f, 43.928635f, 0.32999992f, 0.6059958f);
+ /*SSAOFilter ssaoFilter = new SSAOFilter(12.940201f, 43.928635f, 0.32999992f, 0.6059958f);
                  fpp.addFilter(ssaoFilter);
                  new SSAOUI(app.getInputManager(), ssaoFilter);*/
-
-                app.getViewPort().addProcessor(fpp);
+                //app.getViewPort().addProcessor(fpp);
             }
         }
     }
@@ -176,7 +221,16 @@ public class House {
             Node room = (Node) sr;
             roomNames.add(room.getName());
             for (Spatial sa : room.getChildren()) {
-                spatials.put(sa.getName(), sa);
+                if (sa.getName().equals("Perimeter")) {
+                    Node perimeter = (Node) sa;
+                    List<Vector3f> points = new ArrayList<>();
+                    for (Spatial point : perimeter.getChildren()) {
+                        points.add(point.getWorldTranslation());
+                    }
+                    roomBoundings.put(room.getName(), points);
+                } else {
+                    spatials.put(sa.getName(), sa);
+                }
             }
         }
     }
@@ -344,6 +398,14 @@ public class House {
             result.addAll(room.getChildren());
         }
         return result;
+    }
+
+    public List<Spatial> getPhyObjecInRoom(String roomName) {
+        Spatial room = physicalEntities.getChild(roomName);
+        if (room != null && room instanceof Node) {
+            return ((Node)room).getChildren();
+        }
+        return null;
     }
 
     public Quaternion getrRotationSpace(String idSpace) {

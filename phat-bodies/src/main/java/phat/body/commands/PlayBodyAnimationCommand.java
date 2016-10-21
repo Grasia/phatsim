@@ -27,19 +27,25 @@ import java.util.logging.Level;
 import phat.body.BodiesAppState;
 import phat.body.control.animation.AnimFinishedListener;
 import phat.body.control.animation.BasicCharacterAnimControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
+import phat.commands.PHATCommandAnn;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name="PlayBodyAnim", type="PHATCommand", debug = false)
 public class PlayBodyAnimationCommand extends PHATCommand implements
         AnimFinishedListener {
 
     private String bodyId;
     private String animationName;
+
+    public PlayBodyAnimationCommand() {
+    }
 
     public PlayBodyAnimationCommand(String bodyId, String animationName) {
         this(bodyId, animationName, null);
@@ -98,5 +104,15 @@ public class PlayBodyAnimationCommand extends PHATCommand implements
     public void animFinished(BasicCharacterAnimControl.AnimName animationName) {
         System.out.println("Animation finished = " + animationName.name());
         setState(State.Success);
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory=true, order=2)
+    public void setAnimName(BasicCharacterAnimControl.AnimName animationName) {
+        this.animationName = animationName.name();
     }
 }

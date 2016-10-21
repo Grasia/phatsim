@@ -25,16 +25,22 @@ import com.jme3.scene.Node;
 import java.util.logging.Level;
 import phat.audio.PHATAudioAppState;
 import phat.body.BodiesAppState;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name="SetPCListenerToBody", type="body", debug = true)
 public class SetPCListenerToBodyCommand extends PHATCommand {
 
     private String bodyId;
+
+    public SetPCListenerToBodyCommand() {
+    }
 
     public SetPCListenerToBodyCommand(String bodyId, PHATCommandListener listener) {
         super(listener);
@@ -73,5 +79,10 @@ public class SetPCListenerToBodyCommand extends PHATCommand {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + bodyId + ")";
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
     }
 }

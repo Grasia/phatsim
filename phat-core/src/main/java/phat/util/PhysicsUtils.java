@@ -22,8 +22,11 @@ package phat.util;
 import com.jme3.bullet.BulletAppState;
 import com.jme3.bullet.control.PhysicsControl;
 import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.math.Quaternion;
+import com.jme3.math.Vector3f;
 import com.jme3.scene.SceneGraphVisitor;
 import com.jme3.scene.Spatial;
+import com.jme3.util.TempVars;
 
 /**
  *
@@ -71,5 +74,41 @@ public class PhysicsUtils {
             }
         };
         spatial.depthFirstTraversal(visitor);
+    }
+    
+    public static void speed(Vector3f pos1, Vector3f pos2, float dt, Vector3f result) {
+        result.set(pos2);
+        result.subtractLocal(pos1);
+        result.divideLocal(dt);
+    }
+    
+    public static float speed(Vector3f pos1, Vector3f pos2, float dt) {
+        float length = pos1.distance(pos2);
+        return length / dt;
+    }
+    
+    public static void acceleration(Vector3f vel1, Vector3f vel2, float dt, Vector3f result) {
+        result.set(vel2);
+        result.subtractLocal(vel1);
+        result.divideLocal(dt);
+    }
+    
+    public static float acceleration(float vel1, float vel2, float dt) {
+        return (vel2 - vel1) / dt;
+    }
+    
+    public static void angularSpeed(Quaternion q1, Quaternion q2, float dt, Vector3f angularSpeed) {
+        TempVars tempVars = TempVars.get();
+        float[] angles1 = tempVars.fWdU;
+        float[] angles2 = tempVars.fAWdU;
+        
+        q1.toAngles(angles1);
+        q2.toAngles(angles2);
+        
+        angularSpeed.set(
+                (angles2[0]-angles1[0]) / dt, 
+                (angles2[1]-angles1[1]) / dt,
+                (angles2[2]-angles1[2]) / dt);
+        tempVars.release();
     }
 }

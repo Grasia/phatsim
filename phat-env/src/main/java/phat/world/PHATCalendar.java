@@ -20,10 +20,8 @@
 package phat.world;
 
 import java.io.Serializable;
-import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.TimeZone;
 
 /**
  * Calendar of the simulation.
@@ -114,12 +112,24 @@ public class PHATCalendar implements Serializable{
         return calendar.get(Calendar.YEAR);
     }
     
+    public void setYear(int year) {
+        calendar.set(Calendar.YEAR, year);
+    }
+    
     public int getMonth() {
         return calendar.get(Calendar.MONTH)+1;
     }
     
+    public void setMonth(int month) {
+        calendar.set(Calendar.MONTH, month-1);
+    }
+    
     public int getDayOfMonth() {
         return calendar.get(Calendar.DAY_OF_MONTH);
+    }
+    
+    public void setDayOfMonth(int dayOfMonth) {
+        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
     }
     
     public int getDayOfWeek() {
@@ -130,12 +140,24 @@ public class PHATCalendar implements Serializable{
         return calendar.get(Calendar.HOUR_OF_DAY);
     }
     
+    public void setHourOfDay(int hourOfDay) {
+        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+    }
+    
     public int getMinute() {
         return calendar.get(Calendar.MINUTE);
     }
     
+    public void setMinute(int min) {
+        calendar.set(Calendar.MINUTE, min);
+    }
+    
     public int getSecond() {
         return calendar.get(Calendar.SECOND);
+    }
+    
+    public void setSecs(int sec) {
+        calendar.set(Calendar.SECOND, sec);
     }
     
     public int getMillisecond() {

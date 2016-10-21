@@ -25,17 +25,23 @@ import java.util.logging.Level;
 import phat.body.BodiesAppState;
 import phat.body.sensing.vision.AttachLabelToVisibleObjectsControl;
 import phat.body.sensing.vision.VisionControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name="ShowLabelsOfVisibleObjects", type="body", debug = true)
 public class ShowLabelsOfVisibleObjectsCommand extends PHATCommand {
 
     private String bodyId;
     private boolean on;
+
+    public ShowLabelsOfVisibleObjectsCommand() {
+    }
 
     public ShowLabelsOfVisibleObjectsCommand(String bodyId, boolean on, PHATCommandListener listener) {
         super(listener);
@@ -87,4 +93,14 @@ public class ShowLabelsOfVisibleObjectsCommand extends PHATCommand {
     public String toString() {
         return getClass().getSimpleName() + "(" + bodyId + ", on=" + on + ")";
     }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory=true, order=2)
+    public void setOn(boolean on) {
+        this.on = on;
+    }    
 }

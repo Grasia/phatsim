@@ -70,7 +70,7 @@ public class PHATDoorSensor extends Sensor {
         if (control == null) {
             getControl();
         }
-        if (control.getState().equals(FridgeDoorControl.STATE.OPEN)) {
+        if (control.getState().equals(FridgeDoorControl.STATE.OPENED)) {
             if (!doorData.opened) {
                 doorData.opened = true;
                 doorData.timestamp = calendar.getTimeInMillis();
@@ -83,6 +83,10 @@ public class PHATDoorSensor extends Sensor {
                 notifyListeners();
             }
         }
+    }
+    
+    public DoorData getDoorData() {
+        return doorData;
     }
 
     private void notifyListeners() {

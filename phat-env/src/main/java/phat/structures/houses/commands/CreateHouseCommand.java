@@ -20,7 +20,9 @@
 package phat.structures.houses.commands;
 
 import com.jme3.app.Application;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
 import phat.structures.houses.HouseAppState;
 import phat.structures.houses.HouseFactory;
@@ -29,9 +31,13 @@ import phat.structures.houses.HouseFactory;
  *
  * @author pablo
  */
+@PHATCommandAnn(name="CreateHouse", type="env", debug = false)
 public class CreateHouseCommand extends PHATCommand {
     String id;
     HouseFactory.HouseType houseType;
+
+    public CreateHouseCommand() {
+    }
 
     public CreateHouseCommand(String id, HouseFactory.HouseType houseType) {
         this(id, houseType, null);
@@ -58,5 +64,14 @@ public class CreateHouseCommand extends PHATCommand {
     @Override
     public void interruptCommand(Application app) {
         setState(State.Fail);
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setHouseType(HouseFactory.HouseType houseType) {
+        this.houseType = houseType;
     }
 }

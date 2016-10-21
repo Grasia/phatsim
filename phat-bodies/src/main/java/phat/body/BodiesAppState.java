@@ -25,23 +25,24 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.material.Material;
-import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
-import com.jme3.scene.control.Control;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import phat.audio.AudioFactory;
 import phat.body.commands.CreateBodyTypeCommand;
 import phat.body.commands.RemoveBodyFromSpaceCommand;
 import phat.body.commands.SetBodyInHouseSpaceCommand;
+import phat.body.control.animation.BasicCharacterAnimControl;
+import phat.body.control.animation.BasicCharacterAnimControl.AnimName;
+import phat.body.control.navigation.StraightMovementControl;
 import phat.body.control.physics.PHATCharacterControl;
 import phat.commands.PHATCommand;
 import phat.structures.houses.House;
@@ -64,13 +65,40 @@ public class BodiesAppState extends AbstractAppState {
     private Node humans;
     private Map<String, Node> availableBodies = new HashMap<>();
 
+    public String getCurrentAnimation(String bodyId) {
+        Node body = getBody(bodyId);
+        if (body != null) {
+            BasicCharacterAnimControl ac = body.getControl(BasicCharacterAnimControl.class);
+            AnimName an = ac.getManualAnimation();
+            if (an != null) {
+                return an.name();
+            }
+        }
+        return null;
+    }
+
+    public boolean isWalking(String bodyId) {
+        Node body = getBody(bodyId);
+        if (body != null) {
+            StraightMovementControl control = body.getControl(StraightMovementControl.class);
+            if (control != null && control.isEnabled()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public String getRoomNameLocation(String bodyId) {
+        return houseAppState.getRoomNameLocation(bodyId);
+    }
+
     public enum BodyType {
 
-        Elder, Young, Sinbad, ElderLP
+        Elder, Young, ElderLP
     }
     ConcurrentLinkedQueue<PHATCommand> runningCommands = new ConcurrentLinkedQueue<>();
     ConcurrentLinkedQueue<PHATCommand> pendingCommands = new ConcurrentLinkedQueue<>();
-    List<PHATCommand> commandLog = new ArrayList<PHATCommand>();
+    List<PHATCommand> commandLog = new ArrayList<>();
 
     @Override
     public void initialize(AppStateManager stateManager, Application application) {
@@ -110,9 +138,6 @@ public class BodiesAppState extends AbstractAppState {
                 break;
             case Young:
                 createBodyType("Models/People/Male/Male.j3o", id);
-                break;
-            case Sinbad:
-                createBodyType("Models/Sinbad/Sinbad.j3o", id);
                 break;
         }
         return null;
@@ -180,7 +205,6 @@ public class BodiesAppState extends AbstractAppState {
          System.out.println("\t"+n.getControl(i).getClass().getSimpleName());
          }
          }*/
-
         runningCommands.addAll(pendingCommands);
         pendingCommands.clear();
         for (PHATCommand bc : runningCommands) {
@@ -223,15 +247,30 @@ public class BodiesAppState extends AbstractAppState {
         return worldAppState.getCalendar();
     }
 
+    public boolean exists(String bodyId) {
+        return availableBodies.get(bodyId) != null;
+    }
+    
+    public Set<String> getBodyIds() {
+        return availableBodies.keySet();
+    }
+
     public Node getBody(String bodyId) {
 
         return availableBodies.get(bodyId);
     }
 
+    public PHATCommand getLastCommand() {
+        if (commandLog.size() > 0) {
+            return commandLog.get(commandLog.size() - 1);
+        }
+        return null;
+    }
+
     public < T extends PHATCommand> T getLastCommand(Class<T> commandType) {
         int last = commandLog.size();
         for (int i = last - 1; i >= 0; i--) {
-            if(commandType.isAssignableFrom(commandLog.get(i).getClass())) {
+            if (commandType.isAssignableFrom(commandLog.get(i).getClass())) {
                 return (T) commandLog.get(i);
             }
         }

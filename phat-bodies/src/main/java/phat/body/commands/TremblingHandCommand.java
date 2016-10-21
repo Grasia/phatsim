@@ -20,25 +20,21 @@
 package phat.body.commands;
 
 import com.jme3.app.Application;
-import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.control.BetterCharacterControl;
-import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import java.util.logging.Level;
 import phat.body.BodiesAppState;
-import phat.body.control.navigation.navmesh.NavMeshMovementControl;
-import phat.body.control.parkinson.HeadTremblingControl;
 import phat.body.control.parkinson.LeftHandTremblingControl;
 import phat.body.control.parkinson.RightHandTremblingControl;
-import phat.body.control.physics.PHATCharacterControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
-import phat.structures.houses.HouseAppState;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name="TremblingHand", type="body", debug = false)
 public class TremblingHandCommand extends PHATCommand {
 
     private String bodyId;
@@ -47,6 +43,9 @@ public class TremblingHandCommand extends PHATCommand {
     private Float minAngle;
     private Float maxAngle;
     private Float angular;
+
+    public TremblingHandCommand() {
+    }
 
     public TremblingHandCommand(String bodyId, Boolean on, Boolean left, PHATCommandListener listener) {
         super(listener);
@@ -155,5 +154,20 @@ public class TremblingHandCommand extends PHATCommand {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + bodyId + ", on=" + on + ", left=" + left + ")";
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory=true, order=2)
+    public void setOn(Boolean on) {
+        this.on = on;
+    }
+
+    @PHATCommParam(mandatory=true, order=3)
+    public void setLeft(Boolean left) {
+        this.left = left;
     }
 }

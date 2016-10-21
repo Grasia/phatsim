@@ -27,6 +27,8 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.texture.Texture;
 import java.util.logging.Level;
+import phat.commands.PHATCommParam;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
 import phat.devices.DevicesAppState;
 import phat.devices.smartphone.SmartPhoneFactory;
@@ -37,6 +39,7 @@ import phat.util.Debug;
  *
  * @author pablo
  */
+@PHATCommandAnn(name = "CreateScreen", type = "device", debug = false)
 public class CreateScreenCommand extends PHATDeviceCommand {
 
     private String screenId;
@@ -46,6 +49,9 @@ public class CreateScreenCommand extends PHATDeviceCommand {
     private Vector3f location = new Vector3f();
     private Vector3f direction = new Vector3f();
     private boolean attachCoordinateAxes = false;
+
+    public CreateScreenCommand() {
+    }
 
     public CreateScreenCommand(String smartphoneId) {
         this(smartphoneId, null);
@@ -113,16 +119,8 @@ public class CreateScreenCommand extends PHATDeviceCommand {
         return width;
     }
 
-    public void setWidth(float width) {
-        this.width = width;
-    }
-
     public float getHeight() {
         return height;
-    }
-
-    public void setHeight(float height) {
-        this.height = height;
     }
 
     public Vector3f getLocation() {
@@ -147,5 +145,25 @@ public class CreateScreenCommand extends PHATDeviceCommand {
     
     public void setDirection(float x, float y, float z) {
         this.direction.set(x,y,z);
+    }
+
+    @PHATCommParam(mandatory = true, order = 1)
+    public void setScreenId(String screenId) {
+        this.screenId = screenId;
+    }
+
+    @PHATCommParam(mandatory = true, order = 2)
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    @PHATCommParam(mandatory = true, order = 3)
+    public void setWidth(float width) {
+        this.width = width;
+    }
+
+    @PHATCommParam(mandatory = true, order = 4)
+    public void setHeight(float height) {
+        this.height = height;
     }
 }

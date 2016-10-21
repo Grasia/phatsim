@@ -42,6 +42,9 @@ public class RandomWalkingCommand extends PHATCommand implements
     private String bodyId;
     private boolean enabled;
 
+    public RandomWalkingCommand() {
+    }
+
     public RandomWalkingCommand(String bodyId, boolean enabled) {
         this(bodyId, enabled, null);
     }

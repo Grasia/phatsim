@@ -31,11 +31,12 @@ import phat.body.BodiesAppState;
 import phat.body.BodyUtils;
 import phat.body.control.animation.SitDownControl;
 import phat.body.control.navigation.AutonomousControlListener;
-import phat.body.control.navigation.navmesh.NavMeshMovementControl;
 import phat.body.control.physics.PHATCharacterControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
+import phat.commands.PHATCommandAnn;
 import phat.structures.houses.House;
 import phat.structures.houses.HouseAppState;
 import phat.util.Lazy;
@@ -45,6 +46,7 @@ import phat.util.SpatialUtils;
  *
  * @author pablo
  */
+@PHATCommandAnn(name="GoIntoBed", type="body", debug = false)
 public class GoIntoBedCommand extends PHATCommand implements AutonomousControlListener, PHATCommandListener {
 
     private String bodyId;
@@ -52,6 +54,9 @@ public class GoIntoBedCommand extends PHATCommand implements AutonomousControlLi
     BodiesAppState bodiesAppState;
     Spatial nearestSeat;
     Node body;
+
+    public GoIntoBedCommand() {
+    }
 
     public GoIntoBedCommand(String bodyId, String bedId, PHATCommandListener listener) {
         super(listener);
@@ -101,15 +106,15 @@ public class GoIntoBedCommand extends PHATCommand implements AutonomousControlLi
             }
             House house = houseAppState.getHouse(body);
             Spatial bedToGo = null;
-            if(bedId == null) {
+            if (bedId == null) {
                 bedToGo = SpatialUtils.getNearest(body, "Bed");
-                if(bedToGo == null) {
+                if (bedToGo == null) {
                     setState(State.Fail);
                     return;
                 }
                 bedId = bedToGo.getUserData("ID");
             } else {
-                bedToGo = SpatialUtils.getSpatialById(house.getRootNode(), bedId);           
+                bedToGo = SpatialUtils.getSpatialById(house.getRootNode(), bedId);
             }
             if (bedToGo != null) {
                 nearestSeat = getNearestSeat((Node) bedToGo, body);
@@ -188,5 +193,19 @@ public class GoIntoBedCommand extends PHATCommand implements AutonomousControlLi
 
     public String getBedId() {
         return bedId;
+    }
+
+    public String getBodyId() {
+        return bodyId;
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory=true, order=2)
+    public void setBedId(String bedId) {
+        this.bedId = bedId;
     }
 }

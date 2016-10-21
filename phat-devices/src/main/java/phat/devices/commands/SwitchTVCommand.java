@@ -26,6 +26,8 @@ import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import com.jme3.texture.Texture;
 import java.util.logging.Level;
+import phat.commands.PHATCommParam;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
 import phat.structures.houses.HouseAppState;
 import phat.util.SpatialFactory;
@@ -35,11 +37,15 @@ import phat.util.SpatialUtils;
  *
  * @author pablo
  */
+@PHATCommandAnn(name = "SwitchTV", type = "device", debug = false)
 public class SwitchTVCommand extends PHATDeviceCommand {
     static String TV_STATE_KEY = "TV_STATE_KEY";
     
     private String tvId;
     private boolean on;
+
+    public SwitchTVCommand() {
+    }
 
     public SwitchTVCommand(String tvId, boolean on) {
         this(tvId, on, null);
@@ -86,5 +92,15 @@ public class SwitchTVCommand extends PHATDeviceCommand {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + tvId + ")";
+    }
+
+    @PHATCommParam(mandatory = true, order = 1)
+    public void setTvId(String tvId) {
+        this.tvId = tvId;
+    }
+
+    @PHATCommParam(mandatory = true, order = 2)
+    public void setOn(boolean on) {
+        this.on = on;
     }
 }

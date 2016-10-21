@@ -29,7 +29,9 @@ import java.util.logging.Level;
 
 import phat.body.BodiesAppState;
 import phat.body.control.physics.PHATCharacterControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
 import phat.structures.houses.House;
 import phat.structures.houses.HouseAppState;
@@ -40,11 +42,15 @@ import phat.util.SpatialUtils;
  *
  * @author pablo
  */
+@PHATCommandAnn(name="SetBodyInHouseSpace", type="body", debug = false)
 public class SetBodyInHouseSpaceCommand extends PHATCommand {
 
     private String bodyId;
-    private String houseId;
+    private String houseId = "House1";
     private String spaceId;
+
+    public SetBodyInHouseSpaceCommand() {
+    }
 
     public SetBodyInHouseSpaceCommand(String bodyId, String houseId, String spaceId) {
         this(bodyId, houseId, spaceId, null);
@@ -102,5 +108,19 @@ public class SetBodyInHouseSpaceCommand extends PHATCommand {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + bodyId + ", " + spaceId + ")";
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    public void setHouseId(String houseId) {
+        this.houseId = "House1";
+    }
+
+    @PHATCommParam(mandatory=true, order=2)
+    public void setSpaceId(String spaceId) {
+        this.spaceId = spaceId;
     }
 }

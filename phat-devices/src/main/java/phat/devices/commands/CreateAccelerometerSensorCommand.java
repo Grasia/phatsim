@@ -25,6 +25,8 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import java.util.logging.Level;
+import phat.commands.PHATCommParam;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
 import phat.devices.DevicesAppState;
 import phat.devices.smartphone.SmartPhoneFactory;
@@ -35,11 +37,15 @@ import phat.util.SpatialUtils;
  *
  * @author pablo
  */
+@PHATCommandAnn(name = "CreateAccelerometerSensor", type = "device", debug = false)
 public class CreateAccelerometerSensorCommand extends PHATDeviceCommand {
 
     private String sensorID;
     private boolean attachCoordinateAxes = false;
     private Vector3f dimensions = new Vector3f(0.018f, 0.02f, 0.001f);
+
+    public CreateAccelerometerSensorCommand() {
+    }
 
     public CreateAccelerometerSensorCommand(String sensorID) {
         this(sensorID, null);
@@ -100,5 +106,15 @@ public class CreateAccelerometerSensorCommand extends PHATDeviceCommand {
 
     public String getSensorID() {
         return sensorID;
+    }
+
+    @PHATCommParam(mandatory = true, order = 1)
+    public void setSensorID(String sensorID) {
+        this.sensorID = sensorID;
+    }
+    
+    @PHATCommParam(mandatory = false, order = 2)
+    public void setDebug(boolean debug) {
+        attachCoordinateAxes = debug;
     }
 }

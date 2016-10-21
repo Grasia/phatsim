@@ -20,32 +20,32 @@
 package phat.body.commands;
 
 import com.jme3.app.Application;
-import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.control.BetterCharacterControl;
 import com.jme3.font.BitmapText;
-import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 
 import java.util.logging.Level;
 
 import phat.body.BodiesAppState;
-import phat.body.control.navigation.navmesh.NavMeshMovementControl;
-import phat.body.control.physics.PHATCharacterControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
-import phat.structures.houses.HouseAppState;
+import phat.commands.PHATCommandAnn;
 import phat.util.SpatialFactory;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name = "BodyLabel", type = "body", debug = true)
 public class BodyLabelCommand extends PHATCommand {
 
     private String bodyId;
     private Boolean show;
+
+    public BodyLabelCommand() {
+    }
 
     public BodyLabelCommand(String bodyId, Boolean show, PHATCommandListener listener) {
         super(listener);
@@ -64,7 +64,7 @@ public class BodyLabelCommand extends PHATCommand {
 
         Node body = bodiesAppState.getBody(bodyId);
         BitmapText bitmapText = getName(body);
-        
+
         if (show && bitmapText == null) {
             Node showedName = SpatialFactory.attachAName(body);
             showedName.setLocalTranslation(0f, 2f, 0f);
@@ -75,11 +75,11 @@ public class BodyLabelCommand extends PHATCommand {
     }
 
     @Override
-	public void interruptCommand(Application app) {
-		show = false;
-		runCommand(app);
-	}
-    
+    public void interruptCommand(Application app) {
+        show = false;
+        runCommand(app);
+    }
+
     private BitmapText getName(Node body) {
         for (Spatial s : body.getChildren()) {
             if (s instanceof BitmapText) {
@@ -90,7 +90,25 @@ public class BodyLabelCommand extends PHATCommand {
         }
         return null;
     }
-    
+
+    public String getBodyId() {
+        return bodyId;
+    }
+
+    public Boolean getShow() {
+        return show;
+    }
+
+    @PHATCommParam(mandatory = true, order = 1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory = true, order = 2)
+    public void setShow(Boolean show) {
+        this.show = show;
+    }
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + bodyId + ",show=" + show + ")";

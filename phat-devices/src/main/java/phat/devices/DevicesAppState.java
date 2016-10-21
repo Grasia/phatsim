@@ -25,6 +25,8 @@ import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppStateManager;
 import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
+import com.jme3.bullet.control.RigidBodyControl;
+import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import java.util.HashMap;
@@ -32,8 +34,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import phat.body.control.physics.PHATCharacterControl;
 import phat.devices.commands.PHATDeviceCommand;
 import phat.devices.smartphone.SmartPhoneFactory;
+import phat.structures.houses.House;
 import phat.structures.houses.HouseAppState;
 import phat.util.SpatialUtils;
 import phat.world.WorldAppState;
@@ -83,6 +87,16 @@ public class DevicesAppState extends AbstractAppState {
         runningCommands.clear();
     }
 
+    public boolean isBodyInAHouse(String bodyId) {
+        Node body = availableDevices.get(bodyId);
+        for (House house : houseAppState.getHouses()) {
+            if (house.isSpatialInHouse(body)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public boolean isBodyInTheWorld(String bodyId) {
         Node body = availableDevices.get(bodyId);
         if (body != null) {
@@ -111,6 +125,18 @@ public class DevicesAppState extends AbstractAppState {
     
     public Set<String> getDeviceIds() {
         return availableDevices.keySet();
+    }
+    
+    public Vector3f getLocation(String bodyId) {
+        Node body = availableDevices.get(bodyId);
+        if (body != null && body.getParent() != null) {
+            if(body.getControl(RigidBodyControl.class) != null) {
+                return body.getControl(RigidBodyControl.class).getPhysicsLocation();
+            } else {
+                return body.getWorldTranslation();
+            }
+        }
+        return null;
     }
 
     @Override

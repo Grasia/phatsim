@@ -28,6 +28,8 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import java.util.List;
 import java.util.logging.Level;
+import phat.commands.PHATCommParam;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
 import phat.devices.DevicesAppState;
 import phat.structures.houses.HouseAppState;
@@ -37,12 +39,16 @@ import phat.util.PhysicsUtils;
  *
  * @author pablo
  */
+@PHATCommandAnn(name = "SetDeviceOnFurniture", type = "device", debug = false)
 public class SetDeviceOnFurnitureCommand extends PHATDeviceCommand {
 
     private String deviceId;
     private String houseId;
     private String furnitureId;
     private String placeId;
+
+    public SetDeviceOnFurnitureCommand() {
+    }
 
     public SetDeviceOnFurnitureCommand(String smartphoneId, String houseId, String furnitureId) {
         this(smartphoneId, houseId, furnitureId, null);
@@ -114,11 +120,6 @@ public class SetDeviceOnFurnitureCommand extends PHATDeviceCommand {
         return placeId;
     }
 
-    public SetDeviceOnFurnitureCommand setPlaceId(String placeId) {
-        this.placeId = placeId;
-        return this;
-    }
-
     @Override
     public void interruptCommand(Application app) {
         setState(State.Interrupted);
@@ -127,5 +128,25 @@ public class SetDeviceOnFurnitureCommand extends PHATDeviceCommand {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + deviceId + ", " + houseId + ", " + furnitureId + ", " + placeId + ")";
+    }
+    
+    @PHATCommParam(mandatory = true, order = 1)
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+    
+    @PHATCommParam(mandatory = true, order = 2)
+    public void setFurnitureId(String furnitureId) {
+        this.furnitureId = furnitureId;
+    }
+
+    @PHATCommParam(mandatory = false, order = 3)
+    public SetDeviceOnFurnitureCommand setPlaceId(String placeId) {
+        this.placeId = placeId;
+        return this;
+    }
+    
+    public void setHouseId(String houseId) {
+        this.houseId = "House1";
     }
 }

@@ -34,17 +34,17 @@ import java.util.logging.Level;
 import phat.agents.actors.ActorFactory;
 import phat.body.BodiesAppState;
 import phat.body.control.navigation.AutonomousControlListener;
-import phat.body.control.physics.PHATCharacterControl;
-import phat.commands.PHATCommand;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
+import phat.commands.PHATCommandAnn;
 import phat.devices.DevicesAppState;
-import phat.util.SpatialUtils;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name = "SetDeviceOnBody", type = "device", debug = false)
 public class SetDeviceOnPartOfBodyCommand extends PHATDeviceCommand implements AutonomousControlListener {
 
     public enum PartOfBody {
@@ -53,6 +53,9 @@ public class SetDeviceOnPartOfBodyCommand extends PHATDeviceCommand implements A
     String bodyId;
     String deviceId;
     PartOfBody partOfBody;
+
+    public SetDeviceOnPartOfBodyCommand() {
+    }
 
     public SetDeviceOnPartOfBodyCommand(String bodyId, String deviceId, PartOfBody partOfBody, PHATCommandListener listener) {
         super(listener);
@@ -155,5 +158,20 @@ public class SetDeviceOnPartOfBodyCommand extends PHATDeviceCommand implements A
 
     public String getEntityId() {
         return deviceId;
+    }
+
+    @PHATCommParam(mandatory = true, order = 1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory = true, order = 2)
+    public void setDeviceId(String deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    @PHATCommParam(mandatory = true, order = 3)
+    public void setPartOfBody(PartOfBody partOfBody) {
+        this.partOfBody = partOfBody;
     }
 }

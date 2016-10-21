@@ -22,7 +22,6 @@ package phat.body.commands;
 import com.jme3.app.Application;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
-import com.jme3.scene.SceneGraphVisitor;
 import com.jme3.scene.Spatial;
 
 import java.util.logging.Level;
@@ -30,22 +29,26 @@ import java.util.logging.Level;
 import phat.body.BodiesAppState;
 import phat.body.control.navigation.AutonomousControlListener;
 import phat.body.control.physics.PHATCharacterControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
-import phat.structures.houses.HouseAppState;
-import phat.util.PHATSceneGraphVisitor;
+import phat.commands.PHATCommandAnn;
 import phat.util.SpatialUtils;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name="RotateToward", type="body", debug = false)
 public class RotateTowardCommand extends PHATCommand implements AutonomousControlListener {
 
     private String bodyId;
     private String entityId;
     private boolean oposite = false;
+
+    public RotateTowardCommand() {
+    }
 
     public RotateTowardCommand(String bodyId, String entityId, PHATCommandListener listener) {
         super(listener);
@@ -103,10 +106,6 @@ public class RotateTowardCommand extends PHATCommand implements AutonomousContro
     public boolean isOposite() {
         return oposite;
     }
-
-    public void setOposite(boolean oposite) {
-        this.oposite = oposite;
-    }
     
     @Override
     public String toString() {
@@ -117,4 +116,20 @@ public class RotateTowardCommand extends PHATCommand implements AutonomousContro
     public void destinationReached(Vector3f destination) {
         setState(State.Success);
     }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory=true, order=2)
+    public void setEntityId(String entityId) {
+        this.entityId = entityId;
+    }
+
+    @PHATCommParam(mandatory=false, order=3)
+    public void setOposite(boolean oposite) {
+        this.oposite = oposite;
+    }
+    
 }

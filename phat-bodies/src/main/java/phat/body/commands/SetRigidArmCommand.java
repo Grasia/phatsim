@@ -20,7 +20,6 @@
 package phat.body.commands;
 
 import com.jme3.animation.Bone;
-import com.jme3.animation.SkeletonControl;
 import com.jme3.app.Application;
 import com.jme3.scene.Node;
 import java.util.logging.Level;
@@ -29,18 +28,24 @@ import phat.body.control.parkinson.LeftHandTremblingControl;
 import phat.body.control.parkinson.RightHandTremblingControl;
 import phat.body.control.parkinson.RigidLeftArmControl;
 import phat.body.control.parkinson.RigidRightArmControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name="SetRigidArm", type="body", debug = false)
 public class SetRigidArmCommand extends PHATCommand {
 
     private String bodyId;
     private Boolean on;
     private Boolean left;
+
+    public SetRigidArmCommand() {
+    }
 
     public SetRigidArmCommand(String bodyId, Boolean on, Boolean left, PHATCommandListener listener) {
         super(listener);
@@ -114,5 +119,20 @@ public class SetRigidArmCommand extends PHATCommand {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + bodyId + ", on=" + on + ", left=" + left + ")";
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory=true, order=2)
+    public void setLeft(Boolean left) {
+        this.left = left;
+    }
+
+    @PHATCommParam(mandatory=true, order=3)
+    public void setOn(Boolean on) {
+        this.on = on;
     }
 }

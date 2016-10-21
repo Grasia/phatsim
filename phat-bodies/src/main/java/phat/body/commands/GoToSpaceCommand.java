@@ -29,9 +29,11 @@ import phat.body.BodiesAppState;
 import phat.body.BodyUtils;
 import phat.body.control.navigation.AutonomousControlListener;
 import phat.body.control.navigation.navmesh.NavMeshMovementControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
+import phat.commands.PHATCommandAnn;
 import phat.structures.houses.House;
 import phat.structures.houses.HouseAppState;
 
@@ -39,11 +41,15 @@ import phat.structures.houses.HouseAppState;
  *
  * @author pablo
  */
+@PHATCommandAnn(name="GoToSpace", type="body", debug = false)
 public class GoToSpaceCommand extends PHATCommand implements AutonomousControlListener, PHATCommandListener {
 
     private String bodyId;
     private String spaceId;
     Application app;
+
+    public GoToSpaceCommand() {
+    }
             
     public GoToSpaceCommand(String bodyId, String spaceId, PHATCommandListener listener) {
         super(listener);
@@ -133,5 +139,15 @@ public class GoToSpaceCommand extends PHATCommand implements AutonomousControlLi
                 setState(State.Fail);
             }
         }
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory=true, order=2)
+    public void setSpaceId(String spaceId) {
+        this.spaceId = spaceId;
     }
 }

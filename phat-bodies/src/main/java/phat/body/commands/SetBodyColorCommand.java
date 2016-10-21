@@ -21,31 +21,34 @@ package phat.body.commands;
 
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
-import com.jme3.bullet.BulletAppState;
 import com.jme3.material.Material;
 import com.jme3.math.ColorRGBA;
-import com.jme3.math.Matrix4f;
-import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import java.util.logging.Level;
 import phat.body.BodiesAppState;
-import phat.body.control.physics.PHATCharacterControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
-import phat.structures.houses.HouseAppState;
-import phat.util.PhysicsUtils;
-import phat.util.SpatialUtils;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name="SetBodyColor", type="body", debug = true)
 public class SetBodyColorCommand extends PHATCommand {
 
     private String bodyId;
     private ColorRGBA color;
+    private float r = -1;
+    private float g = -1;
+    private float b = -1;
+    private float a = -1;
+
+    public SetBodyColorCommand() {
+    }
 
     public SetBodyColorCommand(String bodyId, ColorRGBA color) {
         this(bodyId, color, null);
@@ -68,7 +71,9 @@ public class SetBodyColorCommand extends PHATCommand {
             for(Spatial s: body.getChildren()) {
                 if(s instanceof Geometry) {
                     Geometry geo = (Geometry)s;
-                    //com.jme3.util.TangentBinormalGenerator.generate(geo.getMesh());
+                    if(color == null) {
+                        color = new ColorRGBA(r, g, b, a);
+                    }
                     geo.setMaterial(getMaterial(color, app.getAssetManager()));
                 }
             }
@@ -101,4 +106,31 @@ public class SetBodyColorCommand extends PHATCommand {
     public String toString() {
         return getClass().getSimpleName() + "(" + bodyId + ", height=" + color + ")";
     }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory=true, order=2)
+    public void setR(float r) {
+        this.r = r;
+    }
+
+    @PHATCommParam(mandatory=true, order=3)
+    public void setG(float g) {
+        this.g = g;
+    }
+
+    @PHATCommParam(mandatory=true, order=4)
+    public void setB(float b) {
+        this.b = b;
+    }
+
+    @PHATCommParam(mandatory=true, order=5)
+    public void setA(float a) {
+        this.a = a;
+    }
+    
+    
 }

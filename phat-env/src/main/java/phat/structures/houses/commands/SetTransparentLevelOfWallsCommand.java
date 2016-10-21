@@ -21,14 +21,15 @@ package phat.structures.houses.commands;
 
 import com.jme3.app.Application;
 import com.jme3.asset.AssetManager;
-import com.jme3.material.MatParam;
 import com.jme3.material.Material;
 import com.jme3.material.RenderState.BlendMode;
 import com.jme3.math.ColorRGBA;
 import com.jme3.renderer.queue.RenderQueue.Bucket;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Spatial;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
 import phat.structures.houses.House;
 import phat.structures.houses.HouseAppState;
@@ -38,11 +39,15 @@ import phat.util.SpatialUtils;
  *
  * @author pablo
  */
+@PHATCommandAnn(name="SetWallTransparency", type="env", debug = true)
 public class SetTransparentLevelOfWallsCommand extends PHATCommand {
 
     float level;
-    String houseName;
+    String houseName = "House1";
     Material transMat;
+
+    public SetTransparentLevelOfWallsCommand() {
+    }
 
     public SetTransparentLevelOfWallsCommand(String houseName, float level) {
         this(houseName, level, null);
@@ -105,5 +110,14 @@ public class SetTransparentLevelOfWallsCommand extends PHATCommand {
     @Override
     public void interruptCommand(Application app) {
         setState(PHATCommand.State.Fail);
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setLevel(float level) {
+        this.level = level;
+    }
+
+    public void setHouseName(String houseName) {
+        this.houseName = houseName;
     }
 }

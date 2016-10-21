@@ -44,21 +44,25 @@
         <vendor>GRASIA Research Group</vendor>
         <developername>Pablo Campillo-Sanchez</developername>
         <developeremail>pabcampi@ucm.es</developeremail>
+        <java.version>1.7</java.version>
         <jme.version>3.0.0</jme.version>
-        <sociaal.version>1.0.7</sociaal.version>
+        <sociaal.version>1.0.8-SNAPSHOT</sociaal.version>
         <jali.version>1.0.7</jali.version>
         <jdos.version>1.0.5</jdos.version>
     </properties>
     
     <modules>
         <module>phat-env</module>
-        <module>phat-bodies</module>
         <module>phat-core</module>
         <module>phat-audio</module>
-        <module>phat-interface</module>
         <module>phat-devices</module>
-        <module>phat-server</module>
+        <module>phat-device-server</module>
+        <module>phat-bodies</module>
+        <module>phat-agents</module>
+        <module>phat-api-server</module>
+        <module>phat-gui</module>
         <module>phat-generator</module>
+        <module>phat-console</module>
     </modules>
     
     <reporting>

@@ -34,7 +34,9 @@ import phat.body.control.animation.BasicCharacterAnimControl;
 import phat.body.control.animation.SitDownControl;
 import phat.body.control.navigation.StraightMovementControl;
 import phat.body.control.physics.PHATCharacterControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
 import phat.structures.houses.House;
 import phat.structures.houses.HouseAppState;
@@ -44,6 +46,7 @@ import phat.util.SpatialUtils;
  *
  * @author pablo
  */
+@PHATCommandAnn(name="StandUp", type="body", debug = false)
 public class StandUpCommand extends PHATCommand implements AnimFinishedListener {
 
     private String bodyId;
@@ -51,6 +54,9 @@ public class StandUpCommand extends PHATCommand implements AnimFinishedListener 
     private HouseAppState houseAppState;
     BodiesAppState bodiesAppState;
     Spatial seat;
+
+    public StandUpCommand() {
+    }
 
     public StandUpCommand(String bodyId, PHATCommandListener listener) {
         super(listener);
@@ -156,5 +162,10 @@ public class StandUpCommand extends PHATCommand implements AnimFinishedListener 
     @Override
     public void interruptCommand(Application app) {
         setState(State.Fail);
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
     }
 }

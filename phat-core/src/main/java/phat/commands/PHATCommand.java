@@ -33,18 +33,24 @@ public abstract class PHATCommand {
     protected static final Logger logger = Logger.getLogger(PHATCommand.class.getName());
     PHATCommandListener listener;
 
-    public enum Function {
+    public static enum Function {
 
         Run, Interrupt
     }
     Function function = Function.Run;
 
-    public enum State {
+    public static enum State {
 
         Waiting, Running, Interrupted, Success, Fail
     }
     State state = State.Waiting;
 
+    Object result;
+    
+    public PHATCommand() {
+        
+    }
+    
     public PHATCommand(PHATCommandListener listener) {
         this.listener = listener;
     }
@@ -82,5 +88,17 @@ public abstract class PHATCommand {
 
     public void setFunction(Function function) {
         this.function = function;
+    }
+
+    public PHATCommandListener getListener() {
+        return listener;
+    }
+
+    public void setListener(PHATCommandListener listener) {
+        this.listener = listener;
+    }
+    
+    public Object getResult() {
+        return result;
     }
 }

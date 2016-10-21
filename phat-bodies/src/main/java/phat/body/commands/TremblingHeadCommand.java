@@ -20,23 +20,20 @@
 package phat.body.commands;
 
 import com.jme3.app.Application;
-import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.control.BetterCharacterControl;
-import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import java.util.logging.Level;
 import phat.body.BodiesAppState;
-import phat.body.control.navigation.navmesh.NavMeshMovementControl;
 import phat.body.control.parkinson.HeadTremblingControl;
-import phat.body.control.physics.PHATCharacterControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
-import phat.structures.houses.HouseAppState;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name="TremblingHead", type="body", debug = false)
 public class TremblingHeadCommand extends PHATCommand {
 
     private String bodyId;
@@ -44,6 +41,9 @@ public class TremblingHeadCommand extends PHATCommand {
     private Float minAngle;
     private Float maxAngle;
     private Float angular;
+
+    public TremblingHeadCommand() {
+    }
 
     public TremblingHeadCommand(String bodyId, Boolean on, PHATCommandListener listener) {
         super(listener);
@@ -127,5 +127,15 @@ public class TremblingHeadCommand extends PHATCommand {
     @Override
     public void interruptCommand(Application app) {
         setState(State.Fail);
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory=true, order=2)
+    public void setOn(Boolean on) {
+        this.on = on;
     }
 }

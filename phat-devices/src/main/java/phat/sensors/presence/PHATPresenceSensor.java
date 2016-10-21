@@ -158,6 +158,10 @@ public class PHATPresenceSensor extends Sensor {
         
     }
 
+    public PresenceData getPresenceData() {
+        return presenceData;
+    }
+
     public float gethAngle() {
         return hAngle;
     }

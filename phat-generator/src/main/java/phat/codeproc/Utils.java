@@ -581,6 +581,21 @@ public class Utils {
         }
         return result;
     }
+    
+    public static GraphEntity getFirstEntity(Graph graph, String type) {
+        GraphEntity result = null;
+        try {
+            for (GraphEntity ge : graph.getEntities()) {
+                if (!isTargetOfAnyRelationship(ge) && ge.getType().equals(type)) {
+                    return ge;
+                }
+            }
+        } catch (NullEntity e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return result;
+    }
 
     public static List<GraphEntity> getFirstEntities(Graph graph) {
         List<GraphEntity> result = new ArrayList<>();;
@@ -848,6 +863,15 @@ public class Utils {
             }
         }
         return "";
+    }
+    
+    public static String getAttributeByName(GraphEntity ge, String attributeName, String defaultValue) {
+        for (GraphAttribute ga : ge.getAllAttrs()) {
+            if (ga.getName().equals(attributeName)) {                
+                return (ga.getSimpleValue().equals("")) ? defaultValue : ga.getSimpleValue();
+            }
+        }
+        return defaultValue;
     }
 
     public static String yesNoToTrueFalse(String yesno) {

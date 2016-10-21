@@ -20,17 +20,22 @@
 package phat.structures.houses.commands;
 
 import com.jme3.app.Application;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
 import phat.structures.houses.HouseAppState;
-import phat.structures.houses.HouseFactory;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name="ShowNavMesh", type="env", debug = true)
 public class DebugShowHouseNavMeshCommand extends PHATCommand {
     boolean enable;
+
+    public DebugShowHouseNavMeshCommand() {
+    }
     
     public DebugShowHouseNavMeshCommand(boolean enable) {
         this(enable, null);        
@@ -56,5 +61,10 @@ public class DebugShowHouseNavMeshCommand extends PHATCommand {
     @Override
     public void interruptCommand(Application app) {
         setState(State.Fail);
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setEnable(boolean enable) {
+        this.enable = enable;
     }
 }

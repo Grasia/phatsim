@@ -50,6 +50,15 @@ public class ShowLabelOfObjectById extends PHATCommand {
         super(listener);
         this.objectId = objectId;
         this.show = show;
+        
+        this.debugId = objectId + "BitmapText";
+
+        Node rootNode = SpatialFactory.getRootNode();
+        debugNode = (Node) rootNode.getChild("DebugNode");
+        if (debugNode == null) {
+            debugNode = new Node("DebugNode");
+            rootNode.attachChild(debugNode);
+        }
         logger.log(Level.INFO, "New Command: {0}", new Object[]{this});
     }
 
@@ -63,13 +72,6 @@ public class ShowLabelOfObjectById extends PHATCommand {
         Spatial object = SpatialUtils.getSpatialById(SpatialFactory.getRootNode(), objectId);
 
         if (object != null) {
-            debugId = objectId + "BitmapText";
-            Node rootNode = SpatialFactory.getRootNode();
-            debugNode = (Node) rootNode.getChild("DebugNode");
-            if (debugNode == null) {
-                debugNode = new Node("DebugNode");
-                rootNode.attachChild(debugNode);
-            }
             if (show) {
                 attachName(object);
             } else {
@@ -92,7 +94,7 @@ public class ShowLabelOfObjectById extends PHATCommand {
             BitmapText text = SpatialFactory.attachAName(textNode, name);
             text.setColor(colour);
             text.setLocalScale(scale);
-            Spatial cube = SpatialFactory.createCube(new Vector3f(0.02f,0.02f,0.02f), ColorRGBA.Red);
+            Spatial cube = SpatialFactory.createCube(new Vector3f(0.02f, 0.02f, 0.02f), ColorRGBA.Red);
             cube.setLocalTranslation(offset.negate().addLocal(0f, 0.01f, 0f));
             textNode.attachChild(cube);
             target.attachChild(textNode);
@@ -101,14 +103,14 @@ public class ShowLabelOfObjectById extends PHATCommand {
     }
 
     private void attachName(Spatial s) {
-        Node result = attachName(debugNode, s, objectId);
+        attachName(debugNode, s, debugId);
         if (s instanceof Node) {
             Spatial places = ((Node) s).getChild("Places");
             if (places != null) {
                 Node p = (Node) places;
                 if (p.getChildren() != null) {
                     for (Spatial pos : p.getChildren()) {
-                        attachName(debugNode, pos, objectId+":"+pos.getName());
+                        attachName(debugNode, pos, objectId + ":" + pos.getName());
                     }
                 }
             }
@@ -118,19 +120,35 @@ public class ShowLabelOfObjectById extends PHATCommand {
     private void calculateOffset(Spatial s) {
         Vector3f targetPosition = SpatialUtils.getCenterBoinding(s);
         Vector3f max = SpatialUtils.getMaxBounding(s);
-        
-        System.out.println(s.getName()+":"+targetPosition+":"+max);
+
+        System.out.println(s.getName() + ":" + targetPosition + ":" + max);
 
         targetPosition.setY(max.y);
 
         offset.addLocal(targetPosition.subtract(s.getWorldTranslation()));
-        System.out.println("Offset -> "+offset);
+        System.out.println("Offset -> " + offset);
     }
 
     private void dettachName(Spatial s) {
+        System.out.println("detach = "+s.getName()+", "+debugId);
         Spatial child = debugNode.getChild(debugId);
+        System.out.println("child = "+child);
         if (child != null) {
             child.removeFromParent();
+            if (s instanceof Node) {
+                Spatial places = ((Node) s).getChild("Places");
+                if (places != null) {
+                    Node p = (Node) places;
+                    if (p.getChildren() != null) {
+                        for (Spatial pos : p.getChildren()) {
+                            child = debugNode.getChild(objectId + ":" + pos.getName());
+                            if (child != null) {
+                                child.removeFromParent();
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

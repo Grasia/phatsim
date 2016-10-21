@@ -1,0 +1,78 @@
+@@@program xmlns:xsi="http://www.w3.org/2000/10/XMLSchema-instance"@@@
+ @@@repeat id="programBehavior"@@@
+	@@@saveto@@@
+		@@@file overwrite="yes"@@@
+			@@@v@@@output@@@/v@@@/phat/agents/devices/@@@v@@@seName@@@/v@@@.java@@@/file@@@
+@@@text@@@
+package phat.agents.devices;
+
+import phat.agents.Agent;
+import phat.agents.automaton.*;
+import phat.agents.automaton.devices.*;
+import phat.agents.automaton.conditions.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import phat.PHATInterface;
+import phat.agents.Agent;
+
+public class @@@v@@@seName@@@/v@@@ extends FSMProgramBehavior {
+
+    public @@@v@@@seName@@@/v@@@(Agent agent, String name) {
+        super(agent, name);
+        setMetadata("SOCIAALML_ENTITY_ID", "@@@v@@@pID@@@/v@@@");
+        setMetadata("SOCIAALML_ENTITY_TYPE", "@@@v@@@pType@@@/v@@@");
+        setMetadata("SOCIAALML_DESCRIPTION", "@@@v@@@pDesc@@@/v@@@");
+    }
+    
+    protected void initProgramStates(PHATInterface phatInterface) {
+        @@@repeat id="progStates"@@@
+        ProgState @@@v@@@psID@@@/v@@@ = new ProgState(agent, "@@@v@@@psID@@@/v@@@");
+        @@@v@@@psID@@@/v@@@.setMetadata("SOCIAALML_ENTITY_ID", "@@@v@@@psID@@@/v@@@");
+        @@@v@@@psID@@@/v@@@.setMetadata("SOCIAALML_ENTITY_TYPE", "@@@v@@@psType@@@/v@@@");
+        @@@v@@@psID@@@/v@@@.setMetadata("SOCIAALML_DESCRIPTION", "@@@v@@@psDesc@@@/v@@@");
+        
+        @@@repeat id="TTSAction"@@@
+        Automaton @@@v@@@aID@@@/v@@@  = new TextToSpeachAutomaton(agent, "@@@v@@@aID@@@/v@@@").setDeviceId("@@@v@@@deviceId@@@/v@@@").setMessage("@@@v@@@message@@@/v@@@");
+        @@@v@@@aID@@@/v@@@.setMetadata("SOCIAALML_ENTITY_ID", "@@@v@@@aID@@@/v@@@");
+        @@@v@@@aID@@@/v@@@.setMetadata("SOCIAALML_ENTITY_TYPE", "@@@v@@@aType@@@/v@@@");
+        @@@v@@@aID@@@/v@@@.setMetadata("SOCIAALML_DESCRIPTION", "@@@v@@@aDesc@@@/v@@@");
+        @@@v@@@psID@@@/v@@@.addTransition(@@@v@@@aID@@@/v@@@, false);@@@/repeat@@@
+        
+        @@@repeat id="VibrateAction"@@@
+        Automaton @@@v@@@aID@@@/v@@@  = new VibrateDeviceAutomaton(agent, "@@@v@@@aID@@@/v@@@").setDeviceId("@@@v@@@deviceId@@@/v@@@").setMillis(@@@v@@@millis@@@/v@@@);
+        @@@v@@@aID@@@/v@@@.setMetadata("SOCIAALML_ENTITY_ID", "@@@v@@@aID@@@/v@@@");
+        @@@v@@@aID@@@/v@@@.setMetadata("SOCIAALML_ENTITY_TYPE", "@@@v@@@aType@@@/v@@@");
+        @@@v@@@aID@@@/v@@@.setMetadata("SOCIAALML_DESCRIPTION", "@@@v@@@aDesc@@@/v@@@");        
+        @@@v@@@psID@@@/v@@@.addTransition(@@@v@@@aID@@@/v@@@, false);@@@/repeat@@@
+        
+        @@@repeat id="IncomingCallAction"@@@
+        Automaton @@@v@@@aID@@@/v@@@  = new IncomingCallAutomaton(agent, "@@@v@@@aID@@@/v@@@").setDeviceId("@@@v@@@deviceId@@@/v@@@").setPhoneNumber("@@@v@@@phoneNumber@@@/v@@@");
+        @@@v@@@aID@@@/v@@@.setMetadata("SOCIAALML_ENTITY_ID", "@@@v@@@aID@@@/v@@@");
+        @@@v@@@aID@@@/v@@@.setMetadata("SOCIAALML_ENTITY_TYPE", "@@@v@@@aType@@@/v@@@");
+        @@@v@@@aID@@@/v@@@.setMetadata("SOCIAALML_DESCRIPTION", "@@@v@@@aDesc@@@/v@@@");  
+        @@@v@@@psID@@@/v@@@.addTransition(@@@v@@@aID@@@/v@@@, false);@@@/repeat@@@
+        
+        @@@repeat id="SwitchLightAction"@@@
+        Automaton @@@v@@@aID@@@/v@@@  = new SwitchLightOfRoomAutomaton(agent, "@@@v@@@aID@@@/v@@@")
+                    .setRoomName("@@@v@@@roomId@@@/v@@@").setOnOff("@@@v@@@onOff@@@/v@@@");
+        @@@v@@@aID@@@/v@@@.setMetadata("SOCIAALML_ENTITY_ID", "@@@v@@@aID@@@/v@@@");
+        @@@v@@@aID@@@/v@@@.setMetadata("SOCIAALML_ENTITY_TYPE", "@@@v@@@aType@@@/v@@@");
+        @@@v@@@aID@@@/v@@@.setMetadata("SOCIAALML_DESCRIPTION", "@@@v@@@aDesc@@@/v@@@");  
+        @@@v@@@psID@@@/v@@@.addTransition(@@@v@@@aID@@@/v@@@, false);@@@/repeat@@@
+        @@@/repeat@@@
+        
+        @@@repeat id="progStatesTrans"@@@
+        registerTransition(@@@v@@@stateSource@@@/v@@@, new Transition(@@@v@@@condInst@@@/v@@@, @@@v@@@stateTarget@@@/v@@@));
+        @@@/repeat@@@
+        
+        @@@repeat id="firstProgState"@@@registerStartState(@@@v@@@psID@@@/v@@@);
+    	@@@/repeat@@@
+    }
+}
+@@@/text@@@
+	@@@/saveto@@@
+	@@@/repeat@@@   
+@@@/program@@@

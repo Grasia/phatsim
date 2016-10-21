@@ -45,6 +45,9 @@ public class ConditionGenerator {
     final static String CSYMP_TYPE = "CSymptom";
     final static String CDAY_OF_THE_WEEK = "CDayOfTheWeek";
     final static String CWEIGHT = "CObjWeight";
+    final static String CBODY_STATE = "BodyStateCondition";
+    final static String THING_IN_ROOM_STATE = "IsThingInRoomCondition";
+    final static String NOT_CONDITION = "NotCondition";
 
     public static String generateAndCondition(Collection<GraphEntity> conds) {
         if (!conds.isEmpty()) {
@@ -196,7 +199,7 @@ public class ConditionGenerator {
             } else {
                 sentence = "new IsInsideHouseCondition()";
             }
-            if(type.equals(COUTSIDE_HOUSE_TYPE)) {
+            if (type.equals(COUTSIDE_HOUSE_TYPE)) {
                 sentence = negate(sentence);
             }
             return sentence;
@@ -263,7 +266,71 @@ public class ConditionGenerator {
                         new Object[]{"IntensityLevelField", geCond.getID()});
                 System.exit(-1);
             }
-            return "new SymptomCondition(\"" + symptomName + "\", \"" + symptomLevel + "\")";
+            String bodyId = "";
+            try {
+                GraphAttribute ga = geCond.getAttributeByName("HumanTarget");
+                if (ga.getSimpleValue().equals("")) {
+                    return "new SymptomCondition(\"" + symptomName + "\", \"" + symptomLevel + "\")";
+                }
+                bodyId = Utils.replaceBadChars(ga.getSimpleValue());
+                return "new SymptomCondition(\"" + symptomName + "\", \"" + symptomLevel + "\", \"" + bodyId + "\")";
+            } catch (NotFound ex) {
+                logger.log(Level.SEVERE, "Attribute {0} of entity {1} is not set",
+                        new Object[]{"HumanTarget", geCond.getID()});
+                System.exit(-1);
+            }
+        } else if (type.equals(CBODY_STATE)) {
+            String bodyState = "";
+            try {
+                GraphAttribute ga = geCond.getAttributeByName("BodyStateField");
+                if (ga.getSimpleValue().equals("")) {
+                    throw new NotFound();
+                }
+                bodyState = Utils.replaceBadChars(ga.getSimpleValue());
+            } catch (NotFound ex) {
+                logger.log(Level.SEVERE, "Attribute {0} of entity {1} is not set",
+                        new Object[]{"BodyStateField", geCond.getID()});
+                System.exit(-1);
+            }
+            String bodyId = "";
+            try {
+                GraphAttribute ga = geCond.getAttributeByName("HumanTarget");
+                if (ga.getSimpleValue().equals("")) {
+                    return "new AgentBodyStateCondition(\"" + bodyState + "\")";
+                }
+                bodyId = Utils.replaceBadChars(ga.getSimpleValue());
+                return "new AgentBodyStateCondition(\"" + bodyId + "\", \"" + bodyState + "\")";
+            } catch (NotFound ex) {
+                logger.log(Level.SEVERE, "Attribute {0} of entity {1} is not set",
+                        new Object[]{"IntensityLevelField", geCond.getID()});
+                System.exit(-1);
+            }
+        } else if (type.equals(THING_IN_ROOM_STATE)) {
+            String roomName = "";
+            try {
+                GraphAttribute ga = geCond.getAttributeByName("RoomIdField");
+                if (ga.getSimpleValue().equals("")) {
+                    throw new NotFound();
+                }
+                roomName = Utils.replaceBadChars(ga.getSimpleValue());
+            } catch (NotFound ex) {
+                logger.log(Level.SEVERE, "Attribute {0} of entity {1} is not set",
+                        new Object[]{"RoomIdField", geCond.getID()});
+                System.exit(-1);
+            }
+            String objId = "";
+            try {
+                GraphAttribute ga = geCond.getAttributeByName("ThingField");
+                if (ga.getSimpleValue().equals("")) {
+                    return "new IsObjInRoomCondition(\"" + roomName + "\")";
+                }
+                objId = Utils.replaceBadChars(ga.getSimpleValue());
+                return "new IsObjInRoomCondition(\"" + objId + "\", \"" + roomName + "\")";
+            } catch (NotFound ex) {
+                logger.log(Level.SEVERE, "Attribute {0} of entity {1} is not set",
+                        new Object[]{"ThingField", geCond.getID()});
+                System.exit(-1);
+            }
         } else if (type.equals(CDAY_OF_THE_WEEK)) {
             try {
                 GraphAttribute gaProb = geCond.getAttributeByName("DayOfTheWeekField");
@@ -294,6 +361,15 @@ public class ConditionGenerator {
                         "Entity {0} hasn't got attribute {1}", new Object[]{geCond.getID(), "ProbVarField"});
                 System.exit(-1);
             }
+        } else if (type.equals(NOT_CONDITION)) {
+            GraphEntity condition = Utils.getTargetEntity(geCond, "relatedCondition");
+            if (condition == null) {
+                logger.log(Level.SEVERE,
+                        "{0} Entity is not connected with any condition.",
+                        new Object[]{geCond.getID()});
+                System.exit(-1);
+            }
+            return negate(getCondition(condition));
         } else {
             logger.log(Level.SEVERE, "Condition {0} is not supported.",
                     new Object[]{geCond.getID()});

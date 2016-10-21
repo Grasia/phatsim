@@ -22,28 +22,31 @@ package phat.body.commands;
 import com.jme3.app.Application;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
-import com.jme3.scene.SceneGraphVisitor;
 import com.jme3.scene.Spatial;
 import java.util.logging.Level;
 import phat.body.BodiesAppState;
 import phat.body.control.navigation.AutonomousControlListener;
 import phat.body.control.physics.PHATCharacterControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
-import phat.structures.houses.HouseAppState;
-import phat.util.PHATSceneGraphVisitor;
 import phat.util.SpatialUtils;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name = "AlignBodyWith", type = "body", debug = false)
 public class AlignWithCommand extends PHATCommand implements AutonomousControlListener {
 
     private String bodyId;
     private String entityId;
     private boolean oposite = false;
 
+    public AlignWithCommand() {
+    }
+    
     public AlignWithCommand(String bodyId, String entityId, PHATCommandListener listener) {
         super(listener);
         this.bodyId = bodyId;
@@ -110,5 +113,15 @@ public class AlignWithCommand extends PHATCommand implements AutonomousControlLi
     @Override
     public void destinationReached(Vector3f destination) {
         setState(State.Success);
+    }
+
+    @PHATCommParam(mandatory = true, order = 1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory = true, order = 2)
+    public void setEntityId(String entityId) {
+        this.entityId = entityId;
     }
 }

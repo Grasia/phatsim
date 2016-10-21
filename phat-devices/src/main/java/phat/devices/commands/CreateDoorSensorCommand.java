@@ -24,6 +24,8 @@ import com.jme3.app.SimpleApplication;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
 import java.util.logging.Level;
+import phat.commands.PHATCommParam;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
 import phat.devices.DevicesAppState;
 import phat.sensors.door.PHATDoorSensor;
@@ -34,10 +36,14 @@ import phat.world.WorldAppState;
  *
  * @author pablo
  */
+@PHATCommandAnn(name = "CreateDoorSensor", type = "device", debug = false)
 public class CreateDoorSensorCommand extends PHATDeviceCommand {
 
     private String objectId;
     private String doorSensorId;
+
+    public CreateDoorSensorCommand() {
+    }
 
     public CreateDoorSensorCommand(String objectId, String doorSensorId) {
         this(objectId, doorSensorId, null);
@@ -90,5 +96,15 @@ public class CreateDoorSensorCommand extends PHATDeviceCommand {
 
     public String getDoorSensorId() {
         return doorSensorId;
+    }
+
+    @PHATCommParam(mandatory = true, order = 1)
+    public void setDoorSensorId(String doorSensorId) {
+        this.doorSensorId = doorSensorId;
+    }
+
+    @PHATCommParam(mandatory = true, order = 2)
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
     }
 }

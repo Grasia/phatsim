@@ -14,7 +14,8 @@ import java.rmi.RemoteException;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import phat.agents.Agent;
+import phat.agents.*;
+import phat.agents.devices.*;
 import phat.body.BodiesAppState;
 import phat.body.commands.*;
 import phat.devices.commands.*;
@@ -26,14 +27,14 @@ import phat.world.WorldAppState;
 import phat.structures.houses.HouseFactory;
 import phat.structures.houses.commands.*;
 import phat.PHATInitializer;
-import phat.PHATInterface;
+import phat.GUIPHATInterface;
 import phat.agents.impl.*;
 import phat.agents.automaton.*;
 @@@repeat id="importADL"@@@import phat.agents.automaton.adl.*;
 @@@/repeat@@@
 import phat.agents.automaton.activities.*;
 import phat.util.PHATUtils;
-import phat.ArgumentProcessor;
+import phat.GUIArgumentProcessor;
 import phat.agents.commands.*;
 import phat.body.sensing.hearing.GrammarFacilitator;
 
@@ -46,7 +47,7 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
     public static void main(String[] args) throws RemoteException, AlreadyBoundException, NotBoundException {
     	meq.startServer(MonitorEventQueue.DefaultName);
         Main@@@v@@@simName@@@/v@@@PHATSimulation sim = new Main@@@v@@@simName@@@/v@@@PHATSimulation();
-        PHATInterface phat = new PHATInterface(sim, new ArgumentProcessor(args));
+        GUIPHATInterface phat = new GUIPHATInterface(sim, new GUIArgumentProcessor(args));
         @@@repeat id="setSeed"@@@phat.setSeed(@@@v@@@seedValue@@@/v@@@L);@@@/repeat@@@
         @@@repeat id="setResolution"@@@phat.setDisplayHeight(@@@v@@@displayHeight@@@/v@@@);
         phat.setDisplayWidth(@@@v@@@displayWidth@@@/v@@@);@@@/repeat@@@
@@ -120,8 +121,8 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
     
     @Override
     public void initAgents(AgentConfigurator agentsConfig) {
-        System.setProperty("java.util.logging.config.class", "");
-        Logger.getLogger("").setLevel(Level.OFF);
+        //System.setProperty("java.util.logging.config.class", "");
+        //Logger.getLogger("").setLevel(Level.OFF);
        @@@repeat id="agent"@@@
        {@@@v@@@agentname@@@/v@@@Agent agent = new @@@v@@@agentname@@@/v@@@Agent("@@@v@@@agentname@@@/v@@@","@@@v@@@simName@@@/v@@@" );
        @@@repeat id="ADL"@@@
@@ -144,7 +145,7 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
        ActivateWordsHeardEventsLauncherCommand awhelc = new ActivateWordsHeardEventsLauncherCommand("@@@v@@@agentname@@@/v@@@", null);
        @@@repeat id="wordsToBeListened"@@@
        awhelc.addWord("@@@v@@@word@@@/v@@@");@@@/repeat@@@
-       
+              
         GrammarFacilitator grammarFacilitator = new GrammarFacilitator(System.getProperty("user.dir"), "basic");
         @@@repeat id="sentenceRep"@@@
         grammarFacilitator.add("@@@v@@@sentence@@@/v@@@");@@@/repeat@@@
@@ -152,6 +153,15 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
         awhelc.setGrammarFacilitator(grammarFacilitator);
         agentsConfig.runCommand(awhelc);@@@/repeat@@@
         }@@@/repeat@@@
+        
+        @@@repeat id="deviceAgentRep"@@@
+       DeviceAgent @@@v@@@daID@@@/v@@@ = new DeviceAgent("@@@v@@@daID@@@/v@@@");
+       ParallelAutomaton @@@v@@@daID@@@/v@@@_pa = new ParallelAutomaton(@@@v@@@daID@@@/v@@@, "ParallelAutomaton");
+       @@@repeat id="progsRep"@@@
+       @@@v@@@daID@@@/v@@@_pa.addTransition(new @@@v@@@progId@@@/v@@@(@@@v@@@daID@@@/v@@@, "@@@v@@@progId@@@/v@@@"), true);@@@/repeat@@@
+        @@@v@@@daID@@@/v@@@.setAutomaton(@@@v@@@daID@@@/v@@@_pa);
+        agentsConfig.add(@@@v@@@daID@@@/v@@@);@@@/repeat@@@
+        
        agentsConfig.runCommand(new ActivateActuatorEventsLauncherCommand(null));
        @@@repeat id="activateCallStates"@@@
        agentsConfig.runCommand(new ActivateCallStateEventsLauncherCommand(null));@@@/repeat@@@
@@ -191,14 +201,14 @@ import phat.world.WorldAppState;
 import phat.structures.houses.HouseFactory;
 import phat.structures.houses.commands.*;
 import phat.PHATInitializer;
-import phat.PHATInterface;
+import phat.GUIPHATInterface;
 import phat.agents.impl.*;
 import phat.agents.automaton.*;
 @@@repeat id="importADL"@@@import phat.agents.automaton.adl.*;
 @@@/repeat@@@
 import phat.agents.automaton.activities.*;
 import phat.util.PHATUtils;
-import phat.ArgumentProcessor;
+import phat.GUIArgumentProcessor;
 import phat.agents.commands.*;
 
 /**
@@ -210,7 +220,7 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices implements PHATIn
     public static void main(String[] args) throws RemoteException, AlreadyBoundException, NotBoundException {
     	meq.startServer(MonitorEventQueue.DefaultName);
         Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices sim = new Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices();
-        PHATInterface phat = new PHATInterface(sim, new ArgumentProcessor(args));
+        GUIPHATInterface phat = new GUIPHATInterface(sim, new GUIArgumentProcessor(args));
         @@@repeat id="setSeed"@@@phat.setSeed(@@@v@@@seedValue@@@/v@@@L);@@@/repeat@@@
         phat.start();
     }

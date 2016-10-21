@@ -24,6 +24,7 @@ import ingenias.exception.NullEntity;
 import ingenias.generator.browser.Browser;
 import ingenias.generator.browser.Graph;
 import ingenias.generator.browser.GraphAttribute;
+import ingenias.generator.browser.GraphCollection;
 import ingenias.generator.browser.GraphEntity;
 import ingenias.generator.datatemplate.Repeat;
 import ingenias.generator.datatemplate.Sequences;
@@ -42,6 +43,7 @@ public class SimulationGenerator {
     static final String ADLProfile_SPEC_DIAGRAM = "ADLProfile";
     static final String SIMULATION_DIAGRAM = "SimulationDiagram";
     static final String HUMAN_INITIALIZATION_OBJ = "HumanInitialization";
+    static final String INIT_PROGRAM_POOL = "InitProgramPool";
     Browser browser;
 
     public SimulationGenerator(Browser browser) {
@@ -60,8 +62,31 @@ public class SimulationGenerator {
             generatePeopleInitialization(simDiag, simInitRep);
             generateCameraPositionToBody(simDiag, simInitRep);
             generateSmartphones(simId, simDiag, simInitRep);
+            generateDeviceAgentsInitialization(simDiag, simInitRep);
         }
 
+    }
+
+    private void generateDeviceAgentsInitialization(Graph simDiag, Repeat simInitRep)
+            throws NullEntity, NotFound {
+        for (GraphEntity progPool : Utils.getEntities(simDiag, INIT_PROGRAM_POOL)) {
+            for (GraphEntity deviceEntity : Utils.getTargetsEntity(progPool, "device")) {
+                String deviceId = deviceEntity.getID();
+                Repeat agentRep = new Repeat("deviceAgentRep");
+                simInitRep.add(agentRep);
+                simInitRep.add(new Var("daID", deviceId));
+                
+                GraphCollection gc = progPool.getAttributeByName("ProgramPoolField").getCollectionValue();
+                for(int i = 0; i < gc.size(); i++) {
+                    String progId = gc.getElementAt(i).getAttributeByName("modelID").getSimpleValue();
+                    
+                    Repeat progRep = new Repeat("progsRep");
+                    progRep.add(new Var("progId", progId));
+                    agentRep.add(progRep);
+                }
+            }
+
+        }
     }
 
     private void generatePeopleInitialization(Graph simDiag, Repeat simInitRep)

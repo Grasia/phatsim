@@ -24,17 +24,23 @@ import com.jme3.scene.Node;
 import java.util.logging.Level;
 import phat.body.BodiesAppState;
 import phat.body.control.parkinson.ShortStepsControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name="SetShortSteps", type="body", debug = false)
 public class SetShortStepsCommand  extends PHATCommand {
 
     private String bodyId;
     private Boolean on;
+
+    public SetShortStepsCommand() {
+    }
 
     public SetShortStepsCommand(String bodyId, Boolean on, PHATCommandListener listener) {
         super(listener);
@@ -85,5 +91,15 @@ public class SetShortStepsCommand  extends PHATCommand {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + bodyId + ", on=" + on + ")";
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory=true, order=2)
+    public void setOn(Boolean on) {
+        this.on = on;
     }
 }

@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 import phat.structures.houses.HouseFactory;
 import phat.structures.houses.TestHouse;
 import phat.structures.houses.commands.CreateHouseCommand;
-import phat.structures.houses.commands.SwitchLight;
+import phat.structures.houses.commands.SwitchLightOfRoomCommand;
 import phat.world.WorldAppState;
 
 /**
@@ -74,8 +74,8 @@ public class TestLights  extends SimpleApplication {
         seAPI.getWorldAppState().setLandType(WorldAppState.LandType.Grass);
         
         seAPI.getHouseAppState().runCommand(new CreateHouseCommand("House1", HouseFactory.HouseType.House3room2bath));
-        seAPI.getHouseAppState().runCommand(new SwitchLight("House1", "BedRoom1", true));
-        seAPI.getHouseAppState().runCommand(new SwitchLight("House1", "BathRoom1", true));
+        seAPI.getHouseAppState().runCommand(new SwitchLightOfRoomCommand("House1", "BedRoom1", true));
+        seAPI.getHouseAppState().runCommand(new SwitchLightOfRoomCommand("House1", "BathRoom1", true));
         initialized = true;
     }
     

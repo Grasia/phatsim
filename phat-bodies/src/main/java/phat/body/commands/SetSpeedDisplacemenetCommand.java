@@ -20,24 +20,28 @@
 package phat.body.commands;
 
 import com.jme3.app.Application;
-import com.jme3.bullet.BulletAppState;
 import com.jme3.scene.Node;
 
 import java.util.logging.Level;
 
 import phat.body.BodiesAppState;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
-import phat.structures.houses.HouseAppState;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name="SetDisplSpeed", type="body", debug = false)
 public class SetSpeedDisplacemenetCommand extends PHATCommand {
 
     private String bodyId;
     private float speed;
+
+    public SetSpeedDisplacemenetCommand() {
+    }
 
     public SetSpeedDisplacemenetCommand(String bodyId, float speed) {
         this(bodyId, speed, null);
@@ -72,5 +76,15 @@ public class SetSpeedDisplacemenetCommand extends PHATCommand {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + bodyId + ", speed=" + speed + ")";
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory=true, order=2)
+    public void setSpeed(float speed) {
+        this.speed = speed;
     }
 }

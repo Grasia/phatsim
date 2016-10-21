@@ -22,18 +22,12 @@ package phat.body.commands;
 import com.jme3.app.Application;
 import com.jme3.bullet.control.KinematicRagdollControl;
 import com.jme3.scene.Node;
-import java.io.File;
-import java.io.IOException;
 
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import jme3tools.optimize.GeometryBatchFactory;
-import phat.audio.filters.ResampleAudioFilter;
-import phat.audio.filters.WhiteNoiseGenerator;
-import phat.audio.listeners.AudioSourceWaveFileWriter;
-import phat.audio.listeners.XYRMSAudioChart;
 
 import phat.body.BodiesAppState;
+import phat.body.BodiesAppState.BodyType;
 import phat.body.BodyUtils;
 import phat.body.control.animation.BasicCharacterAnimControl;
 import phat.body.control.navigation.PersuitAndAvoidControl;
@@ -43,17 +37,22 @@ import phat.bullet.control.ragdoll.BVHRagdollPreset;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommand.State;
 import phat.body.control.animation.FootStepsControl;
-import phat.body.sensing.hearing.HearingSense;
-import phat.sensors.microphone.MicrophoneControl;
+import phat.commands.PHATCommParam;
+import phat.commands.PHATCommandAnn;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name = "CreateBody", type = "body", debug = false)
 public class CreateBodyTypeCommand extends PHATCommand {
 
     private String bodyId;
     private String urlResource;
+    private BodyType bodyType;
+
+    public CreateBodyTypeCommand() {
+    }
 
     public CreateBodyTypeCommand(String bodyId, String urlResource) {
         super(null);
@@ -106,15 +105,26 @@ public class CreateBodyTypeCommand extends PHATCommand {
         //body.addControl(new RandomWalkControl());
         body.addControl(new PersuitAndAvoidControl());
         //body.addControl(new LookAtControl());
-        
+
         bodiesAppState.addBody(bodyId, body);
 
         //PhysicsUtils.setHighPhysicsPrecision(body);
         //body.addControl(new VisionControl());
-
         BodyUtils.setBodyPosture(body, BodyUtils.BodyPosture.Standing);
 
         setState(State.Success);
+    }
+
+    public String getUrl(BodyType type) {
+        switch (type) {
+            case Elder:
+                return "Models/People/Elder/Elder.j3o";
+            case ElderLP:
+                return "Models/male/male.j3o";
+            case Young:
+                return "Models/People/Male/Male.j3o";
+        }
+        return null;
     }
 
     @Override
@@ -125,5 +135,15 @@ public class CreateBodyTypeCommand extends PHATCommand {
     @Override
     public String toString() {
         return getClass().getSimpleName() + "(" + bodyId + ", " + urlResource + ")";
+    }
+
+    @PHATCommParam(mandatory = true, order = 1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory = true, order = 2)
+    public void setBodyType(BodyType bodyType) {
+        this.bodyType = bodyType;
     }
 }

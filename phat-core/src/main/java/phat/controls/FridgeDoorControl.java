@@ -39,9 +39,9 @@ import java.io.IOException;
 public class FridgeDoorControl extends AbstractControl {
 
     public static enum STATE {
-        OPEN, CLOSE
+        OPENED, CLOSED
     };
-    FridgeDoorControl.STATE state = FridgeDoorControl.STATE.CLOSE;
+    FridgeDoorControl.STATE state = FridgeDoorControl.STATE.CLOSED;
     boolean stateChanged = false;
     float angularSpeed = FastMath.QUARTER_PI;
     float openingAngle = FastMath.HALF_PI * 0.7f;
@@ -51,14 +51,14 @@ public class FridgeDoorControl extends AbstractControl {
         if (stateChanged) {
             spatial.getLocalRotation().toAngles(angles);
             float rot = tpf * angularSpeed;
-            if (state.equals(FridgeDoorControl.STATE.CLOSE)) {
+            if (state.equals(FridgeDoorControl.STATE.CLOSED)) {
                 angles[2] -= rot;
                 if (angles[2] < 0f) {
                     angles[2] = 0f;
                     stateChanged = false;
                 }
                 spatial.setLocalRotation(new Quaternion(angles));
-            } else if (state.equals(FridgeDoorControl.STATE.OPEN)) {
+            } else if (state.equals(FridgeDoorControl.STATE.OPENED)) {
                 angles[2] += rot;
                 if (angles[2] > openingAngle) {
                     angles[2] = openingAngle;
@@ -126,7 +126,7 @@ public class FridgeDoorControl extends AbstractControl {
     public void read(JmeImporter im) throws IOException {
         super.read(im);
         InputCapsule ic = im.getCapsule(this);
-        state = ic.readEnum("state", FridgeDoorControl.STATE.class, FridgeDoorControl.STATE.CLOSE);
+        state = ic.readEnum("state", FridgeDoorControl.STATE.class, FridgeDoorControl.STATE.CLOSED);
         angularSpeed = ic.readFloat("angularSpeed", FastMath.HALF_PI * 0.7f);
         openingAngle = ic.readFloat("openingAngle", FastMath.HALF_PI * 0.7f);
     }
@@ -135,7 +135,7 @@ public class FridgeDoorControl extends AbstractControl {
     public void write(JmeExporter ex) throws IOException {
         super.write(ex);
         OutputCapsule oc = ex.getCapsule(this);
-        oc.write(state, "state", FridgeDoorControl.STATE.CLOSE);
+        oc.write(state, "state", FridgeDoorControl.STATE.CLOSED);
         oc.write(angularSpeed, "angularSpeed", FastMath.QUARTER_PI);
         oc.write(openingAngle, "openingAngle", FastMath.HALF_PI * 0.7f);
     }

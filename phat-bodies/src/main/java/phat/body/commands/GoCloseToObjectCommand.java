@@ -29,110 +29,135 @@ import java.util.logging.Level;
 import phat.body.BodiesAppState;
 import phat.body.control.navigation.AutonomousControlListener;
 import phat.body.control.navigation.navmesh.NavMeshMovementControl;
-import phat.body.control.physics.PHATCharacterControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
+import phat.commands.PHATCommandAnn;
 import phat.util.SpatialUtils;
 
 /**
- * 
+ *
  * @author pablo
  */
+@PHATCommandAnn(name = "GoCloseToObject", type = "body", debug = false)
 public class GoCloseToObjectCommand extends PHATCommand implements
-		AutonomousControlListener {
+        AutonomousControlListener {
 
-	String bodyId;
-	String targetObjectId;
-	float minDistance = 0.5f;
+    String bodyId;
+    String targetObjectId;
+    float minDistance = 0.5f;
 
-	public GoCloseToObjectCommand(String bodyId, String targetObjectId,
-			PHATCommandListener listener) {
-		super(listener);
-		this.bodyId = bodyId;
-		this.targetObjectId = targetObjectId;
-		logger.log(Level.INFO, "New Command: {0}", new Object[] { this });
-	}
+    public GoCloseToObjectCommand() {
+    }
 
-	public GoCloseToObjectCommand(String bodyId, String targetObjectId) {
-		this(bodyId, targetObjectId, null);
-	}
+    public GoCloseToObjectCommand(String bodyId, String targetObjectId,
+            PHATCommandListener listener) {
+        super(listener);
+        this.bodyId = bodyId;
+        this.targetObjectId = targetObjectId;
+        logger.log(Level.INFO, "New Command: {0}", new Object[]{this});
+    }
 
-	@Override
-	public void runCommand(Application app) {
-		BodiesAppState bodiesAppState = app.getStateManager().getState(
-				BodiesAppState.class);
+    public GoCloseToObjectCommand(String bodyId, String targetObjectId) {
+        this(bodyId, targetObjectId, null);
+    }
 
-		Node body = bodiesAppState.getBody(bodyId);
+    @Override
+    public void runCommand(Application app) {
+        BodiesAppState bodiesAppState = app.getStateManager().getState(
+                BodiesAppState.class);
 
-		if (body != null && body.getParent() != null) {
-			Node rootNode = SpatialUtils.getRootNode(body);
-			Spatial targetSpatial = SpatialUtils.getSpatialById(rootNode,
-					targetObjectId);
-			System.out.println("TargetSpatial = " + targetSpatial);
-			if (targetSpatial != null) {
-				System.out.println("Object " + targetObjectId + " found!");
-				NavMeshMovementControl nmmc = body
-						.getControl(NavMeshMovementControl.class);
-				if (nmmc != null) {
-					System.out.println("Body " + bodyId
-							+ " has NavMeshMovementControl!");
-					System.out.println("GoCloseToObjectCommand: minDistance = "
-							+ minDistance);
-					nmmc.setMinDistance(minDistance);
-					// Vector3f loc =
-					// SpatialUtils.getCenterBoinding(targetSpatial);
-					Vector3f loc = targetSpatial.getWorldTranslation();
-                                        System.out.println("Location = "+loc);
-					boolean reachable = nmmc.moveTo(loc);
-					System.out.println("Loc = " + loc);
-					System.out.println("Object " + targetObjectId
-							+ " reachable = " + reachable + "!");
-					if (reachable) {
-						nmmc.setListener(this);
-						return;
-					}
-				}
-			} else {
-				System.out.println("Target not found!");
-			}
-		}
-		setState(State.Fail);
-	}
+        Node body = bodiesAppState.getBody(bodyId);
 
-	@Override
-	public void interruptCommand(Application app) {
-		BodiesAppState bodiesAppState = app.getStateManager().getState(
-				BodiesAppState.class);
+        if (body != null && body.getParent() != null) {
+            Node rootNode = SpatialUtils.getRootNode(body);
+            Spatial targetSpatial = SpatialUtils.getSpatialById(rootNode,
+                    targetObjectId);
+            System.out.println("TargetSpatial = " + targetSpatial);
+            if (targetSpatial != null) {
+                System.out.println("Object " + targetObjectId + " found!");
+                NavMeshMovementControl nmmc = body
+                        .getControl(NavMeshMovementControl.class);
+                if (nmmc != null) {
+                    System.out.println("Body " + bodyId
+                            + " has NavMeshMovementControl!");
+                    System.out.println("GoCloseToObjectCommand: minDistance = "
+                            + minDistance);
+                    nmmc.setMinDistance(minDistance);
+                    // Vector3f loc =
+                    // SpatialUtils.getCenterBoinding(targetSpatial);
+                    Vector3f loc = targetSpatial.getWorldTranslation();
+                    System.out.println("Location = " + loc);
+                    boolean reachable = nmmc.moveTo(loc);
+                    System.out.println("Loc = " + loc);
+                    System.out.println("Object " + targetObjectId
+                            + " reachable = " + reachable + "!");
+                    if (reachable) {
+                        nmmc.setListener(this);
+                        return;
+                    }
+                }
+            } else {
+                System.out.println("Target not found!");
+            }
+        }
+        setState(State.Fail);
+    }
 
-		Node body = bodiesAppState.getBody(bodyId);
+    @Override
+    public void interruptCommand(Application app) {
+        BodiesAppState bodiesAppState = app.getStateManager().getState(
+                BodiesAppState.class);
 
-		if (body != null && body.getParent() != null) {
-			NavMeshMovementControl nmmc = body
-					.getControl(NavMeshMovementControl.class);
-			nmmc.moveTo(null);
-			setState(State.Interrupted);
-			return;
-		}
-		setState(State.Fail);
-	}
+        Node body = bodiesAppState.getBody(bodyId);
 
-	@Override
-	public void destinationReached(Vector3f destination) {
-		setState(State.Success);
-	}
+        if (body != null && body.getParent() != null) {
+            NavMeshMovementControl nmmc = body
+                    .getControl(NavMeshMovementControl.class);
+            nmmc.moveTo(null);
+            setState(State.Interrupted);
+            return;
+        }
+        setState(State.Fail);
+    }
 
-	@Override
-	public String toString() {
-		return getClass().getSimpleName() + "(" + bodyId + ",targetBodyId="
-				+ targetObjectId + ",minDistance=" + minDistance + ")";
-	}
+    @Override
+    public void destinationReached(Vector3f destination) {
+        setState(State.Success);
+    }
 
-	public float getMinDistance() {
-		return minDistance;
-	}
+    @Override
+    public String toString() {
+        return getClass().getSimpleName() + "(" + bodyId + ",targetBodyId="
+                + targetObjectId + ",minDistance=" + minDistance + ")";
+    }
 
-	public void setMinDistance(float minDistance) {
-		this.minDistance = minDistance;
-	}
+    public float getMinDistance() {
+        return minDistance;
+    }
+
+    public String getBodyId() {
+        return bodyId;
+    }
+
+    public String getTargetObjectId() {
+        return targetObjectId;
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory=true, order=2)
+    public void setTargetObjectId(String targetObjectId) {
+        this.targetObjectId = targetObjectId;
+    }
+
+    @PHATCommParam(mandatory=false, order=3)
+    public void setMinDistance(float minDistance) {
+        this.minDistance = minDistance;
+    }
+
 }

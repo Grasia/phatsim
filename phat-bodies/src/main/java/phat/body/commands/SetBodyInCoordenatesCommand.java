@@ -21,17 +21,16 @@ package phat.body.commands;
 
 import com.jme3.app.Application;
 import com.jme3.bullet.BulletAppState;
-import com.jme3.bullet.control.BetterCharacterControl;
-import com.jme3.bullet.control.PhysicsControl;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
-import com.jme3.scene.Spatial;
 
 import java.util.logging.Level;
 
 import phat.body.BodiesAppState;
 import phat.body.control.physics.PHATCharacterControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
 import phat.structures.houses.HouseAppState;
 import phat.util.PhysicsUtils;
@@ -40,10 +39,17 @@ import phat.util.PhysicsUtils;
  *
  * @author pablo
  */
+@PHATCommandAnn(name="SetBodyXYZ", type="body", debug = false)
 public class SetBodyInCoordenatesCommand extends PHATCommand {
 
     private String bodyId;
     private Vector3f location;
+    private float x = -1;
+    private float y = -1;
+    private float z = -1;
+
+    public SetBodyInCoordenatesCommand() {
+    }
 
     public SetBodyInCoordenatesCommand(String bodyId, Vector3f location) {
         this(bodyId, location, null);
@@ -71,6 +77,9 @@ public class SetBodyInCoordenatesCommand extends PHATCommand {
             PhysicsUtils.addAllPhysicsControls(body, bulletAppState);
             //bulletAppState.getPhysicsSpace().addAll(body);
 
+            if(location == null) {
+                location = new Vector3f(x, y, z);
+            }
             if(cc != null)
                 cc.warp(location);
             else
@@ -90,4 +99,26 @@ public class SetBodyInCoordenatesCommand extends PHATCommand {
     public String toString() {
         return getClass().getSimpleName() + "(" + bodyId + ", " + location + ")";
     }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory=true, order=2)
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    @PHATCommParam(mandatory=true, order=3)
+    public void setY(float y) {
+        this.y = y;
+    }
+
+    @PHATCommParam(mandatory=true, order=4)
+    public void setZ(float z) {
+        this.z = z;
+    }
+    
+    
 }

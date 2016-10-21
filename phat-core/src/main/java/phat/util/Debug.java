@@ -66,7 +66,7 @@ public class Debug {
     public static void attachCoordinateAxes(Vector3f pos, float size, AssetManager assetManager, Node rootNode) {
         Arrow arrow = new Arrow(Vector3f.UNIT_X.mult(size));
         arrow.setLineWidth(4); // make arrow thicker
-        putShape(arrow, ColorRGBA.Red, assetManager, rootNode).setLocalTranslation(pos);
+        putShape(arrow, ColorRGBA.Green, assetManager, rootNode).setLocalTranslation(pos);
 
         arrow = new Arrow(Vector3f.UNIT_Y.mult(size));
         arrow.setLineWidth(4); // make arrow thicker
@@ -74,7 +74,7 @@ public class Debug {
 
         arrow = new Arrow(Vector3f.UNIT_Z.mult(size));
         arrow.setLineWidth(4); // make arrow thicker
-        putShape(arrow, ColorRGBA.Green, assetManager, rootNode).setLocalTranslation(pos);
+        putShape(arrow, ColorRGBA.Red, assetManager, rootNode).setLocalTranslation(pos);
     }
 
     // code based on http://jmonkeyengine.org/wiki/doku.php/jme3:advanced:debugging

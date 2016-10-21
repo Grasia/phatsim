@@ -23,7 +23,6 @@ import com.jme3.app.Application;
 import com.jme3.app.SimpleApplication;
 import com.jme3.material.Material;
 import com.jme3.math.FastMath;
-import com.jme3.math.Quaternion;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
@@ -31,6 +30,8 @@ import com.jme3.scene.Spatial;
 import com.jme3.scene.shape.Quad;
 import java.util.List;
 import java.util.logging.Level;
+import phat.commands.PHATCommParam;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
 import phat.devices.DevicesAppState;
 import phat.devices.smartphone.SmartPhoneFactory;
@@ -42,6 +43,7 @@ import phat.util.SpatialUtils;
  *
  * @author pablo
  */
+@PHATCommandAnn(name = "CreateDeviceSensor", type = "device", debug = false)
 public class CreateSmartphoneCommand extends PHATDeviceCommand {
 
     private String smartphoneId;
@@ -50,6 +52,12 @@ public class CreateSmartphoneCommand extends PHATDeviceCommand {
     private boolean microphoneSensor = true;
     private boolean attachCoordinateAxes = false;
     private Vector3f dimensions = new Vector3f(0.048f, 0.08f, 0.002f);
+    private float dx = -1;
+    private float dy = -1;
+    private float dz = -1;
+
+    public CreateSmartphoneCommand() {
+    }
 
     public CreateSmartphoneCommand(String smartphoneId) {
         this(smartphoneId, null);
@@ -72,6 +80,9 @@ public class CreateSmartphoneCommand extends PHATDeviceCommand {
             smartphone = (Node) device;
             fixScreen(device);
         } else {
+            if(dx != -1 && dy != -1 && dz != -1) {
+                dimensions.set(dx, dy, dz);
+            }
             smartphone = SmartPhoneFactory.createSmartphone(smartphoneId, dimensions);
         }
         smartphone.setName(smartphoneId);
@@ -144,27 +155,47 @@ public class CreateSmartphoneCommand extends PHATDeviceCommand {
         return cameraSensor;
     }
 
-    public void setCameraSensor(boolean cameraSensor) {
-        this.cameraSensor = cameraSensor;
-    }
-
     public boolean isAccelerometerSensor() {
         return accelerometerSensor;
-    }
-
-    public void setAccelerometerSensor(boolean accelerometerSensor) {
-        this.accelerometerSensor = accelerometerSensor;
     }
 
     public boolean isMicrophoneSensor() {
         return microphoneSensor;
     }
 
-    public void setMicrophoneSensor(boolean microphoneSensor) {
-        this.microphoneSensor = microphoneSensor;
-    }
-
     public String getSmartphoneId() {
         return smartphoneId;
+    }
+
+    @PHATCommParam(mandatory = true, order = 1)
+    public void setSmartphoneId(String smartphoneId) {
+        this.smartphoneId = smartphoneId;
+    }
+
+    @PHATCommParam(mandatory = false, order = 2)
+    public void setDx(float dx) {
+        this.dx = dx;
+    }
+
+    @PHATCommParam(mandatory = false, order = 3)
+    public void setDy(float dy) {
+        this.dy = dy;
+    }
+
+    @PHATCommParam(mandatory = false, order = 4)
+    public void setDz(float dz) {
+        this.dz = dz;
+    }
+
+    public void setCameraSensor(boolean cameraSensor) {
+        this.cameraSensor = cameraSensor;
+    }
+
+    public void setAccelerometerSensor(boolean accelerometerSensor) {
+        this.accelerometerSensor = accelerometerSensor;
+    }
+
+    public void setMicrophoneSensor(boolean microphoneSensor) {
+        this.microphoneSensor = microphoneSensor;
     }
 }

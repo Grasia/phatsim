@@ -29,7 +29,9 @@ import com.jme3.scene.Node;
 import com.jme3.scene.debug.SkeletonDebugger;
 import java.util.logging.Level;
 import phat.body.BodiesAppState;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
+import phat.commands.PHATCommandAnn;
 import phat.commands.PHATCommandListener;
 import phat.util.SpatialFactory;
 
@@ -37,12 +39,16 @@ import phat.util.SpatialFactory;
  *
  * @author sala26
  */
+@PHATCommandAnn(name = "DebugSkeleton", type = "body", debug = true)
 public class DebugSkeletonCommand extends PHATCommand {
 
     private String bodyId;
     private Boolean show;
     private AssetManager assetManager;
     SkeletonDebugger skeletonDebug;
+
+    public DebugSkeletonCommand() {
+    }
 
     public DebugSkeletonCommand(String bodyId, Boolean show, PHATCommandListener listener) {
         super(listener);
@@ -93,5 +99,15 @@ public class DebugSkeletonCommand extends PHATCommand {
             skeletonDebug.setMaterial(mat);
         }
         body.attachChild(skeletonDebug);
+    }
+
+    @PHATCommParam(mandatory = true, order = 1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory = true, order = 2)
+    public void setShow(Boolean show) {
+        this.show = show;
     }
 }

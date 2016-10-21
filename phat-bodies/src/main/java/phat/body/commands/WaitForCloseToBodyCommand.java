@@ -20,7 +20,6 @@
 package phat.body.commands;
 
 import com.jme3.app.Application;
-import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import java.util.Observable;
 import java.util.Observer;
@@ -28,18 +27,18 @@ import java.util.Observer;
 import java.util.logging.Level;
 
 import phat.body.BodiesAppState;
-import phat.body.control.navigation.AutonomousControlListener;
-import phat.body.control.navigation.navmesh.NavMeshMovementControl;
-import phat.body.control.physics.PHATCharacterControl;
 import phat.body.sensing.BasicObjectPerceptionControl;
+import phat.commands.PHATCommParam;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
+import phat.commands.PHATCommandAnn;
 
 /**
  *
  * @author pablo
  */
+@PHATCommandAnn(name="WaitForBody", type="body", debug = false)
 public class WaitForCloseToBodyCommand extends PHATCommand implements
         Observer {
 
@@ -50,6 +49,9 @@ public class WaitForCloseToBodyCommand extends PHATCommand implements
     
     BodiesAppState bodiesAppState;
     Node body;
+
+    public WaitForCloseToBodyCommand() {
+    }
     
     public WaitForCloseToBodyCommand(String bodyId, String targetBodyId,
             PHATCommandListener listener) {
@@ -106,5 +108,15 @@ public class WaitForCloseToBodyCommand extends PHATCommand implements
     public void update(Observable o, Object arg) {
         removePerceptionControl();
         setState(phat.commands.PHATCommand.State.Success);
+    }
+
+    @PHATCommParam(mandatory=true, order=1)
+    public void setBodyId(String bodyId) {
+        this.bodyId = bodyId;
+    }
+
+    @PHATCommParam(mandatory=true, order=2)
+    public void setTargetBodyId(String targetBodyId) {
+        this.targetBodyId = targetBodyId;
     }
 }

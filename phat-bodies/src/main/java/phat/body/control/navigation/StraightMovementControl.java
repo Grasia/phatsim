@@ -107,7 +107,7 @@ public class StraightMovementControl extends AbstractControl implements Autonomo
                 spatial.removeControl(this);
                 return;
             }
-            
+
             move(tpf);
             jumpIfNecessary(tpf);
         } else {
@@ -142,7 +142,7 @@ public class StraightMovementControl extends AbstractControl implements Autonomo
                 return;
             }
             characterControl.setViewDirection(targetDir);
-            characterControl.setLocation(getLocation().add(targetDir.multLocal(getSpeed()*tpf)));
+            characterControl.setLocation(getLocation().add(targetDir.multLocal(getSpeed() * tpf)));
             characterControl.setWalkDirection(Vector3f.ZERO);
             return;
         }
@@ -150,7 +150,7 @@ public class StraightMovementControl extends AbstractControl implements Autonomo
         currentDir.cross(aux, angRes);
         if (angOri.add(angRes).length() < angOri.length()) {
             characterControl.setViewDirection(targetDir);
-            characterControl.setWalkDirection(targetDir.multLocal(getSpeed()*tpf));
+            characterControl.setWalkDirection(targetDir.multLocal(getSpeed() * tpf));
         } else {
             effectDir.mult(getSpeed(diff, distanceToTarget), aux);
             characterControl.setViewDirection(effectDir);
@@ -167,8 +167,10 @@ public class StraightMovementControl extends AbstractControl implements Autonomo
             timeToJump -= tpf;
             if (timeToJump <= 0f) {
                 //setGravity(new Vector3f(0f, -0.1f, 0f));
-                System.out.println("JUMP!!");
-                spatial.getControl(PHATCharacterControl.class).jump();
+                if (spatial != null && spatial.getControl(PHATCharacterControl.class) != null) {
+                    System.out.println("JUMP!!");
+                    spatial.getControl(PHATCharacterControl.class).jump();
+                }
                 timeToJump = 1f;
             }
         } else {
@@ -187,6 +189,7 @@ public class StraightMovementControl extends AbstractControl implements Autonomo
         }
         return speed;
     }
+
     /*private void move(float tpf) {
      Vector3f modelForwardDir = spatial.getWorldRotation().mult(Vector3f.UNIT_Z);
      directionVector.normalizeLocal();
