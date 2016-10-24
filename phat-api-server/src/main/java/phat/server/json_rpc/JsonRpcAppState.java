@@ -28,6 +28,7 @@ import com.jme3.asset.AssetManager;
 import com.jme3.bullet.BulletAppState;
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import phat.body.BodiesAppState;
 import phat.commands.PHATCommand;
@@ -106,7 +107,8 @@ public class JsonRpcAppState extends AbstractAppState {
         public void run() {
             try (ServerSocket serverSocket = new ServerSocket(portNumber)) {
                 while (listening) {
-                    new PHATSocketDispacherThread(JsonRpcAppState.this, serverSocket.accept()).start();
+                    Socket client = serverSocket.accept();
+                    new PHATSocketDispacherThread(JsonRpcAppState.this, client).start();
                 }
             } catch (IOException e) {
                 System.err.println("Could not listen on port " + portNumber);

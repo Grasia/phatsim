@@ -108,7 +108,9 @@ public final class JsonToPHATCommandFactory {
 
     private Object getRightInstance(Method m, String value) {
         Class<?> type = m.getParameterTypes()[0];
-        if (type.isPrimitive()) {
+        if(type.getSimpleName().equals("String")) {
+          return value;  
+        } else if (type.isPrimitive()) {
             String typeName = type.getSimpleName();
             if (typeName.equalsIgnoreCase("boolean")) {
                 return Boolean.valueOf(value);

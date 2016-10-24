@@ -133,15 +133,12 @@ public class PHATSocketDispacherThread extends Thread implements ResponseSender 
     @Override
     public void sendResponse(JSONRPC2Response respOut) {
         String jsonResponse = respOut.toJSONString();
-        System.out.println("beforeMutext");
         synchronized (mutex) {
-            System.out.println("write1");
             if (out != null) {
-                System.out.println("write2 = " + jsonResponse);
+                System.out.println("JSONRPC2Response = " + jsonResponse);
                 out.println(jsonResponse);
-                System.out.println("write finished!");
             }
-            remove(String.valueOf(getId()));
+            remove(String.valueOf(respOut.getID()));
         }
     }
 
@@ -149,7 +146,6 @@ public class PHATSocketDispacherThread extends Thread implements ResponseSender 
         String inputLine, result = null;
         System.out.println("ReadingLine...");
         inputLine = in.readLine();
-        System.out.println("Line=" + inputLine);
         return inputLine;
     }
 }

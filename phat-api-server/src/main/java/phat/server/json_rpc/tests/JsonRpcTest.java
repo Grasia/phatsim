@@ -32,13 +32,10 @@ import javax.swing.JFrame;
 import phat.app.PHATApplication;
 import phat.app.PHATInitAppListener;
 import phat.body.BodiesAppState;
-import phat.body.commands.SetBodyInHouseSpaceCommand;
 import phat.devices.DevicesAppState;
 import phat.server.json_rpc.JsonRpcAppState;
 import phat.structures.houses.HouseAppState;
-import phat.structures.houses.HouseFactory;
 import phat.structures.houses.TestHouse;
-import phat.structures.houses.commands.CreateHouseCommand;
 import phat.util.SpatialFactory;
 import phat.world.WorldAppState;
 

@@ -53,7 +53,6 @@ public class JsonRpcAsycPHATCommandRequest implements PHATCommandListener{
                 respOut = new JSONRPC2Response(command.getState().name(), request.getID());
             }
             
-            System.out.println("send = "+respOut);
             sender.sendResponse(respOut);
         }
     }
