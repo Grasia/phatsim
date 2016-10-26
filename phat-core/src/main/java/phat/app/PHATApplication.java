@@ -19,12 +19,9 @@
  */
 package phat.app;
 
-import java.util.concurrent.Callable;
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AppState;
 import com.jme3.audio.AudioContext;
-import com.jme3.bullet.BulletAppState;
-import com.jme3.scene.Spatial;
 
 /**
  *

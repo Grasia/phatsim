@@ -36,7 +36,7 @@ public class ArgumentProcessor {
         System.out.println("Arguments:");
         System.out.println("----------------");
         for (String s : args) {
-            System.out.println("->"+s);
+            System.out.println("->" + s);
         }
         System.out.println("----------------\n\n\n\n\n");
     }
@@ -45,11 +45,9 @@ public class ArgumentProcessor {
         if (PHATUtils.contains(args, "-ml")) {
             inter.setMultiListener(true);
         }
-        
-        for (String s: args) {
-            if (s.contains("-seed")) {
-                //inter.setSeed(Long.parseLong(args[i + 1]));
-            }
+
+        if (PHATUtils.contains(args, "-record")) {
+            inter.setRecordVideo(true);
         }
     }
 }

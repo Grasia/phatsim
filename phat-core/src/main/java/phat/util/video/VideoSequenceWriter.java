@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Pablo Campillo-Sanchez <pabcampi@ucm.es>
+ * Copyright (C) 2016 Pablo Campillo-Sanchez <pabcampi@ucm.es>
  *
  * This software has been developed as part of the 
  * SociAAL project directed by Jorge J. Gomez Sanz
@@ -17,16 +17,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package phat.config;
+package phat.util.video;
 
-import phat.structures.houses.HouseFactory;
-
+import java.io.File;
+import java.nio.ByteBuffer;
 /**
+ * 
+ * @author Rafael Pax
  *
- * @author sala26
  */
-public interface HouseConfigurator {
-    public void addHouseType(String houseId, HouseFactory.HouseType type);
-    public void setDebugNavMesh(boolean enabled);
-    public void recordVideo(String fileName);
+public interface VideoSequenceWriter {
+
+	public void start(File output);
+	public void writePicture(ByteBuffer rgbaBuff);
+	public int getWidth();
+	public void setWidth(int width);
+	public int getHeight();
+	public void setHeight(int height);
+	public void stop();
 }

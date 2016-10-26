@@ -40,6 +40,7 @@ import com.jme3.scene.Node;
 import com.jme3.scene.control.CameraControl;
 import com.jme3.system.AppSettings;
 import com.jme3.system.JmeSystem;
+import java.io.File;
 
 import phat.agents.AgentsAppState;
 import phat.app.PHATApplication;
@@ -62,6 +63,7 @@ import phat.devices.DevicesAppState;
 import phat.server.ServerAppState;
 import phat.structures.houses.HouseAppState;
 import phat.util.PHATUtils;
+import phat.util.video.RecordVideoCommand;
 import phat.world.PHATCalendar;
 import phat.world.WorldAppState;
 
@@ -91,6 +93,7 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
     boolean multiListener = false;
     private int displayWidth = 480;
     private int displayHeight = 800;
+    private boolean recordVideo = false;
 
     public PHATInterface(PHATInitializer initializer) {
         this.initializer = initializer;
@@ -285,6 +288,11 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
         random = new Random(seed);
 
         this.initSimTime = new PHATCalendar(getSimTime());
+        
+        if(recordVideo) {
+            HouseAppState has = app.getStateManager().getState(HouseAppState.class);
+            has.runCommand(new RecordVideoCommand(new File(getClass().getSimpleName()+".mp4")));
+        }
     }
 
     public void setSimSpeed(float speed) {
@@ -399,5 +407,9 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
 
     public void setDisplayHeight(int displayHeight) {
         this.displayHeight = displayHeight;
+    }
+
+    public void setRecordVideo(boolean recordVideo) {
+        this.recordVideo = recordVideo;
     }
 }

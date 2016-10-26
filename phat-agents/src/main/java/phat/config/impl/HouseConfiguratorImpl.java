@@ -19,13 +19,13 @@
  */
 package phat.config.impl;
 
+import java.io.File;
 import phat.config.HouseConfigurator;
-import phat.config.WorldConfigurator;
 import phat.structures.houses.HouseAppState;
 import phat.structures.houses.HouseFactory;
 import phat.structures.houses.commands.CreateHouseCommand;
 import phat.structures.houses.commands.DebugShowHouseNavMeshCommand;
-import phat.world.WorldAppState;
+import phat.util.video.RecordVideoCommand;
 
 /**
  *
@@ -51,5 +51,10 @@ public class HouseConfiguratorImpl implements HouseConfigurator {
     @Override
     public void setDebugNavMesh(boolean enabled) {
         this.houseAppState.runCommand(new DebugShowHouseNavMeshCommand(enabled));
+    }
+    
+    @Override
+    public void recordVideo(String fileName) {
+        this.houseAppState.runCommand(new RecordVideoCommand(new File(fileName)));
     }
 }

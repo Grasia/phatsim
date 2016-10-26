@@ -17,34 +17,41 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package phat;
+package phat.util.video;
 
-import com.jme3.app.SimpleApplication;
-import phat.server.json_rpc.JsonRpcAppState;
+import java.io.File;
+import java.util.logging.Logger;
+
+import com.jme3.app.Application;
+
+import phat.commands.PHATCommand;
 
 /**
  *
- * @author sala26
+ * @author Rafael Pax
+ *
  */
-public class JSONPHATInterface extends PHATInterface {
+public class StopVideoCommand extends PHATCommand {
 
-     JsonRpcAppState jsonAppState;
-    
-    public JSONPHATInterface(PHATInitializer initializer) {
-        super(initializer);
-    }
+    private final File output;
 
-    public JSONPHATInterface(PHATInitializer initializer, ArgumentProcessor ap) {
-        super(initializer, ap);
+    public StopVideoCommand(File output) {
+        super(null);
+        this.output = output;
     }
 
     @Override
-    public void init(SimpleApplication app) {
-        super.init(app);
-        
-        jsonAppState = new JsonRpcAppState();
-        app.getStateManager().attach(jsonAppState);
-
+    public void runCommand(Application app) {
+        Logger.getLogger(getClass().getName()).info("Video recording stopped");
+        VideoRenderAppState videoAppState = app.getStateManager()
+                .getState(VideoRenderAppState.class);
+        if (videoAppState != null) {
+            app.getStateManager().detach(videoAppState);
+        }
+        setState(State.Success);
     }
-    
+
+    @Override
+    public void interruptCommand(Application app) {   
+    }
 }

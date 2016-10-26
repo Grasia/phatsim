@@ -36,13 +36,10 @@ public class GUIPHATInterface extends JSONPHATInterface {
 
     public GUIPHATInterface(PHATInitializer initializer) {
         super(initializer);
-        this.initializer = initializer;
     }
 
     public GUIPHATInterface(PHATInitializer initializer, GUIArgumentProcessor ap) {
-        this(initializer);
-
-        ap.initialize(this);
+        super(initializer, ap);
     }
 
     @Override

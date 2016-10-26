@@ -63,7 +63,7 @@ import phat.world.WorldAppState;
 public class GUIMainPHATSimulation implements PHATInitializer {
 
     public static void main(String[] args) {
-        String[] a = {"-ml"};
+        String[] a = {/*"-ml",*/ "-record"};
         GUIMainPHATSimulation sim = new GUIMainPHATSimulation();
         GUIPHATInterface phat = new GUIPHATInterface(sim, new GUIArgumentProcessor(a));
         phat.setSeed(0);
