@@ -44,24 +44,26 @@ import phat.commands.PHATCommandAnn;
  *
  * @author pablo
  */
-@PHATCommandAnn(name="SayASentence", type="body", debug = false)
+@PHATCommandAnn(name = "SayASentence", type = "body", debug = false)
 public class SayASentenceBodyCommand extends PHATCommand implements AudioSourceStatusListener {
 
     private String bodyId;
     private String message;
     private float volume = 1.0f;
     AudioSpeakerSource speaker;
+    SetTextOnTopOfBody textBalloon;
+    BodiesAppState bodiesAppState;
 
     public SayASentenceBodyCommand() {
     }
-    
+
     public SayASentenceBodyCommand(String bodyId, String message, PHATCommandListener listener) {
         super(listener);
         this.bodyId = bodyId;
         this.message = message;
         logger.log(Level.INFO, "New Command: {0}", new Object[]{this});
     }
-    
+
     public SayASentenceBodyCommand(String bodyId, String message) {
         this(bodyId, message, null);
     }
@@ -70,14 +72,13 @@ public class SayASentenceBodyCommand extends PHATCommand implements AudioSourceS
     public void runCommand(Application app) {
         if (app.getStateManager().getState(PHATAudioAppState.class) != null) {
 
-            BodiesAppState bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
+            bodiesAppState = app.getStateManager().getState(BodiesAppState.class);
             Node body = bodiesAppState.getBody(bodyId);
 
             if (body != null && body.getParent() != null) {
                 removeAudioSpeakerSource(body);
 
-                speaker =
-                        AudioFactory.getInstance().makeAudioSpeakerSource(message, message, Vector3f.ZERO);
+                speaker = AudioFactory.getInstance().makeAudioSpeakerSource(message, message, Vector3f.ZERO);
                 speaker.setVolume(volume);
                 speaker.setLooping(false);
                 speaker.setRefDistance(2f);
@@ -85,11 +86,15 @@ public class SayASentenceBodyCommand extends PHATCommand implements AudioSourceS
                 body.attachChild(speaker);
 
                 speaker.play();
-                
+
                 AudioStatusNotifierControl asnc = new AudioStatusNotifierControl();
                 asnc.setAudioSourceStateListener(this);
                 speaker.addControl(asnc);
-                
+
+                textBalloon = new SetTextOnTopOfBody(bodyId, message, true);
+                textBalloon.setSeconds(5f);
+                bodiesAppState.runCommand(textBalloon);
+
                 return;
             }
         }
@@ -97,17 +102,18 @@ public class SayASentenceBodyCommand extends PHATCommand implements AudioSourceS
     }
 
     @Override
-	public void interruptCommand(Application app) {
+    public void interruptCommand(Application app) {
         if (speaker != null) {
-        	speaker.removeFromParent();
-        	speaker.getControl(AudioStatusNotifierControl.class).setAudioSourceStateListener(null);
-        	speaker.stop();
-        	setState(State.Interrupted);
-        	return;
+            speaker.removeFromParent();
+            speaker.getControl(AudioStatusNotifierControl.class).setAudioSourceStateListener(null);
+            speaker.stop();
+
+            setState(State.Interrupted);
+            return;
         }
         setState(State.Fail);
-	}
-    
+    }
+
     private void removeAudioSpeakerSource(Node body) {
         for (Spatial s : body.getChildren()) {
             if (s instanceof AudioSpeakerSource) {
@@ -119,9 +125,9 @@ public class SayASentenceBodyCommand extends PHATCommand implements AudioSourceS
     public float getVolume() {
         return volume;
     }
-    
+
     public String getMessage() {
-    	return message;
+        return message;
     }
 
     @Override
@@ -131,23 +137,24 @@ public class SayASentenceBodyCommand extends PHATCommand implements AudioSourceS
 
     @Override
     public void AudioStatusChanged(AudioNode audioNode) {
-        if(audioNode.getStatus() == AudioSource.Status.Stopped) {
+        if (audioNode.getStatus() == AudioSource.Status.Stopped) {
             audioNode.removeFromParent();
+            
             setState(State.Success);
         }
     }
 
-    @PHATCommParam(mandatory=true, order=1)
+    @PHATCommParam(mandatory = true, order = 1)
     public void setBodyId(String bodyId) {
         this.bodyId = bodyId;
     }
 
-    @PHATCommParam(mandatory=true, order=2)
+    @PHATCommParam(mandatory = true, order = 2)
     public void setMessage(String message) {
         this.message = message;
     }
 
-    @PHATCommParam(mandatory=false, order=3)
+    @PHATCommParam(mandatory = false, order = 3)
     public void setVolume(float volume) {
         this.volume = volume;
     }

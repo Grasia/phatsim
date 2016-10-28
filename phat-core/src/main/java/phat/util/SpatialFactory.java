@@ -158,7 +158,7 @@ public class SpatialFactory {
         ch.setName("BitmapText");
         ch.setSize(guiFont.getCharSet().getRenderedSize() * 0.02f);
         ch.setText(name); // crosshairs
-        ch.setColor(new ColorRGBA(1f, 0.8f, 0.3f, 0.8f));
+        ch.setColor(new ColorRGBA(0f, 0f, 0f, 1f));
         ch.getLocalScale().divideLocal(node.getLocalScale());
         // controlador para que los objetos miren a la cámara.
         BillboardControl control = new BillboardControl();
