@@ -20,6 +20,7 @@
 package phat.body.commands;
 
 import com.jme3.app.Application;
+import com.jme3.math.ColorRGBA;
 import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.Spatial;
@@ -34,6 +35,7 @@ import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
 import phat.commands.PHATCommand.State;
 import phat.commands.PHATCommandAnn;
+import phat.util.SpatialFactory;
 import phat.util.SpatialUtils;
 
 /**
@@ -47,6 +49,7 @@ public class GoCloseToObjectCommand extends PHATCommand implements
     String bodyId;
     String targetObjectId;
     float minDistance = 0.5f;
+    Vector3f relativePosition = new Vector3f(0f, 0f, 0f);
 
     public GoCloseToObjectCommand() {
     }
@@ -74,25 +77,23 @@ public class GoCloseToObjectCommand extends PHATCommand implements
             Node rootNode = SpatialUtils.getRootNode(body);
             Spatial targetSpatial = SpatialUtils.getSpatialById(rootNode,
                     targetObjectId);
-            System.out.println("TargetSpatial = " + targetSpatial);
             if (targetSpatial != null) {
-                System.out.println("Object " + targetObjectId + " found!");
                 NavMeshMovementControl nmmc = body
                         .getControl(NavMeshMovementControl.class);
                 if (nmmc != null) {
-                    System.out.println("Body " + bodyId
-                            + " has NavMeshMovementControl!");
-                    System.out.println("GoCloseToObjectCommand: minDistance = "
-                            + minDistance);
                     nmmc.setMinDistance(minDistance);
                     // Vector3f loc =
                     // SpatialUtils.getCenterBoinding(targetSpatial);
-                    Vector3f loc = targetSpatial.getWorldTranslation();
-                    System.out.println("Location = " + loc);
+                    Vector3f loc = new Vector3f();
+                    loc.set(targetSpatial.getWorldTranslation());
+                    loc.addLocal(targetSpatial.getWorldRotation().mult(relativePosition));
+                    
+                    /*Node root = SpatialUtils.getRootNode(targetSpatial);
+                    Spatial s = SpatialFactory.createCube(Vector3f.UNIT_XYZ.mult(0.1f), ColorRGBA.Blue);
+                    s.setLocalTranslation(loc);
+                    root.attachChild(s);*/
+                    
                     boolean reachable = nmmc.moveTo(loc);
-                    System.out.println("Loc = " + loc);
-                    System.out.println("Object " + targetObjectId
-                            + " reachable = " + reachable + "!");
                     if (reachable) {
                         nmmc.setListener(this);
                         return;
@@ -129,7 +130,7 @@ public class GoCloseToObjectCommand extends PHATCommand implements
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + bodyId + ",targetBodyId="
+        return getClass().getSimpleName() + "(" + bodyId + ",targetObjectId="
                 + targetObjectId + ",minDistance=" + minDistance + ")";
     }
 
@@ -143,6 +144,10 @@ public class GoCloseToObjectCommand extends PHATCommand implements
 
     public String getTargetObjectId() {
         return targetObjectId;
+    }
+    
+    public void setRelativePosition(float x, float y, float z) {
+        relativePosition.set(x, y, z);
     }
 
     @PHATCommParam(mandatory=true, order=1)

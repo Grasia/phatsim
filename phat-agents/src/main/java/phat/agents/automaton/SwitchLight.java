@@ -21,34 +21,60 @@ package phat.agents.automaton;
 
 import phat.PHATInterface;
 import phat.agents.Agent;
+import phat.agents.DeviceAgent;
+import phat.agents.HumanAgent;
+import phat.body.commands.GoCloseToSwitchLightOfRoom;
+import phat.commands.PHATCommand;
+import phat.commands.PHATCommandListener;
+import phat.structures.houses.commands.SwitchLightOfRoomCommand;
 
 /**
  *
  * @author pablo
  */
-public class SwitchLight extends SimpleState {
-    private String roomName;
-    private boolean on;
+public class SwitchLight extends SimpleState implements PHATCommandListener {
+
+    PHATCommand command;
+    private final String roomName;
+    private final boolean on;
     private boolean done;
-    
-    public SwitchLight( Agent agent, int priority, String name, String roomName, boolean on) {
+
+    public SwitchLight(Agent agent, int priority, String name, String roomName, boolean on) {
         super(agent, priority, name);
         this.roomName = roomName;
         this.on = on;
+        this.done = false;
     }
-    
+
     @Override
     public boolean isFinished(PHATInterface phatInterface) {
-        return done;
+        return super.isFinished(phatInterface) || done;
     }
 
     @Override
     public void simpleNextState(PHATInterface phatInterface) {
-        //phatInterface.getMasonAppState().getHouseAdapter().switchLight(roomName, on);
+        if (command == null) {
+            if (agent instanceof DeviceAgent) {
+                command = new SwitchLightOfRoomCommand("House1", roomName, on);
+                agent.runCommand(command);
+                this.done = true;
+            } else if(agent instanceof HumanAgent) {
+                command = new GoCloseToSwitchLightOfRoom(agent.getId(), roomName, on, this);
+                agent.runCommand(command);
+            }
+        }
     }
 
     @Override
     public void initState(PHATInterface phatInterface) {
         this.done = false;
+    }
+
+    @Override
+    public void commandStateChanged(PHATCommand command) {
+        if (command == this.command
+                && command.getState().equals(PHATCommand.State.Success)) {
+            done = true;
+        }
     }
 }

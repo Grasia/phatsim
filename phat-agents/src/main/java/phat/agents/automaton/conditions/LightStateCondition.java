@@ -46,16 +46,9 @@ public class LightStateCondition extends AutomatonCondition {
      */
     @Override
     public boolean simpleEvaluation(Agent agent) {
-        List<Light> ligths = agent.getAgentsAppState().getHouseAppState().getHouse("House1").getLights(roomId);
-        if (ligths != null) {
-            for(Light l: ligths) {
-                boolean isOff = l.getColor().toVector3f().length() == 0f;
-                return (lightState.equals("ON") && isOff) ||
-                            (lightState.equals("OFF") && !isOff);
-            }
-        }
-        
-        return false;
+        boolean isOn = agent.getAgentsAppState().getHouseAppState().getHouse("House1").isLightOn(roomId);
+        return (lightState.equals("ON") && !isOn)
+                || (lightState.equals("OFF") && isOn);
     }
 
     @Override

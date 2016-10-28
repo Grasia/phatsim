@@ -177,6 +177,46 @@ public class House {
         return false;
     }
 
+    public Spatial getClosetLightSwitch(Spatial object, String roomName) {
+        Spatial result = null;
+        float minDist = Float.MAX_VALUE;
+        Node cLights = getNode(roomName, "Lights");
+        if(cLights != null) {
+            for(Spatial s: cLights.getChildren()) {
+                if(result == null) {
+                    result = s;
+                    minDist = object.getWorldTranslation().distance(s.getWorldTranslation());
+                } else if(object.getWorldTranslation().distance(s.getWorldTranslation()) < minDist) {
+                    result = s;
+                    minDist = object.getWorldTranslation().distance(s.getWorldTranslation());
+                }
+            }
+        }
+        return result;
+    }
+
+    public void switchLights(String room, boolean on) {
+        for (Light l : lights.get(room)) {
+            if (on) {
+                l.setColor(ColorRGBA.White);
+                if (l instanceof PointLight) {
+                    ((PointLight) l).setRadius(4f);
+                    System.out.println("Position = " + ((PointLight) l).getPosition());
+                    System.out.println("PointLight radius = " + ((PointLight) l).getRadius());
+                }
+            } else {
+                l.setColor(l.getColor().mult(0f));
+            }
+        }
+    }
+    
+    public boolean isLightOn(String room) {
+        for (Light l : lights.get(room)) {
+            return 0f != l.getColor().toVector3f().length();
+        }
+        return false;
+    }
+    
     private void initLights(SimpleApplication app) {
         for (String roomName : getRoomNames()) {
             Node clights = getNode(roomName, "Lights");
@@ -231,21 +271,6 @@ public class House {
                 } else {
                     spatials.put(sa.getName(), sa);
                 }
-            }
-        }
-    }
-
-    public void switchLights(String room, boolean on) {
-        for (Light l : lights.get(room)) {
-            if (on) {
-                l.setColor(ColorRGBA.White);
-                if (l instanceof PointLight) {
-                    ((PointLight) l).setRadius(4f);
-                    System.out.println("Position = " + ((PointLight) l).getPosition());
-                    System.out.println("PointLight radius = " + ((PointLight) l).getRadius());
-                }
-            } else {
-                l.setColor(l.getColor().mult(0f));
             }
         }
     }

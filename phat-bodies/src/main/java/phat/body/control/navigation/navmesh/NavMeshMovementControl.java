@@ -85,7 +85,6 @@ public class NavMeshMovementControl extends AbstractControl implements Autonomou
     @Override
     public boolean moveTo(Vector3f targetLocation) {
         if (targetLocation == null) {
-            listener = null;
             finishControl();
             return true;
         }
