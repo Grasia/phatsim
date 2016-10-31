@@ -16,14 +16,19 @@
         <condition property="arg.sv" value="-sv">
             <isset property="sv"/>
         </condition>
+        <condition property="arg.record" value="-record">
+            <isset property="record"/>
+        </condition>
         <echoproperties regex="arg.fps"/>
         <echoproperties regex="arg.ml"/>
         <echoproperties regex="arg.sv"/>
+        <echoproperties regex="arg.record"/>
         <java fork="true" failonerror="true" maxmemory="300m"
               classname="phat.sim.Main@@@v@@@simName@@@/v@@@PHATSimulation">
             <arg value="${arg.ml}"/>
             <arg value="${arg.fps}"/>
             <arg value="${arg.sv}"/>
+            <arg value="${arg.record}"/>
             <classpath>			  
                 <pathelement path="${maven.build.outputDir}" />
                 <pathelement path="${mavenclasspath}" />              
@@ -45,6 +50,30 @@
         <echoproperties regex="arg.sv"/>
         <java fork="true" failonerror="true" maxmemory="300m"
               classname="phat.sim.Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices">
+            <arg value="${arg.ml}"/>
+            <arg value="${arg.fps}"/>
+            <arg value="${arg.sv}"/>
+            <classpath>			  
+                <pathelement path="${maven.build.outputDir}" />
+                <pathelement path="${mavenclasspath}" />              
+            </classpath>
+        </java>
+    </target>
+    <target name="run@@@v@@@simName@@@/v@@@NoDevicesRecord" depends="compile">
+        <condition property="arg.ml" value="-ml">
+            <isset property="ml"/>
+        </condition>
+        <condition property="arg.fps" value="-fps">
+            <isset property="fps"/>
+        </condition>
+        <condition property="arg.sv" value="-sv">
+            <isset property="sv"/>
+        </condition>
+        <echoproperties regex="arg.fps"/>
+        <echoproperties regex="arg.ml"/>
+        <echoproperties regex="arg.sv"/>
+        <java fork="true" failonerror="true" maxmemory="300m"
+              classname="phat.sim.Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevicesRecord">
             <arg value="${arg.ml}"/>
             <arg value="${arg.fps}"/>
             <arg value="${arg.sv}"/>

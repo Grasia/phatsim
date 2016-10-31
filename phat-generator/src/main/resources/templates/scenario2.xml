@@ -215,7 +215,7 @@ import phat.agents.commands.*;
  *
  * @author pablo
  */
-public class Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices implements PHATInitializer {
+public class Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices extends Main@@@v@@@simName@@@/v@@@PHATSimulation {
 	static MonitorEventQueueImp meq=new MonitorEventQueueImp();
     public static void main(String[] args) throws RemoteException, AlreadyBoundException, NotBoundException {
     	meq.startServer(MonitorEventQueue.DefaultName);
@@ -224,39 +224,6 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices implements PHATIn
         @@@repeat id="setSeed"@@@phat.setSeed(@@@v@@@seedValue@@@/v@@@L);@@@/repeat@@@
         phat.start();
     }
-
-    @Override
-    public void initWorld(WorldConfigurator worldConfig) {
-        worldConfig.setTime(@@@v@@@year@@@/v@@@, @@@v@@@month@@@/v@@@, @@@v@@@day@@@/v@@@, @@@v@@@hour@@@/v@@@, @@@v@@@min@@@/v@@@, @@@v@@@sec@@@/v@@@);
-        worldConfig.setTimeVisible(true);
-        worldConfig.setLandType(WorldAppState.LandType.Grass);
-    }
-
-    @Override
-    public void initHouse(HouseConfigurator houseConfig) {
-        houseConfig.addHouseType("House1", HouseFactory.HouseType.House3room2bath);
-    }
-
-    @Override
-    public void initBodies(BodyConfigurator bodyConfig) {
-       @@@repeat id="bodies"@@@
-       bodyConfig.createBody(BodiesAppState.BodyType.@@@v@@@bodyType@@@/v@@@, "@@@v@@@actorname@@@/v@@@");
-       bodyConfig.runCommand(new BodyLabelCommand("@@@v@@@actorname@@@/v@@@", @@@v@@@showName@@@/v@@@));
-       
-       // Initial locations
-       @@@repeat id="initLocRep"@@@bodyConfig.setInSpace("@@@v@@@actorname@@@/v@@@", "House1", "@@@v@@@iniLoc@@@/v@@@");
-        @@@/repeat@@@
-       bodyConfig.runCommand(new SetBodyHeightCommand("@@@v@@@actorname@@@/v@@@", 1.7f));
-       @@@/repeat@@@
-       @@@repeat id="CameraToBodyInit"@@@
-        SetCameraToBodyCommand setCameraToBodyCommand = new SetCameraToBodyCommand("@@@v@@@actorname@@@/v@@@");
-        setCameraToBodyCommand.setFront(@@@v@@@isinfrontofhuman@@@/v@@@);
-        setCameraToBodyCommand.setDistance(@@@v@@@distance@@@/v@@@f);
-        setCameraToBodyCommand.setHeight(@@@v@@@elevation@@@/v@@@f);
-        bodyConfig.runCommand(setCameraToBodyCommand);
-        bodyConfig.runCommand(new SetPCListenerToBodyCommand("@@@v@@@actorname@@@/v@@@"));
-        bodyConfig.runCommand(new SetTransparentLevelOfWallsCommand("House1", 0.5f));@@@/repeat@@@
-    }
     
     @Override
     public void initDevices(DeviceConfigurator deviceConfig) {
@@ -264,31 +231,6 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices implements PHATIn
     
     @Override
     public void initServer(ServerConfigurator serverConfig) {
-    }
-    
-    @Override
-    public void initAgents(AgentConfigurator agentsConfig) {
-       @@@repeat id="agent"@@@
-       {@@@v@@@agentname@@@/v@@@Agent agent = new @@@v@@@agentname@@@/v@@@Agent("@@@v@@@agentname@@@/v@@@","@@@v@@@simName@@@/v@@@" );
-       @@@repeat id="ADL"@@@
-            FSM adl = new @@@v@@@adlName@@@/v@@@ADL(agent, "ADL-@@@v@@@adlName@@@/v@@@");
-            MainAutomaton mainAutomaton = new MainAutomaton(agent);
-	    mainAutomaton.addTransition(adl, false);
-            mainAutomaton.addListener(new AutomatonIcon());
-            agent.setAutomaton(mainAutomaton);
-        @@@/repeat@@@
-        @@@repeat id="setActivity"@@@
-            ActivityAutomaton @@@v@@@actName@@@/v@@@Activity = new @@@v@@@actName@@@/v@@@Activity(agent, "@@@v@@@actName@@@/v@@@");
-            MainAutomaton mainAutomaton = new MainAutomaton(agent);
-	    mainAutomaton.addTransition(@@@v@@@actName@@@/v@@@Activity, false);
-            mainAutomaton.addListener(new AutomatonIcon());
-            agent.setAutomaton(mainAutomaton);
-        @@@/repeat@@@
-       agent.registerListener(meq); 
-       agentsConfig.add(agent);}@@@/repeat@@@
-       agentsConfig.runCommand(new ActivateActuatorEventsLauncherCommand(null));
-       @@@repeat id="activateCallStates"@@@
-       agentsConfig.runCommand(new ActivateCallStateEventsLauncherCommand(null));@@@/repeat@@@
     }
     
     @Override
@@ -301,7 +243,65 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices implements PHATIn
 @@@/text@@@
 	@@@/saveto@@@
 	
+	
+	@@@saveto@@@
+		@@@file overwrite="yes"@@@
+			@@@v@@@output@@@/v@@@/phat/sim/Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevicesRecord.java@@@/file@@@
+@@@text@@@
+package phat.sim;
 
+
+import java.rmi.AlreadyBoundException;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+
+import phat.agents.Agent;
+import phat.body.BodiesAppState;
+import phat.body.commands.*;
+import phat.devices.commands.*;
+import phat.server.commands.*;
+import phat.config.*;
+import phat.world.MonitorEventQueue;
+import phat.world.MonitorEventQueueImp;
+import phat.world.WorldAppState;
+import phat.structures.houses.HouseFactory;
+import phat.structures.houses.commands.*;
+import phat.PHATInitializer;
+import phat.GUIPHATInterface;
+import phat.agents.impl.*;
+import phat.agents.automaton.*;
+@@@repeat id="importADL"@@@import phat.agents.automaton.adl.*;
+@@@/repeat@@@
+import phat.agents.automaton.activities.*;
+import phat.util.PHATUtils;
+import phat.GUIArgumentProcessor;
+import phat.agents.commands.*;
+
+/**
+ *
+ * @author pablo
+ */
+public class Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevicesRecord extends Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices {
+	static MonitorEventQueueImp meq=new MonitorEventQueueImp();
+    public static void main(String[] args) throws RemoteException, AlreadyBoundException, NotBoundException {
+    	meq.startServer(MonitorEventQueue.DefaultName);
+        Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevicesRecord sim = new Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevicesRecord();
+        GUIPHATInterface phat = new GUIPHATInterface(sim, new GUIArgumentProcessor(args));
+        @@@repeat id="setSeed"@@@phat.setSeed(@@@v@@@seedValue@@@/v@@@L);@@@/repeat@@@
+        phat.setRecordVideo(true);
+        phat.start();
+    }
+    
+    @Override
+    public String getTittle() {
+        return "PHAT-@@@v@@@simName@@@/v@@@";
+    }
+}
+
+
+@@@/text@@@
+	@@@/saveto@@@
+        
 @@@saveto@@@
 		@@@file overwrite="yes"@@@
 @@@v@@@output@@@/v@@@/phat/sim/Main@@@v@@@simName@@@/v@@@PHATSimulationOnlyDevices.java@@@/file@@@
