@@ -291,7 +291,7 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
         
         if(recordVideo) {
             HouseAppState has = app.getStateManager().getState(HouseAppState.class);
-            has.runCommand(new RecordVideoCommand(new File(getClass().getSimpleName()+".mp4")));
+            has.runCommand(new RecordVideoCommand(new File(initializer.getTittle()+".mp4")));
         }
     }
 
