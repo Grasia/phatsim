@@ -38,7 +38,7 @@ public class SwitchLight extends SimpleState implements PHATCommandListener {
     private final String roomName;
     private final boolean on;
     private boolean done;
-
+    
     public SwitchLight(Agent agent, int priority, String name, String roomName, boolean on) {
         super(agent, priority, name);
         this.roomName = roomName;
@@ -46,6 +46,10 @@ public class SwitchLight extends SimpleState implements PHATCommandListener {
         this.done = false;
     }
 
+    public SwitchLight(Agent agent, String name, String roomName, String ONOFF) {
+        this(agent, 0, name, roomName, ONOFF.equalsIgnoreCase("ON"));
+    }
+    
     @Override
     public boolean isFinished(PHATInterface phatInterface) {
         return super.isFinished(phatInterface) || done;

@@ -20,6 +20,7 @@
 package phat.codeproc;
 
 import ingenias.exception.NotFound;
+import ingenias.exception.NullEntity;
 import ingenias.generator.browser.Browser;
 import ingenias.generator.browser.Graph;
 import ingenias.generator.browser.GraphAttribute;
@@ -33,7 +34,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import phat.codeproc.pd.PDGenerator;
 
 public class TaskGenerator {
 
@@ -73,6 +73,7 @@ public class TaskGenerator {
         entityToAutomatonMap.put("SayTask", "SayAutomaton");
         entityToAutomatonMap.put("FallTask", "FallAutomaton");
         entityToAutomatonMap.put("TapXYTask", "PressOnScreenXYAutomaton");
+        entityToAutomatonMap.put("SwitchLightTask", "SwitchLight");
 
     }
 
@@ -195,6 +196,13 @@ public class TaskGenerator {
                 return def;
             }
         }
+        if(at.isCollectionValue()) {
+            try {
+                return at.getCollectionValue().getElementAt(0).getID();
+            } catch (NullEntity ex) {
+                Logger.getLogger(TaskGenerator.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         return at.getSimpleValue();
     }
 
@@ -239,6 +247,9 @@ public class TaskGenerator {
             params.add(getFieldValue(taskGE, "MessageField", "null", true));
         } else if (taskGE.getType().equals("TapXYTask")) {
             params.add(getFieldValue(taskGE, "TargetSmartphone", "null", true));
+        } else if (taskGE.getType().equals("SwitchLightTask")) {
+            params.add(getFieldValue(taskGE, "RoomField", "null", true));
+            params.add(getFieldValue(taskGE, "ONOFFStateField", "null", true));
         }
         return params;
     }
