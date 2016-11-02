@@ -74,6 +74,7 @@ public class TaskGenerator {
         entityToAutomatonMap.put("FallTask", "FallAutomaton");
         entityToAutomatonMap.put("TapXYTask", "PressOnScreenXYAutomaton");
         entityToAutomatonMap.put("SwitchLightTask", "SwitchLight");
+        entityToAutomatonMap.put("DropObj", "DropObjTask");
 
     }
 
@@ -95,6 +96,7 @@ public class TaskGenerator {
             throws NotFound {
         GraphEntity task = Utils.getFirstEntity(std);
         while (task != null) {
+            System.out.println("Task = "+task.getID());
             List<String> params = fillConstructorParams(task);
 
             Repeat rep = new Repeat("subTasks");
@@ -117,24 +119,42 @@ public class TaskGenerator {
             }
 
             if (hasField(task, "BTaskDuration")) {
-                String duration = getFieldValue(task, "BTaskDuration", "0", false);
-                if (!duration.equals("") && Integer.parseInt(duration) > 0) {
+                GraphEntity var = Utils.getTargetEntity(task, "durationVar");
+                String duration = getFieldValue(task, "BTaskDuration", "-1", false);
+                if (var != null || (!duration.equals("") && Integer.parseInt(duration) > 0)) {
                     Repeat durRep = new Repeat("durRep");
+                    if (var != null) {
+                        durRep.add(new Var("durVar", Utils.replaceBadChars(var.getID())));
+                    }
                     durRep.add(new Var("duration", duration));
                     rep.add(durRep);
                 }
             }
 
             if (hasField(task, "SpeedField")) {
-                Repeat speedRep = new Repeat("speedRep");
-                speedRep.add(new Var("speed", getFieldValue(task, "SpeedField", "null", false)));
-                rep.add(speedRep);
+                GraphEntity var = null;
+                if (task.getType().equals("BGoToTask")) {
+                    var = Utils.getTargetEntity(task, "goToSpeedVar");
+                } else if (task.getType().equals("GoToBodyLoc")) {
+                    var = Utils.getTargetEntity(task, "goToBodySpeedVar");
+                }
+                String speed = getFieldValue(task, "SpeedField", "-1", false);
+                if (var != null || (!speed.equals("") && Integer.parseInt(speed) > 0)) {
+                    Repeat speedRep = new Repeat("speedRep");
+                    if (var != null) {
+                        speedRep.add(new Var("speedVar", Utils.replaceBadChars(var.getID())));
+                    }
+                    speedRep.add(new Var("speed", speed));
+                    rep.add(speedRep);
+                }
             }
 
             if (hasField(task, "XPosOnScreen")) {
                 Repeat xyParams = new Repeat("setXY");
-                xyParams.add(new Var("x", getFieldValue(task, "XPosOnScreen", "null", true)));
-                xyParams.add(new Var("y", getFieldValue(task, "YPosOnScreen", "null", true)));
+                String x = getVarValue(task, "tapXVar", getFieldValue(task, "XPosOnScreen", "null", true));
+                xyParams.add(new Var("x", x));
+                String y = getVarValue(task, "tapYVar", getFieldValue(task, "YPosOnScreen", "null", true));
+                xyParams.add(new Var("y", y));
                 rep.add(xyParams);
             }
 
@@ -176,7 +196,7 @@ public class TaskGenerator {
         } catch (NotFound ex) {
             return false;
         }
-        return d != null && !d.getSimpleValue().equals("");
+        return true;//d != null && !d.getSimpleValue().equals("");
     }
 
     private static String getFieldValue(GraphEntity task, String fieldName, String def, boolean mandatory) {
@@ -196,7 +216,7 @@ public class TaskGenerator {
                 return def;
             }
         }
-        if(at.isCollectionValue()) {
+        if (at.isCollectionValue()) {
             try {
                 return at.getCollectionValue().getElementAt(0).getID();
             } catch (NullEntity ex) {
@@ -220,37 +240,69 @@ public class TaskGenerator {
 
         if (taskGE.getType().equals("GoIntoBed")) {
             params.add("Bed1");
-        } else if (taskGE.getType().equals("OpenTask") || taskGE.getType().equals("CloseTask")) {
-            params.add(getFieldValue(taskGE, "OpenCloseObjField", "null", true));
+        } else if (taskGE.getType().equals("OpenTask")) {
+            String open = getVarValue(taskGE, "openObjVar", getFieldValue(taskGE, "OpenCloseObjField", "null", true));
+            params.add(open);
+        } else if (taskGE.getType().equals("CloseTask")) {
+            String close = getVarValue(taskGE, "closeObjVar", getFieldValue(taskGE, "OpenCloseObjField", "null", true));
+            params.add(close);
         } else if (taskGE.getType().equals("BGoToTask")) {
-            params.add(getFieldValue(taskGE, "SpaceToGoField", "null", true));
+            String go = getVarValue(taskGE, "goToPlaceVar", getFieldValue(taskGE, "SpaceToGoField", "null", true));
+            params.add(go);
         } else if (taskGE.getType().equals("GoToBodyLoc")) {
-            params.add(getFieldValue(taskGE, "HumanTarget", "null", true));
+            String go = getVarValue(taskGE, "goToBodyVar", getFieldValue(taskGE, "HumanTarget", "null", true));
+            params.add(go);
         } else if (taskGE.getType().equals("WaitForBodyClose")) {
-            params.add(getFieldValue(taskGE, "HumanTarget", "null", false));
+            String body = getVarValue(taskGE, "waitForHumanVar", getFieldValue(taskGE, "HumanTarget", "null", false));
+            params.add(body);
         } else if (taskGE.getType().equals("BUseTask")) {
-            params.add(getFieldValue(taskGE, "BUseObjectField", "null", true));
-        } else if (taskGE.getType().equals("TakeOffTask") || taskGE.getType().equals("PutOnTask")) {
-            params.add(getFieldValue(taskGE, "WearableObjField", "null", false));
+            String use = getVarValue(taskGE, "useObjVar", getFieldValue(taskGE, "BUseObjectField", "null", true));
+            params.add(use);
+        } else if (taskGE.getType().equals("TakeOffTask")) {
+            String puton = getVarValue(taskGE, "putOnWearableVar", getFieldValue(taskGE, "WearableObjField", "null", false));
+            params.add(puton);
+        } else if (taskGE.getType().equals("PutOnTask")) {
+            String putoff = getVarValue(taskGE, "putOffWearableVar", getFieldValue(taskGE, "WearableObjField", "null", false));
+            params.add(putoff);
         } else if (taskGE.getType().equals("SitDown")) {
-            params.add(getFieldValue(taskGE, "SeatField", "null", false));
+            String sit = getVarValue(taskGE, "sitDownOnSeatVar", getFieldValue(taskGE, "SeatField", "null", false));
+            params.add(sit);
         } else if (taskGE.getType().equals("BPickUpTask")) {
-            params.add(getFieldValue(taskGE, "PysicalMobObjField", "null", true));
+            String pickUp = getVarValue(taskGE, "pickUpObjVar", getFieldValue(taskGE, "PysicalMobObjField", "null", true));
+            params.add(pickUp);
         } else if (taskGE.getType().equals("BLeaveTask")) {
-            params.add(getFieldValue(taskGE, "PysicalMobObjField", "null", true));
-            params.add(getFieldValue(taskGE, "DestinyField", "null", true));
+            String obj = getVarValue(taskGE, "leaveObjVar", getFieldValue(taskGE, "PysicalMobObjField", "null", true));
+            params.add(obj);
+            String destiny = getVarValue(taskGE, "leaveDestinyVar", getFieldValue(taskGE, "DestinyField", "null", true));
+            params.add(destiny);
         } else if (taskGE.getType().equals("Drink")) {
-            params.add(getFieldValue(taskGE, "DrinkItemField", "null", false));
+            params.add("\"" + getFieldValue(taskGE, "DrinkItemField", "null", false) + "\"");
         } else if (taskGE.getType().equals("Eat")) {
-            params.add(getFieldValue(taskGE, "EatableItemField", "null", false));
+            params.add("\"" + getFieldValue(taskGE, "EatableItemField", "null", false) + "\"");
         } else if (taskGE.getType().equals("SayTask")) {
-            params.add(getFieldValue(taskGE, "MessageField", "null", true));
+            String message = getVarValue(taskGE, "messageVar", getFieldValue(taskGE, "MessageField", "null", true));
+            params.add(message);
         } else if (taskGE.getType().equals("TapXYTask")) {
-            params.add(getFieldValue(taskGE, "TargetSmartphone", "null", true));
+            String device = getVarValue(taskGE, "tapDeviceVar", getFieldValue(taskGE, "TargetSmartphone", "null", true));
+            params.add(device);
+        } else if (taskGE.getType().equals("DropObj")) {
+            String obj = getVarValue(taskGE, "dropObjVar", getFieldValue(taskGE, "PysicalMobObjField", "null", true));
+            params.add(obj);
         } else if (taskGE.getType().equals("SwitchLightTask")) {
-            params.add(getFieldValue(taskGE, "RoomField", "null", true));
-            params.add(getFieldValue(taskGE, "ONOFFStateField", "null", true));
+            String switchRoomVar = getVarValue(taskGE, "switchRoomVar", getFieldValue(taskGE, "RoomField", "null", true));
+            params.add(switchRoomVar);
+            params.add("\"" + getFieldValue(taskGE, "ONOFFStateField", "null", true) + "\"");
         }
         return params;
+    }
+
+    private static String getVarValue(GraphEntity task, String varRel, String value) {
+        GraphEntity ge = Utils.getTargetEntity(task, varRel);
+        String resultValue = value.equals("null") ? "null" : "\"" + value + "\"";
+        if (ge != null) {
+            String varValue = "getParent().getParent().getMetadata(\"" + Utils.replaceBadChars(ge.getID()) + "\")";
+            return varValue + " != null ? " + varValue + " : " + resultValue;
+        }
+        return resultValue;
     }
 }

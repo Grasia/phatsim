@@ -28,20 +28,30 @@ public class @@@v@@@stID@@@/v@@@Task extends SeqTaskAutomaton {
                 Automaton automaton = new @@@v@@@className@@@/v@@@(
                         agent, 
                         "@@@v@@@className@@@/v@@@"
-                        @@@repeat id="3params"@@@, "@@@v@@@v3@@@/v@@@"
-                        @@@repeat id="4params"@@@, "@@@v@@@v4@@@/v@@@"@@@/repeat@@@@@@/repeat@@@
+                        @@@repeat id="3params"@@@, @@@v@@@v3@@@/v@@@
+                        @@@repeat id="4params"@@@, @@@v@@@v4@@@/v@@@@@@/repeat@@@@@@/repeat@@@
                 ).setCanBeInterrupted(@@@v@@@interrup@@@/v@@@)
                  .setMetadata("SOCIAALML_DESCRIPTION", "@@@v@@@desc@@@/v@@@")
                  .setMetadata("SOCIAALML_ENTITY_ID", "@@@v@@@eID@@@/v@@@")
                  .setMetadata("SOCIAALML_ENTITY_TYPE", "@@@v@@@eType@@@/v@@@");
                 
                 @@@repeat id="durRep"@@@
-                automaton.setFinishCondition(new TimerFinishedCondition(0, 0, @@@v@@@duration@@@/v@@@));@@@/repeat@@@
+                if(getParent().getMetadata("@@@v@@@durVar@@@/v@@@") != null) {
+                    automaton.setFinishCondition(new TimerFinishedCondition(0, 0, Integer.parseInt(getParent().getMetadata("@@@v@@@durVar@@@/v@@@"))));
+                } else if(!"@@@v@@@duration@@@/v@@@".equals("-1")) {
+                    automaton.setFinishCondition(new TimerFinishedCondition(0, 0, @@@v@@@duration@@@/v@@@));
+                }@@@/repeat@@@
+                
                 @@@repeat id="speedRep"@@@
-                ((@@@v@@@className@@@/v@@@)automaton).setSpeed(@@@v@@@speed@@@/v@@@f);@@@/repeat@@@
+                if(getParent().getMetadata("@@@v@@@speedVar@@@/v@@@") != null) {
+                    ((@@@v@@@className@@@/v@@@)automaton).setSpeed(Float.parseFloat(getParent().getMetadata("@@@v@@@speedVar@@@/v@@@")));
+                } else if(!"@@@v@@@speed@@@/v@@@".equals("-1")) {
+                    ((@@@v@@@className@@@/v@@@)automaton).setSpeed(@@@v@@@speed@@@/v@@@f);
+                }@@@/repeat@@@
+                
                 @@@repeat id="setXY"@@@
-                ((@@@v@@@className@@@/v@@@)automaton).setX(@@@v@@@x@@@/v@@@);
-                ((@@@v@@@className@@@/v@@@)automaton).setY(@@@v@@@y@@@/v@@@);@@@/repeat@@@
+                ((@@@v@@@className@@@/v@@@)automaton).setX(Integer.parseInt(@@@v@@@x@@@/v@@@));
+                ((@@@v@@@className@@@/v@@@)automaton).setY(Integer.parseInt(@@@v@@@y@@@/v@@@));@@@/repeat@@@
                 
 		@@@repeat id="events"@@@
                 PHATAudioEventAutomatonFinishedListener audioEvent = 

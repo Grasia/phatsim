@@ -30,6 +30,8 @@ public class @@@v@@@tisName@@@/v@@@TIA extends TimeIntervalAutomaton {
 		FSM fsm = new FSM(agent, 1,"FSM-@@@v@@@tisName@@@/v@@@TIA");
 		@@@repeat id="activities"@@@ActivityAutomaton @@@v@@@actName@@@/v@@@Activity = new @@@v@@@actName@@@/v@@@Activity(agent, "@@@v@@@actName@@@/v@@@");
 		@@@/repeat@@@
+                @@@repeat id="params"@@@@@@v@@@actName@@@/v@@@Activity.setMetadata("@@@v@@@varName@@@/v@@@", "@@@v@@@value@@@/v@@@");
+		@@@/repeat@@@
                 @@@repeat id="conditions"@@@AutomatonCondition @@@v@@@condId@@@/v@@@ = @@@v@@@condInst@@@/v@@@;
                 @@@/repeat@@@
     	@@@repeat id="firstActivity"@@@fsm.registerStartState(@@@v@@@actName@@@/v@@@Activity);

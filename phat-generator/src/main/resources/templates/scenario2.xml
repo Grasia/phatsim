@@ -139,6 +139,8 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
             mainAutomaton.addListener(new AutomatonIcon());
             agent.setAutomaton(mainAutomaton);
         @@@/repeat@@@
+        @@@repeat id="params"@@@@@@v@@@actName@@@/v@@@Activity.setMetadata("@@@v@@@varName@@@/v@@@", "@@@v@@@value@@@/v@@@");
+	@@@/repeat@@@
        agent.registerListener(meq); 
        agentsConfig.add(agent);
         @@@repeat id="ActivateHearingSense"@@@

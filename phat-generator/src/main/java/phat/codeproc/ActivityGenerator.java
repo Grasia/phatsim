@@ -80,6 +80,7 @@ public class ActivityGenerator {
                         rep.add(new Var("aDesc", Utils.getAttributeByName(ge, "Description")));
 
                         rep.add(new Var("stID", Utils.replaceBadChars(actDiagId)));
+
                         continue;
                     }
                 }
@@ -146,6 +147,7 @@ public class ActivityGenerator {
         repFirst.add(new Var("actName", Utils.replaceBadChars(ge.getID())));
 
         generateActivityInstances(adlSpec, repFather);
+        addPararms(adlSpec, repFather);
         generateCondition(adlSpec, repFather);
         generateTransitions(adlSpec, repFather);
     }
@@ -175,13 +177,54 @@ public class ActivityGenerator {
         }
     }
 
+    public static void addPararms(Graph adlSpec, Repeat repFather) throws NullEntity {
+        for (GraphEntity act : adlSpec.getEntities()) {
+            if (act.getType().equals(ACTIVITY_TYPE)) {
+                addPararms(act, repFather);
+            }
+        }
+    }
+
+    public static void addPararms(GraphEntity act, Repeat repFather) throws NullEntity {
+        for (GraphEntity param : Utils.getTargetsEntity(act, "ParamsSet")) {
+            String varName = null;
+            String value = null;
+            if (param.getType().equals("SeatParam")) {
+                varName = Utils.getAttributeByName(param, "SeatVarField");
+                value = Utils.getAttributeByName(param, "SeatField");
+            } else if (param.getType().equals("DeviceParam")) {
+                varName = Utils.getAttributeByName(param, "DeviceVarField");
+                value = Utils.getAttributeByName(param, "DeviceField");
+            } else if (param.getType().equals("ObjectParam")) {
+                varName = Utils.getAttributeByName(param, "ObjectVarField");
+                value = Utils.getAttributeByName(param, "ObjectField");
+            } else if (param.getType().equals("PrimitiveParam")) {
+                varName = Utils.getAttributeByName(param, "PrimitiveVarField");
+                value = Utils.getAttributeByName(param, "PrimitiveField");
+            } else if (param.getType().equals("PlaceParam")) {
+                varName = Utils.getAttributeByName(param, "PlaceVarField");
+                value = Utils.getAttributeByName(param, "PlaceField");
+            } else if (param.getType().equals("WearableParam")) {
+                varName = Utils.getAttributeByName(param, "WearableVarField");
+                value = Utils.getAttributeByName(param, "WearableField");
+            }
+            if (varName != null && value != null) {
+                Repeat params = new Repeat("params");
+                repFather.add(params);
+                params.add(new Var("actName", Utils.replaceBadChars(act.getID())));
+                params.add(new Var("varName", Utils.replaceBadChars(varName)));
+                params.add(new Var("value", Utils.replaceBadChars(value)));
+            }
+        }
+    }
+
     private void generateCondition(Graph adlSpec, Repeat repFather) throws NullEntity {
         for (GraphEntity condition : adlSpec.getEntities()) {
             if (condition.getType().equals(IF_FLOW_CONTROL_TYPE)) {
                 Collection<GraphEntity> conds = Utils.getTargetsEntity(condition, IF_FLOW_COND_REL);
                 String condSentence = ConditionGenerator.generateAndCondition(conds);
                 String condId = condition.getID();
-                
+
                 Repeat conditions = new Repeat("conditions");
                 repFather.add(conditions);
                 conditions.add(new Var("condId", condId));
@@ -189,7 +232,7 @@ public class ActivityGenerator {
             }
         }
     }
-    
+
     private void generateTransitions(Graph adlSpec, Repeat repFather) throws NullEntity {
         for (GraphEntity activity : adlSpec.getEntities()) {
             if (activity.getType().equals(ACTIVITY_TYPE)) {

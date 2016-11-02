@@ -132,6 +132,7 @@ public class SimulationGenerator {
                         Repeat adlRep = new Repeat("setActivity");
                         agentRep.add(adlRep);
                         adlRep.add(new Var("actName", Utils.replaceBadChars(activity.getID())));
+                        ActivityGenerator.addPararms(activity, agentRep);
                     } else {
                         String adlName = ADLsGenerator.getADLName(humanId, browser);
                         if (adlName != null) {
