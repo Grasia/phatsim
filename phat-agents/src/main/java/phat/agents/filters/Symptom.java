@@ -63,6 +63,9 @@ public class Symptom {
             //System.out.println("Symptom = "+symptomType+", Filter chain number = "+levelFilters.size());
             for (Filter filter : levelFilters) {
                 result = filter.process(agent, result);
+                if(result == null) {
+                    break;
+                }
             }
         }
         return result;

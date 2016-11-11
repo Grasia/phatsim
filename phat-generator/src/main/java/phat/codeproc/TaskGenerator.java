@@ -239,7 +239,7 @@ public class TaskGenerator {
         params.add(className);
 
         if (taskGE.getType().equals("GoIntoBed")) {
-            params.add("Bed1");
+            params.add("\"Bed1\"");
         } else if (taskGE.getType().equals("OpenTask")) {
             String open = getVarValue(taskGE, "openObjVar", getFieldValue(taskGE, "OpenCloseObjField", "null", true));
             params.add(open);
@@ -300,7 +300,7 @@ public class TaskGenerator {
         GraphEntity ge = Utils.getTargetEntity(task, varRel);
         String resultValue = value.equals("null") ? "null" : "\"" + value + "\"";
         if (ge != null) {
-            String varValue = "getParent().getParent().getMetadata(\"" + Utils.replaceBadChars(ge.getID()) + "\")";
+            String varValue = "getParent().getMetadata(\"" + Utils.replaceBadChars(ge.getID()) + "\")";
             return varValue + " != null ? " + varValue + " : " + resultValue;
         }
         return resultValue;

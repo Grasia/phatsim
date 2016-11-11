@@ -71,7 +71,7 @@ public class LeaveSomethingIn extends SimpleState implements PHATCommandListener
             if (command == goCloseToObjectCommand) {
                 String loc = agent.getAgentsAppState().getHouseAppState().getHouse("House1").getClosestPlaceToPutThings(agent.getLocation(), furniture);
                 if(loc != null) {
-                    setObjectOnCommand = new SetDeviceOnFurnitureCommand(objectId, "House1", furniture);
+                    setObjectOnCommand = new SetDeviceOnFurnitureCommand(objectId, "House1", furniture, this);
                     setObjectOnCommand.setPlaceId(loc);
                     agent.runCommand(setObjectOnCommand);
                 } else {
