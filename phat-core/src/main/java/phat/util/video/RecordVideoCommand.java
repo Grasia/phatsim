@@ -51,7 +51,8 @@ public class RecordVideoCommand extends PHATCommand {
             videoAppState = new VideoRenderAppState();
             app.getStateManager().attach(videoAppState);
         }
-        videoAppState.recordViewPort(app.getViewPort(), this.output);
+     //  videoAppState.recordViewPort(app.getViewPort(), this.output);
+        videoAppState.recordViewPort(app.getGuiViewPort(), this.output);
         setState(State.Success);
     }
 
