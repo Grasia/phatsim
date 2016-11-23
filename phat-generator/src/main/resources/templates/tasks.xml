@@ -35,7 +35,7 @@ public class @@@v@@@stID@@@/v@@@Task extends SeqTaskAutomaton {
                  .setMetadata("SOCIAALML_ENTITY_ID", "@@@v@@@eID@@@/v@@@")
                  .setMetadata("SOCIAALML_ENTITY_TYPE", "@@@v@@@eType@@@/v@@@");
                 
-                @@@repeat id="params"@@@automaton.setMetadata("@@@v@@@varName@@@/v@@@", "@@@v@@@value@@@/v@@@");
+                @@@repeat id="params"@@@setMetadata("@@@v@@@varName@@@/v@@@", "@@@v@@@value@@@/v@@@");
 		@@@/repeat@@@
                 
                 @@@repeat id="durRep"@@@

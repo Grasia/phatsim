@@ -96,7 +96,7 @@ public class TaskGenerator {
             throws NotFound {
         GraphEntity task = Utils.getFirstEntity(std);
         while (task != null) {
-            System.out.println("Task = "+task.getID());
+            System.out.println("Task = " + task.getID());
             List<String> params = fillConstructorParams(task);
 
             Repeat rep = new Repeat("subTasks");
@@ -106,6 +106,14 @@ public class TaskGenerator {
             rep.add(new Var("desc", getFieldValue(task, "Description", "", false)));
             rep.add(new Var("eID", Utils.replaceBadChars(task.getID())));
             rep.add(new Var("eType", Utils.replaceBadChars(task.getType())));
+
+            if (task.getType().equals("BSequentialTask") || task.getType().equals("BRandomTask")) {
+                try {
+                    ActivityGenerator.addPararms(task, rep);
+                } catch (NullEntity ex) {
+                    Logger.getLogger(TaskGenerator.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
 
             if (params.size() > 1) {
                 Repeat r3params = new Repeat("3params");

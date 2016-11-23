@@ -202,8 +202,8 @@ public class ActivityGenerator {
                 varName = Utils.getAttributeByName(param, "PrimitiveVarField");
                 value = Utils.getAttributeByName(param, "PrimitiveField");
             } else if (param.getType().equals("PlaceParam")) {
-                varName = Utils.getAttributeByName(param, "PlaceVarField");
-                value = Utils.getAttributeByName(param, "PlaceField");
+                varName = Utils.getAttributeByName(param, "SpatialVarField");
+                value = Utils.getAttributeByName(param, "SpatialField");
             } else if (param.getType().equals("WearableParam")) {
                 varName = Utils.getAttributeByName(param, "WearableVarField");
                 value = Utils.getAttributeByName(param, "WearableField");
