@@ -12,6 +12,11 @@
     
     <dependencies>
         <dependency>
+            <groupId>net.sf.sociaal</groupId>
+            <artifactId>icons</artifactId>
+            <version>${sociaal.version}</version>
+        </dependency>
+        <dependency>
             <groupId>net.sf.phat</groupId>
             <artifactId>phat-server</artifactId>
             <version>1.0.10-SNAPSHOT</version>

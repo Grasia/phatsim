@@ -35,29 +35,29 @@ public class AutomatonIcon implements AutomatonListener {
     }
     
     private void init() {
-        iconMapping.put("DrinkAutomaton", "Textures/SociaalmlImages/behaviour/tasks/Drink.png");
-        iconMapping.put("EatAnimation", "Textures/SociaalmlImages/behaviour/tasks/Eat.png");
-        iconMapping.put("DoNothing", "Textures/SociaalmlImages/behaviour/tasks/Wait.png");
-        iconMapping.put("SleepAutomaton", "Textures/SociaalmlImages/behaviour/tasks/FallSleepTask.png");
-        iconMapping.put("FallAutomaton", "Textures/SociaalmlImages/behaviour/tasks/Fall.png");
-        iconMapping.put("OpenObjectAutomaton", "Textures/SociaalmlImages/behaviour/tasks/Open.png");
-        iconMapping.put("CloseObjectAutomaton", "Textures/SociaalmlImages/behaviour/tasks/Close.png");
-        iconMapping.put("GoIntoBedAutomaton", "Textures/SociaalmlImages/behaviour/tasks/GoIntoBed.png");
-        iconMapping.put("MoveToLazyLocation", "Textures/SociaalmlImages/behaviour/tasks/GoToTask.png");
-        iconMapping.put("MoveToBodyLocAutomaton", "Textures/SociaalmlImages/behaviour/tasks/GoToBodyLoc.png");
-        iconMapping.put("MoveToSpace", "Textures/SociaalmlImages/behaviour/tasks/GoToTask.png");
-        iconMapping.put("SayAutomaton", "Textures/SociaalmlImages/behaviour/tasks/Say.png");
-        iconMapping.put("SitDownAutomaton", "Textures/SociaalmlImages/behaviour/tasks/SitDown.png");
-        iconMapping.put("StandUpAutomaton", "Textures/SociaalmlImages/behaviour/tasks/StandUp.png");
-        iconMapping.put("UseObjectAutomaton", "Textures/SociaalmlImages/behaviour/tasks/UseTask.png");
-        iconMapping.put("HaveAShowerAutomaton", "Textures/SociaalmlImages/behaviour/tasks/UseTask.png");
-        iconMapping.put("UseCommonObjectAutomaton", "Textures/SociaalmlImages/behaviour/tasks/UseTask.png");
-        iconMapping.put("UseDoorbellAutomaton", "Textures/SociaalmlImages/behaviour/tasks/UseTask.png");
-        iconMapping.put("UseWCAutomaton", "Textures/SociaalmlImages/behaviour/tasks/UseTask.png");
-        iconMapping.put("PutOnClothingAutomaton", "Textures/SociaalmlImages/behaviour/tasks/PutOn.png");
-        iconMapping.put("TakeOffClothingAutomaton", "Textures/SociaalmlImages/behaviour/tasks/TakeOff.png");
-        iconMapping.put("PressOnScreenXYAutomaton", "Textures/SociaalmlImages/behaviour/tasks/TapXY.png");
-        iconMapping.put("WaitForCloseToBodyAutomaton", "Textures/SociaalmlImages/behaviour/tasks/WaitForBodyClose.png");
+        iconMapping.put("DrinkAutomaton", "images/behaviour/tasks/Drink.png");
+        iconMapping.put("EatAnimation", "images/behaviour/tasks/Eat.png");
+        iconMapping.put("DoNothing", "images/behaviour/tasks/Wait.png");
+        iconMapping.put("SleepAutomaton", "images/behaviour/tasks/FallSleepTask.png");
+        iconMapping.put("FallAutomaton", "images/behaviour/tasks/Fall.png");
+        iconMapping.put("OpenObjectAutomaton", "images/behaviour/tasks/Open.png");
+        iconMapping.put("CloseObjectAutomaton", "imagesbehaviour/tasks/Close.png");
+        iconMapping.put("GoIntoBedAutomaton", "images/behaviour/tasks/GoIntoBed.png");
+        iconMapping.put("MoveToLazyLocation", "images/behaviour/tasks/GoToTask.png");
+        iconMapping.put("MoveToBodyLocAutomaton", "images/behaviour/tasks/GoToBodyLoc.png");
+        iconMapping.put("MoveToSpace", "images/behaviour/tasks/GoToTask.png");
+        iconMapping.put("SayAutomaton", "images/behaviour/tasks/Say.png");
+        iconMapping.put("SitDownAutomaton", "images/behaviour/tasks/SitDown.png");
+        iconMapping.put("StandUpAutomaton", "images/behaviour/tasks/StandUp.png");
+        iconMapping.put("UseObjectAutomaton", "images/behaviour/tasks/UseTask.png");
+        iconMapping.put("HaveAShowerAutomaton", "images/behaviour/tasks/UseTask.png");
+        iconMapping.put("UseCommonObjectAutomaton", "images/behaviour/tasks/UseTask.png");
+        iconMapping.put("UseDoorbellAutomaton", "images/behaviour/tasks/UseTask.png");
+        iconMapping.put("UseWCAutomaton", "images/behaviour/tasks/UseTask.png");
+        iconMapping.put("PutOnClothingAutomaton", "images/behaviour/tasks/PutOn.png");
+        iconMapping.put("TakeOffClothingAutomaton", "images/behaviour/tasks/TakeOff.png");
+        iconMapping.put("PressOnScreenXYAutomaton", "images/behaviour/tasks/TapXY.png");
+        iconMapping.put("WaitForCloseToBodyAutomaton", "images/behaviour/tasks/WaitForBodyClose.png");
     }
     
     @Override
