@@ -33,6 +33,7 @@ public class PlayAnimation extends SimpleState implements PHATCommandListener {
 
     PlayBodyAnimationCommand playBodyAnimationCommand;
     boolean animFinished = false;
+    String animationName;
 
     public PlayAnimation(Agent agent, String name, String animationName) {
         this(agent, 0, name, animationName);
@@ -40,13 +41,12 @@ public class PlayAnimation extends SimpleState implements PHATCommandListener {
     
     public PlayAnimation(Agent agent, int priority, String name, String animationName) {
         super(agent, priority, name);
-
-        playBodyAnimationCommand = new PlayBodyAnimationCommand(agent.getId(), animationName, this);
+        this.animationName = animationName;
     }
 
     @Override
     public boolean isFinished(PHATInterface phatInterface) {
-        return super.isFinished(phatInterface) || animFinished;
+        return ((super.getFinishCondition() != null && super.isFinished(phatInterface)) || super.getFinishCondition() == null) && animFinished;
     }
 
     @Override
@@ -59,11 +59,19 @@ public class PlayAnimation extends SimpleState implements PHATCommandListener {
 
     @Override
     public void simpleNextState(PHATInterface phatInterface) {
-        
+        if(!super.isFinished(phatInterface) && animFinished) {
+            playAnim();
+        }
     }
 
     @Override
     public void initState(PHATInterface phatInterface) {
+        playAnim();
+    }
+    
+    private void playAnim() {
+        playBodyAnimationCommand = new PlayBodyAnimationCommand(agent.getId(), animationName, this);
         agent.runCommand(playBodyAnimationCommand);
+        animFinished = false;
     }
 }

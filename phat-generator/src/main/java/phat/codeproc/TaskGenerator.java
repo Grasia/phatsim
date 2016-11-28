@@ -75,7 +75,7 @@ public class TaskGenerator {
         entityToAutomatonMap.put("TapXYTask", "PressOnScreenXYAutomaton");
         entityToAutomatonMap.put("SwitchLightTask", "SwitchLight");
         entityToAutomatonMap.put("DropObj", "DropObjTask");
-
+        entityToAutomatonMap.put("PlayAnimationTask", "PlayAnimation");
     }
 
     public void generateAllSeqTasks() throws NotFound {
@@ -300,6 +300,9 @@ public class TaskGenerator {
             String switchRoomVar = getVarValue(taskGE, "switchRoomVar", getFieldValue(taskGE, "RoomField", "null", true));
             params.add(switchRoomVar);
             params.add("\"" + getFieldValue(taskGE, "ONOFFStateField", "null", true) + "\"");
+        } else if (taskGE.getType().equals("PlayAnimationTask")) {
+            String switchRoomVar = getVarValue(taskGE, "animVar", getFieldValue(taskGE, "AnimNameField", "null", true));
+            params.add(switchRoomVar);
         }
         return params;
     }
