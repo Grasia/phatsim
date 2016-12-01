@@ -171,7 +171,7 @@ public class SmartPhoneFactory {
     
     public static void enableCameraFacility(Node smartphone, float fovY) {
         // TODO cambiar resolución
-        Camera smartPhoneCamera = new Camera(800, 480);//camera.clone(); 
+        Camera smartPhoneCamera = new Camera(480,800);//camera.clone(); 
         smartPhoneCamera.setFrustumPerspective(fovY, (float) camera.getWidth() / camera.getHeight(), 0.01f, 1000f);
         /*smartPhoneCamera.setLocation(loc);
          smartPhoneCamera.setRotation(cam.getRotation());

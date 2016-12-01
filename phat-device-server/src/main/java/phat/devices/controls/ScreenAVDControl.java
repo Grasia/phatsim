@@ -69,10 +69,10 @@ public class ScreenAVDControl extends AbstractControl {
                 @Override
                 public void run() {
                     while (!finish) {
-                        long t1 = System.currentTimeMillis();
+                        //long t1 = System.currentTimeMillis();
                         BufferedImage bi = avd.takeSnapshot();
-                        long t2 = System.currentTimeMillis();
-                        System.out.println("takeSnapshot Time = " + (t2 - t1));
+                        //long t2 = System.currentTimeMillis();
+                        //System.out.println("takeSnapshot Time = " + (t2 - t1));
                         synchronized (buf) {
                             if (index == -1) {
                                 index = 0;
