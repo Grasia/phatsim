@@ -71,15 +71,18 @@ public class SimulationGenerator {
             throws NullEntity, NotFound {
         for (GraphEntity progPool : Utils.getEntities(simDiag, INIT_PROGRAM_POOL)) {
             for (GraphEntity deviceEntity : Utils.getTargetsEntity(progPool, "device")) {
+                Repeat importADLRep = new Repeat("importDevices");
+                simInitRep.add(importADLRep);
+
                 String deviceId = deviceEntity.getID();
                 Repeat agentRep = new Repeat("deviceAgentRep");
                 simInitRep.add(agentRep);
                 simInitRep.add(new Var("daID", deviceId));
-                
+
                 GraphCollection gc = progPool.getAttributeByName("ProgramPoolField").getCollectionValue();
-                for(int i = 0; i < gc.size(); i++) {
+                for (int i = 0; i < gc.size(); i++) {
                     String progId = gc.getElementAt(i).getAttributeByName("modelID").getSimpleValue();
-                    
+
                     Repeat progRep = new Repeat("progsRep");
                     progRep.add(new Var("progId", progId));
                     agentRep.add(progRep);

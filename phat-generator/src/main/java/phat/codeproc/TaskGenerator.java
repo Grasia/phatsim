@@ -129,7 +129,7 @@ public class TaskGenerator {
             if (hasField(task, "BTaskDuration")) {
                 GraphEntity var = Utils.getTargetEntity(task, "durationVar");
                 String duration = getFieldValue(task, "BTaskDuration", "-1", false);
-                if (var != null || (!duration.equals("") && Integer.parseInt(duration) > 0)) {
+                if (var != null || (!duration.equals("") && Double.parseDouble(duration) > 0)) {
                     Repeat durRep = new Repeat("durRep");
                     if (var != null) {
                         durRep.add(new Var("durVar", Utils.replaceBadChars(var.getID())));
@@ -147,7 +147,7 @@ public class TaskGenerator {
                     var = Utils.getTargetEntity(task, "goToBodySpeedVar");
                 }
                 String speed = getFieldValue(task, "SpeedField", "-1", false);
-                if (var != null || (!speed.equals("") && Integer.parseInt(speed) > 0)) {
+                if (var != null || (!speed.equals("") && Double.parseDouble(speed) > 0)) {
                     Repeat speedRep = new Repeat("speedRep");
                     if (var != null) {
                         speedRep.add(new Var("speedVar", Utils.replaceBadChars(var.getID())));
@@ -224,14 +224,7 @@ public class TaskGenerator {
                 return def;
             }
         }
-        if (at.isCollectionValue()) {
-            try {
-                return at.getCollectionValue().getElementAt(0).getID();
-            } catch (NullEntity ex) {
-                Logger.getLogger(TaskGenerator.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-        return at.getSimpleValue();
+        return Utils.getValue(at);
     }
 
     public static List<String> fillConstructorParams(GraphEntity taskGE)

@@ -47,7 +47,7 @@
         <java.version>1.7</java.version>
         <jme.version>3.0.0</jme.version>
         <sociaal.version>1.0.8-SNAPSHOT</sociaal.version>
-        <jali.version>1.0.7</jali.version>
+        <jali.version>1.0.8-SNAPSHOT</jali.version>
         <jdos.version>1.0.5</jdos.version>
     </properties>
     

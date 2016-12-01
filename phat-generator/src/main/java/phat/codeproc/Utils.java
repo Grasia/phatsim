@@ -39,6 +39,8 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class encapsulates methods to traverse the specification. In general, it
@@ -60,7 +62,21 @@ public class Utils {
      */
     public static String replaceBadChars(String string) {
         return string.replace(' ', '_').replace(',', '_').replace('.', '_')
-                .replace('-', '_').trim().replace("\n", "");
+                .replace('-', '_').trim().replace("\n", "").replace("?", "Int").replace("!", "Exc");
+    }
+    
+    public static String getValue(GraphAttribute attribute) {
+        if (attribute.isCollectionValue()) {
+            try {
+                return replaceBadChars(attribute.getCollectionValue().getElementAt(0).getID());
+            } catch (NullEntity ex) {
+                Logger.getLogger(TaskGenerator.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        if(attribute.isEntityValue()) {
+            return replaceBadChars(attribute.getSimpleValue());
+        }
+        return attribute.getSimpleValue();
     }
 
     public static GraphEntity getProfileTypeOf(String humanId, String profileType, Browser browser) {

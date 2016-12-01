@@ -15,7 +15,8 @@ import java.rmi.RemoteException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import phat.agents.*;
-import phat.agents.devices.*;
+@@@repeat id="importDevices"@@@import phat.agents.devices.*;
+@@@/repeat@@@
 import phat.body.BodiesAppState;
 import phat.body.commands.*;
 import phat.devices.commands.*;

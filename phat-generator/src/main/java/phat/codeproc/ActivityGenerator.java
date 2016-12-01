@@ -223,7 +223,7 @@ public class ActivityGenerator {
             if (condition.getType().equals(IF_FLOW_CONTROL_TYPE)) {
                 Collection<GraphEntity> conds = Utils.getTargetsEntity(condition, IF_FLOW_COND_REL);
                 String condSentence = ConditionGenerator.generateAndCondition(conds);
-                String condId = condition.getID();
+                String condId = Utils.replaceBadChars(condition.getID());
 
                 Repeat conditions = new Repeat("conditions");
                 repFather.add(conditions);
@@ -258,12 +258,12 @@ public class ActivityGenerator {
     private void generateCondTransitions(GraphEntity activity, Repeat repFather) {
         for (GraphEntity previousIf : Utils.getSourcesEntity(activity, TRUE_FLOW_REL)) {
             if (previousIf.getType().equals(IF_FLOW_CONTROL_TYPE)) {
-                propagateCond(activity, previousIf, "new CompositeAndCondition(" + previousIf.getID() + ")", repFather);
+                propagateCond(activity, previousIf, "new CompositeAndCondition(" + Utils.replaceBadChars(previousIf.getID()) + ")", repFather);
             }
         }
         for (GraphEntity previousIf : Utils.getSourcesEntity(activity, FALSE_FLOW_REL)) {
             if (previousIf.getType().equals(IF_FLOW_CONTROL_TYPE)) {
-                propagateCond(activity, previousIf, "new CompositeAndCondition(new NegateCondition(" + previousIf.getID() + "))", repFather);
+                propagateCond(activity, previousIf, "new CompositeAndCondition(new NegateCondition(" + Utils.replaceBadChars(previousIf.getID()) + "))", repFather);
             }
         }
     }
@@ -274,12 +274,12 @@ public class ActivityGenerator {
         }
         for (GraphEntity previousIf : Utils.getSourcesEntity(cIf, TRUE_FLOW_REL)) {
             if (previousIf.getType().equals(IF_FLOW_CONTROL_TYPE)) {
-                propagateCond(targetActivity, previousIf, condition + ".add(" + previousIf.getID() + ")", repFather);
+                propagateCond(targetActivity, previousIf, condition + ".add(" + Utils.replaceBadChars(previousIf.getID()) + ")", repFather);
             }
         }
         for (GraphEntity previousIf : Utils.getSourcesEntity(cIf, FALSE_FLOW_REL)) {
             if (previousIf.getType().equals(IF_FLOW_CONTROL_TYPE)) {
-                propagateCond(targetActivity, previousIf, condition + ".add(" + "new NegateCondition(" + previousIf.getID() + "))", repFather);
+                propagateCond(targetActivity, previousIf, condition + ".add(" + "new NegateCondition(" + Utils.replaceBadChars(previousIf.getID()) + "))", repFather);
             }
         }
     }
