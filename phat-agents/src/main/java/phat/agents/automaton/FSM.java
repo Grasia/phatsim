@@ -190,7 +190,6 @@ public class FSM extends Automaton {
      */
     @Override
     protected Automaton getNextAutomaton() {
-        System.out.println(agent.getId()+":"+name+"(getNextAutomaton)");
         Automaton result = null;
         if (currentState == null) {
             System.out.println(agent.getId()+":"+name+"(InitialState="+initialState.getName()+") return "+initialState.getName());
@@ -216,11 +215,7 @@ public class FSM extends Automaton {
         }
         if (result != null) {
             System.out.println("NextState = " + result);
-            result.setAutomatonModificator(automatonModificator);
-
-            for (AutomatonListener al : listeners) {
-                result.addListener(al);
-            }
+            transmitListeners(result);
         }
 
         if (result != null) {

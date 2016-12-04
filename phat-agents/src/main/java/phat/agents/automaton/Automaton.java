@@ -326,10 +326,7 @@ public abstract class Automaton {
                 if (currentState == null) {
                     setState(STATE.FINISHED);
                 } else {
-                    currentState.setAutomatonModificator(automatonModificator);
-                    for (AutomatonListener al : listeners) {
-                        currentState.addListener(al);
-                    }
+                    transmitListeners(currentState);
                     setState(STATE.DEFAULT_STARTED);
                 }
                 break;
