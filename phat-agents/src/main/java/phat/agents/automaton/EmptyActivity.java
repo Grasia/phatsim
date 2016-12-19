@@ -19,29 +19,22 @@
  */
 package phat.agents.automaton;
 
-import java.util.ArrayList;
-import phat.PHATInterface;
 import phat.agents.Agent;
+import phat.agents.automaton.conditions.EmptyCondition;
 
 /**
  *
  * @author pablo
  */
-public abstract class ActivityAutomaton extends Automaton {
+public class EmptyActivity extends ActivityAutomaton {
 
-    public ActivityAutomaton(Agent agent, String name) {
-        super(agent, 0, name);
+    public EmptyActivity(Agent agent, String name) {
+        super(agent, name);
     }
     
     @Override
-    public void initState(PHATInterface phatInterface) {
-        initTasks();
+    public void initTasks() {
+        setFinishCondition(new EmptyCondition());
     }
-    
-    public abstract void initTasks();
 
-    @Override
-    public Automaton getDefaultState(PHATInterface phatInterface) {
-        return null;
-    }
 }

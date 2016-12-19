@@ -89,9 +89,9 @@ public class GUIMainPHATSimulation implements PHATInitializer {
     public void initBodies(BodyConfigurator bodyConfig) {
         bodyConfig.createBody(BodiesAppState.BodyType.ElderLP, "Relative");        
         bodyConfig.runCommand(new SetBodyInHouseSpaceCommand("Relative", "House1", "BedRoom1"));
-        bodyConfig.runCommand(new TremblingHeadCommand("Relative", true));
-        bodyConfig.runCommand(new SetStoopedBodyCommand("Relative", true));
-        bodyConfig.runCommand(new TremblingHandCommand("Relative", true, true));
+        //bodyConfig.runCommand(new TremblingHeadCommand("Relative", true));
+        //bodyConfig.runCommand(new SetStoopedBodyCommand("Relative", true));
+        //bodyConfig.runCommand(new TremblingHandCommand("Relative", true, true));
         //bodyConfig.runCommand(new BodyLabelCommand("Relative", true));
         /*SetCameraToBodyCommand setCameraToBodyCommand = new SetCameraToBodyCommand("Relative");
         setCameraToBodyCommand.setFront(true);
@@ -122,7 +122,7 @@ public class GUIMainPHATSimulation implements PHATInitializer {
     
     @Override
     public void initAgents(AgentConfigurator agentsConfig) {
-        Agent relative = new HumanAgent("Relative");
+        /*Agent relative = new HumanAgent("Relative");
         
         MoveToSpace moveToBathroom1 = new MoveToSpace(relative, "GoToBathRoom1", "BathRoom1");
         
@@ -223,7 +223,7 @@ public class GUIMainPHATSimulation implements PHATInitializer {
         grammarFacilitator.createFile();
         awhelc.setGrammarFacilitator(grammarFacilitator);
         
-        agentsConfig.runCommand(awhelc);
+        agentsConfig.runCommand(awhelc);*/
     }
 
     @Override
