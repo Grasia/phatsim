@@ -21,11 +21,11 @@
             <artifactId>jali-adm</artifactId>
             <version>${jali.version}</version>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>net.sf.jali</groupId>
             <artifactId>jali-vapi-common</artifactId>
             <version>${jali.version}</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>net.sf.jali</groupId>
             <artifactId>jali-phat-client</artifactId>

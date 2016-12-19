@@ -48,6 +48,7 @@ public class ConditionGenerator {
     final static String CBODY_STATE = "BodyStateCondition";
     final static String THING_IN_ROOM_STATE = "IsThingInRoomCondition";
     final static String NOT_CONDITION = "NotCondition";
+    final static String CSAY = "CSay";
 
     public static String generateAndCondition(Collection<GraphEntity> conds) {
         if (!conds.isEmpty()) {
@@ -305,6 +306,14 @@ public class ConditionGenerator {
                         new Object[]{"IntensityLevelField", geCond.getID()});
                 System.exit(-1);
             }
+        } else if (type.equals(CSAY)) {
+            String message = Utils.getFieldValue(geCond, "MessageField", null, true);
+            String result = "new SomeoneSayCondition(\""+message+"\")";
+            String human = Utils.getFieldValue(geCond, "HumanTarget", null, false);
+            if(human != null) {
+                result += ".setHumanAgentSourceId(\""+human+"\")";
+            }
+            return result;
         } else if (type.equals(THING_IN_ROOM_STATE)) {
             String roomName = "";
             try {

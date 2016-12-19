@@ -22,6 +22,7 @@ package phat.codeproc;
  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
  */
+import ingenias.exception.NotFound;
 import ingenias.exception.NotInitialised;
 import ingenias.exception.NullEntity;
 import ingenias.generator.browser.Browser;
@@ -41,6 +42,7 @@ import java.util.List;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static phat.codeproc.TaskGenerator.logger;
 
 /**
  * This class encapsulates methods to traverse the specification. In general, it
@@ -62,7 +64,7 @@ public class Utils {
      */
     public static String replaceBadChars(String string) {
         return string.replace(' ', '_').replace(',', '_').replace('.', '_')
-                .replace('-', '_').trim().replace("\n", "").replace("?", "Int").replace("!", "Exc");
+                .replace('-', '_').trim().replace("\n", "").replace("?", "Int").replace("!", "Exc").replace("ñ", "gn");
     }
     
     public static String getValue(GraphAttribute attribute) {
@@ -77,6 +79,26 @@ public class Utils {
             return replaceBadChars(attribute.getSimpleValue());
         }
         return attribute.getSimpleValue();
+    }
+    
+    public static String getFieldValue(GraphEntity task, String fieldName, String def, boolean mandatory) {
+        GraphAttribute at = null;
+        try {
+            at = task.getAttributeByName(fieldName);
+        } catch (NotFound ex) {
+        }
+        if (at == null || at.getSimpleValue().equals("")) {
+            if (mandatory) {
+                logger.log(Level.SEVERE, "Attribute {0} of {1} is empty!",
+                        new Object[]{fieldName, task.getID()});
+                System.exit(0);
+            } else {
+                logger.log(Level.WARNING, "Attribute {0} of {1} is empty!",
+                        new Object[]{fieldName, task.getID()});
+                return def;
+            }
+        }
+        return Utils.getValue(at);
     }
 
     public static GraphEntity getProfileTypeOf(String humanId, String profileType, Browser browser) {

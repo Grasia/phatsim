@@ -12,11 +12,11 @@
     <name>PHAT - Devices</name>
 
     <dependencies>
-        <dependency>
+        <!--dependency>
             <groupId>net.sf.phat</groupId>
             <artifactId>phat-audio</artifactId>
             <version>1.0.10-SNAPSHOT</version>
-        </dependency>
+        </dependency-->
         <dependency>
             <groupId>uk.co.caprica</groupId>
             <artifactId>vlcj</artifactId>

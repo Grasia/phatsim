@@ -81,4 +81,12 @@ public class SayAutomaton extends SimpleState implements PHATCommandListener {
         sayASentenceBodyCommand.setVolume(volume);
         agent.runCommand(sayASentenceBodyCommand);
     }
+
+    public String getText() {
+        return text;
+    }
+
+    public float getVolume() {
+        return volume;
+    }
 }
