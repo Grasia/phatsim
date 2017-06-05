@@ -6,3 +6,5 @@ vapi.props
 /phat-mason/target/
 /phat-demos/target/
 /target/
+.idea
+*.iml
