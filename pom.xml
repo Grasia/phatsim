@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
@@ -13,18 +14,18 @@
     <name>PHAT - Physical Human Activity Tester</name>
     <description>Physical Human Activity Tester</description>
     <url>https://sourceforge.net/projects/phatsim/</url>
-    
+
     <licenses>
         <license>
             <name>The GPL V3</name>
             <url>http://www.gnu.org/copyleft/gpl.html</url>
-            <distribution />
+            <distribution/>
         </license>
     </licenses>
     <scm>
         <connection>scm:git:git://github.com/GRASIA/phatsim.git</connection>
         <developerConnection>scm:git:git@github.com:GRASIA/phatsim.git</developerConnection>
-        <url>https://github.com/Grasia/phatsim</url>		
+        <url>https://github.com/Grasia/phatsim</url>
     </scm>
 
     <developers>
@@ -38,19 +39,25 @@
             <name>Pablo Campillo-Sanchez</name>
             <email>pabcampi@ucm.es</email>
         </developer>
+        <developer>
+            <id>marlonca</id>
+            <name>Marlon Cardenas</name>
+            <email>marlonca@ucm.es</email>
+        </developer>
     </developers>
-    
+
     <properties>
         <vendor>GRASIA Research Group</vendor>
         <developername>Pablo Campillo-Sanchez</developername>
         <developeremail>pabcampi@ucm.es</developeremail>
         <java.version>1.7</java.version>
         <jme.version>3.0.0</jme.version>
-        <sociaal.version>1.0.8-SNAPSHOT</sociaal.version>
-        <jali.version>1.0.8-SNAPSHOT</jali.version>
-        <jdos.version>1.0.5</jdos.version>
+        <sociaal.version>1.0.9</sociaal.version>
+        <sociaalml.version>1.0.11</sociaalml.version>
+        <jali.version>1.0.9</jali.version>
+        <jdos.version>1.0.8</jdos.version>
     </properties>
-    
+
     <modules>
         <module>phat-env</module>
         <module>phat-core</module>
@@ -64,7 +71,18 @@
         <module>phat-generator</module>
         <module>phat-console</module>
     </modules>
-    
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
     <reporting>
         <plugins>
             <plugin>
@@ -74,10 +92,8 @@
             </plugin>
         </plugins>
     </reporting>
-        
-    <build>
 
-        
+    <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -85,7 +101,6 @@
                 <version>2.2</version>
             </plugin>
         </plugins>
-
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -105,7 +120,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore />
+                                        <ignore/>
                                     </action>
                                 </pluginExecution>
                             </pluginExecutions>
@@ -115,7 +130,7 @@
             </plugins>
         </pluginManagement>
     </build>
-    
+
     <repositories>
         <repository>
             <id>java.net-m2</id>
@@ -126,7 +141,30 @@
             <id>sonatype-public</id>
             <name>sonatype public</name>
             <url>https://oss.sonatype.org/content/groups/public/</url>
-        </repository>	  
+        </repository>
     </repositories>
-    
+
+    <profiles>
+        <!-- ********************************** -->
+        <!-- Javadoc disabled for Class Edit    -->
+        <!-- ********************************** -->
+        <profile>
+            <id>doclint-java8-disable</id>
+            <activation>
+                <jdk>[1.8,)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <additionalparam>-Xdoclint:none</additionalparam>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>

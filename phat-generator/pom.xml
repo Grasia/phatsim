@@ -29,6 +29,11 @@
             <name>Jorge Gomez-Sanz</name>
             <email>jjgomez@fdi.ucm.es</email>
         </developer>
+        <developer>
+            <id>marlonca</id>
+            <name>Marlon Cardenas</name>
+            <email>marlonca@ucm.es</email>
+        </developer>
     </developers>
     <dependencies>
 	
@@ -47,7 +52,7 @@
         <dependency>
             <groupId>net.sf.sociaal</groupId>
             <artifactId>sociaalmled</artifactId>
-            <version>${sociaal.version}</version>
+            <version>${sociaalml.version}</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>

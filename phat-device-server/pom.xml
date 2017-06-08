@@ -12,20 +12,13 @@
 
     <name>PHAT - Server</name>
 
-    <!-- Note that the jmonkey.version variable is set in our parent pom.xml.
-                                                                    Currently the value is   3.0.0.20120512-SNAPSHOT
-    -->
+    <!-- Note that the jmonkey.version variable is set in our parent pom.xml. Currently the value is   3.0.0.20120512-SNAPSHOT -->
     <dependencies>
         <dependency>
             <groupId>net.sf.jali</groupId>
             <artifactId>jali-adm</artifactId>
             <version>${jali.version}</version>
         </dependency>
-        <!--dependency>
-            <groupId>net.sf.jali</groupId>
-            <artifactId>jali-vapi-common</artifactId>
-            <version>${jali.version}</version>
-        </dependency-->
         <dependency>
             <groupId>net.sf.jali</groupId>
             <artifactId>jali-phat-client</artifactId>
