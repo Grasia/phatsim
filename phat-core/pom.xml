@@ -3,7 +3,7 @@
     <parent>
         <groupId>net.sf.phat</groupId>
         <artifactId>phat-sim</artifactId>
-        <version>1.0.10-SNAPSHOT</version>
+        <version>1.0.11-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>phat-core</artifactId>
@@ -12,14 +12,14 @@
     <name>PHAT - Core</name>
 
     <dependencies>
-        
+
         <!-- Dependences in local repository -->
         <dependency>
             <groupId>org.jfree</groupId>
             <artifactId>jfreechart</artifactId>
             <version>1.0.14</version>
         </dependency>
-		
+
         <dependency>
             <!-- Contains some AI classes, the most important NavMeshPathfinder -->
             <groupId>net.sf.sociaal</groupId>
@@ -32,51 +32,49 @@
             <version>1.2</version>
         </dependency>
         <dependency>
-            <!-- WARNING:  Large (40M) block of test data.  Disable this
-                    dependency when not needed.
-            -->
+            <!-- WARNING:  Large (40M) block of test data.  Disable this dependency when not needed. -->
             <groupId>net.sf.sociaal</groupId>
             <artifactId>jME3-testdata</artifactId>
             <version>${jmonkey.version}</version>
         </dependency>
 
-		
+
         <!-- The core library -->
         <dependency>
             <groupId>net.sf.sociaal</groupId>
             <artifactId>jME3-core</artifactId>
             <version>${jmonkey.version}</version>
-        </dependency>		
-		
+        </dependency>
+
         <!-- LWJGL stuff -->
         <dependency>
             <groupId>net.sf.sociaal</groupId>
             <artifactId>jME3-lwjgl</artifactId>
             <version>${jmonkey.version}</version>
-        </dependency>		
+        </dependency>
         <dependency>
             <groupId>net.sf.sociaal</groupId>
             <artifactId>jME3-lwjgl-natives</artifactId>
             <version>${jmonkey.version}</version>
-        </dependency>		
+        </dependency>
         <dependency>
             <groupId>net.sf.sociaal</groupId>
             <artifactId>lwjgl</artifactId>
             <version>${jmonkey.version}</version>
-        </dependency>	
-		
+        </dependency>
+
         <!-- Bullet stuff -->
         <dependency>
             <groupId>net.sf.sociaal</groupId>
             <artifactId>jME3-jbullet</artifactId>
             <version>${jmonkey.version}</version>
-        </dependency>		
+        </dependency>
         <dependency>
             <groupId>net.sf.sociaal</groupId>
             <artifactId>jbullet</artifactId>
             <version>${jmonkey.version}</version>
-        </dependency>		
-        
+        </dependency>
+
         <!-- Bullet stuff natives>
         <dependency>
             <groupId>net.sf.sociaal</groupId>
@@ -88,13 +86,13 @@
             <artifactId>jME3-bullet-natives</artifactId>
             <version>${jmonkey.version}</version>
         </dependency-->
-		
+
         <!-- Feature libs -->
         <dependency>
             <groupId>net.sf.sociaal</groupId>
             <artifactId>jME3-blender</artifactId>
             <version>${jmonkey.version}</version>
-        </dependency>		
+        </dependency>
         <dependency>
             <groupId>net.sf.sociaal</groupId>
             <artifactId>jME3-desktop</artifactId>
@@ -104,56 +102,56 @@
             <groupId>net.sf.sociaal</groupId>
             <artifactId>jME3-effects</artifactId>
             <version>${jmonkey.version}</version>
-        </dependency>		
+        </dependency>
         <dependency>
             <groupId>net.sf.sociaal</groupId>
             <artifactId>jME3-networking</artifactId>
             <version>${jmonkey.version}</version>
-        </dependency>		
+        </dependency>
         <dependency>
             <groupId>net.sf.sociaal</groupId>
             <artifactId>jME3-plugins</artifactId>
             <version>${jmonkey.version}</version>
-        </dependency>		
+        </dependency>
         <dependency>
             <groupId>net.sf.sociaal</groupId>
             <artifactId>jME3-terrain</artifactId>
             <version>${jmonkey.version}</version>
-        </dependency>	
-		
+        </dependency>
+
         <!-- Ogg audio stuff -->
         <dependency>
             <groupId>net.sf.sociaal</groupId>
             <artifactId>jME3-jogg</artifactId>
             <version>${jmonkey.version}</version>
-        </dependency>		
+        </dependency>
         <dependency>
             <groupId>net.sf.sociaal</groupId>
             <artifactId>j-ogg-oggd</artifactId>
             <version>${jmonkey.version}</version>
-        </dependency>		
+        </dependency>
         <dependency>
             <groupId>net.sf.sociaal</groupId>
             <artifactId>j-ogg-vorbisd</artifactId>
             <version>${jmonkey.version}</version>
-        </dependency>		
-		
+        </dependency>
+
         <!-- Third party libs -->
         <dependency>
             <groupId>net.sf.sociaal</groupId>
             <artifactId>jinput</artifactId>
             <version>${jmonkey.version}</version>
-        </dependency>		
+        </dependency>
         <dependency>
             <groupId>net.sf.sociaal</groupId>
             <artifactId>eventbus</artifactId>
             <version>${jmonkey.version}</version>
-        </dependency>		
+        </dependency>
         <dependency>
             <groupId>net.sf.sociaal</groupId>
             <artifactId>stack-alloc</artifactId>
             <version>${jmonkey.version}</version>
-        </dependency>		
+        </dependency>
         <dependency>
             <groupId>net.sf.sociaal</groupId>
             <artifactId>vecmath</artifactId>
@@ -163,8 +161,8 @@
             <groupId>net.sf.sociaal</groupId>
             <artifactId>xmlpull-xpp3</artifactId>
             <version>${jmonkey.version}</version>
-        </dependency>			
-		
+        </dependency>
+
         <!-- Nifty GUI -->
         <dependency>
             <groupId>net.sf.sociaal</groupId>
@@ -175,7 +173,7 @@
             <groupId>net.sf.sociaal</groupId>
             <artifactId>nifty</artifactId>
             <version>${jmonkey.version}</version>
-        </dependency>			
+        </dependency>
         <dependency>
             <groupId>net.sf.sociaal</groupId>
             <artifactId>nifty-default-controls</artifactId>
@@ -186,17 +184,17 @@
             <groupId>net.sf.sociaal</groupId>
             <artifactId>nifty-examples</artifactId>
             <version>${jmonkey.version}</version>
-        </dependency>	
+        </dependency>
         <dependency>
             <groupId>net.sf.sociaal</groupId>
             <artifactId>nifty-style-black</artifactId>
             <version>${jmonkey.version}</version>
-        </dependency>	
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
-        </dependency>		
+        </dependency>
     </dependencies>
 
     <profiles>
@@ -217,11 +215,11 @@
             </build>
         </profile>
     </profiles>
-    
+
     <build>
         <defaultGoal>package</defaultGoal>
         <finalName>${project.artifactId}</finalName>
-        
+
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -263,7 +261,7 @@
                     </excludes>
                 </configuration>
             </plugin>
-            
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
@@ -313,27 +311,27 @@
     </properties>
 </project>
 
-<!--
-/*
-*  Copyright 2011 by The Friendularity Project (www.friendularity.org).
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*       http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-* 
-* 
-* This file depends on and contains pieces of the JMonkeyEngine3 software,
-* and all software it includes.   You must manage your own compliance
-* with all license agreements.  See "AS IS" BASIS provisions above.
-*
-* See http://www.jmonkeyengine.org
-*/
--->
+        <!--
+        /*
+        *  Copyright 2011 by The Friendularity Project (www.friendularity.org).
+        *
+        *  Licensed under the Apache License, Version 2.0 (the "License");
+        *  you may not use this file except in compliance with the License.
+        *  You may obtain a copy of the License at
+        *
+        *       http://www.apache.org/licenses/LICENSE-2.0
+        *
+        *  Unless required by applicable law or agreed to in writing, software
+        *  distributed under the License is distributed on an "AS IS" BASIS,
+        *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        *  See the License for the specific language governing permissions and
+        *  limitations under the License.
+        *
+        *
+        * This file depends on and contains pieces of the JMonkeyEngine3 software,
+        * and all software it includes.   You must manage your own compliance
+        * with all license agreements.  See "AS IS" BASIS provisions above.
+        *
+        * See http://www.jmonkeyengine.org
+        */
+        -->

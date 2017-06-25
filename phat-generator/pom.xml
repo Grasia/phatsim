@@ -3,7 +3,7 @@
     <parent>
         <groupId>net.sf.phat</groupId>
         <artifactId>phat-sim</artifactId>
-        <version>1.0.10-SNAPSHOT</version>
+        <version>1.0.11-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>phat-generator</artifactId>
@@ -17,7 +17,7 @@
             <url>http://www.gnu.org/copyleft/gpl.html</url>
             <distribution />
         </license>
-    </licenses>		
+    </licenses>
     <developers>
         <developer>
             <id>pcampillo</id>
@@ -29,15 +29,20 @@
             <name>Jorge Gomez-Sanz</name>
             <email>jjgomez@fdi.ucm.es</email>
         </developer>
+        <developer>
+            <id>marlonca</id>
+            <name>Marlon Cardenas</name>
+            <email>marlonca@ucm.es</email>
+        </developer>
     </developers>
     <dependencies>
-	
+
         <dependency>
             <groupId>net.sf.phat</groupId>
             <artifactId>phat-gui</artifactId>
-            <version>1.0.10-SNAPSHOT</version>
+            <version>1.0.11-SNAPSHOT</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.apache.maven.doxia</groupId>
             <artifactId>doxia-module-markdown</artifactId>
@@ -57,7 +62,7 @@
             </exclusions>
         </dependency>
     </dependencies>
-  
+
     <build>
         <plugins>
             <!--plugin>
@@ -102,13 +107,13 @@
                 </configuration>
             </plugin>
             <!-- It generates the documentation associated wiht the metamodel in each submodule-->
-            <plugin>		
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.2.1</version>
                 <executions>
                     <execution>
-						
+
                         <id>generate document for metamodel</id>
                         <phase>pre-site</phase>
                         <goals>
@@ -150,13 +155,13 @@
                     </execution>
                 </executions>
             </plugin>
-	  
+
         </plugins>
         <pluginManagement>
             <plugins>
-                <!--This plugin's configuration is used to store Eclipse m2e settings 
+                <!--This plugin's configuration is used to store Eclipse m2e settings
                 only. It has no influence on the Maven build itself. -->
-	      
+
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
                     <artifactId>lifecycle-mapping</artifactId>
@@ -197,9 +202,9 @@
                         </lifecycleMappingMetadata>
                     </configuration>
                 </plugin>
-		
+
             </plugins>
         </pluginManagement>
     </build>
-	  
+
 </project>

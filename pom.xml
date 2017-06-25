@@ -9,11 +9,11 @@
     <groupId>net.sf.phat</groupId>
     <artifactId>phat-sim</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.10-SNAPSHOT</version>
+    <version>1.0.11-SNAPSHOT</version>
     <name>PHAT - Physical Human Activity Tester</name>
     <description>Physical Human Activity Tester</description>
     <url>https://sourceforge.net/projects/phatsim/</url>
-    
+
     <licenses>
         <license>
             <name>The GPL V3</name>
@@ -24,7 +24,7 @@
     <scm>
         <connection>scm:git:git://github.com/GRASIA/phatsim.git</connection>
         <developerConnection>scm:git:git@github.com:GRASIA/phatsim.git</developerConnection>
-        <url>https://github.com/Grasia/phatsim</url>		
+        <url>https://github.com/Grasia/phatsim</url>
     </scm>
 
     <developers>
@@ -38,8 +38,13 @@
             <name>Pablo Campillo-Sanchez</name>
             <email>pabcampi@ucm.es</email>
         </developer>
+        <developer>
+            <id>marlonca</id>
+            <name>Marlon Cardenas</name>
+            <email>marlonca@ucm.es</email>
+        </developer>
     </developers>
-    
+
     <properties>
         <vendor>GRASIA Research Group</vendor>
         <developername>Pablo Campillo-Sanchez</developername>
@@ -50,7 +55,7 @@
         <jali.version>1.0.9</jali.version>
         <jdos.version>1.0.8</jdos.version>
     </properties>
-    
+
     <modules>
         <module>phat-env</module>
         <module>phat-core</module>
@@ -64,7 +69,18 @@
         <module>phat-generator</module>
         <module>phat-console</module>
     </modules>
-    
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
     <reporting>
         <plugins>
             <plugin>
@@ -74,10 +90,8 @@
             </plugin>
         </plugins>
     </reporting>
-        
-    <build>
 
-        
+    <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -85,7 +99,6 @@
                 <version>2.2</version>
             </plugin>
         </plugins>
-
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -115,7 +128,7 @@
             </plugins>
         </pluginManagement>
     </build>
-    
+
     <repositories>
         <repository>
             <id>java.net-m2</id>
@@ -126,7 +139,30 @@
             <id>sonatype-public</id>
             <name>sonatype public</name>
             <url>https://oss.sonatype.org/content/groups/public/</url>
-        </repository>	  
+        </repository>
     </repositories>
-    
+
+    <profiles>
+        <!-- ********************************** -->
+        <!-- Javadoc disabled for Class Edit    -->
+        <!-- ********************************** -->
+        <profile>
+            <id>doclint-java8-disable</id>
+            <activation>
+                <jdk>[1.8,)</jdk>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <configuration>
+                            <additionalparam>-Xdoclint:none</additionalparam>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
 </project>

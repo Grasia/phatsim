@@ -7,3 +7,5 @@ vapi.props
 /phat-demos/target/
 /target/
 /phat-agents/target/
+.idea
+*.iml

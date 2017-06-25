@@ -4,7 +4,7 @@
     <parent>
         <groupId>net.sf.phat</groupId>
         <artifactId>phat-sim</artifactId>
-        <version>1.0.10-SNAPSHOT</version>
+        <version>1.0.11-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>phat-device-server</artifactId>
@@ -12,20 +12,13 @@
 
     <name>PHAT - Server</name>
 
-    <!-- Note that the jmonkey.version variable is set in our parent pom.xml.
-                                                                    Currently the value is   3.0.0.20120512-SNAPSHOT
-    -->
+    <!-- Note that the jmonkey.version variable is set in our parent pom.xml. Currently the value is   3.0.0.20120512-SNAPSHOT -->
     <dependencies>
         <dependency>
             <groupId>net.sf.jali</groupId>
             <artifactId>jali-adm</artifactId>
             <version>${jali.version}</version>
         </dependency>
-        <!--dependency>
-            <groupId>net.sf.jali</groupId>
-            <artifactId>jali-vapi-common</artifactId>
-            <version>${jali.version}</version>
-        </dependency-->
         <dependency>
             <groupId>net.sf.jali</groupId>
             <artifactId>jali-phat-client</artifactId>
@@ -37,7 +30,7 @@
             <artifactId>jdos-sm</artifactId>
             <version>${jdos.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>net.sf.jdos</groupId>
             <artifactId>jdos-common</artifactId>
@@ -46,8 +39,8 @@
         <dependency>
             <groupId>net.sf.phat</groupId>
             <artifactId>phat-devices</artifactId>
-            <version>1.0.10-SNAPSHOT</version>
-        </dependency>	
+            <version>1.0.11-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>com.thetransactioncompany</groupId>
             <artifactId>jsonrpc2-base</artifactId>
@@ -78,11 +71,11 @@
             </build>
         </profile>
     </profiles>
-    
+
     <build>
         <defaultGoal>package</defaultGoal>
         <finalName>${project.artifactId}</finalName>
-        
+
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -111,7 +104,7 @@
                 </plugin>
             </plugins>
         </pluginManagement>
-        
+
         <plugins>
 
             <plugin>
@@ -171,27 +164,27 @@
     </build>
 </project>
 
-<!--
-/*
-*  Copyright 2011 by The Friendularity Project (www.friendularity.org).
-*
-*  Licensed under the Apache License, Version 2.0 (the "License");
-*  you may not use this file except in compliance with the License.
-*  You may obtain a copy of the License at
-*
-*       http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-* 
-* 
-* This file depends on and contains pieces of the JMonkeyEngine3 software,
-* and all software it includes.   You must manage your own compliance
-* with all license agreements.  See "AS IS" BASIS provisions above.
-*
-* See http://www.jmonkeyengine.org
-*/
--->
+        <!--
+        /*
+        *  Copyright 2011 by The Friendularity Project (www.friendularity.org).
+        *
+        *  Licensed under the Apache License, Version 2.0 (the "License");
+        *  you may not use this file except in compliance with the License.
+        *  You may obtain a copy of the License at
+        *
+        *       http://www.apache.org/licenses/LICENSE-2.0
+        *
+        *  Unless required by applicable law or agreed to in writing, software
+        *  distributed under the License is distributed on an "AS IS" BASIS,
+        *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        *  See the License for the specific language governing permissions and
+        *  limitations under the License.
+        *
+        *
+        * This file depends on and contains pieces of the JMonkeyEngine3 software,
+        * and all software it includes.   You must manage your own compliance
+        * with all license agreements.  See "AS IS" BASIS provisions above.
+        *
+        * See http://www.jmonkeyengine.org
+        */
+        -->
