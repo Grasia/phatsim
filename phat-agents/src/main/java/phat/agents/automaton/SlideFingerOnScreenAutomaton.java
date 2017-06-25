@@ -24,51 +24,30 @@ import phat.agents.Agent;
 import phat.agents.automaton.conditions.TimerFinishedCondition;
 import phat.commands.PHATCommand;
 import phat.commands.PHATCommandListener;
-import phat.server.commands.PressOnScreen;
+import phat.server.commands.*;
 
 /**
  *
  * @author Pablo
  */
-public class PressOnScreenXYAutomaton extends SimpleState implements PHATCommandListener {
+public class SlideFingerOnScreenAutomaton extends SimpleState implements PHATCommandListener {
 
     private String smartphoneId;
-    private int x;
-    private int y;
+    private int xSource;
+    private int ySource;
+    private int xTarget;
+    private int yTarget;
 
-    PressOnScreen pressOnScreenCommand;
+    SlideFingerOnScreen slideFingerOnScreenCommand;
     boolean done = false;
     
-    public PressOnScreenXYAutomaton(Agent agent, String name, String smartphoneId) {
+    public SlideFingerOnScreenAutomaton(Agent agent, String name, String smartphoneId) {
         super(agent, 0, name);
         this.smartphoneId = smartphoneId;
-    }
-    
-    public PressOnScreenXYAutomaton(Agent agent, String name, String smartphoneId, int x, int y) {
-        super(agent, 0, name);
-        this.smartphoneId = smartphoneId;
-        this.x = x;
-        this.y = y;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public void setY(int y) {
-        this.y = y;
     }
 
     public String getSmartphoneId() {
         return smartphoneId;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
     }
 
     @Override
@@ -83,7 +62,7 @@ public class PressOnScreenXYAutomaton extends SimpleState implements PHATCommand
     
     @Override
     public void commandStateChanged(PHATCommand command) {
-        if (command == pressOnScreenCommand
+        if (command == slideFingerOnScreenCommand
                 && (
                 		command.getState().equals(PHATCommand.State.Success) ||
                 		command.getState().equals(PHATCommand.State.Fail))) {
@@ -94,7 +73,48 @@ public class PressOnScreenXYAutomaton extends SimpleState implements PHATCommand
     @Override
     public void initState(PHATInterface phatInterface) {
         setFinishCondition(new TimerFinishedCondition(0, 0, 1));
-        pressOnScreenCommand = new PressOnScreen(smartphoneId, x, y, this);
-        phatInterface.getServerConfig().runCommand(pressOnScreenCommand);
+        int duration = 1000;
+        if(getFinishCondition() instanceof TimerFinishedCondition) {
+            TimerFinishedCondition tfc = (TimerFinishedCondition) getFinishCondition();
+            duration = (int) tfc.getSeconds()*1000;
+        }
+        slideFingerOnScreenCommand = new SlideFingerOnScreen(smartphoneId, xSource, ySource, xTarget, yTarget, duration, this);
+        phatInterface.getServerConfig().runCommand(slideFingerOnScreenCommand);
+    }
+
+    public int getxSource() {
+        return xSource;
+    }
+
+    public void setxSource(int xSource) {
+        this.xSource = xSource;
+    }
+
+    public int getySource() {
+        return ySource;
+    }
+
+    public void setySource(int ySource) {
+        this.ySource = ySource;
+    }
+
+    public int getxTarget() {
+        return xTarget;
+    }
+
+    public void setxTarget(int xTarget) {
+        this.xTarget = xTarget;
+    }
+
+    public int getyTarget() {
+        return yTarget;
+    }
+
+    public void setyTarget(int yTarget) {
+        this.yTarget = yTarget;
+    }
+
+    public void setSmartphoneId(String smartphoneId) {
+        this.smartphoneId = smartphoneId;
     }
 }

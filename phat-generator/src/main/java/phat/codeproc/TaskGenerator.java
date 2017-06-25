@@ -77,6 +77,7 @@ public class TaskGenerator {
         entityToAutomatonMap.put("DropObj", "DropObjTask");
         entityToAutomatonMap.put("PlayAnimationTask", "PlayAnimation");
         entityToAutomatonMap.put("BWakeUpTask", "DoNothing");
+        entityToAutomatonMap.put("SwipeTask", "SlideFingerOnScreenAutomaton");
     }
 
     public void generateAllSeqTasks() throws NotFound {
@@ -165,6 +166,19 @@ public class TaskGenerator {
                 String y = getVarValue(task, "tapYVar", Utils.getFieldValue(task, "YPosOnScreen", "null", true));
                 xyParams.add(new Var("y", y));
                 rep.add(xyParams);
+            }
+            
+            if(hasField(task, "StartXField")) {
+                Repeat coordsParams = new Repeat("setCoords");
+                String xSource = getVarValue(task, "swipeXSource", Utils.getFieldValue(task, "StartXField", "null", true));
+                coordsParams.add(new Var("xSource", xSource));
+                String ySource = getVarValue(task, "swipeYSource", Utils.getFieldValue(task, "StartYField", "null", true));
+                coordsParams.add(new Var("ySource", ySource));
+                String xTarget = getVarValue(task, "swipeXTarget", Utils.getFieldValue(task, "EndXField", "null", true));
+                coordsParams.add(new Var("xTarget", xTarget));
+                String yTarget = getVarValue(task, "swipeYTarget", Utils.getFieldValue(task, "EndYField", "null", true));
+                coordsParams.add(new Var("yTarget", yTarget));
+                rep.add(coordsParams);
             }
 
             GraphEntity event = Utils
@@ -266,6 +280,9 @@ public class TaskGenerator {
             params.add(message);
         } else if (taskGE.getType().equals("TapXYTask")) {
             String device = getVarValue(taskGE, "tapDeviceVar", Utils.getFieldValue(taskGE, "TargetSmartphone", "null", true));
+            params.add(device);
+        } else if (taskGE.getType().equals("SwipeTask")) {
+            String device = getVarValue(taskGE, "swipeDeviceVar", Utils.getFieldValue(taskGE, "TargetSmartphone", "null", true));
             params.add(device);
         } else if (taskGE.getType().equals("DropObj")) {
             String obj = getVarValue(taskGE, "dropObjVar", Utils.getFieldValue(taskGE, "PysicalMobObjField", "null", true));

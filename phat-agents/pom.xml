@@ -13,12 +13,12 @@
     <dependencies>
         <dependency>
             <groupId>net.sf.sociaal</groupId>
-            <artifactId>icons</artifactId>
+            <artifactId>sociaalmled</artifactId>
             <version>${sociaal.version}</version>
         </dependency>
         <dependency>
             <groupId>net.sf.phat</groupId>
-            <artifactId>phat-server</artifactId>
+            <artifactId>phat-device-server</artifactId>
             <version>1.0.10-SNAPSHOT</version>
         </dependency>
     </dependencies>

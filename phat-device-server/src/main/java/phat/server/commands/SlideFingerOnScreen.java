@@ -21,6 +21,7 @@ package phat.server.commands;
 
 import com.jme3.app.Application;
 import com.jme3.scene.Node;
+import static java.lang.Thread.sleep;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import phat.commands.PHATCommandListener;
@@ -32,31 +33,27 @@ import phat.server.ServerAppState;
  *
  * @author pablo
  */
-public class PressOnScreen extends PHATServerCommand {
+public class SlideFingerOnScreen extends PHATServerCommand {
 
     private String smartphoneId;
-    private int x;
-    private int y;
+    private int xSource;
+    private int ySource;
+    private int xTarget;
+    private int yTarget;
     private int duration = 0;
     TouchingThread thread;
 
-    public PressOnScreen(String smartphoneId, int x, int y) {
-        this(smartphoneId, x, y, 0, null);
+    public SlideFingerOnScreen(String smartphoneId, int xSource, int ySource, int xTarget, int yTarget, int duration) {
+        this(smartphoneId, xSource, ySource, xTarget, yTarget, duration, null);
     }
 
-    public PressOnScreen(String smartphoneId, int x, int y, int duration) {
-        this(smartphoneId, x, y, duration, null);
-    }
-
-    public PressOnScreen(String smartphoneId, int x, int y, PHATCommandListener listener) {
-        this(smartphoneId, x, y, 0, listener);
-    }
-
-    public PressOnScreen(String smartphoneId, int x, int y, int duration, PHATCommandListener listener) {
+    public SlideFingerOnScreen(String smartphoneId, int xSource, int ySource, int xTarget, int yTarget, int duration, PHATCommandListener listener) {
         super(listener);
         this.smartphoneId = smartphoneId;
-        this.x = x;
-        this.y = y;
+        this.xSource = xSource;
+        this.ySource = ySource;
+        this.xTarget = xTarget;
+        this.yTarget = yTarget;
         this.duration = duration;
         logger.log(Level.INFO, "New Command: {0}", new Object[]{this});
     }
@@ -70,9 +67,9 @@ public class PressOnScreen extends PHATServerCommand {
     class TouchingThread extends Thread {
 
         Application app;
-        PressOnScreen pos;
+        SlideFingerOnScreen pos;
 
-        public TouchingThread(Application app, PressOnScreen pos) {
+        public TouchingThread(Application app, SlideFingerOnScreen pos) {
             this.app = app;
             this.pos = pos;
         }
@@ -85,22 +82,12 @@ public class PressOnScreen extends PHATServerCommand {
             if (smartphone != null) {
                 AndroidVirtualDevice avd = serverAppState.getAVD(smartphoneId);
                 if (avd != null) {
-                    if (duration == 0) {
-                        avd.tap(x, y);
-                    } else {
-                        avd.touchDown(x, y);
-                        try {
-                            sleep(duration);
-                        } catch (InterruptedException ex) {
-                            Logger.getLogger(PressOnScreen.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                        avd.touchUp(x, y);
-                    }
-                    pos.setState(PressOnScreen.State.Success);
+                    avd.drag(xSource, ySource, xTarget, yTarget, 5, duration);
+                    pos.setState(SlideFingerOnScreen.State.Success);
                     return;
                 }
             }
-            pos.setState(PressOnScreen.State.Fail);
+            pos.setState(SlideFingerOnScreen.State.Fail);
         }
     }
 
@@ -111,6 +98,6 @@ public class PressOnScreen extends PHATServerCommand {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + "(" + smartphoneId + ", " + x + ", " + y + ")";
+        return getClass().getSimpleName() + "(" + smartphoneId + ", " + xSource + ", " + ySource + ", " + xTarget+ ", "+ yTarget + ","+duration+")";
     }
 }

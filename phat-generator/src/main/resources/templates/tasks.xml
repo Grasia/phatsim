@@ -55,6 +55,11 @@ public class @@@v@@@stID@@@/v@@@Task extends SeqTaskAutomaton {
                 @@@repeat id="setXY"@@@
                 ((@@@v@@@className@@@/v@@@)automaton).setX(Integer.parseInt(@@@v@@@x@@@/v@@@));
                 ((@@@v@@@className@@@/v@@@)automaton).setY(Integer.parseInt(@@@v@@@y@@@/v@@@));@@@/repeat@@@
+                @@@repeat id="setCoords"@@@
+                ((@@@v@@@className@@@/v@@@)automaton).setxSource(Integer.parseInt(@@@v@@@xSource@@@/v@@@));
+                ((@@@v@@@className@@@/v@@@)automaton).setySource(Integer.parseInt(@@@v@@@ySource@@@/v@@@));
+                ((@@@v@@@className@@@/v@@@)automaton).setxTarget(Integer.parseInt(@@@v@@@xTarget@@@/v@@@));
+                ((@@@v@@@className@@@/v@@@)automaton).setyTarget(Integer.parseInt(@@@v@@@yTarget@@@/v@@@));@@@/repeat@@@
                 
 		@@@repeat id="events"@@@
                 PHATAudioEventAutomatonFinishedListener audioEvent = 

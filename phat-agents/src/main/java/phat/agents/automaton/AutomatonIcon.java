@@ -35,7 +35,7 @@ public class AutomatonIcon implements AutomatonListener {
     }
     
     private void init() {
-        iconMapping.put("CloseObjectAutomaton", "imagesbehaviour/tasks/Close.png");
+        iconMapping.put("CloseObjectAutomaton", "images/behaviour/tasks/Close.png");
         iconMapping.put("DoNothing", "images/behaviour/tasks/Wait.png");
         iconMapping.put("DrinkAutomaton", "images/behaviour/tasks/Drink.png");
         iconMapping.put("DropObjTask", "images/behaviour/tasks/ObjDropped.png");
@@ -59,6 +59,7 @@ public class AutomatonIcon implements AutomatonListener {
         iconMapping.put("TakeOffClothingAutomaton", "images/behaviour/tasks/TakeOff.png");
         iconMapping.put("UseObjectAutomaton", "images/behaviour/tasks/UseTask.png");
         iconMapping.put("WaitForCloseToBodyAutomaton", "images/behaviour/tasks/WaitForBodyClose.png");
+        iconMapping.put("SlideFingerOnScreenAutomaton", "images/behaviour/tasks/Swipe.png");
         
         
         iconMapping.put("HaveAShowerAutomaton", "images/behaviour/tasks/UseTask.png");

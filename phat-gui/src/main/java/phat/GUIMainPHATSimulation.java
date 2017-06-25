@@ -88,7 +88,7 @@ public class GUIMainPHATSimulation implements PHATInitializer {
     @Override
     public void initBodies(BodyConfigurator bodyConfig) {
         bodyConfig.createBody(BodiesAppState.BodyType.ElderLP, "Relative");        
-        bodyConfig.runCommand(new SetBodyInHouseSpaceCommand("Relative", "House1", "BedRoom1"));
+        bodyConfig.runCommand(new SetBodyInHouseSpaceCommand("Relative", "House1", "LivingRoom"));
         //bodyConfig.runCommand(new TremblingHeadCommand("Relative", true));
         //bodyConfig.runCommand(new SetStoopedBodyCommand("Relative", true));
         //bodyConfig.runCommand(new TremblingHandCommand("Relative", true, true));
