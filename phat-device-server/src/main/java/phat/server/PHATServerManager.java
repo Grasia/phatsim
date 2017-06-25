@@ -238,7 +238,7 @@ public class PHATServerManager {
 
                 NetworkInterface ni = (NetworkInterface) e.nextElement();
                 System.out.println("NetworkInterface = " + ni.getName());
-                if (ni.getName().contains("eth") || ni.getName().contains("wlan")) {
+                if (!ni.getName().contains("lo")) {
                     for (Enumeration ee = ni.getInetAddresses(); ee.hasMoreElements();) {
                         InetAddress ip = (InetAddress) ee.nextElement();
                         if (ip instanceof Inet4Address && ip.getAddress() != null) {
