@@ -3,7 +3,7 @@
     <parent>
         <groupId>net.sf.phat</groupId>
         <artifactId>phat-sim</artifactId>
-        <version>1.0.10-SNAPSHOT</version>
+        <version>1.0.11-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>phat-agents</artifactId>
@@ -19,7 +19,7 @@
         <dependency>
             <groupId>net.sf.phat</groupId>
             <artifactId>phat-device-server</artifactId>
-            <version>1.0.10-SNAPSHOT</version>
+            <version>1.0.11-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
