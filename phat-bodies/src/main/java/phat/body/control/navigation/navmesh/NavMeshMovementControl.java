@@ -225,6 +225,21 @@ public class NavMeshMovementControl extends AbstractControl implements Autonomou
     private boolean destinyReached() {
         return getDistanceToTarget() < minDistaceToTarget;
     }
+    
+    private void abortControl() {
+        if (pathViewer != null) {
+            pathViewer.hidePath();
+            pathViewer = null;
+        }
+        targetLocation = null;
+        StraightMovementControl smc = spatial.getControl(StraightMovementControl.class);
+        if (smc != null) {
+            smc.stop();
+        }
+        if (listener != null) {
+            listener.destinationAborted();
+        }
+    }
 
     private void finishControl() {
         if (pathViewer != null) {
@@ -267,7 +282,7 @@ public class NavMeshMovementControl extends AbstractControl implements Autonomou
                 }
             }
         } else if (targetLocation != null) {
-            finishControl();
+            abortControl();
         }
     }
 

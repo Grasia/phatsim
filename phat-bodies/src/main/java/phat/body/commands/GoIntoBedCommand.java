@@ -47,7 +47,7 @@ import phat.util.SpatialUtils;
  * @author pablo
  */
 @PHATCommandAnn(name="GoIntoBed", type="body", debug = false)
-public class GoIntoBedCommand extends PHATCommand implements AutonomousControlListener, PHATCommandListener {
+public class GoIntoBedCommand extends PHATCommand implements PHATCommandListener {
 
     private String bodyId;
     private String bedId;
@@ -163,10 +163,10 @@ public class GoIntoBedCommand extends PHATCommand implements AutonomousControlLi
         return getClass().getSimpleName() + "(" + bodyId + ", " + bedId + ")";
     }
 
-    @Override
+   /* @Override
     public void destinationReached(Vector3f destination) {
         setState(State.Success);
-    }
+    }*/
 
     private void lyingDown() {
         PHATCharacterControl cc = body.getControl(PHATCharacterControl.class);
@@ -208,4 +208,10 @@ public class GoIntoBedCommand extends PHATCommand implements AutonomousControlLi
     public void setBedId(String bedId) {
         this.bedId = bedId;
     }
+/*
+	@Override
+	public void destinationAborted() {
+		// TODO Auto-generated method stub
+		
+	}*/
 }

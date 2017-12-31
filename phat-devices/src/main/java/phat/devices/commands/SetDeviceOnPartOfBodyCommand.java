@@ -45,7 +45,7 @@ import phat.devices.DevicesAppState;
  * @author pablo
  */
 @PHATCommandAnn(name = "SetDeviceOnBody", type = "device", debug = false)
-public class SetDeviceOnPartOfBodyCommand extends PHATDeviceCommand implements AutonomousControlListener {
+public class SetDeviceOnPartOfBodyCommand extends PHATDeviceCommand  {
 
     public enum PartOfBody {
         LeftHand, RightHand, LeftWrist, RightWrist, LeftUnkle, RightUnkle, Head, Chest
@@ -147,10 +147,6 @@ public class SetDeviceOnPartOfBodyCommand extends PHATDeviceCommand implements A
         return getClass().getSimpleName() + "(" + bodyId + ", " + deviceId + ", " + partOfBody.name() + ")";
     }
 
-    @Override
-    public void destinationReached(Vector3f destination) {
-        setState(State.Success);
-    }
 
     public String getBodyId() {
         return bodyId;

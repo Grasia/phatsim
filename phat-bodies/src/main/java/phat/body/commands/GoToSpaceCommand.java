@@ -150,4 +150,10 @@ public class GoToSpaceCommand extends PHATCommand implements AutonomousControlLi
     public void setSpaceId(String spaceId) {
         this.spaceId = spaceId;
     }
+
+	@Override
+	public void destinationAborted() {
+		// TODO Auto-generated method stub
+		
+	}
 }

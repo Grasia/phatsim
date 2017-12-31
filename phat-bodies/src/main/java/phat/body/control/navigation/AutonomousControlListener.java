@@ -27,4 +27,5 @@ import com.jme3.math.Vector3f;
  */
 public interface AutonomousControlListener {
     public void destinationReached(Vector3f destination);
+    public void destinationAborted();
 }

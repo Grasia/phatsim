@@ -165,4 +165,10 @@ public class GoCloseToObjectCommand extends PHATCommand implements
         this.minDistance = minDistance;
     }
 
+	@Override
+	public void destinationAborted() {
+		  setState(State.Interrupted);
+		
+	}
+
 }

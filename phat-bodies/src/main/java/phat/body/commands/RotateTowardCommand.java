@@ -41,7 +41,7 @@ import phat.util.SpatialUtils;
  * @author pablo
  */
 @PHATCommandAnn(name="RotateToward", type="body", debug = false)
-public class RotateTowardCommand extends PHATCommand implements AutonomousControlListener {
+public class RotateTowardCommand extends PHATCommand  {
 
     private String bodyId;
     private String entityId;
@@ -112,10 +112,10 @@ public class RotateTowardCommand extends PHATCommand implements AutonomousContro
         return getClass().getSimpleName() + "(" + bodyId + ", " + entityId + ")";
     }
 
-    @Override
+  /*  @Override
     public void destinationReached(Vector3f destination) {
         setState(State.Success);
-    }
+    }*/
 
     @PHATCommParam(mandatory=true, order=1)
     public void setBodyId(String bodyId) {

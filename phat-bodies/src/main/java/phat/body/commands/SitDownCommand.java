@@ -245,4 +245,10 @@ public class SitDownCommand extends PHATCommand implements AutonomousControlList
     public void setPlaceId(String placeId) {
         this.placeId = placeId;
     }
+
+	@Override
+	public void destinationAborted() {
+		  setState(State.Interrupted);
+		
+	}
 }

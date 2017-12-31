@@ -70,7 +70,7 @@ public class SetBodyInCoordenatesCommand extends PHATCommand {
 
         Node body = bodiesAppState.getBody(bodyId);
 
-        if (body != null && body.getParent() == null) {
+        if (body != null) {// && body.getParent() == null) {
             PHATCharacterControl cc = body.getControl(PHATCharacterControl.class);
             bodiesAppState.getBodiesNode().attachChild(body);
 

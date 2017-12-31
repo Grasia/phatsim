@@ -231,9 +231,16 @@ public class PHATServerManager {
         return CommonVars.SERVICE_MANAGER_SERVER_PORT;
     }
 
+    /**
+     * This method returns the address of the machine. It is needed to successfully communicate
+     * with emulators hosted into other machines. 
+     * @return
+     */
     public static InetAddress getAddress() {
+    	
         try {
-            for (Enumeration e = NetworkInterface.getNetworkInterfaces();
+        	return InetAddress.getByAddress(new byte[] {0,0,0,0});
+            /*for (Enumeration e = NetworkInterface.getNetworkInterfaces();
                     e.hasMoreElements();) {
 
                 NetworkInterface ni = (NetworkInterface) e.nextElement();
@@ -257,6 +264,16 @@ public class PHATServerManager {
                     }
                 }
             }
+            
+            NetworkInterface lo0 = NetworkInterface.getByName("lo0");
+            if (lo0 != null) {
+                for (Enumeration ee = lo0.getInetAddresses(); ee.hasMoreElements();) {
+                    InetAddress ip = (InetAddress) ee.nextElement();
+                    if (ip instanceof Inet4Address && ip.getAddress() != null) {
+                        return ip;
+                    }
+                }
+            }*/
         } catch (Exception e) {
             System.err.println("Error");
         }

@@ -134,4 +134,10 @@ public class GoCloseToBodyCommand extends PHATCommand implements
         this.targetBodyId = targetBodyId;
     }
 
+	@Override
+	public void destinationAborted() {
+		  setState(State.Interrupted);
+		
+	}
+
 }

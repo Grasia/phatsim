@@ -38,7 +38,7 @@ import phat.util.SpatialUtils;
  * @author pablo
  */
 @PHATCommandAnn(name = "AlignBodyWith", type = "body", debug = false)
-public class AlignWithCommand extends PHATCommand implements AutonomousControlListener {
+public class AlignWithCommand extends PHATCommand  {
 
     private String bodyId;
     private String entityId;
@@ -110,10 +110,6 @@ public class AlignWithCommand extends PHATCommand implements AutonomousControlLi
         return getClass().getSimpleName() + "(" + bodyId + ", " + entityId + ")";
     }
 
-    @Override
-    public void destinationReached(Vector3f destination) {
-        setState(State.Success);
-    }
 
     @PHATCommParam(mandatory = true, order = 1)
     public void setBodyId(String bodyId) {
@@ -124,4 +120,6 @@ public class AlignWithCommand extends PHATCommand implements AutonomousControlLi
     public void setEntityId(String entityId) {
         this.entityId = entityId;
     }
+
+
 }

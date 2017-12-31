@@ -41,7 +41,7 @@ public class GoToCommand extends PHATCommand implements AutonomousControlListene
 
     private String bodyId;
     private Lazy<Vector3f> destiny;
-    private float minDistance;
+    private float minDistance=0.5f;
 
     public GoToCommand() {
     }
@@ -94,7 +94,17 @@ public class GoToCommand extends PHATCommand implements AutonomousControlListene
 		setState(State.Fail);
 	}
     
+
+    
+    
+    
     @Override
+	protected void setState(State state) {
+		// TODO Auto-generated method stub
+		super.setState(state);
+	}
+
+	@Override
     public String toString() {
         return getClass().getSimpleName()+"("+bodyId+", "+destiny.getLazy()+")";
     }
@@ -111,4 +121,10 @@ public class GoToCommand extends PHATCommand implements AutonomousControlListene
     public void setMinDistance(float minDistance) {
         this.minDistance = minDistance;
     }
+
+	@Override
+	public void destinationAborted() {
+		  setState(State.Interrupted);
+		
+	}
 }

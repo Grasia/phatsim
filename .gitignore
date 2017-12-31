@@ -9,3 +9,4 @@ vapi.props
 /phat-agents/target/
 .idea
 *.iml
+/phat-server/nbproject/private/

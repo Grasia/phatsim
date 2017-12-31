@@ -45,7 +45,7 @@ import phat.util.SpatialUtils;
  * @author pablo
  */
 @PHATCommandAnn(name="PickUp", type="body", debug = false)
-public class PickUpCommand extends PHATCommand implements AutonomousControlListener {
+public class PickUpCommand extends PHATCommand {
 
     public enum Hand {Left, Right}
     
@@ -125,10 +125,10 @@ public class PickUpCommand extends PHATCommand implements AutonomousControlListe
         return getClass().getSimpleName() + "(" + bodyId + ", " + entityId + ")";
     }
 
-    @Override
+  /*  @Override
     public void destinationReached(Vector3f destination) {
         setState(State.Success);
-    }
+    }*/
 
     public float getMinDistance() {
         return minDistance;

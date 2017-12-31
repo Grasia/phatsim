@@ -51,14 +51,14 @@
         <developeremail>pabcampi@ucm.es</developeremail>
         <java.version>1.7</java.version>
         <jme.version>3.0.0</jme.version>
-        <sociaal.version>1.0.11</sociaal.version>
-        <jali.version>1.0.9</jali.version>
-        <jdos.version>1.0.8</jdos.version>
+        <sociaal.version>1.0.12-SNAPSHOT</sociaal.version>
+        <jali.version>1.0.10-SNAPSHOT</jali.version>
+        <jdos.version>1.0.9-SNAPSHOT</jdos.version>
     </properties>
 
     <modules>
-        <module>phat-env</module>
         <module>phat-core</module>
+        <module>phat-env</module>
         <module>phat-audio</module>
         <module>phat-devices</module>
         <module>phat-device-server</module>
@@ -70,7 +70,7 @@
         <module>phat-console</module>
     </modules>
 
-    <distributionManagement>
+    <!--distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots</url>
@@ -79,7 +79,7 @@
             <id>ossrh</id>
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
-    </distributionManagement>
+    </distributionManagement-->
 
     <reporting>
         <plugins>
@@ -93,11 +93,18 @@
 
     <build>
         <plugins>
+        
+    <plugin>
+      <groupId>com.github.ferstl</groupId>
+      <artifactId>depgraph-maven-plugin</artifactId>
+      <version>3.0.1</version>
+    </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <version>2.2</version>
             </plugin>
+ 
         </plugins>
         <pluginManagement>
             <plugins>
