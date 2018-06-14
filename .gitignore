@@ -10,3 +10,5 @@ vapi.props
 .idea
 *.iml
 /phat-server/nbproject/private/
+/phat-server/target/
+/phat-interface/target/
