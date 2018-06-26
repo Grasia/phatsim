@@ -173,7 +173,7 @@ public class GUIMainMenuAppState extends AbstractAppState {
 
     public void onSpeedUp(MouseButtonEvent evt, boolean isToggle) {
         float speed = Float.parseFloat(speedLabel.getText());
-        if (speed < 128f) {
+        if (speed < 512f) {
             speed *= 2;
             speedLabel.setText(String.valueOf(speed));
             onSpeedChange();
