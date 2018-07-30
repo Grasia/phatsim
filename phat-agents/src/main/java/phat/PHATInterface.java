@@ -30,6 +30,8 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.Random;
 
+import javax.swing.JFrame;
+
 import com.jme3.app.SimpleApplication;
 import com.jme3.app.state.AbstractAppState;
 import com.jme3.app.state.AppState;
@@ -39,7 +41,11 @@ import com.jme3.math.Vector3f;
 import com.jme3.scene.Node;
 import com.jme3.scene.control.CameraControl;
 import com.jme3.system.AppSettings;
+import com.jme3.system.JmeCanvasContext;
 import com.jme3.system.JmeSystem;
+
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.io.File;
 
 import phat.agents.AgentsAppState;
@@ -73,343 +79,366 @@ import phat.world.WorldAppState;
  */
 public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListener {
 
-    public static final String SERVER_NAME = "PHATInterface";
-    PHATApplication app;
-    PHATInitializer initializer;
-    BulletAppState bulletAppState;
-    AudioConfiguratorImpl audioConfig;
-    WorldConfiguratorImpl worldConfig;
-    HouseConfiguratorImpl houseConfig;
-    BodyConfiguratorImpl bodyConfig;
-    DeviceConfiguratorImpl deviceConfig;
-    ServerConfiguratorImpl serverConfig;
-    AgentConfiguratorImpl agentConfig;
-    boolean paused;
-    long seed;
-    String tittle = "PHAT";
-    Random random;
-    private Registry registry;
-    PHATCalendar initSimTime = null;
-    boolean multiListener = false;
-    private int displayWidth = 480;
-    private int displayHeight = 800;
-    private boolean recordVideo = false;
+	public static final String SERVER_NAME = "PHATInterface";
+	PHATApplication app;
+	PHATInitializer initializer;
+	BulletAppState bulletAppState;
+	AudioConfiguratorImpl audioConfig;
+	WorldConfiguratorImpl worldConfig;
+	HouseConfiguratorImpl houseConfig;
+	BodyConfiguratorImpl bodyConfig;
+	DeviceConfiguratorImpl deviceConfig;
+	ServerConfiguratorImpl serverConfig;
+	AgentConfiguratorImpl agentConfig;
+	boolean paused;
+	long seed;
+	String tittle = "PHAT";
+	Random random;
+	private Registry registry;
+	PHATCalendar initSimTime = null;
+	boolean multiListener = false;
+	private int displayWidth = 480;
+	private int displayHeight = 800;
+	private boolean recordVideo = false;
+	private JFrame rootFrame;
 
-    public PHATInterface(PHATInitializer initializer) {
-        this.initializer = initializer;
-    }
-    
-    public PHATInterface(PHATInitializer initializer, ArgumentProcessor ap) {
-        this(initializer);
-        
-        ap.initialize(this);
-    }
+	public PHATInterface(PHATInitializer initializer) {
+		this.initializer = initializer;
+	}
+	
+	public JFrame getRootJFrame() {
+		return rootFrame;
+	}
 
-    public void startServer(String name) throws RemoteException, AlreadyBoundException, NotBoundException {
-        final java.util.concurrent.ConcurrentLinkedQueue<String> commands = new java.util.concurrent.ConcurrentLinkedQueue<String>();
-        RemotePHATInterface rmi = new RemotePHATInterface() {
-            @Override
-            public void resumePHAT() throws RemoteException {
-                commands.add("resume");
-                //guimainMenu.resume(); // resume cannot be 
-                // executed in an appstate because appstate execution is frozen
-                // if a pause has been issued before
-            }
+	public PHATInterface(PHATInitializer initializer, ArgumentProcessor ap) {
+		this(initializer);
 
-            @Override
-            public void pausePHAT() throws RemoteException {
-                commands.add("pause");
+		ap.initialize(this);
+	}
 
-            }
+	public void startServer(String name) throws RemoteException, AlreadyBoundException, NotBoundException {
+		final java.util.concurrent.ConcurrentLinkedQueue<String> commands = new java.util.concurrent.ConcurrentLinkedQueue<String>();
+		RemotePHATInterface rmi = new RemotePHATInterface() {
+			@Override
+			public void resumePHAT() throws RemoteException {
+				commands.add("resume");
+				// guimainMenu.resume(); // resume cannot be
+				// executed in an appstate because appstate execution is frozen
+				// if a pause has been issued before
+			}
 
-            @Override
-            public PHATCalendar getSimTime() throws RemoteException {
-                // TODO Auto-generated method stub
-                return PHATInterface.this.getSimTime();
-            }
+			@Override
+			public void pausePHAT() throws RemoteException {
+				commands.add("pause");
 
-            @Override
-            public long getElapsedSimTimeSeconds() throws RemoteException {
-                // TODO Auto-generated method stub
-                return PHATInterface.this.getElapsedSimTimeSeconds();
-            }
-        };
+			}
 
-        AbstractAppState absApp = new AbstractAppState() {
-            @Override
-            public void update(float tpf) {
-                super.update(tpf);
-                if (!commands.isEmpty()) {
-                    String command = commands.poll();
+			@Override
+			public PHATCalendar getSimTime() throws RemoteException {
+				// TODO Auto-generated method stub
+				return PHATInterface.this.getSimTime();
+			}
 
-                    /*if (command.equalsIgnoreCase("pause")) {
-                        guimainMenu.pause();
-                    }*/
-                }
+			@Override
+			public long getElapsedSimTimeSeconds() throws RemoteException {
+				// TODO Auto-generated method stub
+				return PHATInterface.this.getElapsedSimTimeSeconds();
+			}
+		};
 
-            }
-        };
+		AbstractAppState absApp = new AbstractAppState() {
+			@Override
+			public void update(float tpf) {
+				super.update(tpf);
+				if (!commands.isEmpty()) {
+					String command = commands.poll();
 
-        app.getStateManager().attach(absApp);
+					/*
+					 * if (command.equalsIgnoreCase("pause")) { guimainMenu.pause(); }
+					 */
+				}
 
+			}
+		};
 
+		app.getStateManager().attach(absApp);
 
-        int port = 60200;
-        System.setProperty("java.rmi.server.useCodebaseOnly", "false");
-        if (System.getProperty("phat.monitorport") != null) {
-            port = Integer.parseInt(System.getProperty("phat.monitorport"));
-        }
-        if (registry == null) {
-            try {
+		int port = 60200;
+		System.setProperty("java.rmi.server.useCodebaseOnly", "false");
+		if (System.getProperty("phat.monitorport") != null) {
+			port = Integer.parseInt(System.getProperty("phat.monitorport"));
+		}
+		if (registry == null) {
+			try {
 
-                registry = LocateRegistry.getRegistry(port);
-                registry.list();// to force the connection and ensure there is something at the other side
-                // getRegistry is not failing when resolving the registry
+				registry = LocateRegistry.getRegistry(port);
+				registry.list();// to force the connection and ensure there is something at the other side
+				// getRegistry is not failing when resolving the registry
 
-            } catch (Exception e) {
-                registry = java.rmi.registry.LocateRegistry.createRegistry(port); // Creates and exports a Registry instance	
+			} catch (Exception e) {
+				registry = java.rmi.registry.LocateRegistry.createRegistry(port); // Creates and exports a Registry
+																					// instance
 
-            }
-        }
-        try {
-            Thread.currentThread().sleep(1000);
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+			}
+		}
+		try {
+			Thread.currentThread().sleep(1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
-        RemotePHATInterface stub = (RemotePHATInterface) UnicastRemoteObject.exportObject(rmi, 0); // Exports remote object		
-        registry.bind(name, stub); // Binds a remote reference
-        registry.lookup(name);
+		RemotePHATInterface stub = (RemotePHATInterface) UnicastRemoteObject.exportObject(rmi, 0); // Exports remote
+																									// object
+		registry.bind(name, stub); // Binds a remote reference
+		registry.lookup(name);
 
-    }
+	}
 
-    public void start() {
-        PHATUtils.removeNativeFiles();
-        app = new PHATApplication(this);
+	public void start() {
+		PHATUtils.removeNativeFiles();
+		app = new PHATApplication(this);
 
-        AppSettings s = new AppSettings(true);
-        s.setTitle(initializer.getTittle());
-        s.setWidth(displayWidth);
-        s.setHeight(displayHeight);
-        if(multiListener) {
-            s.setAudioRenderer(AurellemSystemDelegate.SEND);
-            JmeSystem.setSystemDelegate(new PHATSystemDelegate());
-            app.setTimer(new IsoTimer(60f));
-            org.lwjgl.input.Mouse.setGrabbed(false);
-        } else {
-            s.setAudioRenderer("LWJGL");
-            JmeSystem.setSystemDelegate(new PHATSystemDelegate());
-        }
-        app.setSettings(s);
+		AppSettings s = new AppSettings(true);
+		s.setTitle(initializer.getTittle());
+		s.setWidth(displayWidth);
+		s.setHeight(displayHeight);
+		if (multiListener) {
+			s.setAudioRenderer(AurellemSystemDelegate.SEND);
+			JmeSystem.setSystemDelegate(new PHATSystemDelegate());
+			app.setTimer(new IsoTimer(60f));
+			org.lwjgl.input.Mouse.setGrabbed(false);
+		} else {
+			s.setAudioRenderer("LWJGL");
+			JmeSystem.setSystemDelegate(new PHATSystemDelegate());
+		}
+		app.setSettings(s);
 
-        /*AppSettings s = new AppSettings(true);
-         s.setAudioRenderer(AurellemSystemDelegate.SEND);
-         JmeSystem.setSystemDelegate(new AurellemSystemDelegate());
-         app.setSettings(s);*/
+		/*
+		 * AppSettings s = new AppSettings(true);
+		 * s.setAudioRenderer(AurellemSystemDelegate.SEND);
+		 * JmeSystem.setSystemDelegate(new AurellemSystemDelegate());
+		 * app.setSettings(s);
+		 */
 
-        /*AppSettings s = new AppSettings(true);
-         s.setAudioRenderer("LWJGL");
-         JmeSystem.setSystemDelegate(new AurellemSystemDelegate());
-         app.setSettings(s);*/
+		/*
+		 * AppSettings s = new AppSettings(true); s.setAudioRenderer("LWJGL");
+		 * JmeSystem.setSystemDelegate(new AurellemSystemDelegate());
+		 * app.setSettings(s);
+		 */
 
-        app.start();
-        try {
-            startServer(PHATInterface.SERVER_NAME);
-        } catch (RemoteException | AlreadyBoundException | NotBoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-            System.exit(-1);
-        }
-    }
+		app.createCanvas();
 
-    @Override
-    public void init(SimpleApplication app) {
+		JmeCanvasContext ctx = (JmeCanvasContext) app.getContext();
 
-        app.getFlyByCamera().setMoveSpeed(10f);
-        app.getFlyByCamera().setDragToRotate(true);
+		ctx.setSystemListener(app);
 
-        app.getCamera().setFrustumPerspective(45f,
-                (float) app.getCamera().getWidth() / app.getCamera().getHeight(),
-                0.1f, 1000f);
+		rootFrame = new JFrame("PHATSIM");
+		Dimension dim = new Dimension(displayWidth, displayHeight);
+		ctx.getCanvas().setPreferredSize(dim);
+		rootFrame.getContentPane().setLayout(new FlowLayout());
+		rootFrame.getContentPane().add(ctx.getCanvas());
+		rootFrame.pack();
+		rootFrame.setVisible(true);
 
-        app.getCamera().setLocation(new Vector3f(6.2354145f, 18.598438f, 4.6557f));
-        app.getCamera().setRotation(new Quaternion(0.5041053f, -0.49580166f, 0.5068195f, 0.4931456f));
+		app.startCanvas();
 
-        //Debug.enableDebugGrid(20, app.getAssetManager(), app.getRootNode());
-        //bulletAppState = new BulletAppState();        
-        //app.getStateManager().attach(bulletAppState);
-        //bulletAppState.getPhysicsSpace().setAccuracy(1f/200f);
-        //bulletAppState.setDebugEnabled(true);
+		// app.start();
+		/*
+		 * try { startServer(PHATInterface.SERVER_NAME); } catch (RemoteException |
+		 * AlreadyBoundException | NotBoundException e) { // TODO Auto-generated catch
+		 * block e.printStackTrace(); System.exit(-1); }
+		 */
+	}
 
-        if(multiListener) {
-            audioConfig = new AudioConfiguratorImpl(new MultiAudioAppState());
-        } else {
-            audioConfig = new AudioConfiguratorImpl(new SingleAudioAppState());
-        }
-        
-        //audioConfig.setMultiAudioRenderer(false, app);
-        Node camFollower = new Node("CamNode");
-        // means that the Camera's transform is "copied" to the Transform of the Spatial.
-        CameraControl cc = new CameraControl(app.getCamera(), CameraControl.ControlDirection.CameraToSpatial);
-        camFollower.addControl(cc);
-        app.getRootNode().attachChild(camFollower);
-        audioConfig.getAudioAppState().setPCSpeakerTo(camFollower);
-        app.getStateManager().attach(audioConfig.getAudioAppState());
-        
-        worldConfig = new WorldConfiguratorImpl(new WorldAppState());
-        app.getStateManager().attach(worldConfig.getWorldAppState());
+	@Override
+	public void init(SimpleApplication app) {
 
-        houseConfig = new HouseConfiguratorImpl(new HouseAppState());
-        app.getStateManager().attach(houseConfig.getHousedAppState());
+		app.getFlyByCamera().setMoveSpeed(10f);
+		app.getFlyByCamera().setDragToRotate(true);
 
-        bodyConfig = new BodyConfiguratorImpl(new BodiesAppState());
-        app.getStateManager().attach(bodyConfig.getBodiesAppState());
+		app.getCamera().setFrustumPerspective(45f, (float) app.getCamera().getWidth() / app.getCamera().getHeight(),
+				0.1f, 1000f);
 
-        deviceConfig = new DeviceConfiguratorImpl(new DevicesAppState());
-        app.getStateManager().attach(deviceConfig.getDevicesAppState());
+		app.getCamera().setLocation(new Vector3f(6.2354145f, 18.598438f, 4.6557f));
+		app.getCamera().setRotation(new Quaternion(0.5041053f, -0.49580166f, 0.5068195f, 0.4931456f));
 
-        serverConfig = new ServerConfiguratorImpl(new ServerAppState());
-        app.getStateManager().attach(serverConfig.getServerAppState());
+		// Debug.enableDebugGrid(20, app.getAssetManager(), app.getRootNode());
+		// bulletAppState = new BulletAppState();
+		// app.getStateManager().attach(bulletAppState);
+		// bulletAppState.getPhysicsSpace().setAccuracy(1f/200f);
+		// bulletAppState.setDebugEnabled(true);
 
-        agentConfig = new AgentConfiguratorImpl(new AgentsAppState(this));
-        agentConfig.getAgentsAppState().setBodiesAppState(bodyConfig.getBodiesAppState());
-        app.getStateManager().attach(agentConfig.getAgentsAppState());
+		if (multiListener) {
+			audioConfig = new AudioConfiguratorImpl(new MultiAudioAppState());
+		} else {
+			audioConfig = new AudioConfiguratorImpl(new SingleAudioAppState());
+		}
 
+		// audioConfig.setMultiAudioRenderer(false, app);
+		Node camFollower = new Node("CamNode");
+		// means that the Camera's transform is "copied" to the Transform of the
+		// Spatial.
+		CameraControl cc = new CameraControl(app.getCamera(), CameraControl.ControlDirection.CameraToSpatial);
+		camFollower.addControl(cc);
+		app.getRootNode().attachChild(camFollower);
+		audioConfig.getAudioAppState().setPCSpeakerTo(camFollower);
+		app.getStateManager().attach(audioConfig.getAudioAppState());
 
-        //app.getStateManager().attach(initAppState);
-        initializer.initWorld(worldConfig);
-        initializer.initHouse(houseConfig);
-        initializer.initBodies(bodyConfig);
-        initializer.initDevices(deviceConfig);
-        initializer.initServer(serverConfig);
-        initializer.initAgents(agentConfig);
+		worldConfig = new WorldConfiguratorImpl(new WorldAppState());
+		app.getStateManager().attach(worldConfig.getWorldAppState());
 
-        random = new Random(seed);
+		houseConfig = new HouseConfiguratorImpl(new HouseAppState());
+		app.getStateManager().attach(houseConfig.getHousedAppState());
 
-        this.initSimTime = new PHATCalendar(getSimTime());
-        
-        if(recordVideo) {
-            HouseAppState has = app.getStateManager().getState(HouseAppState.class);
-            has.runCommand(new RecordVideoCommand(new File(initializer.getTittle()+".mp4")));
-        }
-    }
+		bodyConfig = new BodyConfiguratorImpl(new BodiesAppState());
+		app.getStateManager().attach(bodyConfig.getBodiesAppState());
 
-    public void setSimSpeed(float speed) {
-        if (speed > 0) {
-            app.setSimSpeed(speed);
-            if (paused) {
-                resumePHAT();
-            }
-        } else if (!paused) {
-            pausePHAT();
-        }
-    }
+		deviceConfig = new DeviceConfiguratorImpl(new DevicesAppState());
+		app.getStateManager().attach(deviceConfig.getDevicesAppState());
 
-    public void pausePHAT() {
-        paused = true;
+		serverConfig = new ServerConfiguratorImpl(new ServerAppState());
+		app.getStateManager().attach(serverConfig.getServerAppState());
 
-        pauseAppState(BulletAppState.class);
-        pauseAppState(AgentsAppState.class);
-        pauseAppState(DevicesAppState.class);
-        pauseAppState(ServerAppState.class);
-        pauseAppState(BodiesAppState.class);
-        pauseAppState(HouseAppState.class);
-        pauseAppState(WorldAppState.class);
-    }
+		agentConfig = new AgentConfiguratorImpl(new AgentsAppState(this));
+		agentConfig.getAgentsAppState().setBodiesAppState(bodyConfig.getBodiesAppState());
+		app.getStateManager().attach(agentConfig.getAgentsAppState());
 
-    private <T extends AppState> void pauseAppState(Class<T> appStateClass) {
-        T appState = app.getStateManager().getState(appStateClass);
-        if (appState != null) {
-            app.getStateManager().detach(appState);
-        }
-    }
+		// app.getStateManager().attach(initAppState);
+		initializer.initWorld(worldConfig);
+		initializer.initHouse(houseConfig);
+		initializer.initBodies(bodyConfig);
+		initializer.initDevices(deviceConfig);
+		initializer.initServer(serverConfig);
+		initializer.initAgents(agentConfig);
 
-    public void resumePHAT() {
-        paused = false;
+		random = new Random(seed);
 
-        app.getStateManager().attach(bulletAppState);
-        app.getStateManager().attach(agentConfig.getAgentsAppState());
-        app.getStateManager().attach(serverConfig.getServerAppState());
-        app.getStateManager().attach(deviceConfig.getDevicesAppState());
-        app.getStateManager().attach(bodyConfig.getBodiesAppState());
-        app.getStateManager().attach(houseConfig.getHousedAppState());
-        app.getStateManager().attach(worldConfig.getWorldAppState());
-    }
+		this.initSimTime = new PHATCalendar(getSimTime());
 
-    public float getSimSpeed() {
-        return app.getSimSpeed();
-    }
+		if (recordVideo) {
+			HouseAppState has = app.getStateManager().getState(HouseAppState.class);
+			
+			has.runCommand(new RecordVideoCommand(new File(initializer.getTittle() + ".mp4")));
+			
+		}
+	}
 
-    @Override
-    public void finalize(SimpleApplication app) {
-        
-    }
+	public void setSimSpeed(float speed) {
+		if (speed > 0) {
+			app.setSimSpeed(speed);
+			if (paused) {
+				resumePHAT();
+			}
+		} else if (!paused) {
+			pausePHAT();
+		}
+	}
 
-    public Random getRandom() {
-        return random;
-    }
+	public void pausePHAT() {
+		paused = true;
 
-    public synchronized PHATCalendar getSimTime() {
-        return worldConfig.getWorldAppState().getCalendar();
-    }
+		pauseAppState(BulletAppState.class);
+		pauseAppState(AgentsAppState.class);
+		pauseAppState(DevicesAppState.class);
+		pauseAppState(ServerAppState.class);
+		pauseAppState(BodiesAppState.class);
+		pauseAppState(HouseAppState.class);
+		pauseAppState(WorldAppState.class);
+	}
 
-    public synchronized long getElapsedSimTimeSeconds() {
-        if (initSimTime == null) {
-            return 0;
-        }
-        return initSimTime.spentTimeTo(getSimTime());
-    }
+	private <T extends AppState> void pauseAppState(Class<T> appStateClass) {
+		T appState = app.getStateManager().getState(appStateClass);
+		if (appState != null) {
+			app.getStateManager().detach(appState);
+		}
+	}
 
-    public long getSeed() {
-        return seed;
-    }
+	public void resumePHAT() {
+		paused = false;
 
-    public void setSeed(long seed) {
-        this.seed = seed;
-    }
+		app.getStateManager().attach(bulletAppState);
+		app.getStateManager().attach(agentConfig.getAgentsAppState());
+		app.getStateManager().attach(serverConfig.getServerAppState());
+		app.getStateManager().attach(deviceConfig.getDevicesAppState());
+		app.getStateManager().attach(bodyConfig.getBodiesAppState());
+		app.getStateManager().attach(houseConfig.getHousedAppState());
+		app.getStateManager().attach(worldConfig.getWorldAppState());
+	}
 
-    public String getTittle() {
-        return tittle;
-    }
+	public float getSimSpeed() {
+		return app.getSimSpeed();
+	}
 
-    public void setTittle(String tittle) {
-        this.tittle = tittle;
-    }
+	@Override
+	public void finalize(SimpleApplication app) {
 
-    public DeviceConfigurator getDevicesConfig() {
-        return deviceConfig;
-    }
+	}
 
-    public ServerConfigurator getServerConfig() {
-        return serverConfig;
-    }
+	public Random getRandom() {
+		return random;
+	}
 
-    public boolean isMultiListener() {
-        return multiListener;
-    }
+	public synchronized PHATCalendar getSimTime() {
+		return worldConfig.getWorldAppState().getCalendar();
+	}
 
-    public void setMultiListener(boolean multiListener) {
-        this.multiListener = multiListener;
-    }
+	public synchronized long getElapsedSimTimeSeconds() {
+		if (initSimTime == null) {
+			return 0;
+		}
+		return initSimTime.spentTimeTo(getSimTime());
+	}
 
-    public int getDisplayWidth() {
-        return displayWidth;
-    }
+	public long getSeed() {
+		return seed;
+	}
 
-    public void setDisplayWidth(int displayWidth) {
-        this.displayWidth = displayWidth;
-    }
+	public void setSeed(long seed) {
+		this.seed = seed;
+	}
 
-    public int getDisplayHeight() {
-        return displayHeight;
-    }
+	public String getTittle() {
+		return tittle;
+	}
 
-    public void setDisplayHeight(int displayHeight) {
-        this.displayHeight = displayHeight;
-    }
+	public void setTittle(String tittle) {
+		this.tittle = tittle;
+	}
 
-    public void setRecordVideo(boolean recordVideo) {
-        this.recordVideo = recordVideo;
-    }
+	public DeviceConfigurator getDevicesConfig() {
+		return deviceConfig;
+	}
+
+	public ServerConfigurator getServerConfig() {
+		return serverConfig;
+	}
+
+	public boolean isMultiListener() {
+		return multiListener;
+	}
+
+	public void setMultiListener(boolean multiListener) {
+		this.multiListener = multiListener;
+	}
+
+	public int getDisplayWidth() {
+		return displayWidth;
+	}
+
+	public void setDisplayWidth(int displayWidth) {
+		this.displayWidth = displayWidth;
+	}
+
+	public int getDisplayHeight() {
+		return displayHeight;
+	}
+
+	public void setDisplayHeight(int displayHeight) {
+		this.displayHeight = displayHeight;
+	}
+
+	public void setRecordVideo(boolean recordVideo) {
+		this.recordVideo = recordVideo;
+	}
 }
