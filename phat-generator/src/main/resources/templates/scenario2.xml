@@ -53,6 +53,7 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
         @@@repeat id="setResolution"@@@phat.setDisplayHeight(@@@v@@@displayHeight@@@/v@@@);
         phat.setDisplayWidth(@@@v@@@displayWidth@@@/v@@@);@@@/repeat@@@
         phat.start();
+        phat.setPrettyLogView(true);
     }
 
     @Override
@@ -226,6 +227,7 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices extends Main@@@v@
         GUIPHATInterface phat = new GUIPHATInterface(sim, new GUIArgumentProcessor(args));
         @@@repeat id="setSeed"@@@phat.setSeed(@@@v@@@seedValue@@@/v@@@L);@@@/repeat@@@
         phat.start();
+        phat.setPrettyLogView(true);
     }
     
     @Override

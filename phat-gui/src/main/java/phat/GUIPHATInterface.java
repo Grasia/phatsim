@@ -19,9 +19,14 @@
  */
 package phat;
 
+import javax.swing.SwingUtilities;
+
 import com.jme3.app.SimpleApplication;
+
+import phat.agents.AgentsAppState;
 import phat.gui.GUIMainMenuAppState;
 import phat.gui.logging.LoggingViewerAppState;
+import phat.gui.logging.PrettyLogViewerAppState;
 import tonegod.gui.core.Screen;
 
 /**
@@ -30,41 +35,88 @@ import tonegod.gui.core.Screen;
  */
 public class GUIPHATInterface extends JSONPHATInterface {
 
-    private GUIMainMenuAppState guimainMenu;
-    private boolean displayFps = false;
-    private boolean statView = false;
+	private GUIMainMenuAppState guimainMenu;
+	private boolean displayFps = false;
+	private boolean statView = false;
+	private PrettyLogViewerAppState prettyLog = null;
 
-    public GUIPHATInterface(PHATInitializer initializer) {
-        super(initializer);
-    }
+	public GUIPHATInterface(PHATInitializer initializer) {
+		super(initializer);
+	}
 
-    public GUIPHATInterface(PHATInitializer initializer, GUIArgumentProcessor ap) {
-        super(initializer, ap);
-    }
+	public GUIPHATInterface(PHATInitializer initializer, GUIArgumentProcessor ap) {
+		super(initializer, ap);
+	}
 
-    @Override
-    public void init(SimpleApplication app) {
-        super.init(app);
-        
-        Screen screen = new Screen(app, "tonegod/gui/style/def/style_map.gui.xml");
-        app.getGuiNode().addControl(screen);
-        guimainMenu = new GUIMainMenuAppState(screen);
-        guimainMenu.setDisplayFps(displayFps);
-        guimainMenu.setStatView(statView);
-        app.getStateManager().attach(guimainMenu);
+	@Override
+	public void init(SimpleApplication app) {
+		super.init(app);
 
-        app.getStateManager().attach(new LoggingViewerAppState());
-    }
+		Screen screen = new Screen(app, "tonegod/gui/style/def/style_map.gui.xml");
+		app.getGuiNode().addControl(screen);
+		guimainMenu = new GUIMainMenuAppState(screen);
+		guimainMenu.setDisplayFps(displayFps);
+		guimainMenu.setStatView(statView);
+		app.getStateManager().attach(guimainMenu);
 
-    public void setDisplayFPS(boolean show) {
-        this.displayFps = show;
-    }
+		prettyLog = app.getStateManager().getState(PrettyLogViewerAppState.class);
+		if (prettyLog == null) {
+			prettyLog = new PrettyLogViewerAppState();
 
-    public boolean isStatView() {
-        return statView;
-    }
+		}
+		app.getStateManager().attach(prettyLog);
+		app.getStateManager().attach(new LoggingViewerAppState());
 
-    public void setStatView(boolean statView) {
-        this.statView = statView;
-    }
+	}
+
+	public void setDisplayFPS(boolean show) {
+		this.displayFps = show;
+	}
+
+	public boolean isStatView() {
+		return statView;
+	}
+
+	public void setStatView(boolean statView) {
+		this.statView = statView;
+	}
+
+	public void setPrettyLogView(boolean b) {
+		do {
+			prettyLog = app.getStateManager().getState(PrettyLogViewerAppState.class);
+			try {
+				Thread.currentThread().sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} while (prettyLog == null);
+
+		while (!prettyLog.isInitialized())
+			try {
+				Thread.currentThread().sleep(100);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		while (!prettyLog.isShown()) {
+
+			try {
+				Thread.currentThread().sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		prettyLog.show();
+
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				app.getStateManager().getState(AgentsAppState.class).getPHAInterface().getRootJFrame().pack();		
+			}
+		});
+		
+
+	}
 }
