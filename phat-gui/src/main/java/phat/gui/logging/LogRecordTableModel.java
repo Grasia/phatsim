@@ -86,6 +86,10 @@ public class LogRecordTableModel extends AbstractTableModel {
                     }
                     break;
                 case 2:
+                	if (params != null) {
+                        Automaton aut = (Automaton) params[5];
+                        return aut.getAgent().getId();
+                    }
                     return log.getLoggerName();
                 case 3:
                     if (params != null) {

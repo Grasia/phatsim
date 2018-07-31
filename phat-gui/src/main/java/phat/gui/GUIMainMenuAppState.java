@@ -45,273 +45,274 @@ import tonegod.gui.effects.Effect;
  */
 public class GUIMainMenuAppState extends AbstractAppState {
 
-    Screen screen;
-    Menu mainMenu;
-    Menu viewMenu;
-    Menu viewInfoMenu;
-    Menu viewDebugMenu;
-    Menu toolsMenu;
-    Button menuButton;
-    Button playPauseButton;
-    Button speedDownButton;
-    TextField speedLabel;
-    Button speedUpButton;
-    PHATApplication app;
-    boolean displayFps = false;
-    boolean statView = false;
-    boolean displayTimeAtStart = true;
+	Screen screen;
+	Menu mainMenu;
+	Menu viewMenu;
+	Menu viewInfoMenu;
+	Menu viewDebugMenu;
+	Menu toolsMenu;
+	Button menuButton;
+	Button playPauseButton;
+	Button speedDownButton;
+	TextField speedLabel;
+	Button speedUpButton;
+	PHATApplication app;
+	boolean displayFps = false;
+	boolean statView = false;
+	boolean displayTimeAtStart = true;
 
-    EventLauncherPanel eventLauncherPanel;
+	EventLauncherPanel eventLauncherPanel;
 
-    public GUIMainMenuAppState(Screen screen) {
-        // Store a pointer to the screen
-        this.screen = screen;
-        // Call the xml parser to load your new components
-        screen.parseLayout("Interface/MainMenu.gui.xml", this);
+	public GUIMainMenuAppState(Screen screen) {
+		// Store a pointer to the screen
+		this.screen = screen;
+		// Call the xml parser to load your new components
+		screen.parseLayout("Interface/MainMenu.gui.xml", this);
 
-        // Here we can grab pointers to the loaded elements
-        mainMenu = (Menu) screen.getElementById("MainMenu");
-        toolsMenu = (Menu) screen.getElementById("ToolsMenu");
-        viewMenu = (Menu) screen.getElementById("ViewMenu");
-        viewInfoMenu = (Menu) screen.getElementById("ViewInfoMenu");
-        viewDebugMenu = (Menu) screen.getElementById("ViewDebugMenu");
-        menuButton = (Button) screen.getElementById("MenuButton");
-        playPauseButton = (Button) screen.getElementById("PlayPauseButton");
-        speedDownButton = (Button) screen.getElementById("SpeedDownButton");
-        speedLabel = (TextField) screen.getElementById("SpeedLabel");
-        speedUpButton = (Button) screen.getElementById("SpeedUpButton");
-    }
+		// Here we can grab pointers to the loaded elements
+		mainMenu = (Menu) screen.getElementById("MainMenu");
+		toolsMenu = (Menu) screen.getElementById("ToolsMenu");
+		viewMenu = (Menu) screen.getElementById("ViewMenu");
+		viewInfoMenu = (Menu) screen.getElementById("ViewInfoMenu");
+		viewDebugMenu = (Menu) screen.getElementById("ViewDebugMenu");
+		menuButton = (Button) screen.getElementById("MenuButton");
+		playPauseButton = (Button) screen.getElementById("PlayPauseButton");
+		speedDownButton = (Button) screen.getElementById("SpeedDownButton");
+		speedLabel = (TextField) screen.getElementById("SpeedLabel");
+		speedUpButton = (Button) screen.getElementById("SpeedUpButton");
+	}
 
-    @Override
-    public void initialize(AppStateManager stateManager, Application app) {
-        super.initialize(stateManager, app);
+	@Override
+	public void initialize(AppStateManager stateManager, Application app) {
+		super.initialize(stateManager, app);
 
-        this.app = (PHATApplication) app;
-        this.app.setSimSpeed(1f);
+		this.app = (PHATApplication) app;
+		this.app.setSimSpeed(1f);
 
-        this.app.setDisplayFps(displayFps);
-        this.app.setDisplayStatView(statView);
-        if (displayTimeAtStart) {
-            this.execDisplayTime();
-        }
-    }
+		this.app.setDisplayFps(displayFps);
+		this.app.setDisplayStatView(statView);
+		if (displayTimeAtStart) {
+			this.execDisplayTime();
+		}
+	}
 
-    @Override
-    public void update(float tpf) {
-        super.update(tpf);
+	@Override
+	public void update(float tpf) {
+		super.update(tpf);
 
-        Vector2f pos = screen.getMouseXY();
+		Vector2f pos = screen.getMouseXY();
 
-        if (pos.y > screen.getHeight() - 50f) {
-            if (!menuButton.getIsVisible() && !mainMenu.getIsVisible()) {
-                menuButton.showWithEffect();
-                playPauseButton.showWithEffect();
-                speedDownButton.showWithEffect();
-                speedLabel.showWithEffect();
-                speedUpButton.showWithEffect();
-            }
-        } else if (menuButton.getIsVisible()) {
-            menuButton.hideWithEffect();
-            playPauseButton.hideWithEffect();
-            speedDownButton.hideWithEffect();
-            speedLabel.hideWithEffect();
-            speedUpButton.hideWithEffect();
-        }
-    }
+		if (pos.y > screen.getHeight() - 50f) {
+			if (!menuButton.getIsVisible() && !mainMenu.getIsVisible()) {
+				menuButton.showWithEffect();
+				playPauseButton.showWithEffect();
+				speedDownButton.showWithEffect();
+				speedLabel.showWithEffect();
+				speedUpButton.showWithEffect();
+			}
+		} else if (menuButton.getIsVisible()) {
+			menuButton.hideWithEffect();
+			playPauseButton.hideWithEffect();
+			speedDownButton.hideWithEffect();
+			speedLabel.hideWithEffect();
+			speedUpButton.hideWithEffect();
+		}
+	}
 
-    @Override
-    public void cleanup() {
-        super.cleanup();
+	@Override
+	public void cleanup() {
+		super.cleanup();
 
-        // We can alter the effect to destroy our inventory window
-        // when we unload the AppState
-        Effect hide = new Effect(Effect.EffectType.FadeOut, Effect.EffectEvent.Hide, 0.25f);
-        hide.setDestroyOnHide(true);
+		// We can alter the effect to destroy our inventory window
+		// when we unload the AppState
+		Effect hide = new Effect(Effect.EffectType.FadeOut, Effect.EffectEvent.Hide, 0.25f);
+		hide.setDestroyOnHide(true);
 
-        screen.removeElement(menuButton);
-        screen.removeElement(viewDebugMenu);
-        screen.removeElement(viewInfoMenu);
-        screen.removeElement(viewMenu);
-        screen.removeElement(toolsMenu);
-        screen.removeElement(mainMenu);
-        screen.removeElement(playPauseButton);
-        screen.removeElement(speedDownButton);
-        screen.removeElement(speedLabel);
-        screen.removeElement(speedUpButton);
-    }
+		screen.removeElement(menuButton);
+		screen.removeElement(viewDebugMenu);
+		screen.removeElement(viewInfoMenu);
+		screen.removeElement(viewMenu);
+		screen.removeElement(toolsMenu);
+		screen.removeElement(mainMenu);
+		screen.removeElement(playPauseButton);
+		screen.removeElement(speedDownButton);
+		screen.removeElement(speedLabel);
+		screen.removeElement(speedUpButton);
+	}
 
-    public void showMenu(MouseButtonEvent evt, boolean isToggle) {
-        //mainMenu.showMenu(null, evt.getX(), evt.get - mainMenu.getHeight());
-        System.out.println("showMenu!!!");
-        mainMenu.showWithEffect();
-    }
+	public void showMenu(MouseButtonEvent evt, boolean isToggle) {
+		// mainMenu.showMenu(null, evt.getX(), evt.get - mainMenu.getHeight());
+		System.out.println("showMenu!!!");
+		mainMenu.showWithEffect();
+	}
 
-    public void pause() {
-        playPauseButton.setText("Resume");
-        this.app.setSimSpeed(0f);
-    }
+	public void pause() {
+		playPauseButton.setText("Resume");
+		this.app.setSimSpeed(0f);
+	}
 
-    public void resume() {
-        playPauseButton.setText("Pause");
-        this.app.setSimSpeed(Float.parseFloat(speedLabel.getText()));
-    }
+	public void resume() {
+		playPauseButton.setText("Pause");
+		this.app.setSimSpeed(Float.parseFloat(speedLabel.getText()));
+	}
 
-    public void playPauseSim(MouseButtonEvent evt, boolean isToggle) {
-        if (playPauseButton.getText().equals("Pause")) {
-            pause();
-        } else {
-            resume();
-        }
-    }
+	public void playPauseSim(MouseButtonEvent evt, boolean isToggle) {
+		if (playPauseButton.getText().equals("Pause")) {
+			pause();
+		} else {
+			resume();
+		}
+	}
 
-    public void onSpeedDown(MouseButtonEvent evt, boolean isToggle) {
-        float speed = Float.parseFloat(speedLabel.getText());
-        if (speed >= 0.5f) {
-            speed /= 2;
-            speedLabel.setText(String.valueOf(speed));
-            onSpeedChange();
-        }
-    }
+	public void onSpeedDown(MouseButtonEvent evt, boolean isToggle) {
+		float speed = Float.parseFloat(speedLabel.getText());
+		if (speed >= 0.5f) {
+			speed /= 2;
+			speedLabel.setText(String.valueOf(speed));
+			onSpeedChange();
+		}
+	}
 
-    public void onSpeedUp(MouseButtonEvent evt, boolean isToggle) {
-        float speed = Float.parseFloat(speedLabel.getText());
-        if (speed < 512f) {
-            speed *= 2;
-            speedLabel.setText(String.valueOf(speed));
-            onSpeedChange();
-        }
-    }
+	public void onSpeedUp(MouseButtonEvent evt, boolean isToggle) {
+		float speed = Float.parseFloat(speedLabel.getText());
+		if (speed < 512f) {
+			speed *= 2;
+			speedLabel.setText(String.valueOf(speed));
+			onSpeedChange();
+		}
+	}
 
-    public void onSpeedChange() {
-        if (playPauseButton.getText().equals("Pause")) {
-            this.app.setSimSpeed(Float.parseFloat(speedLabel.getText()));
-        }
-    }
+	public void onSpeedChange() {
+		if (playPauseButton.getText().equals("Pause")) {
+			this.app.setSimSpeed(Float.parseFloat(speedLabel.getText()));
+		}
+	}
 
-    public void viewInfoMenuClick(int index, Object value, boolean isToggled) {
-        switch (index) {
-            case 0:
-                this.execDisplayTime();
-                break;
-        }
-    }
+	public void viewInfoMenuClick(int index, Object value, boolean isToggled) {
+		switch (index) {
+		case 0:
+			this.execDisplayTime();
+			break;
+		}
+	}
 
-    /*
-     * DEBUG OPTIONS
-     */
-    public void viewDebugMenuClick(int index, Object value, boolean isToggled) {
-        System.out.println(index + ":" + value + ":" + isToggled);
-        switch (index) {
-            case 0:
-                displayFps = isToggled;
-                app.setDisplayFps(isToggled);
-                break;
-            case 1:
-                app.setDisplayStatView(isToggled);
-                break;
-        }
-    }
+	/*
+	 * DEBUG OPTIONS
+	 */
+	public void viewDebugMenuClick(int index, Object value, boolean isToggled) {
+		System.out.println(index + ":" + value + ":" + isToggled);
+		switch (index) {
+		case 0:
+			displayFps = isToggled;
+			app.setDisplayFps(isToggled);
+			break;
+		case 1:
+			app.setDisplayStatView(isToggled);
+			break;
+		}
+	}
 
-    /*
-     * TOOLS OPTIONS
-     */
-    public void toolsMenuClick(int index, Object value, boolean isToggled) {
-        System.out.println(index + ":" + value + ":" + isToggled);
-        switch (index) {
-            case 0:
-                // Call the xml parser to load your new components
-                //screen.parseLayout("Interface/MainMenu.gui.xml", this);
-                //screenShotState.takeScreenshot();
-                app.getStateManager().detach(this);
-                takeScreenshot();
-                break;
-            case 1:
-                LoggingViewerAppState log = app.getStateManager().getState(LoggingViewerAppState.class);
-                if (log == null) {
-                    log = new LoggingViewerAppState();
-                    app.getStateManager().attach(this);
-                }
-                if (log.isShown()) {
-                    log.hide();
-                } else {
-                    log.show();
-                }
-                break;
-            case 2:
-                // Event Launcher
-                if (eventLauncherPanel == null) {
-                    DevicesAppState devicesAppState = app.getStateManager().getState(DevicesAppState.class);
-                    if (devicesAppState != null) {
-                        EventLauncherPanel.createAndShowGUI(devicesAppState);
-                    }
-                } else {
-                    eventLauncherPanel.setVisible(eventLauncherPanel.isVisible());
-                }
-                break;
-        }
-    }
+	/*
+	 * TOOLS OPTIONS
+	 */
+	public void toolsMenuClick(int index, Object value, boolean isToggled) {
+		System.out.println(index + ":" + value + ":" + isToggled);
+		switch (index) {
+		case 0:
+			// Call the xml parser to load your new components
+			// screen.parseLayout("Interface/MainMenu.gui.xml", this);
+			// screenShotState.takeScreenshot();
+			app.getStateManager().detach(this);
+			takeScreenshot();
+			break;
+		case 1:
+			LoggingViewerAppState log = app.getStateManager().getState(LoggingViewerAppState.class);
+			if (log == null) {
+				log = new LoggingViewerAppState();
+				app.getStateManager().attach(this);
+			}
+			if (log.isShown()) {
+				log.hide();
+			} else {
+				log.show();
+			}
+			break;
+		case 2:
+			// Event Launcher
+			if (eventLauncherPanel == null) {
+				DevicesAppState devicesAppState = app.getStateManager().getState(DevicesAppState.class);
+				if (devicesAppState != null) {
+					EventLauncherPanel.createAndShowGUI(devicesAppState);
+				}
+			} else {
+				eventLauncherPanel.setVisible(eventLauncherPanel.isVisible());
+			}
+			break;
+		}
+	}
 
-    private void takeScreenshot() {
-        this.app.getStateManager().attach(new GUIScreenShotAppState(screen));
-    }
+	private void takeScreenshot() {
+		this.app.getStateManager().attach(new GUIScreenShotAppState(screen));
+	}
 
-    public void menuClicked(int index, Object value, boolean isToggled) {
-        switch (index) {
-            case 2:
-                System.out.println("Quit!");
-                float wHeight = 150f;
-                float wWidth = 300f;
-                DialogBox dialog = new DialogBox(screen, "QuitDialog",
-                        new Vector2f((screen.getWidth() - wWidth) / 2f, (screen.getHeight() - wHeight) / 2f), new Vector2f(wWidth, wHeight)) {
-                    @Override
-                    public void onButtonCancelPressed(MouseButtonEvent mbe, boolean bln) {
-                        screen.removeElement(this);
-                    }
+	public void menuClicked(int index, Object value, boolean isToggled) {
+		switch (index) {
+		case 2:
+			System.out.println("Quit!");
+			float wHeight = 150f;
+			float wWidth = 300f;
+			DialogBox dialog = new DialogBox(screen, "QuitDialog",
+					new Vector2f((screen.getWidth() - wWidth) / 2f, (screen.getHeight() - wHeight) / 2f),
+					new Vector2f(wWidth, wHeight)) {
+				@Override
+				public void onButtonCancelPressed(MouseButtonEvent mbe, boolean bln) {
+					screen.removeElement(this);
+				}
 
-                    @Override
-                    public void onButtonOkPressed(MouseButtonEvent mbe, boolean bln) {
-                        quit();
-                    }
-                };
-                dialog.setWindowTitle("Permission!");
-                dialog.setMsg("Are you sure?");
-                screen.addElement(dialog);
-                dialog.hide();
-                dialog.showWithEffect();
-                break;
-        }
-    }
+				@Override
+				public void onButtonOkPressed(MouseButtonEvent mbe, boolean bln) {
+					quit();
+				}
+			};
+			dialog.setWindowTitle("Permission!");
+			dialog.setMsg("Are you sure?");
+			screen.addElement(dialog);
+			dialog.hide();
+			dialog.showWithEffect();
+			break;
+		}
+	}
 
-    private void quit() {
-        this.app.stop();
-    }
+	private void quit() {
+		this.app.stop();
+	}
 
-    public boolean isDisplayFps() {
-        return displayFps;
-    }
+	public boolean isDisplayFps() {
+		return displayFps;
+	}
 
-    public void setDisplayFps(boolean displayFps) {
-        this.displayFps = displayFps;
-    }
+	public void setDisplayFps(boolean displayFps) {
+		this.displayFps = displayFps;
+	}
 
-    public boolean isStatView() {
-        return statView;
-    }
+	public boolean isStatView() {
+		return statView;
+	}
 
-    public void setStatView(boolean statView) {
-        this.statView = statView;
-    }
+	public void setStatView(boolean statView) {
+		this.statView = statView;
+	}
 
-    private void execDisplayTime() {
-        TimeAppState timeAppState = app.getStateManager().getState(TimeAppState.class);
-        if (timeAppState == null) {
-            timeAppState = new TimeAppState(screen);
-            app.getStateManager().attach(timeAppState);
-            viewInfoMenu.getMenuItem(0).setIsToggled(true);
-        } else {
-            app.getStateManager().detach(timeAppState);
-            viewInfoMenu.getMenuItem(0).setIsToggled(false);
-        }
-    }
+	private void execDisplayTime() {
+		TimeAppState timeAppState = app.getStateManager().getState(TimeAppState.class);
+		if (timeAppState == null) {
+			timeAppState = new TimeAppState(screen);
+			app.getStateManager().attach(timeAppState);
+			viewInfoMenu.getMenuItem(0).setIsToggled(true);
+		} else {
+			app.getStateManager().detach(timeAppState);
+			viewInfoMenu.getMenuItem(0).setIsToggled(false);
+		}
+	}
 
 }

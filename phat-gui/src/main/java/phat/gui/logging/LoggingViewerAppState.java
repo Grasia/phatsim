@@ -149,6 +149,8 @@ public class LoggingViewerAppState extends AbstractAppState implements Automaton
     public void stateChanged(Automaton automaton, Automaton.STATE state) {
         log(automaton, state.name());
         if (state == STATE.STARTED) {
+        	// if it is already listening, there are no sideeffects
+        	// if it is not already listening to this, it starts doing it
             automaton.addListener(this);
         }
     }

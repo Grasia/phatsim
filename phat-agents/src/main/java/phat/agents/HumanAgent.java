@@ -185,7 +185,7 @@ public class HumanAgent extends Agent {
                         if (lastEvent == null || (lastEvent != null && !lastEvent.similar(currentEvent))) {
                             lastEvent = currentEvent;
 
-                            System.out.println("Registrandoooooo1");
+                          
                             eventListener.notifyEvent(currentEvent);
 
                         }
