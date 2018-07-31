@@ -39,14 +39,14 @@ public class @@@v@@@stID@@@/v@@@Task extends SeqTaskAutomaton {
 		@@@/repeat@@@
                 
                 @@@repeat id="durRep"@@@
-                if(getParent().getMetadata("@@@v@@@durVar@@@/v@@@") != null) {
+                if(getParent() != null && getParent().getMetadata("@@@v@@@durVar@@@/v@@@") != null) {
                     automaton.setFinishCondition(new TimerFinishedCondition(0, 0, Integer.parseInt(getParent().getMetadata("@@@v@@@durVar@@@/v@@@"))));
                 } else if(!"@@@v@@@duration@@@/v@@@".equals("-1")) {
                     automaton.setFinishCondition(new TimerFinishedCondition(0, 0, @@@v@@@duration@@@/v@@@));
                 }@@@/repeat@@@
                 
                 @@@repeat id="speedRep"@@@
-                if(getParent().getMetadata("@@@v@@@speedVar@@@/v@@@") != null) {
+                if(getParent() != null && getParent().getMetadata("@@@v@@@speedVar@@@/v@@@") != null) {
                     ((@@@v@@@className@@@/v@@@)automaton).setSpeed(Float.parseFloat(getParent().getMetadata("@@@v@@@speedVar@@@/v@@@")));
                 } else if(!"@@@v@@@speed@@@/v@@@".equals("-1")) {
                     ((@@@v@@@className@@@/v@@@)automaton).setSpeed(@@@v@@@speed@@@/v@@@f);

@@ -57,9 +57,9 @@ public class GUIMainMenuAppState extends AbstractAppState {
     TextField speedLabel;
     Button speedUpButton;
     PHATApplication app;
-    String path = "/home/pablo/Models/";
     boolean displayFps = false;
     boolean statView = false;
+    boolean displayTimeAtStart = true;
 
     EventLauncherPanel eventLauncherPanel;
 
@@ -91,6 +91,9 @@ public class GUIMainMenuAppState extends AbstractAppState {
 
         this.app.setDisplayFps(displayFps);
         this.app.setDisplayStatView(statView);
+        if (displayTimeAtStart) {
+            this.execDisplayTime();
+        }
     }
 
     @Override
@@ -144,7 +147,6 @@ public class GUIMainMenuAppState extends AbstractAppState {
     }
 
     public void pause() {
-
         playPauseButton.setText("Resume");
         this.app.setSimSpeed(0f);
     }
@@ -173,7 +175,7 @@ public class GUIMainMenuAppState extends AbstractAppState {
 
     public void onSpeedUp(MouseButtonEvent evt, boolean isToggle) {
         float speed = Float.parseFloat(speedLabel.getText());
-        if (speed < 128f) {
+        if (speed < 512f) {
             speed *= 2;
             speedLabel.setText(String.valueOf(speed));
             onSpeedChange();
@@ -189,13 +191,7 @@ public class GUIMainMenuAppState extends AbstractAppState {
     public void viewInfoMenuClick(int index, Object value, boolean isToggled) {
         switch (index) {
             case 0:
-                TimeAppState timeAppState = app.getStateManager().getState(TimeAppState.class);
-                if (timeAppState == null) {
-                    timeAppState = new TimeAppState(screen);
-                    app.getStateManager().attach(timeAppState);
-                } else {
-                    app.getStateManager().detach(timeAppState);
-                }
+                this.execDisplayTime();
                 break;
         }
     }
@@ -305,4 +301,17 @@ public class GUIMainMenuAppState extends AbstractAppState {
     public void setStatView(boolean statView) {
         this.statView = statView;
     }
+
+    private void execDisplayTime() {
+        TimeAppState timeAppState = app.getStateManager().getState(TimeAppState.class);
+        if (timeAppState == null) {
+            timeAppState = new TimeAppState(screen);
+            app.getStateManager().attach(timeAppState);
+            viewInfoMenu.getMenuItem(0).setIsToggled(true);
+        } else {
+            app.getStateManager().detach(timeAppState);
+            viewInfoMenu.getMenuItem(0).setIsToggled(false);
+        }
+    }
+
 }

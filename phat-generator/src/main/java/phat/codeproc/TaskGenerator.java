@@ -302,7 +302,7 @@ public class TaskGenerator {
         GraphEntity ge = Utils.getTargetEntity(task, varRel);
         String resultValue = value.equals("null") ? "null" : "\"" + value + "\"";
         if (ge != null) {
-            String varValue = "getParent().getMetadata(\"" + Utils.replaceBadChars(ge.getID()) + "\")";
+            String varValue = "getParent() != null && getParent().getMetadata(\"" + Utils.replaceBadChars(ge.getID()) + "\")";
             return varValue + " != null ? " + varValue + " : " + resultValue;
         }
         return resultValue;
