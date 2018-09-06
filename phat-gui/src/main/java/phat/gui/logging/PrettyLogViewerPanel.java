@@ -78,6 +78,7 @@ public class PrettyLogViewerPanel extends JPanel {
 					 String agent=tableModel.getValueAt(k, 2).toString();
 					 String simtime=tableModel.getValueAt(k, 1).toString();
 					 String action=tableModel.getValueAt(k, 4).toString();
+					 String type=tableModel.getValueAt(k, 5).toString();
 					 String description="";
 					 if (tableModel.getValueAt(k, 7)!=null)
 						 description=tableModel.getValueAt(k, 7).toString();
@@ -87,7 +88,9 @@ public class PrettyLogViewerPanel extends JPanel {
 						 agentPanels.put(agent, new JPanel(new FlowLayout()));
 						 agentContent.add(agentPanels.get(agent));						 
 					 }
-					 agentLastViews.get(agent).insertElementAt(new LastActionView(action,simtime,state,description),0);
+					 if (type.equals("BActivity")) {
+						 agentLastViews.get(agent).insertElementAt(new LastActionView(action, simtime, state, description), 0);
+					 }
 					 if (agentLastViews.get(agent).size()>NumberOfVisibleLoggedActions) {
 						 agentLastViews.get(agent).removeElementAt(agentLastViews.get(agent).size()-1);
 					 }
