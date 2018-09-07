@@ -61,48 +61,53 @@ public class PrettyLogViewerPanel extends JPanel {
 	
 	public static final int NumberOfVisibleLoggedActions = 2;
 	// contains the last two entries for each agent
-	Hashtable<String, Vector<LastActionView>> agentLastViews=new Hashtable<String, Vector<LastActionView>> ();
-	Hashtable<String, JPanel> agentPanels=new Hashtable<String, JPanel> ();
+	Hashtable<String, Vector<LastActionView>> agentLastViews = new Hashtable<String, Vector<LastActionView>> ();
+	Hashtable<String, JPanel> agentPanels = new Hashtable<String, JPanel> ();
 	
     public PrettyLogViewerPanel(final LogRecordTableModel tableModel) {
-    	final JPanel agentContent=new JPanel();
-    	//final   JScrollPane scrollPane = new JScrollPane(agentContent);
-    	agentContent.setLayout(new BoxLayout(agentContent,BoxLayout.Y_AXIS));
-    	
+    	final JPanel agentContent = new JPanel();
+    	agentContent.setLayout(new BoxLayout(agentContent, BoxLayout.Y_AXIS));
+		//agentContent.setAlignmentY(JLabel.TOP);
+		//agentContent.setAlignmentX(JLabel.TOP);
+
     	tableModel.addTableModelListener(new TableModelListener() {
 			@Override
 			public void tableChanged(TableModelEvent arg0) {
 				
-			 if (arg0.getType()== javax.swing.event.TableModelEvent.INSERT) {
-				 for (int k=arg0.getFirstRow();k<=arg0.getLastRow();k++) {
-					 String agent=tableModel.getValueAt(k, 2).toString();
-					 String simtime=tableModel.getValueAt(k, 1).toString();
-					 String action=tableModel.getValueAt(k, 4).toString();
-					 String type=tableModel.getValueAt(k, 5).toString();
-					 String description="";
-					 if (tableModel.getValueAt(k, 7)!=null)
-						 description=tableModel.getValueAt(k, 7).toString();
-					 String state=tableModel.getValueAt(k, 3).toString();
+			 if (arg0.getType() == javax.swing.event.TableModelEvent.INSERT) {
+				 for (int k = arg0.getFirstRow(); k <= arg0.getLastRow(); k++) {
+					 String agent = tableModel.getValueAt(k, 2).toString();
+					 String simtime = tableModel.getValueAt(k, 1).toString();
+					 String action = tableModel.getValueAt(k, 4).toString();
+					 String type = tableModel.getValueAt(k, 5).toString();
+					 String description = "";
+					 if (tableModel.getValueAt(k, 7) != null)
+						 description = tableModel.getValueAt(k, 7).toString();
+					 String state = tableModel.getValueAt(k, 3).toString();
 					 if (!agentLastViews.containsKey(agent)) {
 						 agentLastViews.put(agent, new Vector<LastActionView>());
-						 agentPanels.put(agent, new JPanel(new FlowLayout()));
+						 JPanel agentPanel = new JPanel(new FlowLayout());
+						 agentPanel.setPreferredSize(new Dimension(650, 100));
+						 agentPanels.put(agent, agentPanel);
 						 agentContent.add(agentPanels.get(agent));						 
 					 }
 					 if (type.equals("BActivity")) {
 						 agentLastViews.get(agent).insertElementAt(new LastActionView(action, simtime, state, description), 0);
 					 }
-					 if (agentLastViews.get(agent).size()>NumberOfVisibleLoggedActions) {
-						 agentLastViews.get(agent).removeElementAt(agentLastViews.get(agent).size()-1);
+					 if (agentLastViews.get(agent).size() > NumberOfVisibleLoggedActions) {
+						 agentLastViews.get(agent).removeElementAt(agentLastViews.get(agent).size() - 1);
 					 }
 				 };
 				 SwingUtilities.invokeLater(new Runnable() {
 					 public void run() {											
 						 for (String agentName:agentPanels.keySet()) {
 							 agentPanels.get(agentName).removeAll();
-							 agentPanels.get(agentName).add(new JLabel(transformStringToHtml(agentName)));
+							 JLabel nameLabel = new JLabel(transformStringToHtml(agentName));
+							 nameLabel.setVerticalAlignment(JLabel.TOP);
+							 agentPanels.get(agentName).add(nameLabel);
 							 Vector<LastActionView> toAdd = agentLastViews.get(agentName);
-							 for (int k=0;k<toAdd.size();k++) {
-								 if (k==0) {
+							 for (int k = 0; k < toAdd.size(); k++) {
+								 if (k == 0) {
 									 toAdd.elementAt(k).tellWhen("Now");
 								 } else {									 
 									 toAdd.elementAt(k).tellWhen("Before");
@@ -139,24 +144,12 @@ public class PrettyLogViewerPanel extends JPanel {
 			}
     		
     	});
-        //JTable table = new JTable(tableModel);
-        //table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-        //table.setPreferredScrollableViewportSize(new Dimension(1200, 700));
-        //table.setFillsViewportHeight(true);
-        
-        //Create the scroll pane and add the table to it.
-     
-     /*   scrollPane.getVerticalScrollBar().addAdjustmentListener(new AdjustmentListener() {
-            @Override
-            public void adjustmentValueChanged(AdjustmentEvent e) {
-                e.getAdjustable().setValue(e.getAdjustable().getMaximum());
-            }
-        });*/
 
         setLayout(new BorderLayout());
-     //   add(new LogViewerControlPanel(table), BorderLayout.NORTH);
         add(agentContent, BorderLayout.CENTER);
-        add(new JLabel("<html><h1>Last actions performed by actors:</h1><br><p><span style=\"background-color: #FFFF00\"><font color=\"black\">Yellow</font></span>:means finished<br/><span style=\"background-color: #008000\"><font color=\"black\">Green</font></span>: means started<br></p></html>"), BorderLayout.NORTH);
+        JLabel titleLabel = new JLabel("<html><h1>Last actions performed by actors:</h1><br><p><span style=\"background-color: #FFFF00\"><font color=\"black\">Yellow</font></span>:means finished<br/><span style=\"background-color: #008000\"><font color=\"black\">Green</font></span>: means started<br></p></html>");
+		//titleLabel.setVerticalTextPosition(JLabel.TOP);
+        add(titleLabel, BorderLayout.NORTH);
 
     }
     
