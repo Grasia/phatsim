@@ -67,8 +67,6 @@ public class PrettyLogViewerPanel extends JPanel {
     public PrettyLogViewerPanel(final LogRecordTableModel tableModel) {
     	final JPanel agentContent = new JPanel();
     	agentContent.setLayout(new BoxLayout(agentContent, BoxLayout.Y_AXIS));
-		//agentContent.setAlignmentY(JLabel.TOP);
-		//agentContent.setAlignmentX(JLabel.TOP);
 
     	tableModel.addTableModelListener(new TableModelListener() {
 			@Override
@@ -87,7 +85,7 @@ public class PrettyLogViewerPanel extends JPanel {
 					 if (!agentLastViews.containsKey(agent)) {
 						 agentLastViews.put(agent, new Vector<LastActionView>());
 						 JPanel agentPanel = new JPanel(new FlowLayout());
-						 agentPanel.setPreferredSize(new Dimension(650, 100));
+						 //agentPanel.setPreferredSize(new Dimension(650, 100));
 						 agentPanels.put(agent, agentPanel);
 						 agentContent.add(agentPanels.get(agent));						 
 					 }
