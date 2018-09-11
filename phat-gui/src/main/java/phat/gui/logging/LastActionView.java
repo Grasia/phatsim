@@ -7,6 +7,7 @@ import java.awt.GridBagLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
+import java.awt.Font;
 
 public class LastActionView extends JPanel {
 
@@ -30,7 +31,7 @@ public class LastActionView extends JPanel {
 		 gbc.gridwidth=1;
 		 gbc.gridheight=1;
 		this.add(new JLabel(action), gbc);
-		JLabel lsimtime=new JLabel("Simtime:");
+		JLabel lsimtime=new JLabel("Simtime: ");
 		 gbc.gridx=0;
 		 gbc.gridy=2;
 		 gbc.gridwidth=1;
@@ -47,7 +48,8 @@ public class LastActionView extends JPanel {
 		 //gbc.gridheight=1;
 		// gbc.weighty=GridBagConstraints.REMAINDER;
 		 gbc.weightx=GridBagConstraints.REMAINDER;
-		 JTextArea ta=new JTextArea(description,15,25);
+		 JTextArea ta=new JTextArea(description,5,25);
+		 ta.setFont(new Font("Ubuntu", Font.BOLD, 16));
 		 ta.setEditable(false);
 		 ta.setLineWrap(true);
 		 ta.setWrapStyleWord(true);
