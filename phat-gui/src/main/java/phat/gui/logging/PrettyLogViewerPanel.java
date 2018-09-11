@@ -76,6 +76,8 @@ public class PrettyLogViewerPanel extends JPanel {
 				 for (int k = arg0.getFirstRow(); k <= arg0.getLastRow(); k++) {
 					 String agent = tableModel.getValueAt(k, 2).toString();
 					 String simtime = tableModel.getValueAt(k, 1).toString();
+					 //removes the date from simtime string
+					 simtime = simtime.split("-")[0];
 					 String action = tableModel.getValueAt(k, 4).toString();
 					 String type = tableModel.getValueAt(k, 5).toString();
 					 String description = "";
