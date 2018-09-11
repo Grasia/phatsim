@@ -11,15 +11,17 @@ import java.awt.Font;
 
 public class LastActionView extends JPanel {
 
+	private String fontName = "Ubuntu";
 	private JLabel laction;
 	public LastActionView(String action, String simtime,String state, String description) {
 		this.setLayout(new GridBagLayout());		
 		GridBagConstraints gbc=new GridBagConstraints();
-		if (state.equals("STARTED"))
+		if (state.equals("STARTED") || state.equals("DEFAULT_STARTED"))
 			this.setBackground(Color.GREEN);
 		else 
 			this.setBackground(Color.YELLOW);
 		JLabel laction=new JLabel("Action:");
+		laction.setFont(new Font(fontName, Font.BOLD, 14));
 		 gbc.gridx=0;
 		 gbc.gridy=1;
 		 gbc.anchor=GridBagConstraints.WEST;
@@ -30,8 +32,11 @@ public class LastActionView extends JPanel {
 		 gbc.gridy=1;
 		 gbc.gridwidth=1;
 		 gbc.gridheight=1;
-		this.add(new JLabel(action), gbc);
+		JLabel act = new JLabel(action);
+		act.setFont(new Font(fontName, Font.BOLD, 15));
+		this.add(act, gbc);
 		JLabel lsimtime=new JLabel("Simtime: ");
+		lsimtime.setFont(new Font(fontName, Font.BOLD, 14));
 		 gbc.gridx=0;
 		 gbc.gridy=2;
 		 gbc.gridwidth=1;
@@ -41,7 +46,9 @@ public class LastActionView extends JPanel {
 		 gbc.gridy=2;
 		 gbc.gridwidth=1;
 		 gbc.gridheight=1;
-		this.add(new JLabel(simtime), gbc);
+		 JLabel simt = new JLabel(simtime);
+		 simt.setFont(new Font(fontName, Font.BOLD, 15));
+		this.add(simt, gbc);
 		 gbc.gridx=0;
 		 gbc.gridy=3;
 		 gbc.gridwidth=2;
@@ -49,7 +56,7 @@ public class LastActionView extends JPanel {
 		// gbc.weighty=GridBagConstraints.REMAINDER;
 		 gbc.weightx=GridBagConstraints.REMAINDER;
 		 JTextArea ta=new JTextArea(description,5,25);
-		 ta.setFont(new Font("Ubuntu", Font.BOLD, 16));
+		 ta.setFont(new Font(fontName, Font.BOLD, 16));
 		 ta.setEditable(false);
 		 ta.setLineWrap(true);
 		 ta.setWrapStyleWord(true);
@@ -65,6 +72,7 @@ public class LastActionView extends JPanel {
 		if (laction!=null)
 		this.remove(laction);
 		laction=new JLabel(when);
+		laction.setFont(new Font(fontName, Font.BOLD, 14));
 		 gbc.gridx=0;
 		 gbc.gridy=0;
 		 gbc.anchor=GridBagConstraints.WEST;

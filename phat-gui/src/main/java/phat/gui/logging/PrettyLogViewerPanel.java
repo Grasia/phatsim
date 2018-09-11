@@ -147,20 +147,20 @@ public class PrettyLogViewerPanel extends JPanel {
 
         setLayout(new BorderLayout());
         add(agentContent, BorderLayout.CENTER);
-        JLabel titleLabel = new JLabel("<html><h1>Last actions performed by actors:</h1><br><p><span style=\"background-color: #FFFF00\"><font color=\"black\">Yellow</font></span>:means finished<br/><span style=\"background-color: #008000\"><font color=\"black\">Green</font></span>: means started<br></p></html>");
+        JLabel titleLabel = new JLabel("<html><font face=\"Ubuntu\"><h1>Last actions performed by actors:</h1><br><p><span style=\"background-color: #FFFF00\"><font color=\"black\">Yellow</font></span>:means finished<br/><span style=\"background-color: #008000\"><font color=\"black\">Green</font></span>: means started<br></p></font></html>");
 		//titleLabel.setVerticalTextPosition(JLabel.TOP);
         add(titleLabel, BorderLayout.NORTH);
 
     }
     
     public static String transformStringToHtml(String strToTransform) {
-        String ans = "<html>";
+        String ans = "<html><font face=\"Ubuntu\">";
         String br = "<br>";
         String[] lettersArr = strToTransform.split("");
         for (String letter : lettersArr) {
             ans += letter + br;
         }
-        ans += "</html>";
+        ans += "</font></html>";
         return ans;
     }
     
