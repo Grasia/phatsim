@@ -147,7 +147,7 @@ public class PrettyLogViewerPanel extends JPanel {
 
         setLayout(new BorderLayout());
         add(agentContent, BorderLayout.CENTER);
-        JLabel titleLabel = new JLabel("<html><font face=\"Ubuntu\"><h1>Last actions performed by actors:</h1><br><p><span style=\"background-color: #FFFF00\"><font color=\"black\">Yellow</font></span>:means finished<br/><span style=\"background-color: #008000\"><font color=\"black\">Green</font></span>: means started<br></p></font></html>");
+        JLabel titleLabel = new JLabel("<html><h1><font face=\"Ubuntu\">Last actions performed by actors:</font></h1><br><p><span style=\"background-color: #FFFF00\"><font color=\"black\" face=\"Ubuntu\">Yellow:</font></span><font face=\"Ubuntu\"> means finished</font><br/><span style=\"background-color: #008000\"><font color=\"black\" face=\"Ubuntu\">Green:</span><font face=\"Ubuntu\"> means started</font><br></p></html>");
 		//titleLabel.setVerticalTextPosition(JLabel.TOP);
         add(titleLabel, BorderLayout.NORTH);
 
