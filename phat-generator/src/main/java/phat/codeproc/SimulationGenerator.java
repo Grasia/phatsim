@@ -254,6 +254,19 @@ public class SimulationGenerator {
 
     public void generateWorldInitialization(String simId, Graph simDiags,
             Repeat rep) throws NullEntity, NotFound {
+
+        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+
+        System.out.print(".::[ ");
+        System.out.print(simDiags.getName());
+        System.out.print(" | ");
+        System.out.print(simDiags.getType());
+        System.out.print(" | ");
+        System.out.print(simDiags.getAttributeByName("Description"));
+        System.out.println(" ]::.");
+
+        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+
         GraphEntity ge = getEntity(simDiags, "WorldInitialization");
         GraphAttribute seedworld = ge.getAttributeByName("SimulationSeedField");
 
@@ -261,6 +274,8 @@ public class SimulationGenerator {
             System.out.println("\n\n\nSEED = " + seedworld.getSimpleValue() + "\n\n\n");
             Repeat setSeed = new Repeat("setSeed");
             rep.add(setSeed);
+            GraphAttribute description = simDiags.getAttributeByName("Description");
+            rep.add(new Var("description", description.getSimpleValue()));
             setSeed.add(new Var("seedValue", seedworld.getSimpleValue()));
         }
 
@@ -282,12 +297,14 @@ public class SimulationGenerator {
         GraphAttribute min = iniDate.getAttributeByName("MinuteField");
         GraphAttribute sec = iniDate.getAttributeByName("SecondField");
 
+
         rep.add(new Var("year", year.getSimpleValue()));
         rep.add(new Var("month", month.getSimpleValue()));
         rep.add(new Var("day", day.getSimpleValue()));
         rep.add(new Var("hour", hour.getSimpleValue()));
         rep.add(new Var("min", min.getSimpleValue()));
         rep.add(new Var("sec", sec.getSimpleValue()));
+
 
         ge = getEntity(simDiags, "FlyCamInit");
         if (ge != null) {

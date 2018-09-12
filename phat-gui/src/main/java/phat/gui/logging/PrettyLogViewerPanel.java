@@ -163,7 +163,7 @@ public class PrettyLogViewerPanel extends JPanel {
         ans += "</font></html>";
         return ans;
     }
-    
+
     public static void main(String args[]) {
     	JFrame jf=new JFrame();
     	jf.getContentPane().add(new LastActionView("uno", "dos",  "tres","cuatro"));
