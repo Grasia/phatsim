@@ -13,14 +13,15 @@ public class LastActionView extends JPanel {
 
 	private String fontName = "Ubuntu";
 	private JLabel laction;
-	public LastActionView(String action, String simtime,String state, String description) {
+	public LastActionView(String action, String simtime, String state, String description) {
 		this.setLayout(new GridBagLayout());		
-		GridBagConstraints gbc=new GridBagConstraints();
-		if (state.equals("STARTED") || state.equals("DEFAULT_STARTED"))
+		GridBagConstraints gbc = new GridBagConstraints();
+		if (state.equals("STARTED") || state.equals("DEFAULT_STARTED")
+				|| state.equals("DEFAULT"))
 			this.setBackground(Color.GREEN);
-		else 
+		else
 			this.setBackground(Color.YELLOW);
-		JLabel laction=new JLabel("Action:");
+		JLabel laction = new JLabel(state + ": ");//new JLabel("Action:");
 		laction.setFont(new Font(fontName, Font.BOLD, 14));
 		 gbc.gridx=0;
 		 gbc.gridy=1;
@@ -55,7 +56,7 @@ public class LastActionView extends JPanel {
 		 //gbc.gridheight=1;
 		// gbc.weighty=GridBagConstraints.REMAINDER;
 		 gbc.weightx=GridBagConstraints.REMAINDER;
-		 JTextArea ta=new JTextArea(description,5,25);
+		 JTextArea ta=new JTextArea(description,8,25);
 		 ta.setFont(new Font(fontName, Font.BOLD, 16));
 		 ta.setEditable(false);
 		 ta.setLineWrap(true);
@@ -66,19 +67,19 @@ public class LastActionView extends JPanel {
 		this.setName(action+":"+simtime);		
 		
 	}
-	public void tellWhen(String when) {		
+	//public void tellWhen(String when) {		
 		
-		GridBagConstraints gbc=new GridBagConstraints();
-		if (laction!=null)
-		this.remove(laction);
-		laction=new JLabel(when);
-		laction.setFont(new Font(fontName, Font.BOLD, 14));
-		 gbc.gridx=0;
-		 gbc.gridy=0;
-		 gbc.anchor=GridBagConstraints.WEST;
-		 gbc.gridwidth=2;
-		 gbc.gridheight=1;
-		this.add(laction, gbc);
-	}
+	// 	GridBagConstraints gbc=new GridBagConstraints();
+	// 	if (laction!=null)
+	// 	this.remove(laction);
+	// 	laction=new JLabel(when);
+	// 	laction.setFont(new Font(fontName, Font.BOLD, 14));
+	// 	 gbc.gridx=0;
+	// 	 gbc.gridy=0;
+	// 	 gbc.anchor=GridBagConstraints.WEST;
+	// 	 gbc.gridwidth=2;
+	// 	 gbc.gridheight=1;
+	// 	this.add(laction, gbc);
+	// }
 	
 };

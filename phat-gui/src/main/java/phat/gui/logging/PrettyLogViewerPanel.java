@@ -107,11 +107,11 @@ public class PrettyLogViewerPanel extends JPanel {
 							 agentPanels.get(agentName).add(nameLabel);
 							 Vector<LastActionView> toAdd = agentLastViews.get(agentName);
 							 for (int k = 0; k < toAdd.size(); k++) {
-								 if (k == 0) {
-									 toAdd.elementAt(k).tellWhen("Now");
-								 } else {									 
-									 toAdd.elementAt(k).tellWhen("Before");
-								 }
+								 //if (k == 0) {
+									 //toAdd.elementAt(k).tellWhen("Now");
+								 //} else {									 
+									 //toAdd.elementAt(k).tellWhen("Before");
+								 //}
 								 toAdd.elementAt(k).revalidate();
 								 agentPanels.get(agentName).add(toAdd.elementAt(k));	
 								 
