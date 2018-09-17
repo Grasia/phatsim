@@ -91,11 +91,19 @@ public class PrettyLogViewerPanel extends JPanel {
 						 agentPanels.put(agent, agentPanel);
 						 agentContent.add(agentPanels.get(agent));						 
 					 }
+					 //Only shows activities
 					 if (type.equals("BActivity")) {
 						 agentLastViews.get(agent).insertElementAt(new LastActionView(action, simtime, state, description), 0);
 					 }
+					 //Prevents generating more panels than specified
 					 if (agentLastViews.get(agent).size() > NumberOfVisibleLoggedActions) {
 						 agentLastViews.get(agent).removeElementAt(agentLastViews.get(agent).size() - 1);
+					 }
+					 //Inits GUi with the final number of panels so it doesn't have to resize the window later
+					 if (agentLastViews.get(agent).size() == 0) {
+					 	for (int i = 0; i < NumberOfVisibleLoggedActions) {
+							agentLastViews.get(agent).insertElementAt(new LastActionView(action, simtime, state, description), i);
+						}
 					 }
 				 };
 				 SwingUtilities.invokeLater(new Runnable() {
@@ -148,7 +156,6 @@ public class PrettyLogViewerPanel extends JPanel {
         setLayout(new BorderLayout());
         add(agentContent, BorderLayout.CENTER);
         JLabel titleLabel = new JLabel("<html><h1><font face=\"Ubuntu\">Last actions performed by actors:</font></h1><br><p><span style=\"background-color: #FFFF00\"><font color=\"black\" face=\"Ubuntu\">Yellow:</font></span><font face=\"Ubuntu\"> means finished</font><br/><span style=\"background-color: #008000\"><font color=\"black\" face=\"Ubuntu\">Green:</span><font face=\"Ubuntu\"> means started</font><br></p></html>");
-		//titleLabel.setVerticalTextPosition(JLabel.TOP);
         add(titleLabel, BorderLayout.NORTH);
 
     }
