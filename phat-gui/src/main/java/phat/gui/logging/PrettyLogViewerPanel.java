@@ -101,7 +101,7 @@ public class PrettyLogViewerPanel extends JPanel {
 					 }
 					 //Inits GUi with the final number of panels so it doesn't have to resize the window later
 					 if (agentLastViews.get(agent).size() == 0) {
-					 	for (int i = 0; i < NumberOfVisibleLoggedActions) {
+					 	for (int i = 0; i < NumberOfVisibleLoggedActions; i++) {
 							agentLastViews.get(agent).insertElementAt(new LastActionView(action, simtime, state, description), i);
 						}
 					 }
