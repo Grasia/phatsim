@@ -58,6 +58,21 @@ public class SimulationGenerator {
             seq.addRepeat(simInitRep);
             simInitRep.add(new Var("simName", Utils.replaceBadChars(simId)));
 
+            System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+
+            System.out.print(".::[ ");
+            System.out.print(simDiag.getName());
+            System.out.print(" | ");
+            System.out.print(simDiag.getType());
+            System.out.print(" | ");
+            System.out.print(simDiag.getAttributeByName("Description"));
+            System.out.println(" ]::.");
+
+            GraphAttribute description = simDiag.getAttributeByName("Description");
+            simInitRep.add(new Var("description", description.getSimpleValue()));
+
+            System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
+
             generateWorldInitialization(simId, simDiag, simInitRep);
             generatePeopleInitialization(simDiag, simInitRep);
             generateCameraPositionToBody(simDiag, simInitRep);
@@ -255,18 +270,6 @@ public class SimulationGenerator {
     public void generateWorldInitialization(String simId, Graph simDiags,
             Repeat rep) throws NullEntity, NotFound {
 
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-
-        System.out.print(".::[ ");
-        System.out.print(simDiags.getName());
-        System.out.print(" | ");
-        System.out.print(simDiags.getType());
-        System.out.print(" | ");
-        System.out.print(simDiags.getAttributeByName("Description"));
-        System.out.println(" ]::.");
-
-        System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-
         GraphEntity ge = getEntity(simDiags, "WorldInitialization");
         GraphAttribute seedworld = ge.getAttributeByName("SimulationSeedField");
 
@@ -274,8 +277,6 @@ public class SimulationGenerator {
             System.out.println("\n\n\nSEED = " + seedworld.getSimpleValue() + "\n\n\n");
             Repeat setSeed = new Repeat("setSeed");
             rep.add(setSeed);
-            GraphAttribute description = simDiags.getAttributeByName("Description");
-            rep.add(new Var("description", description.getSimpleValue()));
             setSeed.add(new Var("seedValue", seedworld.getSimpleValue()));
         }
 
