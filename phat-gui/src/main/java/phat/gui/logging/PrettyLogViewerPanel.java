@@ -56,6 +56,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import org.apache.commons.lang.WordUtils;
+
 
 public class PrettyLogViewerPanel extends JPanel {
 	
@@ -87,7 +89,6 @@ public class PrettyLogViewerPanel extends JPanel {
 					 if (!agentLastViews.containsKey(agent)) {
 						 agentLastViews.put(agent, new Vector<LastActionView>());
 						 JPanel agentPanel = new JPanel(new FlowLayout());
-						 //agentPanel.setPreferredSize(new Dimension(650, 100));
 						 agentPanels.put(agent, agentPanel);
 						 agentContent.add(agentPanels.get(agent));						 
 					 }
@@ -137,20 +138,13 @@ public class PrettyLogViewerPanel extends JPanel {
 									 c=c.getParent();
 								 }
 								 ((JFrame)c).pack();
-
 							 }
 						 });
-						
-						 
 					 }
 				 });
-				 
-				 
-				 
 			 }
 				
 			}
-    		
     	});
 
         setLayout(new BorderLayout());
@@ -159,14 +153,11 @@ public class PrettyLogViewerPanel extends JPanel {
 		JPanel titleContent = new JPanel();
 		titleContent.setLayout(new BoxLayout(titleContent, BoxLayout.Y_AXIS));
 
-        JLabel titleLabel = new JLabel("<html><h2><font face=\"Ubuntu\">Last actions performed by actors:</font></h2><br><p><span style=\"background-color: #FFFF00\"><font color=\"black\" face=\"Ubuntu\">Yellow:</font></span><font face=\"Ubuntu\"> means finished</font><br/><span style=\"background-color: #008000\"><font color=\"black\" face=\"Ubuntu\">Green:</span><font face=\"Ubuntu\"> means started</font><br></p></html>");
-        //add(titleLabel, BorderLayout.NORTH);
-
+        JLabel titleLabel = new JLabel("<html><p><span style=\"background-color: #FFFF00\"><font color=\"black\" face=\"Ubuntu\">Yellow:</font></span><font face=\"Ubuntu\"> means finished</font><br/><span style=\"background-color: #008000\"><font color=\"black\" face=\"Ubuntu\">Green:</span><font face=\"Ubuntu\"> means started</font><br></p></html>");
         String title = tableModel.getAgentsAppState().getPHAInterface().getSimTitle();
-        JLabel simTitleLabel = new JLabel("<html><h1><font face=\"Ubuntu\">Name: " + title + " </font></h1></html>");
+        JLabel simTitleLabel = new JLabel("<html><h1><font face=\"Ubuntu\">" + title + " </font></h1></html>");
         String description = tableModel.getAgentsAppState().getPHAInterface().getSimDescription();
-        JLabel simDescriptionLabel = new JLabel("<html><h1><font face=\"Ubuntu\">Description: " + description + " </font></h1></html>");
-
+        JLabel simDescriptionLabel = new JLabel(wrapDescription(description));
 		titleContent.add(simTitleLabel);
 		titleContent.add(simDescriptionLabel);
 		titleContent.add(titleLabel);
@@ -184,6 +175,16 @@ public class PrettyLogViewerPanel extends JPanel {
         ans += "</font></html>";
         return ans;
     }
+
+    public static String wrapDescription(String strToTransform) {
+    	int maxLength = 65;
+    	String ans = "<html><font face=\\\"Ubuntu\\\"><h2>";
+
+		ans += WordUtils.wrap(strToTransform, maxLength, "</font><br/><font face=\"Ubuntu\">", true);
+
+    	ans += "</h2></font></html>";
+    	return ans;
+	}
 
     public static void main(String args[]) {
     	JFrame jf=new JFrame();
