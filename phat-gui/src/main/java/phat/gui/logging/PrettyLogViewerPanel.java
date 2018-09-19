@@ -155,9 +155,23 @@ public class PrettyLogViewerPanel extends JPanel {
 
         setLayout(new BorderLayout());
         add(agentContent, BorderLayout.CENTER);
-        JLabel titleLabel = new JLabel("<html><h1><font face=\"Ubuntu\">Last actions performed by actors:</font></h1><br><p><span style=\"background-color: #FFFF00\"><font color=\"black\" face=\"Ubuntu\">Yellow:</font></span><font face=\"Ubuntu\"> means finished</font><br/><span style=\"background-color: #008000\"><font color=\"black\" face=\"Ubuntu\">Green:</span><font face=\"Ubuntu\"> means started</font><br></p></html>");
-        add(titleLabel, BorderLayout.NORTH);
 
+		JPanel titleContent = new JPanel();
+		titleContent.setLayout(new BoxLayout(titleContent, BoxLayout.Y_AXIS));
+
+        JLabel titleLabel = new JLabel("<html><h2><font face=\"Ubuntu\">Last actions performed by actors:</font></h2><br><p><span style=\"background-color: #FFFF00\"><font color=\"black\" face=\"Ubuntu\">Yellow:</font></span><font face=\"Ubuntu\"> means finished</font><br/><span style=\"background-color: #008000\"><font color=\"black\" face=\"Ubuntu\">Green:</span><font face=\"Ubuntu\"> means started</font><br></p></html>");
+        //add(titleLabel, BorderLayout.NORTH);
+
+        String title = tableModel.getAgentsAppState().getPHAInterface().getSimTitle();
+        JLabel simTitleLabel = new JLabel("<html><h1><font face=\"Ubuntu\">Name: " + title + " </font></h1></html>");
+        String description = tableModel.getAgentsAppState().getPHAInterface().getSimDescription();
+        JLabel simDescriptionLabel = new JLabel("<html><h1><font face=\"Ubuntu\">Description: " + description + " </font></h1></html>");
+
+		titleContent.add(simTitleLabel);
+		titleContent.add(simDescriptionLabel);
+		titleContent.add(titleLabel);
+
+		add(titleContent, BorderLayout.NORTH);
     }
     
     public static String transformStringToHtml(String strToTransform) {
