@@ -56,6 +56,8 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
+import org.apache.commons.lang.WordUtils;
+
 
 public class PrettyLogViewerPanel extends JPanel {
 	
@@ -87,15 +89,22 @@ public class PrettyLogViewerPanel extends JPanel {
 					 if (!agentLastViews.containsKey(agent)) {
 						 agentLastViews.put(agent, new Vector<LastActionView>());
 						 JPanel agentPanel = new JPanel(new FlowLayout());
-						 //agentPanel.setPreferredSize(new Dimension(650, 100));
 						 agentPanels.put(agent, agentPanel);
 						 agentContent.add(agentPanels.get(agent));						 
 					 }
+					 //Only shows activities
 					 if (type.equals("BActivity")) {
 						 agentLastViews.get(agent).insertElementAt(new LastActionView(action, simtime, state, description), 0);
 					 }
+					 //Prevents generating more panels than specified
 					 if (agentLastViews.get(agent).size() > NumberOfVisibleLoggedActions) {
 						 agentLastViews.get(agent).removeElementAt(agentLastViews.get(agent).size() - 1);
+					 }
+					 //Inits GUi with the final number of panels so it doesn't have to resize the window later
+					 if (agentLastViews.get(agent).size() == 0) {
+					 	for (int i = 0; i < NumberOfVisibleLoggedActions; i++) {
+							agentLastViews.get(agent).insertElementAt(new LastActionView(action, simtime, state, description), i);
+						}
 					 }
 				 };
 				 SwingUtilities.invokeLater(new Runnable() {
@@ -107,11 +116,6 @@ public class PrettyLogViewerPanel extends JPanel {
 							 agentPanels.get(agentName).add(nameLabel);
 							 Vector<LastActionView> toAdd = agentLastViews.get(agentName);
 							 for (int k = 0; k < toAdd.size(); k++) {
-								 if (k == 0) {
-									 toAdd.elementAt(k).tellWhen("Now");
-								 } else {									 
-									 toAdd.elementAt(k).tellWhen("Before");
-								 }
 								 toAdd.elementAt(k).revalidate();
 								 agentPanels.get(agentName).add(toAdd.elementAt(k));	
 								 
@@ -129,28 +133,32 @@ public class PrettyLogViewerPanel extends JPanel {
 									 c=c.getParent();
 								 }
 								 ((JFrame)c).pack();
-
 							 }
 						 });
-						
-						 
 					 }
 				 });
-				 
-				 
-				 
 			 }
 				
 			}
-    		
     	});
 
         setLayout(new BorderLayout());
         add(agentContent, BorderLayout.CENTER);
-        JLabel titleLabel = new JLabel("<html><font face=\"Ubuntu\"><h1>Last actions performed by actors:</h1><br><p><span style=\"background-color: #FFFF00\"><font color=\"black\">Yellow</font></span>:means finished<br/><span style=\"background-color: #008000\"><font color=\"black\">Green</font></span>: means started<br></p></font></html>");
-		//titleLabel.setVerticalTextPosition(JLabel.TOP);
-        add(titleLabel, BorderLayout.NORTH);
 
+		JPanel titleContent = new JPanel();
+		titleContent.setLayout(new BoxLayout(titleContent, BoxLayout.Y_AXIS));
+
+        JLabel titleLabel = new JLabel("<html><p><span style=\"background-color: #FFFF00\"><font color=\"black\" face=\"Ubuntu\">Yellow:</font></span><font face=\"Ubuntu\"> means finished</font><br/><span style=\"background-color: #008000\"><font color=\"black\" face=\"Ubuntu\">Green:</span><font face=\"Ubuntu\"> means started</font><br></p></html>");
+        String title = tableModel.getAgentsAppState().getPHAInterface().getSimTitle();
+        JLabel simTitleLabel = new JLabel("<html><h1><font face=\"Ubuntu\">" + title + " </font></h1></html>");
+        String description = tableModel.getAgentsAppState().getPHAInterface().getSimDescription();
+        JLabel simDescriptionLabel = new JLabel(wrapDescription(description));
+
+		titleContent.add(simTitleLabel);
+		titleContent.add(simDescriptionLabel);
+		titleContent.add(titleLabel);
+
+		add(titleContent, BorderLayout.NORTH);
     }
     
     public static String transformStringToHtml(String strToTransform) {
@@ -163,7 +171,17 @@ public class PrettyLogViewerPanel extends JPanel {
         ans += "</font></html>";
         return ans;
     }
-    
+
+    public static String wrapDescription(String strToTransform) {
+    	int maxLength = 65;
+    	String ans = "<html><font face=\\\"Ubuntu\\\"><h2>";
+
+		ans += WordUtils.wrap(strToTransform, maxLength, "</font><br/><font face=\"Ubuntu\">", true);
+
+    	ans += "</h2></font></html>";
+    	return ans;
+	}
+
     public static void main(String args[]) {
     	JFrame jf=new JFrame();
     	jf.getContentPane().add(new LastActionView("uno", "dos",  "tres","cuatro"));

@@ -371,9 +371,7 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
 	}
 
 	@Override
-	public void finalize(SimpleApplication app) {
-
-	}
+	public void finalize(SimpleApplication app) {}
 
 	public Random getRandom() {
 		return random;
@@ -440,5 +438,13 @@ public class PHATInterface implements PHATInitAppListener, PHATFinalizeAppListen
 
 	public void setRecordVideo(boolean recordVideo) {
 		this.recordVideo = recordVideo;
+	}
+
+	public String getSimTitle() {
+		return this.initializer.getTittle();
+	}
+
+	public String getSimDescription() {
+		return this.initializer.getDescription();
 	}
 }

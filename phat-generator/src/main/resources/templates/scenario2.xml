@@ -173,8 +173,13 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulation implements PHATInitializer
     
     @Override
     public String getTittle() {
-        return "PHAT-@@@v@@@simName@@@/v@@@";
+        return "@@@v@@@simName@@@/v@@@";
     }
+
+	@Override
+	public String getDescription() {
+		return "@@@v@@@simDescription@@@/v@@@";
+	}
 }
 
 
@@ -240,8 +245,13 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevices extends Main@@@v@
     
     @Override
     public String getTittle() {
-        return "PHAT-@@@v@@@simName@@@/v@@@";
+        return "@@@v@@@simName@@@/v@@@";
     }
+
+	@Override
+	public String getDescription() {
+		return "@@@v@@@simDescription@@@/v@@@";
+	}
 }
 
 
@@ -299,8 +309,15 @@ public class Main@@@v@@@simName@@@/v@@@PHATSimulationNoDevicesRecord extends Mai
     
     @Override
     public String getTittle() {
-        return "PHAT-@@@v@@@simName@@@/v@@@";
+        return "@@@v@@@simName@@@/v@@@";
     }
+
+	@Override
+	public String getDescription() {
+		return "@@@v@@@simDescription@@@/v@@@";
+	}
+
+
 }
 
 
