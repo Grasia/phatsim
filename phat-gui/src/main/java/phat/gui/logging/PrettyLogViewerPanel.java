@@ -116,11 +116,6 @@ public class PrettyLogViewerPanel extends JPanel {
 							 agentPanels.get(agentName).add(nameLabel);
 							 Vector<LastActionView> toAdd = agentLastViews.get(agentName);
 							 for (int k = 0; k < toAdd.size(); k++) {
-								 //if (k == 0) {
-									 //toAdd.elementAt(k).tellWhen("Now");
-								 //} else {									 
-									 //toAdd.elementAt(k).tellWhen("Before");
-								 //}
 								 toAdd.elementAt(k).revalidate();
 								 agentPanels.get(agentName).add(toAdd.elementAt(k));	
 								 
@@ -158,6 +153,7 @@ public class PrettyLogViewerPanel extends JPanel {
         JLabel simTitleLabel = new JLabel("<html><h1><font face=\"Ubuntu\">" + title + " </font></h1></html>");
         String description = tableModel.getAgentsAppState().getPHAInterface().getSimDescription();
         JLabel simDescriptionLabel = new JLabel(wrapDescription(description));
+
 		titleContent.add(simTitleLabel);
 		titleContent.add(simDescriptionLabel);
 		titleContent.add(titleLabel);

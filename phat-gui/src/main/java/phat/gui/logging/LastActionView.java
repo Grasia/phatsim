@@ -21,7 +21,7 @@ public class LastActionView extends JPanel {
 			this.setBackground(Color.GREEN);
 		else
 			this.setBackground(Color.YELLOW);
-		JLabel laction = new JLabel(state + ": ");//new JLabel("Action:");
+		JLabel laction = new JLabel(state + ": ");
 		laction.setFont(new Font(fontName, Font.BOLD, 14));
 		 gbc.gridx=0;
 		 gbc.gridy=1;
@@ -67,19 +67,4 @@ public class LastActionView extends JPanel {
 		this.setName(action+":"+simtime);		
 		
 	}
-	//public void tellWhen(String when) {		
-		
-	// 	GridBagConstraints gbc=new GridBagConstraints();
-	// 	if (laction!=null)
-	// 	this.remove(laction);
-	// 	laction=new JLabel(when);
-	// 	laction.setFont(new Font(fontName, Font.BOLD, 14));
-	// 	 gbc.gridx=0;
-	// 	 gbc.gridy=0;
-	// 	 gbc.anchor=GridBagConstraints.WEST;
-	// 	 gbc.gridwidth=2;
-	// 	 gbc.gridheight=1;
-	// 	this.add(laction, gbc);
-	// }
-	
 };

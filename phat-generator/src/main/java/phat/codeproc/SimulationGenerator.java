@@ -57,21 +57,8 @@ public class SimulationGenerator {
             Repeat simInitRep = new Repeat("simInitialization");
             seq.addRepeat(simInitRep);
             simInitRep.add(new Var("simName", Utils.replaceBadChars(simId)));
-
-            System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
-
-            System.out.print(".::[ ");
-            System.out.print(simDiag.getName());
-            System.out.print(" | ");
-            System.out.print(simDiag.getType());
-            System.out.print(" | ");
-            System.out.print(simDiag.getAttributeByName("Description"));
-            System.out.println(" ]::.");
-
             GraphAttribute description = simDiag.getAttributeByName("Description");
             simInitRep.add(new Var("simDescription", description.getSimpleValue()));
-
-            System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
 
             generateWorldInitialization(simId, simDiag, simInitRep);
             generatePeopleInitialization(simDiag, simInitRep);
@@ -298,14 +285,12 @@ public class SimulationGenerator {
         GraphAttribute min = iniDate.getAttributeByName("MinuteField");
         GraphAttribute sec = iniDate.getAttributeByName("SecondField");
 
-
         rep.add(new Var("year", year.getSimpleValue()));
         rep.add(new Var("month", month.getSimpleValue()));
         rep.add(new Var("day", day.getSimpleValue()));
         rep.add(new Var("hour", hour.getSimpleValue()));
         rep.add(new Var("min", min.getSimpleValue()));
         rep.add(new Var("sec", sec.getSimpleValue()));
-
 
         ge = getEntity(simDiags, "FlyCamInit");
         if (ge != null) {
