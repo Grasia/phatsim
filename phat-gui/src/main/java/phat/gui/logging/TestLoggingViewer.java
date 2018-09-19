@@ -178,4 +178,9 @@ public class TestLoggingViewer implements PHATInitializer {
     public String getTittle() {
         return "PHAT-"+getClass().getSimpleName();
     }
+
+    @Override
+    public String getDescription() {
+        return "TestLoggingViewer";
+    }
 }

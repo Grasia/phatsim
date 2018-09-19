@@ -30,8 +30,9 @@ public interface PHATInitializer {
 	public void initWorld(WorldConfigurator worldConfig);
 	public void initHouse(HouseConfigurator houseConfig);
 	public void initBodies(BodyConfigurator bodyConfig);
-        public void initDevices(DeviceConfigurator deviceConfig);
-        public void initServer(ServerConfigurator deviceConfig);
+	public void initDevices(DeviceConfigurator deviceConfig);
+    public void initServer(ServerConfigurator deviceConfig);
 	public void initAgents(AgentConfigurator agentsConfig);
-        public String getTittle();
+    public String getTittle();
+    public String getDescription();
 }

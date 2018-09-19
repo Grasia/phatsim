@@ -69,7 +69,7 @@ public class SimulationGenerator {
             System.out.println(" ]::.");
 
             GraphAttribute description = simDiag.getAttributeByName("Description");
-            simInitRep.add(new Var("description", description.getSimpleValue()));
+            simInitRep.add(new Var("simDescription", description.getSimpleValue()));
 
             System.out.println("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
 
