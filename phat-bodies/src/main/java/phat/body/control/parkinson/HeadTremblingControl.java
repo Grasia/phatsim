@@ -106,18 +106,19 @@ public class HeadTremblingControl extends AbstractControl {
         float angle = angles[index];
 
         if (min) {
+            angle -= angular * tpf;
             if (angle < minAngle) {
                 min = false;
-            } else {
-                angle -= angular * tpf;
+                angle = minAngle;
             }
         } else {
+            angle += angular * tpf;
             if (angle > maxAngle) {
                 min = true;
-            } else {
-                angle += angular * tpf;
+                angle = maxAngle;
             }
         }
+
         angles[0] = 0;
         angles[1] = 0;
         angles[index] = angle;
