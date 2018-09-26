@@ -57,6 +57,8 @@ public class SimulationGenerator {
             Repeat simInitRep = new Repeat("simInitialization");
             seq.addRepeat(simInitRep);
             simInitRep.add(new Var("simName", Utils.replaceBadChars(simId)));
+            GraphAttribute description = simDiag.getAttributeByName("Description");
+            simInitRep.add(new Var("simDescription", description.getSimpleValue()));
 
             generateWorldInitialization(simId, simDiag, simInitRep);
             generatePeopleInitialization(simDiag, simInitRep);
@@ -254,6 +256,7 @@ public class SimulationGenerator {
 
     public void generateWorldInitialization(String simId, Graph simDiags,
             Repeat rep) throws NullEntity, NotFound {
+
         GraphEntity ge = getEntity(simDiags, "WorldInitialization");
         GraphAttribute seedworld = ge.getAttributeByName("SimulationSeedField");
 
