@@ -1,6 +1,6 @@
 languaje: java
 jdk:
-  -openjdk8
+  - openjdk8
 
 sudo: false
 
