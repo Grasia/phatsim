@@ -10,17 +10,17 @@
 It is used to model scenarios where simulated humans recreate activities of daily life. Filters can then be added that represent an illness.
 
 
-## Requirements:
+## Requirements
 
-### Java 1.7 at least (set variable JAVA_HOME). 
+### Java 1.7 at least (set variable JAVA_HOME)
 
 In ubuntu at the time of writing the minimun version is 1.8. Install it by typing:
-```
+```bash
 $ sudo apt install openjdk-8-jre
 $ sudo apt install openjdk-8-jdk-headless
 ```
 You can check the java version with:
-```
+```bash
 $ java -version
 $ javac -version
 ```
@@ -29,13 +29,13 @@ To change between java versions:
 sudo update-alternatives --config java
 ```
 
-### Maven 3.1.1+ at least (set variable M2_HOME).
+### Maven 3.1.1+ at least (set variable M2_HOME)
 
-```
+```bash
 $ sudo apt install maven
 ```
 If you need to set M2 variables add the following lines to your .bashrc or .zshrc or whatever you use:
-```
+```bash
 export M2_HOME="/usr/share/maven"
 export M2="$M2_HOME/bin"
 export PATH="$M2:$PATH"

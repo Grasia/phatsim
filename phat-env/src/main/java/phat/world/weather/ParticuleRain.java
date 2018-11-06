@@ -66,7 +66,7 @@ public class ParticuleRain extends SimpleApplication {
         points.setShadowMode(RenderQueue.ShadowMode.CastAndReceive);
         Material mat = new Material(assetManager,
                 "Common/MatDefs/Misc/Particle.j3md");
-        // “raindrop.png” is just “spark.png”, rotated by 90 degrees.
+        // "raindrop.png" is just "spark.png", rotated by 90 degrees.
         mat.setTexture(
                 "Texture", assetManager.loadTexture(
                 "Effects/raindrop.png"));
