@@ -5,12 +5,14 @@
 [![OpenJDK Version](https://img.shields.io/badge/openjdk-v1.8-red.svg)](http://openjdk.java.net/)
 [![Maven Version](https://img.shields.io/badge/maven-v3.1.1-orange.svg)](http://maven.apache.org/)
 
-PHATSIM is a platform for the 3d simulation of Ambient Assisted Living Environments.
+**P**hysical **H**uman **A**ctivity **T**ester **Sim**ulator is a JAVA platform for the 3d simulation of Ambient Assisted Living Environments.
 
-## Getting Started:
+It is used to model scenarios where simulated humans recreate activities of daily life. Filters can then be added that represent an illness.
 
-### Installation:
-#### Java 1.7 at least (set variable JAVA_HOME). 
+
+## Requirements:
+
+### Java 1.7 at least (set variable JAVA_HOME). 
 
 In ubuntu at the time of writing the minimun version is 1.8. Install it by typing:
 ```
@@ -27,7 +29,7 @@ To change between java versions:
 sudo update-alternatives --config java
 ```
 
-#### Maven 3.1.1+ at least (set variable M2_HOME).
+### Maven 3.1.1+ at least (set variable M2_HOME).
 
 ```
 $ sudo apt install maven
