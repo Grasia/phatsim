@@ -1,41 +1,41 @@
 # Instalation
 1. Make sure the "config.properties" exists and sets the right ip address:
-```
+```bash
 ip=127.0.0.1
 port=44123
 ```
 2. A PHAT simulation should be running before launching the Console GUI.
 To launch the Console GUI:
-```
-$mvn exec:java -Dexec.mainClass="phat.console.ConsoleControl"
+```bash
+$ mvn exec:java -Dexec.mainClass="phat.console.ConsoleControl"
 ```
 3. It should print "connected!"
 4. Type the commands in the botom text field.
 5. Console GUI commands (don't type '>'. It's just to identify command entries.
 
 To show all commands and their usage:
-```
->help
+```bash
+> help
 ```
 It is possible to show command usage by its type:
-```
->help {env|body|agent|device|info}
+```bash
+> help {env|body|agent|device|info}
 ```
 Result:
-```
->help env # To show commands related with the environment
->help body # To show commands related with the bodies of the characters
->help device # To show commands related with the devices
->help info # To show commands that get information about the entities of the simulation
+```bash
+> help env # To show commands related with the environment
+> help body # To show commands related with the bodies of the characters
+> help device # To show commands related with the devices
+> help info # To show commands that get information about the entities of the simulation
 ```
 For example: Sitdown a character in a chair in the kitchen
 
-# Methods to get information commands
-```
->help info
+## Methods to get information commands
+```bash
+> help info
 ```
 Result:
-```
+```bash
 help (0):
 -------------------------------------------------------
 agentInfo <bodyId>
@@ -44,12 +44,12 @@ envInfo [roomId]
 help [env|body|device|info]
 *******************************************************
 ```
-# To get information about the characters available.
-```
->body info
+## To get information about the characters available
+```bash
+> body info
 ```
 Result:
-```
+```bash
 bodyInfo (2):
 -------------------------------------------------------
 
@@ -78,11 +78,11 @@ bodyInfo (2):
 *******************************************************
 ```
 There are two: Human0 and Sujeto1. Sujeto 1 will be choosen. Before, we need to know the name of the command:
-```
->help body
+```bash
+> help body
 ```
 Result:
-```
+```bash
 help (3):
 -------------------------------------------------------
 AlignBodyWith <bodyId> <entityId>
@@ -121,18 +121,18 @@ WaitForBody <bodyId> <targetBodyId>
 *******************************************************
 ```
 The command is: 
-```
+```bash
 SitDown <bodyId> <placeId>
 ```
 It has 2 params:
 1. The first one is the id of the body, e.i., "Sujeto1"
 2. The second one is the id of the chair where the character will sit.
 We need to discover the id of the chair. Before, it is nacesary to get the names of the rooms of the house:
-```
->envInfo
+```bash
+> envInfo
 ```
 Result:
-```
+```bash
 envInfo (5):
 -------------------------------------------------------
 
@@ -156,11 +156,11 @@ envInfo (5):
 *******************************************************
 ```
 Now, we can ask for information about the Kitchen:
-```
->envInfo Kitchen
+```bash
+> envInfo Kitchen
 ```
 Result:
-```
+```bash
 envInfo (6):
 -------------------------------------------------------
 
@@ -199,18 +199,17 @@ envInfo (6):
 ```
 
 For instance, we choose Chair1, so the command will be:
-```
->SitDown Sujeto1 Chair1
+```bash
+> SitDown Sujeto1 Chair1
 ```
 When a command is finished, the GUI shows the name of the command with its id in brackets and the result: Fail or Success.
 The response could take a while. For example, when the character has to walk to a given place.
 In the meantime, others commands could be executed, so it is necessary an id to differentiate them.
 
 Result of SitDown command with id 8:
-```
+```bash
 SitDown (8):
 -------------------------------------------------------
 Success
 *******************************************************
 ```
-
