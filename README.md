@@ -12,17 +12,17 @@ It is used to model scenarios where simulated humans recreate activities of dail
 
 ## Requirements
 
-### Java 1.7 at least (set variable JAVA_HOME)
+### Java 1.8 at least (set variable JAVA_HOME)
 
-In ubuntu at the time of writing the minimun version is 1.8. Install it by typing:
+Install it by typing:
 ```bash
-$ sudo apt install openjdk-8-jre
-$ sudo apt install openjdk-8-jdk-headless
+sudo apt install openjdk-8-jre
+sudo apt install openjdk-8-jdk-headless
 ```
 You can check the java version with:
 ```bash
-$ java -version
-$ javac -version
+java -version
+javac -version
 ```
 To change between java versions:
 ```
@@ -30,14 +30,38 @@ sudo update-alternatives --config java
 ```
 
 ### Maven 3.1.1+ at least (set variable M2_HOME)
-
 ```bash
-$ sudo apt install maven
+sudo apt install maven
 ```
 If you need to set M2 variables add the following lines to your .bashrc or .zshrc or whatever you use:
 ```bash
 export M2_HOME="/usr/share/maven"
 export M2="$M2_HOME/bin"
 export PATH="$M2:$PATH"
+```
+## Usage
+### Generating Javadocs
+```bash
+mvn site:site
+```
+Output can be found in /target/site/
+### Installing 
+```bash
+mvn clean install
+```
+## Useful plugins used
+### Dependencies
+To generate dependency graphs you can use the included **depgraph-maven-plugin**. See <https://github.com/ferstl/depgraph-maven-plugin>
+An example:
+```bash
+mvn depgraph:graph -DgraphFormat="text"
+```
+Common output formats are "text" "json" or "dot". For viewing dot files in Ubuntu the package "Xdot" is easily found and used. 
+### Cyclomatic complexity analysis
+To generate html reports **javancss-maven-plugin** is used. See <http://www.mojohaus.org/javancss-maven-plugin/index.html>
+As for phatsim we have no source but we have child modules it is advised by the developer to use:
+```bash
+mvn clean site
+mvn jancss:report
 ```
 
