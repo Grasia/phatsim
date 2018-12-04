@@ -116,7 +116,10 @@ public class GUIPHATInterface extends JSONPHATInterface {
 				app.getStateManager().getState(AgentsAppState.class).getPHAInterface().getRootJFrame().pack();		
 			}
 		});
-		
+	}
 
+	public void hidePrettyLogger() {
+		this.setPrettyLogView(false);
+		app.getStateManager().detach(prettyLog);
 	}
 }
