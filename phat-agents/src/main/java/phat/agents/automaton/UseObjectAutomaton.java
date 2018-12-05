@@ -50,6 +50,7 @@ public class UseObjectAutomaton extends SimpleState {
     public void initState(PHATInterface phatInterface) {
         indirectAutomaton = UseObjectAutomatonFactory.getAutomaton(agent, objToBeUsedId);
         indirectAutomaton.setFinishCondition(finishCondition);
+        finishCondition.automatonReset(indirectAutomaton);
     }
 
     @Override
