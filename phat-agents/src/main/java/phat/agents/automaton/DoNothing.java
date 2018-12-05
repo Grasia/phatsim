@@ -45,5 +45,6 @@ public class DoNothing extends SimpleState {
 
     @Override
     public void initState(PHATInterface phatInterface) {
+        finishCondition.automatonReset(this.automatonFahter);
     }
 }
