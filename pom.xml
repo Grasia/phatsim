@@ -9,7 +9,7 @@
     <groupId>net.sf.phat</groupId>
     <artifactId>phat-sim</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.12</version>
+    <version>1.0.12-SNAPSHOT</version>
     <name>PHAT - Physical Human Activity Tester</name>
     <description>Physical Human Activity Tester</description>
     <url>https://github.com/Grasia/phatsim</url>
@@ -25,8 +25,7 @@
         <connection>scm:git:git://github.com/GRASIA/phatsim.git</connection>
         <developerConnection>scm:git:git@github.com:GRASIA/phatsim.git</developerConnection>
         <url>https://github.com/Grasia/phatsim</url>
-      <tag>phat-sim-1.0.12</tag>
-  </scm>
+    </scm>
 
     <developers>
         <developer>
